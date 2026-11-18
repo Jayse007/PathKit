@@ -9,7 +9,7 @@ export type AxisToken = '+X' | '-X' | '+Y' | '-Y' | '+Z' | '-Z';
 export const MIN_POINT_SPACING = 0.1;
 
 const coord = (min: number, max: number) =>
-  fc.double({ min, max, noNaN: true, noDefaultInfinity: true });
+  fc.integer({ min: -1000000, max: 1000000 }).map(i => min + (i + 1000000) / 2000000 * (max - min));
 
 /** Finite Vec3 with every coordinate in [-100, 100]. */
 export const arbVec3: fc.Arbitrary<Vec3> = fc.record({

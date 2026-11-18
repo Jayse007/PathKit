@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { slerp, quatAngle } from '../../src/math';
-import type { Quat } from '../../src/math';
-import { arbUnitQuat } from '../helpers/basic-generators';
+import { slerp, quatAngle } from '../../src/math.js';
+import type { Quat } from '../../src/math.js';
+import { arbUnitQuat } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 5: Slerp follows the shorter arc
 // **Validates: Requirements 1.3, 1.5**

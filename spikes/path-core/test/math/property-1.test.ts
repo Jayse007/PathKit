@@ -3,8 +3,8 @@ import fc from 'fast-check';
 import {
   add, sub, scale, dot, cross, length, normalize, lerp,
   quatFromBasis, quatMul, quatInverse, rotateVec, slerp, quatAngle,
-} from '../../src/math';
-import { arbVec3, arbUnitQuat } from '../helpers/basic-generators';
+} from '../../src/math.js';
+import { arbVec3, arbUnitQuat } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 1: Math functions do not mutate inputs
 // **Validates: Requirements 1.6, 10.10**

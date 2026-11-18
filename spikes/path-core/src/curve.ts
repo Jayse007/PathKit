@@ -1,5 +1,5 @@
-import type { Vec3 } from './math';
-import { length, sub } from './math';
+import type { Vec3 } from './math.js';
+import { length, sub } from './math.js';
 
 export interface Curve {
   readonly closed: boolean;

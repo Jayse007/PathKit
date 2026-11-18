@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { normalize } from '../../src/math';
-import { arbVec3 } from '../helpers/basic-generators';
+import { normalize } from '../../src/math.js';
+import { arbVec3 } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 3: Normalize yields unit or zero
 // **Validates: Requirements 1.4**

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { createCurve } from '../../src/curve';
-import type { Vec3 } from '../../src/math';
-import { arbCurveInput } from '../helpers/basic-generators';
+import { createCurve } from '../../src/curve.js';
+import type { Vec3 } from '../../src/math.js';
+import { arbCurveInput } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 6: Curve interpolates its points and endpoints
 // **Validates: Requirements 2.1, 2.3, 2.4**

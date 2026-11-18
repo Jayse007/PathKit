@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { quatFromBasis, rotateVec } from '../../src/math';
-import type { Vec3, Quat } from '../../src/math';
-import { arbUnitQuat } from '../helpers/basic-generators';
+import { quatFromBasis, rotateVec } from '../../src/math.js';
+import type { Vec3, Quat } from '../../src/math.js';
+import { arbUnitQuat } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 4: Quaternion from orthonormal basis rotates the axes
 // **Validates: Requirements 1.2**
