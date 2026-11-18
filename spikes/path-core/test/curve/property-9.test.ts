@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
 import { createCurve } from '../../src/curve.js';
 import type { Vec3 } from '../../src/math.js';
-import { arbCurveInput } from '../helpers/basic-generators.js';
+import { arbCurveInput, arbPointList } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 9: Out-of-range parameter clamps or wraps
 // **Validates: Requirements 2.8**
@@ -37,10 +37,36 @@ describe('Property 9: Out-of-range parameter clamps or wraps', () => {
     );
   });
 
+  it('tangentAt(t) equals tangentAt(clamp(t, 0, 1)) for open curves and tangentAt(t - floor(t)) for closed curves', () => {
+    fc.assert(
+      fc.property(arbCurveInput, arbT, ({ points, closed }, t) => {
+        const curve = createCurve(points, closed);
+        const expected = closed ? t - Math.floor(t) : Math.min(1, Math.max(0, t));
+        const actual = curve.tangentAt(t, { x: 0, y: 0, z: 0 });
+        const reference = curve.tangentAt(expected, { x: 0, y: 0, z: 0 });
+        expectClose(actual, reference);
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it('closed curves are periodic: pointAt(t) equals pointAt(t + 1)', () => {
+    const arbPeriodT = unit.map(u => -5 + u * 10);
+    fc.assert(
+      fc.property(arbPointList(true), arbPeriodT, (points, t) => {
+        const curve = createCurve(points, true);
+        const a = curve.pointAt(t, { x: 0, y: 0, z: 0 });
+        const b = curve.pointAt(t + 1, { x: 0, y: 0, z: 0 });
+        expectClose(a, b);
+      }),
+      { numRuns: 200 },
+    );
+  });
+
   it('open curves return the start point for t below 0 and the end point for t above 1', () => {
     fc.assert(
       fc.property(
-        arbPointsOpen(),
+        arbPointList(false),
         arbBelow,
         arbAbove,
         (points, below, above) => {
@@ -78,7 +104,3 @@ describe('Property 9: Out-of-range parameter clamps or wraps', () => {
     expectClose(line.pointAt(-3), { x: 0, y: 0, z: 0 });
   });
 });
-
-function arbPointsOpen(): fc.Arbitrary<Vec3[]> {
-  return arbCurveInput.filter(c => !c.closed).map(c => c.points);
-}

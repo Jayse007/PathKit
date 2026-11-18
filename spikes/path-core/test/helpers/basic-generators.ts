@@ -11,6 +11,9 @@ export const MIN_POINT_SPACING = 0.1;
 const coord = (min: number, max: number) =>
   fc.integer({ min: -1000000, max: 1000000 }).map(i => min + (i + 1000000) / 2000000 * (max - min));
 
+export const arbT = fc.integer({ min: 0, max: 1000000 }).map(i => i / 1000000);
+export const arbScalar = fc.integer({ min: -1000000, max: 1000000 }).map(i => i / 10000);
+
 /** Finite Vec3 with every coordinate in [-100, 100]. */
 export const arbVec3: fc.Arbitrary<Vec3> = fc.record({
   x: coord(-100, 100),

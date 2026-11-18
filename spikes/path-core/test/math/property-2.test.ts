@@ -4,13 +4,11 @@ import {
   add, sub, scale, cross, normalize, lerp,
   quatFromBasis, quatMul, quatInverse, rotateVec, slerp,
 } from '../../src/math.js';
-import { arbVec3, arbUnitQuat } from '../helpers/basic-generators.js';
+import { arbVec3, arbUnitQuat, arbScalar, arbT } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 2: Output arguments are written and returned
 // **Validates: Requirements 1.7**
 
-const arbScalar = fc.double({ min: -100, max: 100, noNaN: true, noDefaultInfinity: true });
-const arbT = fc.double({ min: 0, max: 1, noNaN: true, noDefaultInfinity: true });
 
 // Pre-filled with values no result is expected to equal, so an unwritten field is detected.
 const dirtyV = () => ({ x: 12345.5, y: -6789.25, z: 4242.75 });

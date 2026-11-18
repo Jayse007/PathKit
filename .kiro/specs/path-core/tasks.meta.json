@@ -324,6 +324,16 @@
         "executionId": "af3cf85d-bc99-47bb-ac3b-c0a6ce8aa42f",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1795043227534
+      },
+      {
+        "executionId": "90fdaaad-2024-43c6-98ab-04a8f16450c3",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795044671663
+      },
+      {
+        "executionId": "3365b3e2-06f6-4a60-90f3-06f8683b212d",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795045146604
       }
     ],
     "3.6 Write property test for invalid curve inputs": [
@@ -336,6 +346,11 @@
         "executionId": "af3cf85d-bc99-47bb-ac3b-c0a6ce8aa42f",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1795043233921
+      },
+      {
+        "executionId": "90fdaaad-2024-43c6-98ab-04a8f16450c3",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795044662951
       }
     ],
     "3.7 Write property test for reversal symmetry": [
@@ -343,6 +358,11 @@
         "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1794913622539
+      },
+      {
+        "executionId": "3365b3e2-06f6-4a60-90f3-06f8683b212d",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795045154630
       }
     ],
     "4. Implement arc-length parameterisation": [

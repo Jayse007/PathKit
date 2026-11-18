@@ -75,6 +75,18 @@ describe('Property 10: Invalid curve inputs are rejected with informative errors
     );
   });
 
+  it('example: non-neighbouring coincident points are accepted', () => {
+    // Only consecutive points (and, for closed curves, the last and first) may not coincide.
+    const points: Vec3[] = [
+      { x: 0, y: 0, z: 0 },
+      { x: 1, y: 0, z: 0 },
+      { x: 1, y: 1, z: 0 },
+      { x: 1, y: 0, z: 0 },
+    ];
+    expect(() => createCurve(points, true)).not.toThrow();
+    expect(() => createCurve(points, false)).not.toThrow();
+  });
+
   it('example: empty list, single point and closed pair', () => {
     expect(() => createCurve([], false)).toThrow('Curve needs at least 2 points, got 0');
     expect(() => createCurve([{ x: 0, y: 0, z: 0 }], true)).toThrow('Curve needs at least 2 points, got 1');

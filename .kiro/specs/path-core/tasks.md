@@ -104,12 +104,12 @@ These rules apply to every task below.
     - **Property 9: Out-of-range parameter clamps or wraps**
     - **Validates: Requirements 2.8**
 
-  - [-] 3.6 Write property test for invalid curve inputs
+  - [x] 3.6 Write property test for invalid curve inputs
     - **Property 10: Invalid curve inputs are rejected with informative errors**
     - Also cover closed curves with exactly 2 points: they are rejected with `Closed curve needs at least 3 points, got 2`
     - **Validates: Requirements 2.6, 2.7**
 
-  - [ ] 3.7 Write property test for reversal symmetry
+  - [-] 3.7 Write property test for reversal symmetry
     - **Property 45: Reversing an open curve reverses its parameter**
     - For any valid open point list, the curve built from the reversed list satisfies `pointAt(1 - t)` equal to the original `pointAt(t)` within 1e-6 for `t` in [0, 1]
     - **Validates: Requirements 2.9**

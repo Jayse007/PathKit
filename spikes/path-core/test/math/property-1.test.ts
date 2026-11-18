@@ -4,13 +4,11 @@ import {
   add, sub, scale, dot, cross, length, normalize, lerp,
   quatFromBasis, quatMul, quatInverse, rotateVec, slerp, quatAngle,
 } from '../../src/math.js';
-import { arbVec3, arbUnitQuat } from '../helpers/basic-generators.js';
+import { arbVec3, arbUnitQuat, arbScalar, arbT } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 1: Math functions do not mutate inputs
 // **Validates: Requirements 1.6, 10.10**
 
-const arbScalar = fc.double({ min: -100, max: 100, noNaN: true, noDefaultInfinity: true });
-const arbT = fc.double({ min: 0, max: 1, noNaN: true, noDefaultInfinity: true });
 
 const copy = <T extends object>(o: T): T => ({ ...o });
 

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
 import { slerp, quatAngle } from '../../src/math.js';
 import type { Quat } from '../../src/math.js';
-import { arbUnitQuat } from '../helpers/basic-generators.js';
+import { arbUnitQuat, arbT } from '../helpers/basic-generators.js';
 
 // Feature: path-core, Property 5: Slerp follows the shorter arc
 // **Validates: Requirements 1.3, 1.5**
@@ -12,7 +12,6 @@ const UNIT_TOL = 1e-9;
 
 const neg = (q: Quat): Quat => ({ x: -q.x, y: -q.y, z: -q.z, w: -q.w });
 const norm = (q: Quat): number => Math.hypot(q.x, q.y, q.z, q.w);
-const arbT = fc.double({ min: 0, max: 1, noNaN: true, noDefaultInfinity: true });
 
 function checkShorterArc(a: Quat, b: Quat, t: number) {
   const r = slerp(a, b, t);
