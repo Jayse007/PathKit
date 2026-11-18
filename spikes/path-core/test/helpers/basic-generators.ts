@@ -48,9 +48,11 @@ const dist = (a: Vec3, b: Vec3): number => Math.hypot(a.x - b.x, a.y - b.y, a.z 
  */
 export function arbPointList(
   closed: boolean,
-  minCount = 2,
+  minCountArg?: number,
   maxCount = 12,
 ): fc.Arbitrary<Vec3[]> {
+  // Closed curves need at least 3 points; open curves need at least 2.
+  const minCount = minCountArg ?? (closed ? 3 : 2);
   return fc
     .tuple(
       arbVec3,

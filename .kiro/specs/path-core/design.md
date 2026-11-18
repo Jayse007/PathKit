@@ -94,7 +94,7 @@ export function createCurve(points: readonly Vec3[], closed: boolean): Curve;
 - Centripetal parameterisation uses knot spacing `|Pi+1 - Pi|^0.5`. Open curves duplicate endpoints by reflection (`2*P0 - P1`) to create phantom control points. Closed curves wrap indices.
 - Parameter `t` spans the whole curve. Segment index is `floor(t * segmentCount)` and local parameter is the remainder, so `t = 1` on an open curve maps to the last segment's end.
 - `t` is clamped for open curves and wrapped (`t - floor(t)`) for closed curves. Wrapping at `t = 1` yields `t = 0`, which for a closed curve is the same point.
-- Errors: `createCurve` throws `Curve needs at least 2 points, got N` and `Coincident points at indexes i and i+1`. For closed curves it also checks the last-to-first pair, naming `n-1` and `0`.
+- Errors: `createCurve` throws `Curve needs at least 2 points, got N` (checked first, open or closed), `Closed curve needs at least 3 points, got N` (closed curves with exactly 2 points) and `Coincident points at indexes i and i+1`. For closed curves it also checks the last-to-first pair, naming `n-1` and `0`.
 - Tangent is the normalised analytic derivative of the segment. If the derivative is below 1e-12 (should not happen after the coincidence check), the chord direction of the segment is used so the output is never NaN.
 
 ### arclength.ts
@@ -259,6 +259,7 @@ export function motionLinter(
 | Condition | Where | Error |
 | --- | --- | --- |
 | Fewer than 2 curve points | `createCurve` | message states minimum 2 and supplied count |
+| Closed curve with exactly 2 points | `createCurve` | message states minimum 3 and supplied count |
 | Coincident consecutive points | `createCurve` | message names both indexes |
 | Frame count < 2 or non-integer | frames | message states value |
 | Invalid scene | `validateScene`, re-thrown by `bake` | `SceneError` with names and values |
@@ -328,7 +329,7 @@ For any valid point list and openness, `pointAt` at each knot parameter equals t
 
 ### Property 7: Closed curve joins continuously
 
-For any valid point list on a closed curve, `pointAt(0)` equals `pointAt(1)` and `tangentAt(0)` equals `tangentAt(1)` within 1e-6. In addition, `pointAt(1 - 1e-9)` and `tangentAt(1 - 1e-9)` are within 1e-6 of `pointAt(0)` and `tangentAt(0)`.
+For any valid point list on a closed curve, `pointAt(0)` equals `pointAt(1)` and `tangentAt(0)` equals `tangentAt(1)` within 1e-6. In addition, `pointAt(1 - 1e-9)` is within 1e-6 of `pointAt(0)`, and the tangent is continuous at the join: `|tangentAt(1 - 1e-9) - tangentAt(0)|` is at most `|tangentAt(1 - 1e-6) - tangentAt(0)| / 100 + 1e-12`. Curves whose two neighbours of the first point (`points[n-1]` and `points[1]`) are the same spot are excluded, because the tangent at that point is a cusp.
 
 **Validates: Requirements 2.2**
 
@@ -346,7 +347,7 @@ For any valid curve and any finite `t`, an open curve satisfies `pointAt(t) = po
 
 ### Property 10: Invalid curve inputs are rejected with informative errors
 
-For any point list with fewer than 2 points, `createCurve` throws an error containing the minimum 2 and the supplied count. For any point list containing two coincident consecutive points at indexes `i` and `i+1`, it throws an error containing both indexes.
+For any point list with fewer than 2 points, `createCurve` throws an error containing the minimum 2 and the supplied count. For any closed point list with exactly 2 points, it throws an error containing the minimum 3 and the supplied count. For any point list containing two coincident consecutive points at indexes `i` and `i+1`, it throws an error containing both indexes.
 
 **Validates: Requirements 2.6, 2.7**
 

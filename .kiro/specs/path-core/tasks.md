@@ -83,7 +83,7 @@ These rules apply to every task below.
   - [x] 3.1 Implement `src/curve.ts`
     - Implement `createCurve(points, closed)` as a centripetal Catmull-Rom spline (knot spacing `|Pi+1 - Pi|^0.5`), reflected phantom endpoints for open curves, wrapped indices for closed curves
     - Implement `pointAt` and `tangentAt` with `out` support, no allocation when `out` is given, clamp for open and wrap for closed, unit tangent with chord fallback
-    - Throw `Curve needs at least 2 points, got N` and `Coincident points at indexes i and i+1` (closed curves also check `n-1` and `0`)
+    - Throw `Curve needs at least 2 points, got N` (checked first), `Closed curve needs at least 3 points, got N` (closed curves with exactly 2 points) and `Coincident points at indexes i and i+1` (closed curves also check `n-1` and `0`)
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9_
 
   - [x] 3.2 Write property test for interpolation and endpoints
@@ -92,7 +92,8 @@ These rules apply to every task below.
 
   - [-] 3.3 Write property test for closed curve continuity
     - **Property 7: Closed curve joins continuously**
-    - Also check that position and tangent at `t = 1 - 1e-9` are within 1e-6 of those at `t = 0` for closed curves
+    - Also check that the position at `t = 1 - 1e-9` is within 1e-6 of the position at `t = 0` for closed curves
+    - Tangent check: with `T0 = tangentAt(0)`, `d9 = |tangentAt(1 - 1e-9) - T0|` and `d6 = |tangentAt(1 - 1e-6) - T0|`, assert `d9 <= d6 / 100 + 1e-12`. Skip curves where `points[n-1]` and `points[1]` are the same spot (cusp)
     - **Validates: Requirements 2.2**
 
   - [ ] 3.4 Write property test for unit tangents
@@ -105,6 +106,7 @@ These rules apply to every task below.
 
   - [ ] 3.6 Write property test for invalid curve inputs
     - **Property 10: Invalid curve inputs are rejected with informative errors**
+    - Also cover closed curves with exactly 2 points: they are rejected with `Closed curve needs at least 3 points, got 2`
     - **Validates: Requirements 2.6, 2.7**
 
   - [ ] 3.7 Write property test for reversal symmetry

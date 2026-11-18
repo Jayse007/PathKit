@@ -64,7 +64,7 @@ All code follows the project steering file `coordinate-conventions.md`: Y-up rig
 3. WHERE the Path is open, THE Curve SHALL start at the first point and end at the last point.
 4. WHEN pointAt receives t in [0,1], THE Curve SHALL return the position at parameter t over the whole curve.
 5. WHEN tangentAt receives t in [0,1], THE Curve SHALL return a unit-length tangent at parameter t.
-6. IF the Curve is created with fewer than 2 points, THEN THE Curve SHALL throw an error stating the required minimum and the supplied count.
+6. IF the Curve is created with fewer than 2 points, THEN THE Curve SHALL throw an error stating the required minimum and the supplied count. IF a closed Curve is created with exactly 2 points, THEN THE Curve SHALL throw an error stating that a closed curve needs at least 3 points and the supplied count.
 7. IF two consecutive points are coincident, THEN THE Curve SHALL throw an error naming the indexes of both points.
 8. WHEN t is outside [0,1], THE Curve SHALL clamp t for an open curve and wrap t for a closed curve.
 9. WHERE the Curve is open, WHEN a second Curve is built from the same points in reversed order, THE Curve SHALL satisfy reversed.pointAt(1 - t) equal to original.pointAt(t) within 1e-6 for every t in [0,1].

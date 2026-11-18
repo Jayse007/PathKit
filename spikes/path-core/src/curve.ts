@@ -26,6 +26,9 @@ export function createCurve(points: readonly Vec3[], closed: boolean): Curve {
   if (n < 2) {
     throw new Error(`Curve needs at least 2 points, got ${n}`);
   }
+  if (closed && n < 3) {
+    throw new Error(`Closed curve needs at least 3 points, got ${n}`);
+  }
   for (let i = 0; i < n - 1; i++) {
     if (sameSpot(points[i], points[i + 1])) {
       throw new Error(`Coincident points at indexes ${i} and ${i + 1}`);
