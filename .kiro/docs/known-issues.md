@@ -1,0 +1,12 @@
+# Known issues (Windows + Kiro)
+
+| ID | Symptom | Cause | Fix | Prevention in this kit |
+|---|---|---|---|---|
+| KI-1 | Terminal hangs; later commands never run | The agent wrote a file with a multi-line PowerShell string; PowerShell waited for the closing line and swallowed every later command (cost: 48 minutes, 1.18 credits) | Kill the terminal (trash-can icon); create the file with file tools or by hand | Steering: never write files from the terminal; one-line commands |
+| KI-2 | "npm.ps1 cannot be loaded because running scripts is disabled" | Windows' default execution policy blocks PowerShell launcher scripts (Get-ExecutionPolicy -List showed every scope Undefined) | In your own PowerShell, run Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned, or use npm.cmd | Steering: use npm.cmd; stop and tell the user the command |
+| KI-3 | npm.cmd install in Kiro's terminal returns exit code -1 with no output | Not determined (Kiro terminal session, network or antivirus are possible) | Run npm install in your own terminal, then continue | Steering: one diagnostic, then stop and ask the user to run it |
+| KI-4 | The agent read only part of tasks.md | The file was truncated when read whole | Read in chunks | Steering: read long files with offset and limit |
+| KI-5 | The agent picked dependency versions itself | The spec named no versions | Accept and keep package-lock.json | Steering: use the spec's versions; otherwise latest stable, and report them |
+| KI-6 | Spec mode asks many clarifying questions before starting | Behaviour decisions were not written down | Write decisions in design.md first; choose "Skip remaining questions" when they are already specified | Steering: check design decisions before asking |
+| KI-7 | Agent hangs for 120 seconds on a command not in the spec (npx.cmd tsc --noEmit) | typescript is not installed, so npx tried to download it and waited | Skip it; type checking is left to the editor | Steering: never run npx or tsc; only npm.cmd test and git status |
+| KI-8 | The agent cannot see the output of npm.cmd test and appends Out-String (or similar) instead of asking | Kiro's terminal does not always return the output of the test run; the cause is not determined | The user runs npm test in their own terminal and pastes the result | Steering: add nothing to the test command; if the output is invisible, stop and ask the user to paste the result; never report passes without seeing results |

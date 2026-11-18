@@ -1,0 +1,690 @@
+{
+  "pbtResults": {
+    "3.2 Write property test for interpolation and endpoints": {
+      "status": "passed",
+      "lastRunTimestamp": 1794994795105
+    }
+  },
+  "executionHistory": {
+    "1.1 Create project configuration files": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913603020
+      },
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913664473
+      },
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913737054
+      }
+    ],
+    "1.2 Install dev dependencies": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913605330
+      },
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913748458
+      },
+      {
+        "executionId": "0bda7bdd-ccba-4347-ac40-fbacf73813da",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794981348146
+      }
+    ],
+    "1.3 Write unit tests for project constraints": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913609408
+      },
+      {
+        "executionId": "0bda7bdd-ccba-4347-ac40-fbacf73813da",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794981351995
+      },
+      {
+        "executionId": "7617ed51-59f4-4fd4-b7d2-21fb65cd798f",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794988056796
+      },
+      {
+        "executionId": "7617ed51-59f4-4fd4-b7d2-21fb65cd798f",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794988104854
+      },
+      {
+        "executionId": "d1015023-ca51-4b85-ab28-d6b3cc4bac46",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794989715698
+      },
+      {
+        "executionId": "b90f15c9-e61c-4c3d-a766-3a17495fbfa2",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991212757
+      }
+    ],
+    "1.4 Create shared test generators for math, curves and axes": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913612981
+      },
+      {
+        "executionId": "7617ed51-59f4-4fd4-b7d2-21fb65cd798f",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794988109733
+      },
+      {
+        "executionId": "6014276e-8eb6-4844-96ee-123cfdee6dbe",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794988511172
+      },
+      {
+        "executionId": "efdcc88e-e422-4a6a-8b99-9db02309835c",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991531270
+      },
+      {
+        "executionId": "efdcc88e-e422-4a6a-8b99-9db02309835c",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991535900
+      },
+      {
+        "executionId": "efdcc88e-e422-4a6a-8b99-9db02309835c",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991597611
+      }
+    ],
+    "2.1 Implement `src/math.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913614040
+      },
+      {
+        "executionId": "6014276e-8eb6-4844-96ee-123cfdee6dbe",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794988518381
+      },
+      {
+        "executionId": "6014276e-8eb6-4844-96ee-123cfdee6dbe",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794988754953
+      },
+      {
+        "executionId": "efdcc88e-e422-4a6a-8b99-9db02309835c",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991530153
+      },
+      {
+        "executionId": "efdcc88e-e422-4a6a-8b99-9db02309835c",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991601415
+      },
+      {
+        "executionId": "60cacb9f-81fc-497c-a1ac-b2226266eae8",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991794580
+      }
+    ],
+    "2.2 Write property test for input immutability": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913615293
+      },
+      {
+        "executionId": "b1498ad2-3361-41ab-b0b2-92275c289101",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794989510361
+      },
+      {
+        "executionId": "d1015023-ca51-4b85-ab28-d6b3cc4bac46",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794989714503
+      },
+      {
+        "executionId": "b90f15c9-e61c-4c3d-a766-3a17495fbfa2",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991217428
+      },
+      {
+        "executionId": "efdcc88e-e422-4a6a-8b99-9db02309835c",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991529004
+      },
+      {
+        "executionId": "60cacb9f-81fc-497c-a1ac-b2226266eae8",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991799859
+      },
+      {
+        "executionId": "1da6a1c8-82fa-43e4-ab16-8086f1286191",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794991993648
+      }
+    ],
+    "2.3 Write property test for output arguments": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913616051
+      },
+      {
+        "executionId": "1da6a1c8-82fa-43e4-ab16-8086f1286191",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992000274
+      },
+      {
+        "executionId": "46965906-06c7-4253-a96b-611a1e28f1d6",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992139602
+      }
+    ],
+    "2.4 Write property test for normalize": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913616583
+      },
+      {
+        "executionId": "46965906-06c7-4253-a96b-611a1e28f1d6",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992144585
+      },
+      {
+        "executionId": "9d5b8d3e-d4b2-4e7e-b1fc-0d12e7f49f67",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992406683
+      }
+    ],
+    "2.5 Write property test for quaternion from basis": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913617291
+      },
+      {
+        "executionId": "9d5b8d3e-d4b2-4e7e-b1fc-0d12e7f49f67",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992412222
+      },
+      {
+        "executionId": "6144818f-f106-4651-b17a-a790e0261052",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992658527
+      }
+    ],
+    "2.6 Write property test for slerp": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913618113
+      },
+      {
+        "executionId": "6144818f-f106-4651-b17a-a790e0261052",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992664877
+      },
+      {
+        "executionId": "68692131-457b-4d9d-89e0-22c600c44880",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992867483
+      }
+    ],
+    "3.1 Implement `src/curve.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913618641
+      },
+      {
+        "executionId": "68692131-457b-4d9d-89e0-22c600c44880",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992874692
+      },
+      {
+        "executionId": "02bc5adb-a9c7-48f8-9baa-8d157aaadfba",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794993204545
+      }
+    ],
+    "3.2 Write property test for interpolation and endpoints": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913619544
+      },
+      {
+        "executionId": "02bc5adb-a9c7-48f8-9baa-8d157aaadfba",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794993210756
+      },
+      {
+        "executionId": "02bc5adb-a9c7-48f8-9baa-8d157aaadfba",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794994813920
+      }
+    ],
+    "3.3 Write property test for closed curve continuity": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913620253
+      },
+      {
+        "executionId": "02bc5adb-a9c7-48f8-9baa-8d157aaadfba",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794994822112
+      }
+    ],
+    "3.4 Write property test for unit tangents": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913620857
+      }
+    ],
+    "3.5 Write property test for clamp and wrap": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913621667
+      }
+    ],
+    "3.6 Write property test for invalid curve inputs": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913622057
+      }
+    ],
+    "3.7 Write property test for reversal symmetry": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913622539
+      }
+    ],
+    "4. Implement arc-length parameterisation": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913623166
+      }
+    ],
+    "4.1 Implement `src/arclength.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913623718
+      }
+    ],
+    "4.2 Write property test for table size and length": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913624226
+      }
+    ],
+    "4.3 Write property test for clamp and wrap": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913625010
+      }
+    ],
+    "4.4 Write property test for equal chords": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913625443
+      }
+    ],
+    "4.5 Write property test for unit tangents and output reuse": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913625955
+      }
+    ],
+    "5. Implement frames": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913626544
+      }
+    ],
+    "5.1 Implement `src/frames.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913627143
+      }
+    ],
+    "5.2 Write property test for RMF orthonormality": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913627626
+      }
+    ],
+    "5.3 Write property test for first normal": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913628129
+      }
+    ],
+    "5.4 Write property test for twist comparison": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913628594
+      }
+    ],
+    "5.5 Write property test for Frenet frames": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913629221
+      }
+    ],
+    "5.6 Write property test for invalid counts": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913629713
+      }
+    ],
+    "6. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913630220
+      }
+    ],
+    "7.1 Implement `src/scene.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913630640
+      }
+    ],
+    "7.2 Create shared test generators for scenes": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913631078
+      }
+    ],
+    "7.3 Write property test for axis validation": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913631763
+      }
+    ],
+    "7.4 Write property test for numeric field validation": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913632172
+      }
+    ],
+    "7.5 Write property test for reference and duplicate validation": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913632644
+      }
+    ],
+    "7.6 Write unit tests for scene validation messages": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913633052
+      }
+    ],
+    "8.1 Implement `src/bake.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913633522
+      }
+    ],
+    "8.2 Write property test for constraint order": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913634151
+      }
+    ],
+    "8.3 Write property test for followPath positions": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913634623
+      }
+    ],
+    "8.4 Write property test for open-path hold": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913635070
+      }
+    ],
+    "8.5 Write property test for alignToPath": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913635550
+      }
+    ],
+    "8.6 Write property test for aimAt": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913636014
+      }
+    ],
+    "8.7 Write property test for influence blending": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913636628
+      }
+    ],
+    "8.8 Write property test for keyframed targets": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913637086
+      }
+    ],
+    "8.9 Write property test for coincident aim": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913638468
+      }
+    ],
+    "8.10 Write property test for near-vertical aim": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913639141
+      }
+    ],
+    "8.11 Write property test for bake completeness and determinism": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913639611
+      }
+    ],
+    "8.12 Write property test for invalid scenes in bake": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913640309
+      }
+    ],
+    "8.13 Write unit tests for bake edge cases": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913640799
+      }
+    ],
+    "8.14 Write property test for orientation smoothness": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913641309
+      }
+    ],
+    "9.1 Implement `src/evaluate.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913641948
+      }
+    ],
+    "9.2 Write property test for returned values": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913642608
+      }
+    ],
+    "9.3 Write property test for read-only, allocation-free evaluation": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913643256
+      }
+    ],
+    "9.4 Write property test for invalid arguments": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913643891
+      }
+    ],
+    "9.5 Write unit tests for evaluator allocation": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913644496
+      }
+    ],
+    "10.1 Implement `src/linter.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913645397
+      }
+    ],
+    "10.2 Write property test for path-end-reached on open paths": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913646079
+      }
+    ],
+    "10.3 Write property test for closed paths": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913646584
+      }
+    ],
+    "10.4 Write property test for roll and vertical findings": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913647151
+      }
+    ],
+    "10.5 Write property test for speed spikes": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913647859
+      }
+    ],
+    "10.6 Write property test for rotation conflict": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913648360
+      }
+    ],
+    "10.7 Write property test for finding shape and ordering": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913649108
+      }
+    ],
+    "10.8 Write unit tests for linter edge cases": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913649742
+      }
+    ],
+    "11.1 Implement `src/index.ts`": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913650437
+      }
+    ],
+    "11.2 Write property test for NaN-free output": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913651075
+      }
+    ],
+    "12. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913651696
+      }
+    ],
+    "13.1 Run the full test suite and report results": [
+      {
+        "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794913652217
+      }
+    ],
+    "1. Set up the project": [
+      {
+        "executionId": "6014276e-8eb6-4844-96ee-123cfdee6dbe",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794988512073
+      }
+    ],
+    "2. Implement math": [
+      {
+        "executionId": "68692131-457b-4d9d-89e0-22c600c44880",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1794992868427
+      }
+    ]
+  }
+}
