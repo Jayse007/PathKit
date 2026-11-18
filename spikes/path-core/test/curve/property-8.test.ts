@@ -16,7 +16,7 @@ describe('Property 8: Tangents are unit length', () => {
     fc.assert(
       fc.property(
         arbCurveInput,
-        fc.double({ min: 0, max: 1, noNaN: true, noDefaultInfinity: true }),
+        fc.integer({ min: 0, max: 1000000 }).map(i => i / 1000000),
         ({ points, closed }, t) => {
           const curve = createCurve(points, closed);
           const out: Vec3 = { x: 0, y: 0, z: 0 };

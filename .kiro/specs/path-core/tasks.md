@@ -96,15 +96,15 @@ These rules apply to every task below.
     - Tangent check: with `T0 = tangentAt(0)`, `d9 = |tangentAt(1 - 1e-9) - T0|` and `d6 = |tangentAt(1 - 1e-6) - T0|`, assert `d9 <= d6 / 100 + 1e-12`. Skip curves that reverse direction at the first point (cusp): with `û` the unit vector of `points[0] - points[n-1]` and `v̂` the unit vector of `points[1] - points[0]`, skip when `û · v̂ <= -1 + 1e-9`. Count total and skipped curves and print one line `Property 7 reversal skip: <skipped> of <total> generated curves`
     - **Validates: Requirements 2.2**
 
-  - [-] 3.4 Write property test for unit tangents
+  - [x] 3.4 Write property test for unit tangents
     - **Property 8: Tangents are unit length**
     - **Validates: Requirements 2.5**
 
-  - [ ] 3.5 Write property test for clamp and wrap
+  - [x] 3.5 Write property test for clamp and wrap
     - **Property 9: Out-of-range parameter clamps or wraps**
     - **Validates: Requirements 2.8**
 
-  - [ ] 3.6 Write property test for invalid curve inputs
+  - [-] 3.6 Write property test for invalid curve inputs
     - **Property 10: Invalid curve inputs are rejected with informative errors**
     - Also cover closed curves with exactly 2 points: they are rejected with `Closed curve needs at least 3 points, got 2`
     - **Validates: Requirements 2.6, 2.7**
