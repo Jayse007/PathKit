@@ -329,7 +329,7 @@ For any valid point list and openness, `pointAt` at each knot parameter equals t
 
 ### Property 7: Closed curve joins continuously
 
-For any valid point list on a closed curve, `pointAt(0)` equals `pointAt(1)` and `tangentAt(0)` equals `tangentAt(1)` within 1e-6. In addition, `pointAt(1 - 1e-9)` is within 1e-6 of `pointAt(0)`, and the tangent is continuous at the join: `|tangentAt(1 - 1e-9) - tangentAt(0)|` is at most `|tangentAt(1 - 1e-6) - tangentAt(0)| / 100 + 1e-12`. Curves whose two neighbours of the first point (`points[n-1]` and `points[1]`) are the same spot are excluded, because the tangent at that point is a cusp.
+For any valid point list on a closed curve, `pointAt(0)` equals `pointAt(1)` and `tangentAt(0)` equals `tangentAt(1)` within 1e-6. In addition, `pointAt(1 - 1e-9)` is within 1e-6 of `pointAt(0)`, and the tangent is continuous at the join: `|tangentAt(1 - 1e-9) - tangentAt(0)|` is at most `|tangentAt(1 - 1e-6) - tangentAt(0)| / 100 + 1e-12`. Curves that reverse direction at the first point are excluded, because the join is a cusp. With `û` the unit vector of `points[0] - points[n-1]` (arriving) and `v̂` the unit vector of `points[1] - points[0]` (leaving), a curve is excluded when `û · v̂ <= -1 + 1e-9`.
 
 **Validates: Requirements 2.2**
 

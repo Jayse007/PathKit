@@ -93,7 +93,7 @@ These rules apply to every task below.
   - [-] 3.3 Write property test for closed curve continuity
     - **Property 7: Closed curve joins continuously**
     - Also check that the position at `t = 1 - 1e-9` is within 1e-6 of the position at `t = 0` for closed curves
-    - Tangent check: with `T0 = tangentAt(0)`, `d9 = |tangentAt(1 - 1e-9) - T0|` and `d6 = |tangentAt(1 - 1e-6) - T0|`, assert `d9 <= d6 / 100 + 1e-12`. Skip curves where `points[n-1]` and `points[1]` are the same spot (cusp)
+    - Tangent check: with `T0 = tangentAt(0)`, `d9 = |tangentAt(1 - 1e-9) - T0|` and `d6 = |tangentAt(1 - 1e-6) - T0|`, assert `d9 <= d6 / 100 + 1e-12`. Skip curves that reverse direction at the first point (cusp): with `û` the unit vector of `points[0] - points[n-1]` and `v̂` the unit vector of `points[1] - points[0]`, skip when `û · v̂ <= -1 + 1e-9`. Count total and skipped curves and print one line `Property 7 reversal skip: <skipped> of <total> generated curves`
     - **Validates: Requirements 2.2**
 
   - [ ] 3.4 Write property test for unit tangents

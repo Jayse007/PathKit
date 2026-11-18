@@ -60,7 +60,7 @@ All code follows the project steering file `coordinate-conventions.md`: Y-up rig
 #### Acceptance Criteria
 
 1. THE Curve SHALL be a 3D centripetal Catmull-Rom spline passing through every supplied point.
-2. WHERE the Path is closed, THE Curve SHALL join the last point to the first point with continuous position and tangent.
+2. WHERE the Path is closed, THE Curve SHALL join the last point to the first point with continuous position and continuous tangent, unless the Curve reverses direction at the join (the arriving and leaving directions at the first point are opposite), in which case the join is a cusp and tangentAt SHALL return the chord direction.
 3. WHERE the Path is open, THE Curve SHALL start at the first point and end at the last point.
 4. WHEN pointAt receives t in [0,1], THE Curve SHALL return the position at parameter t over the whole curve.
 5. WHEN tangentAt receives t in [0,1], THE Curve SHALL return a unit-length tangent at parameter t.

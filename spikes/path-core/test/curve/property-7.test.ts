@@ -25,13 +25,29 @@ describe('Property 7: Closed curve joins continuously', () => {
   });
 
   it('position at t=1-1e-9 is within 1e-6 of t=0, and the tangent is continuous at the join', () => {
+    let total = 0;
+    let skipped = 0;
     fc.assert(
       fc.property(arbPointList(true), (points) => {
-        // Same coincidence test as createCurve (exact coordinate equality).
-        // When both neighbours of the first point are the same spot, the join is a cusp.
-        const a = points[points.length - 1];
-        const b = points[1];
-        fc.pre(!(a.x === b.x && a.y === b.y && a.z === b.z));
+        // When the curve reverses direction at the first point (arriving and leaving
+        // unit directions are opposite), the join is a cusp and the tangent flips.
+        total++;
+        const prev = points[points.length - 1];
+        const p0 = points[0];
+        const next = points[1];
+        const inLen = dist(p0, prev);
+        const outLen = dist(next, p0);
+        if (inLen > 0 && outLen > 0) {
+          const dot =
+            ((p0.x - prev.x) * (next.x - p0.x) +
+              (p0.y - prev.y) * (next.y - p0.y) +
+              (p0.z - prev.z) * (next.z - p0.z)) /
+            (inLen * outLen);
+          if (dot <= -1 + 1e-9) {
+            skipped++;
+            fc.pre(false);
+          }
+        }
         const curve = createCurve(points, true);
         expect(dist(curve.pointAt(NEAR_END), curve.pointAt(0))).toBeLessThanOrEqual(TOL);
         const t0 = curve.tangentAt(0);
@@ -41,6 +57,7 @@ describe('Property 7: Closed curve joins continuously', () => {
       }),
       { numRuns: 200 },
     );
+    console.log(`Property 7 reversal skip: ${skipped} of ${total} generated curves`);
   });
 
   it('example: closed square joins at t=0 and t=1', () => {
