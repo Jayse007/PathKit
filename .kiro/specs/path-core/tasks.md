@@ -135,12 +135,12 @@ These rules apply to every task below.
     - **Property 11: Arc-length table is bounded and consistent**
     - **Validates: Requirements 3.1, 3.2**
 
-  - [-] 4.3 Write property test for clamp and wrap
+  - [x] 4.3 Write property test for clamp and wrap
     - **Property 12: Arc-length clamp and wrap**
     - The test also checks that `parameterAtDistance` never decreases as `d` increases, for open and closed curves, and that the endpoints are exact (`d = 0` gives `t = 0`; on open curves `d = length` gives `t = 1`)
     - **Validates: Requirements 3.5, 3.6**
 
-  - [ ] 4.4 Write property test for equal chords
+  - [-] 4.4 Write property test for equal chords
     - **Property 13: Equal distance steps give equal chords**
     - Use the `smoothCurvePoints` generator from task 4.1a (smooth curves only), N from 50 to 200, positions at distances `k * length / N`; each consecutive chord distance must be within 1 percent of `length / N`
     - **Validates: Requirements 3.3, 3.7**
