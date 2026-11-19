@@ -183,7 +183,7 @@ These rules apply to every task below.
     - Twist uses the definition from task 5.4 (normal of frame i rotated by the minimal rotation taking tangent i to tangent i+1, compared with the normal of frame i+1)
     - _Requirements: 4.2, 4.7_
 
-  - [ ] 5.6 Write property test for invalid counts
+  - [-] 5.6 Write property test for invalid counts
     - **Property 19: Invalid frame counts are rejected**
     - **Validates: Requirements 4.8**
 
