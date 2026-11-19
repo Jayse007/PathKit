@@ -167,7 +167,7 @@ These rules apply to every task below.
     - **Property 16: RMF first normal follows the up vector**
     - **Validates: Requirements 4.3, 4.4**
 
-  - [ ] 5.4 Write property test for twist comparison
+  - [-] 5.4 Write property test for twist comparison
     - **Property 17: RMF has less twist than Frenet frames**
     - Use the `smoothCurvePoints` generator from task 4.1a with open curves, and a frame count equal to the N returned by the generator (50 to 200)
     - Twist for consecutive frames i and i+1: the angle between the normal of frame i rotated by the minimal rotation that takes tangent i to tangent i+1, and the normal of frame i+1. Compare the sums of absolute twists: RMF total must be at most Frenet total plus 1e-4
