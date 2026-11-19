@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'vitest';
 import fc from 'fast-check';
 import { createCurve } from '../../src/curve.js';
 import { createArcLengthTable } from '../../src/arclength.js';
@@ -32,7 +32,11 @@ describe('Property 13: Equal distance steps give equal chords', () => {
           const chord = Math.hypot(cur.x - prevX, cur.y - prevY, cur.z - prevZ);
           const deviation = Math.abs(chord - step) / step;
           if (deviation > worstDeviation) worstDeviation = deviation;
-          expect(Math.abs(chord - step)).toBeLessThanOrEqual(RELATIVE_TOLERANCE * step);
+          if (!(Math.abs(chord - step) <= RELATIVE_TOLERANCE * step)) {
+            throw new Error(
+              `chord ${k}: |chord - step| / step = ${deviation} exceeds ${RELATIVE_TOLERANCE} (chord ${chord}, step ${step})`,
+            );
+          }
           prevX = cur.x;
           prevY = cur.y;
           prevZ = cur.z;

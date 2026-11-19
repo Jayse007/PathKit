@@ -38,16 +38,26 @@ const expectSameResults = (
   const pb = { x: 0, y: 0, z: 0 };
   table.pointAtDistance(a, pa);
   table.pointAtDistance(b, pb);
-  expect(Math.abs(pa.x - pb.x)).toBeLessThanOrEqual(TOLERANCE);
-  expect(Math.abs(pa.y - pb.y)).toBeLessThanOrEqual(TOLERANCE);
-  expect(Math.abs(pa.z - pb.z)).toBeLessThanOrEqual(TOLERANCE);
+  for (const c of ['x', 'y', 'z'] as const) {
+    const dev = Math.abs(pa[c] - pb[c]);
+    if (!(dev <= TOLERANCE)) {
+      throw new Error(
+        `point ${c} at d=${a} vs d=${b}: |${pa[c]} - ${pb[c]}| = ${dev} exceeds ${TOLERANCE}`,
+      );
+    }
+  }
   const ta = { x: 0, y: 0, z: 0 };
   const tb = { x: 0, y: 0, z: 0 };
   table.tangentAtDistance(a, ta);
   table.tangentAtDistance(b, tb);
-  expect(Math.abs(ta.x - tb.x)).toBeLessThanOrEqual(TOLERANCE);
-  expect(Math.abs(ta.y - tb.y)).toBeLessThanOrEqual(TOLERANCE);
-  expect(Math.abs(ta.z - tb.z)).toBeLessThanOrEqual(TOLERANCE);
+  for (const c of ['x', 'y', 'z'] as const) {
+    const dev = Math.abs(ta[c] - tb[c]);
+    if (!(dev <= TOLERANCE)) {
+      throw new Error(
+        `tangent ${c} at d=${a} vs d=${b}: |${ta[c]} - ${tb[c]}| = ${dev} exceeds ${TOLERANCE}`,
+      );
+    }
+  }
 };
 
 describe('Property 12: Arc-length clamp and wrap', () => {
@@ -89,9 +99,13 @@ describe('Property 12: Arc-length clamp and wrap', () => {
           .map((raw) => (input.closed ? toPeriodDistance(raw, length) : toDistance(raw, length)))
           .sort((a, b) => a - b);
         for (let i = 0; i + 1 < distances.length; i++) {
-          expect(table.parameterAtDistance(distances[i])).toBeLessThanOrEqual(
-            table.parameterAtDistance(distances[i + 1]),
-          );
+          const t0 = table.parameterAtDistance(distances[i]);
+          const t1 = table.parameterAtDistance(distances[i + 1]);
+          if (!(t0 <= t1)) {
+            throw new Error(
+              `sorted sample ${i}: parameterAtDistance(${distances[i]}) = ${t0} exceeds parameterAtDistance(${distances[i + 1]}) = ${t1}`,
+            );
+          }
         }
         // Consecutive dense steps over the same range.
         const lo = input.closed ? 0 : -3 * length;
@@ -100,7 +114,11 @@ describe('Property 12: Arc-length clamp and wrap', () => {
         for (let i = 1; i <= DENSE_STEPS; i++) {
           const d = input.closed ? (i / (DENSE_STEPS + 1)) * span : lo + (i / DENSE_STEPS) * span;
           const t = table.parameterAtDistance(d);
-          expect(t).toBeGreaterThanOrEqual(prevT);
+          if (!(t >= prevT)) {
+            throw new Error(
+              `dense step ${i}: parameterAtDistance(${d}) = ${t} is below previous ${prevT}`,
+            );
+          }
           prevT = t;
         }
       }),
