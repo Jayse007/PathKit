@@ -124,9 +124,9 @@ export function frenetFrames(curve: Curve, count: number): Frame[];
 
 - Both validate `count` first: `Number.isInteger(count) && count >= 2`, otherwise throw `Frame count must be an integer >= 2, got <value>`.
 - Samples are at `t_i = i / (count - 1)`.
-- RMF uses the double reflection method. For each step it reflects the previous normal and tangent across the plane bisecting the two positions, then across the plane bisecting the reflected and new tangents. `binormal = tangent × normal`.
+- RMF uses the double reflection method. For each step it reflects the previous normal and tangent across the plane bisecting the two positions, then across the plane bisecting the reflected and new tangents. If the squared length of a reflection vector (the chord between sample points, or the tangent difference used in the second reflection) is below 1e-24, that reflection is skipped (treated as the identity), so no division by zero happens. `binormal = tangent × normal`.
 - The first normal is `initialUp` (default `(0,1,0)`) with its tangent component removed, then normalised. If the remainder is below 1e-9 (parallel), pick the world axis least aligned with the tangent, cross it with the tangent twice and normalise.
-- Frenet normal comes from the derivative of the tangent estimated by central difference. If curvature is below 1e-9, reuse the previous normal made perpendicular to the current tangent. For frame 0 with no previous normal, use the RMF fallback rule above.
+- Frenet normal comes from the derivative of the tangent estimated as `(tangentAt(min(1, t + h)) - tangentAt(max(0, t - h))) / (min(1, t + h) - max(0, t - h))` with `h = 1e-5`, which makes the estimate one-sided at t = 0 and t = 1. Curvature is the length of this difference quotient. If curvature is below 1e-9, reuse the previous normal made perpendicular to the current tangent. For frame 0 with no previous normal, use the RMF fallback rule above.
 - Twist (used by tests): for consecutive frames i and i+1, rotate the normal of frame i by the minimal rotation that takes tangent i to tangent i+1, then take the angle in [0, pi] between that rotated normal and the normal of frame i+1. Total twist of a frame list is the sum of these absolute angles.
 
 ### scene.ts
@@ -389,7 +389,7 @@ For any valid curve and any `initialUp` not parallel to the first tangent, the f
 
 ### Property 17: RMF has less twist than Frenet frames
 
-For any open curve from the `smoothCurvePoints` generator and count of at least 2, the total twist of the RMF frames is no larger than the total twist of the Frenet frames, plus 1e-4. Twist for consecutive frames i and i+1 is the angle between the normal of frame i rotated by the minimal rotation that takes tangent i to tangent i+1, and the normal of frame i+1. Total twist is the sum of the absolute twists over all consecutive pairs.
+For any open curve from the `smoothCurvePoints` generator and a frame count equal to the N returned by the generator (50 to 200), the total twist of the RMF frames is no larger than the total twist of the Frenet frames, plus 1e-4. Twist for consecutive frames i and i+1 is the angle between the normal of frame i rotated by the minimal rotation that takes tangent i to tangent i+1, and the normal of frame i+1. Total twist is the sum of the absolute twists over all consecutive pairs.
 
 **Validates: Requirements 4.2**
 
