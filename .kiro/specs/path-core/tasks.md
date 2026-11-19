@@ -115,9 +115,9 @@ These rules apply to every task below.
     - **Validates: Requirements 2.9**
 
 - [ ] 4. Implement arc-length parameterisation
-  - [x] 4.1 Implement `src/arclength.ts`
-    - Implement `createArcLengthTable(curve)` whose total entry count, including the entry at t = 0, is `min(1024, max(2, 64 * segmentCount))` (so `entryCount <= 1024`), stored in preallocated `Float64Array`s
-    - Implement `length`, `entryCount`, `parameterAtDistance` (binary search, no allocation), `pointAtDistance` and `tangentAtDistance` writing into `out`
+  - [-] 4.1 Implement `src/arclength.ts`
+    - Implement `createArcLengthTable(curve)` whose total entry count, including the entry at t = 0, is always exactly 1024 (`t_i = i / 1023`, whatever the point count), stored in preallocated `Float64Array`s
+    - Implement `length`, `entryCount`, `parameterAtDistance` (binary search plus monotone cubic Hermite interpolation of t as a function of distance, with node slopes precomputed at setup into a `Float64Array`; no allocation), `pointAtDistance` and `tangentAtDistance` writing into `out`
     - Clamp distance for open curves, wrap into `[0, length)` for closed curves
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8_
 
@@ -127,7 +127,7 @@ These rules apply to every task below.
     - Build the real Catmull-Rom curve and arc-length table from those points, estimate the curve's minimum radius of curvature `rMin` from at least 4096 samples of that curve, and take `length` from the table
     - Let `nMin = max(50, ceil(3 * length / rMin))`. Reject the curve only if `ceil(3 * length / rMin) > 200`. Otherwise choose `N` uniformly in `[nMin, 200]` (chained after the curve), so `rMin >= 3 * length / N` always holds
     - All numbers come from `fc.integer` (no `fc.double`); consecutive points are never coincident. The raw arbitrary returns the candidate or `null` (rejected) so the rejection rate can be measured, and `smoothCurvePoints` filters out the nulls
-    - A separate, deletable file `test/helpers/smooth-curve-generator.stats.test.ts` draws 1000 raw candidates with a fixed seed and prints the rejection count and elapsed time
+    - A separate, deletable file `test/helpers/smooth-curve-generator.test.ts` draws 300 raw candidates with a fixed seed, prints the rejection count and elapsed time, and asserts that fewer than 60% are rejected
     - Properties 13, 17, 26 and 44 and any constant-speed test use this generator
     - _Requirements: 3.7, 10.12_
 
@@ -137,6 +137,7 @@ These rules apply to every task below.
 
   - [ ] 4.3 Write property test for clamp and wrap
     - **Property 12: Arc-length clamp and wrap**
+    - The test also checks that `parameterAtDistance` never decreases as `d` increases, for open and closed curves, and that the endpoints are exact (`d = 0` gives `t = 0`; on open curves `d = length` gives `t = 1`)
     - **Validates: Requirements 3.5, 3.6**
 
   - [ ] 4.4 Write property test for equal chords

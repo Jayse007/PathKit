@@ -14,7 +14,7 @@ Design decisions:
 - **Baked storage is flat typed arrays.** Each entity gets one `Float64Array` of length `frameCount * 7` (px, py, pz, qx, qy, qz, qw). Evaluation is an index computation plus 7 reads. This makes allocation-free evaluation straightforward.
 - **Math functions take an optional `out` argument.** When given, the result is written into it and returned. When omitted, a new object is allocated (setup and bake code only). The evaluation path always passes `out`.
 - **Rotation from entity axes.** For an entity with local `forwardAxis` f and `upAxis` u, and a desired world forward F and world up U, the rotation is `R = quatFromBasis(F, U, F×U) * inverse(quatFromBasis(f, u, f×u))`. This is the only place axes are used, and both are read from the entity. No axis is hard-coded.
-- **Arc-length table.** The table has `min(1024, max(2, 64 * segmentCount))` entries in total, including the entry at t = 0 (so `entryCount <= 1024`). Cumulative chord lengths give a monotone distance table. Lookups binary-search the table and linearly interpolate the parameter. The table is built in setup, never during evaluation.
+- **Arc-length table.** The table always has exactly 1024 entries in total, including the entry at t = 0 (`t_i = i / 1023`, `entryCount = 1024` whatever the point count). Accuracy degrades for paths with more than about 100 points (fewer than about 10 samples per segment). Cumulative chord lengths give a monotone distance table. Lookups binary-search the table and evaluate a monotone cubic Hermite interpolation of the parameter `t` as a function of distance `s`. Node slopes `dt/ds` are precomputed at setup (Fritsch-Butland weighted harmonic mean, adjacent secant at the end nodes, 0 where a secant is 0 or the signs differ, then limited so `(mA/δ)² + (mB/δ)² <= 9`); a zero-length interval gives its adjacent node slopes the value 0 and returns its lower parameter. The table is built in setup, never during evaluation.
 - **Frames at a distance.** For `alignToPath`, the forward direction is the exact `tangentAtDistance` of the arc-length table at the entity's distance. Bake builds an RMF table of 1024 samples once and uses it only for the normal: for each frame it maps distance to parameter `t`, takes the nearest lower and upper RMF samples, and interpolates the normal. The interpolated normal is then re-orthogonalised against the exact tangent (remove the tangent component and normalise; if the remainder is shorter than 1e-9, use the existing guarded fallback of any unit vector perpendicular to the tangent). Binormal is `tangent × normal`.
 - **Degrees only at the boundary.** The linter threshold for roll is accepted in degrees per frame and converted once on entry. `Vertical_Threshold` is stored as `3 * Math.PI / 180` radians.
 - **Core never names a specific entity kind.** All identifiers use "entity", "target" and "path".
@@ -111,7 +111,7 @@ export function createArcLengthTable(curve: Curve): ArcLengthTable;
 ```
 
 - Distance is normalised first: open `d' = clamp(d, 0, length)`, closed `d' = d - length * floor(d / length)`, giving `[0, length)`.
-- `parameterAtDistance` binary-searches preallocated `Float64Array`s and interpolates. It allocates nothing. `pointAtDistance` and `tangentAtDistance` call the curve with `out` and return `out`. To meet the no-allocation rule, Curve implementations must reuse private scratch variables and never create objects in `pointAt` or `tangentAt` when `out` is supplied.
+- `parameterAtDistance` binary-searches preallocated `Float64Array`s (distances, parameters and node slopes) and evaluates the monotone cubic Hermite interpolation. It allocates nothing. `d = 0` gives exactly `t = 0`, and on open curves `d = length` gives exactly `t = 1` (on closed curves `d = length` wraps to 0, so `t = 0`). `pointAtDistance` and `tangentAtDistance` call the curve with `out` and return `out`. To meet the no-allocation rule, Curve implementations must reuse private scratch variables and never create objects in `pointAt` or `tangentAt` when `out` is supplied.
 
 ### frames.ts
 
@@ -353,7 +353,7 @@ For any point list with fewer than 2 points, `createCurve` throws an error conta
 
 ### Property 11: Arc-length table is bounded and consistent
 
-For any valid curve, the Arc_Length_Table has at most 1024 entries, a positive length, and a length within 1 percent of the length of a polyline sampled densely (at least 4096 points) along the curve.
+For any valid curve, the Arc_Length_Table has exactly 1024 entries, a positive length, and a length within 1 percent of the length of a polyline sampled densely (at least 4096 points) along the curve.
 
 **Validates: Requirements 3.1, 3.2**
 
