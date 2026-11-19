@@ -187,7 +187,7 @@ These rules apply to every task below.
     - **Property 19: Invalid frame counts are rejected**
     - **Validates: Requirements 4.8**
 
-- [ ] 6. Checkpoint - Ensure all tests pass
+- [x] 6. Checkpoint - Ensure all tests pass
   - Run `npm test` with `cwd` set to `spikes/path-core`. Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Implement scene types and validation
