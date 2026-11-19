@@ -177,7 +177,7 @@ These rules apply to every task below.
     - **Property 18: Frenet frames are well-formed and continuous at low curvature**
     - **Validates: Requirements 4.7, 4.9**
 
-  - [-] 5.5a Write unit test for the Frenet flip
+  - [x] 5.5a Write unit test for the Frenet flip
     - Create `test/frames/unit.test.ts` with a planar S-shaped curve that has an inflection point, sampled with count 200
     - Assert `frenetFrames` has a twist above 1 radian within one step, and `rotationMinimizingFrames` keeps every step's twist below 0.001
     - Twist uses the definition from task 5.4 (normal of frame i rotated by the minimal rotation taking tangent i to tangent i+1, compared with the normal of frame i+1)
