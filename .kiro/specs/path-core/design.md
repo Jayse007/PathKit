@@ -389,7 +389,7 @@ For any valid curve and any `initialUp` not parallel to the first tangent, the f
 
 ### Property 17: RMF has less twist than Frenet frames
 
-For any open curve from the `smoothCurvePoints` generator and a frame count equal to the N returned by the generator (50 to 200), the total twist of the RMF frames is no larger than the total twist of the Frenet frames, plus 1e-4. Twist for consecutive frames i and i+1 is the angle between the normal of frame i rotated by the minimal rotation that takes tangent i to tangent i+1, and the normal of frame i+1. Total twist is the sum of the absolute twists over all consecutive pairs.
+For any open curve from the `smoothCurvePoints` generator and a frame count equal to the N returned by the generator (50 to 200), the total twist of the RMF frames is no larger than the total twist of the Frenet frames, plus 1e-4. Twist for consecutive frames i and i+1 is the angle between the normal of frame i rotated by the minimal rotation that takes tangent i to tangent i+1, and the normal of frame i+1. Total twist is the sum of the absolute twists over all consecutive pairs. In addition, the RMF total twist is at most 0.02 radians on these curves (an empirical bound: the largest value seen over 10,000 generated curves was 0.0067).
 
 **Validates: Requirements 4.2**
 

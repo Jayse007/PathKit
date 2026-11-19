@@ -9,6 +9,8 @@ import { totalTwist } from '../helpers/twist.js';
 // **Validates: Requirements 4.2**
 
 const SLACK = 1e-4;
+// Empirical bound: the largest RMF total twist seen over 10,000 generated curves was 0.0067. It makes the test fail for an RMF that merely stays below the Frenet total, such as one that follows a fixed up vector.
+const ABSOLUTE_BOUND = 0.02;
 
 describe('Property 17: RMF has less twist than Frenet frames', () => {
   it('RMF total twist is at most Frenet total twist plus 1e-4 on smooth open curves', () => {
@@ -22,6 +24,11 @@ describe('Property 17: RMF has less twist than Frenet frames', () => {
         if (!(rmf <= frenet + SLACK)) {
           throw new Error(
             `RMF total twist ${rmf} exceeds Frenet total ${frenet} + 1e-4 (count ${count})`,
+          );
+        }
+        if (!(rmf <= ABSOLUTE_BOUND)) {
+          throw new Error(
+            `RMF total twist ${rmf} exceeds absolute bound ${ABSOLUTE_BOUND} (count ${count})`,
           );
         }
       }),

@@ -39,4 +39,32 @@ describe('twist helper', () => {
     }
     expect(totalTwist(frames)).toBeLessThan(1e-9);
   });
+
+  it('reports no twist for a planar circle with normals tilted out of the plane', () => {
+    // This case has a normal component along the rotation axis, which a flat
+    // circle never has, so it exercises the (1 - cos) term of the rotation.
+    const radius = 5;
+    const samples = 100;
+    const tilt = 0.6;
+    const frames: Frame[] = [];
+    for (let i = 0; i < samples; i++) {
+      const phi = (2 * Math.PI * i) / samples;
+      const tangent = { x: -Math.sin(phi), y: Math.cos(phi), z: 0 };
+      // cos(tilt) * (unit inward direction) + sin(tilt) * (0, 0, 1)
+      const normal = {
+        x: -Math.cos(tilt) * Math.cos(phi),
+        y: -Math.cos(tilt) * Math.sin(phi),
+        z: Math.sin(tilt),
+      };
+      // binormal = tangent x normal
+      const binormal = {
+        x: tangent.y * normal.z - tangent.z * normal.y,
+        y: tangent.z * normal.x - tangent.x * normal.z,
+        z: tangent.x * normal.y - tangent.y * normal.x,
+      };
+      const position = { x: radius * Math.cos(phi), y: radius * Math.sin(phi), z: 0 };
+      frames.push({ position, tangent, normal, binormal });
+    }
+    expect(totalTwist(frames)).toBeLessThan(1e-9);
+  });
 });
