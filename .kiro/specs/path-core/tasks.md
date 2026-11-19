@@ -115,7 +115,7 @@ These rules apply to every task below.
     - **Validates: Requirements 2.9**
 
 - [ ] 4. Implement arc-length parameterisation
-  - [ ] 4.1 Implement `src/arclength.ts`
+  - [x] 4.1 Implement `src/arclength.ts`
     - Implement `createArcLengthTable(curve)` with `min(1024, max(2, 64 * segmentCount))` samples stored in preallocated `Float64Array`s
     - Implement `length`, `entryCount`, `parameterAtDistance` (binary search, no allocation), `pointAtDistance` and `tangentAtDistance` writing into `out`
     - Clamp distance for open curves, wrap into `[0, length)` for closed curves
