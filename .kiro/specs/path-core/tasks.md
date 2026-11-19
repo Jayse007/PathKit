@@ -150,7 +150,7 @@ These rules apply to every task below.
     - **Validates: Requirements 3.4, 3.8**
 
 - [ ] 5. Implement frames
-  - [-] 5.1 Implement `src/frames.ts`
+  - [x] 5.1 Implement `src/frames.ts`
     - Implement `Frame`, `rotationMinimizingFrames(curve, count, initialUp?)` using the double reflection method, and `frenetFrames(curve, count)` with the low-curvature fallback
     - Validate `count` first and throw `Frame count must be an integer >= 2, got <value>`
     - Frenet tangent derivative is the difference quotient `(tangentAt(min(1, t + h)) - tangentAt(max(0, t - h))) / (min(1, t + h) - max(0, t - h))` with `h = 1e-5`, one-sided at t = 0 and t = 1. The "curvature below 1e-9" test is applied to the length of this quotient
