@@ -74,6 +74,22 @@ describe('Property 18: Frenet frames are well-formed and continuous at low curva
           requireOrthogonal(i, 't·n', f.tangent, f.normal);
           requireUnit(i, 'binormal', f.binormal);
           requireOrthogonal(i, 'b·t', f.binormal, f.tangent);
+
+          // Handedness: binormal must equal tangent × normal.
+          const t = f.tangent;
+          const n = f.normal;
+          const crossTN = {
+            x: t.y * n.z - t.z * n.y,
+            y: t.z * n.x - t.x * n.z,
+            z: t.x * n.y - t.y * n.x,
+          };
+          for (const c of ['x', 'y', 'z'] as const) {
+            if (!(Math.abs(f.binormal[c] - crossTN[c]) <= TOLERANCE)) {
+              throw new Error(
+                `frame ${i}: binormal.${c} = ${f.binormal[c]}, tangent × normal.${c} = ${crossTN[c]} (tolerance ${TOLERANCE})`,
+              );
+            }
+          }
         }
       }),
       { numRuns: 200 },
@@ -124,5 +140,32 @@ describe('Property 18: Frenet frames are well-formed and continuous at low curva
       ),
       { numRuns: 200 },
     );
+  });
+
+  it('normal persists through a straight stretch after a bend (planar curve)', () => {
+    const points: Vec3[] = [
+      { x: 0, y: 0, z: 0 },
+      { x: 6, y: 0, z: 0 },
+      { x: 10, y: 0, z: 2 },
+      { x: 12, y: 0, z: 6 },
+      { x: 12, y: 0, z: 12 },
+      { x: 12, y: 0, z: 18 },
+      { x: 12, y: 0, z: 24 },
+    ];
+    const frames = frenetFrames(createCurve(points, false), 200);
+    expect(frames.length).toBe(200);
+
+    // The curve lies in the plane y = 0, so every genuine Frenet normal lies in that plane. On the straight stretch at the end (curvature below the threshold) the previous normal must be reused. If the code fell back to world up instead, normal.y would jump to 1.
+    for (let i = 0; i < frames.length; i++) {
+      const n = frames[i].normal;
+      if (!isFiniteVec(n)) {
+        throw new Error(`frame ${i}: normal is not finite (${n.x}, ${n.y}, ${n.z})`);
+      }
+      if (!(Math.abs(n.y) <= 1e-6)) {
+        throw new Error(
+          `frame ${i}: normal = (${n.x}, ${n.y}, ${n.z}) has |y| > 1e-6, expected the normal to stay in the plane y = 0`,
+        );
+      }
+    }
   });
 });

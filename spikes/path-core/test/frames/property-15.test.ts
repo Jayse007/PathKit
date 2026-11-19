@@ -60,6 +60,22 @@ function checkFrames(frames: Frame[]): void {
     requireOrthogonal(i, 't·n', f.tangent, f.normal);
     requireOrthogonal(i, 't·b', f.tangent, f.binormal);
     requireOrthogonal(i, 'n·b', f.normal, f.binormal);
+
+    // Handedness: binormal must equal tangent × normal (not just be perpendicular).
+    const t = f.tangent;
+    const n = f.normal;
+    const crossTN = {
+      x: t.y * n.z - t.z * n.y,
+      y: t.z * n.x - t.x * n.z,
+      z: t.x * n.y - t.y * n.x,
+    };
+    for (const c of ['x', 'y', 'z'] as const) {
+      if (!(Math.abs(f.binormal[c] - crossTN[c]) <= TOLERANCE)) {
+        throw new Error(
+          `frame ${i}: binormal.${c} = ${f.binormal[c]}, tangent × normal.${c} = ${crossTN[c]} (tolerance ${TOLERANCE})`,
+        );
+      }
+    }
   }
 }
 
