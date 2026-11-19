@@ -28,17 +28,38 @@ const dotp = (a: Vec3, b: Vec3): number => a.x * b.x + a.y * b.y + a.z * b.z;
 const isFiniteVec = (v: Vec3): boolean =>
   Number.isFinite(v.x) && Number.isFinite(v.y) && Number.isFinite(v.z);
 
+// Per-frame checks use plain comparisons (no expect) because hundreds of
+// thousands of expect calls made one test too slow. A NaN deviation fails
+// every check because the comparisons are written as !(dev < TOLERANCE).
 function checkFrames(frames: Frame[]): void {
-  for (const f of frames) {
-    for (const v of [f.position, f.tangent, f.normal, f.binormal]) {
-      expect(isFiniteVec(v)).toBe(true);
+  const names = ['position', 'tangent', 'normal', 'binormal'] as const;
+  const requireUnitLength = (i: number, name: string, v: Vec3): void => {
+    const dev = Math.abs(norm(v) - 1);
+    if (!(dev < TOLERANCE)) {
+      throw new Error(`frame ${i}: |${name} length - 1| = ${dev} exceeds ${TOLERANCE}`);
     }
-    expect(Math.abs(norm(f.tangent) - 1)).toBeLessThan(TOLERANCE);
-    expect(Math.abs(norm(f.normal) - 1)).toBeLessThan(TOLERANCE);
-    expect(Math.abs(norm(f.binormal) - 1)).toBeLessThan(TOLERANCE);
-    expect(Math.abs(dotp(f.tangent, f.normal))).toBeLessThan(TOLERANCE);
-    expect(Math.abs(dotp(f.tangent, f.binormal))).toBeLessThan(TOLERANCE);
-    expect(Math.abs(dotp(f.normal, f.binormal))).toBeLessThan(TOLERANCE);
+  };
+  const requireOrthogonal = (i: number, label: string, a: Vec3, b: Vec3): void => {
+    const dev = Math.abs(dotp(a, b));
+    if (!(dev < TOLERANCE)) {
+      throw new Error(`frame ${i}: |${label}| = ${dev} exceeds ${TOLERANCE}`);
+    }
+  };
+  for (let i = 0; i < frames.length; i++) {
+    const f = frames[i];
+    for (const name of names) {
+      if (!isFiniteVec(f[name])) {
+        throw new Error(
+          `frame ${i}: ${name} is not finite (${f[name].x}, ${f[name].y}, ${f[name].z})`,
+        );
+      }
+    }
+    requireUnitLength(i, 'tangent', f.tangent);
+    requireUnitLength(i, 'normal', f.normal);
+    requireUnitLength(i, 'binormal', f.binormal);
+    requireOrthogonal(i, 't·n', f.tangent, f.normal);
+    requireOrthogonal(i, 't·b', f.tangent, f.binormal);
+    requireOrthogonal(i, 'n·b', f.normal, f.binormal);
   }
 }
 

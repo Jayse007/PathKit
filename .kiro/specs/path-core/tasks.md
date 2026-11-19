@@ -25,6 +25,7 @@ These rules apply to every task below.
 - When a property test fails, report the seed and the counterexample that fast-check prints.
 - Every fast-check numeric arbitrary (`fc.double`, `fc.float`) uses `noNaN: true`, `noDefaultInfinity: true` and explicit `min` and `max` bounds. NaN and Infinity appear only in the explicit invalid-scene variants.
 - Execute tasks strictly in the order they appear in the Tasks list, one at a time.
+- Inside a property test, any check that runs once per frame or per sample must use plain comparisons that throw a descriptive Error when violated; call expect only for once-per-run checks. Reason: hundreds of thousands of expect calls made one test take 15 seconds against a 30-second timeout.
 
 ## Tasks
 
@@ -158,7 +159,7 @@ These rules apply to every task below.
     - First normal is the component of `initialUp` (default +Y) perpendicular to the first tangent, with the least-aligned-world-axis fallback when parallel
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9_
 
-  - [x] 5.2 Write property test for RMF orthonormality
+  - [-] 5.2 Write property test for RMF orthonormality
     - **Property 15: RMF frames are orthonormal**
     - **Validates: Requirements 4.1, 4.2, 4.5, 4.6**
 
