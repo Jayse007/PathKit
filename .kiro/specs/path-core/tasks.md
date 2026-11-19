@@ -159,7 +159,7 @@ These rules apply to every task below.
     - First normal is the component of `initialUp` (default +Y) perpendicular to the first tangent, with the least-aligned-world-axis fallback when parallel
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9_
 
-  - [-] 5.2 Write property test for RMF orthonormality
+  - [x] 5.2 Write property test for RMF orthonormality
     - **Property 15: RMF frames are orthonormal**
     - **Validates: Requirements 4.1, 4.2, 4.5, 4.6**
 

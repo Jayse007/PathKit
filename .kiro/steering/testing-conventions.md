@@ -9,7 +9,7 @@ Each rule exists because it already cost us time.
 
 1. **Plain checks inside loops.** In a property test, any check that runs once per frame or per sample uses plain comparisons and throws an Error naming the check, the index and the value. Call `expect` only for once-per-run checks. Reason: hundreds of thousands of `expect` calls made one test take 15 s against a 30 s timeout; plain checks took under 0.1 s.
 
-2. **Evenly spread random inputs.** Do not use `fc.double` for geometry, directions, parameters or scalars. It favours extreme magnitudes (about 93% of generated directions lay almost exactly along an axis). Use `fc.integer(...)` mapped onto a range, or the generators in `test/helpers/basic-generators.ts`.
+2. **Evenly spread random inputs.** Do not use `fc.double` for geometry, directions, parameters or scalars. It favours extreme magnitudes (about 93% of generated directions lay almost exactly along an axis). Use `fc.integer(...)` mapped onto a range, or the generators in `test/helpers/basic-generators.ts`. If fc.double is truly unavoidable, follow the bounds rule in the tasks.md Execution Rules.
 
 3. **Force the special cases.** Random inputs almost never hit edge cases such as a vector exactly parallel to a tangent, a zero vector, or the first and last sample. Build those cases on purpose from the curve's own values.
 
