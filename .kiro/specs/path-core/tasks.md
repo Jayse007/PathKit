@@ -163,7 +163,7 @@ These rules apply to every task below.
     - **Property 15: RMF frames are orthonormal**
     - **Validates: Requirements 4.1, 4.2, 4.5, 4.6**
 
-  - [-] 5.3 Write property test for first normal
+  - [x] 5.3 Write property test for first normal
     - **Property 16: RMF first normal follows the up vector**
     - **Validates: Requirements 4.3, 4.4**
 
