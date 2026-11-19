@@ -114,7 +114,7 @@ These rules apply to every task below.
     - For any valid open point list, the curve built from the reversed list satisfies `pointAt(1 - t)` equal to the original `pointAt(t)` within 1e-6 for `t` in [0, 1]
     - **Validates: Requirements 2.9**
 
-- [ ] 4. Implement arc-length parameterisation
+- [x] 4. Implement arc-length parameterisation
   - [x] 4.1 Implement `src/arclength.ts`
     - Implement `createArcLengthTable(curve)` whose total entry count, including the entry at t = 0, is always exactly 1024 (`t_i = i / 1023`, whatever the point count), stored in preallocated `Float64Array`s
     - Implement `length`, `entryCount`, `parameterAtDistance` (binary search plus monotone cubic Hermite interpolation of t as a function of distance, with node slopes precomputed at setup into a `Float64Array`; no allocation), `pointAtDistance` and `tangentAtDistance` writing into `out`
@@ -145,7 +145,7 @@ These rules apply to every task below.
     - Use the `smoothCurvePoints` generator from task 4.1a (smooth curves only), N from 50 to 200, positions at distances `k * length / N`; each consecutive chord distance must be within 1 percent of `length / N`
     - **Validates: Requirements 3.3, 3.7**
 
-  - [-] 4.5 Write property test for unit tangents and output reuse
+  - [x] 4.5 Write property test for unit tangents and output reuse
     - **Property 14: Tangents at a distance are unit length and outputs are reused**
     - **Validates: Requirements 3.4, 3.8**
 
