@@ -151,10 +151,10 @@ These rules apply to every task below.
     - **Validates: Requirements 3.4, 3.8**
 
 - [ ] 5. Implement frames
-  - [x] 5.1 Implement `src/frames.ts`
+  - [-] 5.1 Implement `src/frames.ts`
     - Implement `Frame`, `rotationMinimizingFrames(curve, count, initialUp?)` using the double reflection method, and `frenetFrames(curve, count)` with the low-curvature fallback
     - Validate `count` first and throw `Frame count must be an integer >= 2, got <value>`
-    - Frenet tangent derivative is the difference quotient `(tangentAt(min(1, t + h)) - tangentAt(max(0, t - h))) / (min(1, t + h) - max(0, t - h))` with `h = 1e-5`, one-sided at t = 0 and t = 1. The "curvature below 1e-9" test is applied to the length of this quotient
+    - Frenet tangent derivative is the difference quotient `(tangentAt(min(1, t + h)) - tangentAt(max(0, t - h))) / (min(1, t + h) - max(0, t - h))` with `h = 1e-5`, one-sided at t = 0 and t = 1. The "curvature below 1e-6" test is applied to the length of this quotient
     - RMF reflections: if the squared length of a reflection vector (the chord between sample points, or the tangent difference in the second reflection) is below 1e-24, skip that reflection (identity), so no division by zero happens
     - First normal is the component of `initialUp` (default +Y) perpendicular to the first tangent, with the least-aligned-world-axis fallback when parallel
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9_

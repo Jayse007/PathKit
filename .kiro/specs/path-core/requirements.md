@@ -98,7 +98,7 @@ All code follows the project steering file `coordinate-conventions.md`: Y-up rig
 6. THE Frame_Builder SHALL return Frames whose tangent, normal and binormal are mutually orthogonal unit vectors within 1e-6.
 7. WHEN frenetFrames receives a curve and a count, THE Frame_Builder SHALL return count Frames using the Frenet definition.
 8. IF count is less than 2 or not an integer, THEN THE Frame_Builder SHALL throw an error stating the supplied value.
-9. IF a Frenet normal is undefined because curvature is below 1e-9, THEN THE Frame_Builder SHALL reuse the previous Frame's normal made perpendicular to the current tangent.
+9. IF a Frenet normal is undefined because the length of the tangent derivative (estimated by a difference quotient per unit of the curve parameter) is below 1e-6, THEN THE Frame_Builder SHALL reuse the previous Frame's normal made perpendicular to the current tangent.
 
 ### Requirement 5: Scene definition and validation
 

@@ -5,7 +5,7 @@ import { cross, dot, length, normalize, scale, sub } from './math.js';
 export interface Frame { position: Vec3; tangent: Vec3; normal: Vec3; binormal: Vec3 }
 
 const PARALLEL_EPS = 1e-9;
-const CURVATURE_EPS = 1e-9;
+const CURVATURE_EPS = 1e-6;
 const REFLECTION_EPS_SQ = 1e-24;
 const DERIVATIVE_H = 1e-5;
 
