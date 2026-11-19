@@ -79,7 +79,7 @@ These rules apply to every task below.
     - **Property 5: Slerp follows the shorter arc**
     - **Validates: Requirements 1.3, 1.5**
 
-- [ ] 3. Implement the curve
+- [x] 3. Implement the curve
   - [x] 3.1 Implement `src/curve.ts`
     - Implement `createCurve(points, closed)` as a centripetal Catmull-Rom spline (knot spacing `|Pi+1 - Pi|^0.5`), reflected phantom endpoints for open curves, wrapped indices for closed curves
     - Implement `pointAt` and `tangentAt` with `out` support, no allocation when `out` is given, clamp for open and wrap for closed, unit tangent with chord fallback
@@ -109,7 +109,7 @@ These rules apply to every task below.
     - Also cover closed curves with exactly 2 points: they are rejected with `Closed curve needs at least 3 points, got 2`
     - **Validates: Requirements 2.6, 2.7**
 
-  - [-] 3.7 Write property test for reversal symmetry
+  - [x] 3.7 Write property test for reversal symmetry
     - **Property 45: Reversing an open curve reverses its parameter**
     - For any valid open point list, the curve built from the reversed list satisfies `pointAt(1 - t)` equal to the original `pointAt(t)` within 1e-6 for `t` in [0, 1]
     - **Validates: Requirements 2.9**
