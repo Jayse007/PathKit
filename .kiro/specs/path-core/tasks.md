@@ -116,15 +116,18 @@ These rules apply to every task below.
 
 - [ ] 4. Implement arc-length parameterisation
   - [x] 4.1 Implement `src/arclength.ts`
-    - Implement `createArcLengthTable(curve)` with `min(1024, max(2, 64 * segmentCount))` samples stored in preallocated `Float64Array`s
+    - Implement `createArcLengthTable(curve)` whose total entry count, including the entry at t = 0, is `min(1024, max(2, 64 * segmentCount))` (so `entryCount <= 1024`), stored in preallocated `Float64Array`s
     - Implement `length`, `entryCount`, `parameterAtDistance` (binary search, no allocation), `pointAtDistance` and `tangentAtDistance` writing into `out`
     - Clamp distance for open curves, wrap into `[0, length)` for closed curves
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8_
 
-  - [ ] 4.1a Create the smooth curve generator
-    - Create `test/helpers/smooth-curve-generator.ts` exporting `smoothCurvePoints`, returning `{ points, rMin }` for open curves only
-    - First draw N (the sample count used by the property), then sample points at 8 to 20 equal parameter steps from a smooth parametric curve (sum of 2 to 3 low-frequency sinusoids per axis, amplitude 20 to 100)
-    - Build the real Catmull-Rom curve and arc-length table from those points, estimate the curve's minimum radius of curvature `rMin` from at least 4096 samples of that curve, and reject (filter out) curves where `rMin < 3 * length / N`
+  - [x] 4.1a Create the smooth curve generator
+    - Create `test/helpers/smooth-curve-generator.ts` exporting `smoothCurvePoints`, returning `{ points, rMin, N }` for open curves only
+    - Build the points first: sample 8 to 20 points at equal parameter steps from a smooth parametric curve (sum of 2 to 3 sinusoids per axis, amplitude 20 to 100, each sinusoid 0.25 to 1 full cycle over the whole curve)
+    - Build the real Catmull-Rom curve and arc-length table from those points, estimate the curve's minimum radius of curvature `rMin` from at least 4096 samples of that curve, and take `length` from the table
+    - Let `nMin = max(50, ceil(3 * length / rMin))`. Reject the curve only if `ceil(3 * length / rMin) > 200`. Otherwise choose `N` uniformly in `[nMin, 200]` (chained after the curve), so `rMin >= 3 * length / N` always holds
+    - All numbers come from `fc.integer` (no `fc.double`); consecutive points are never coincident. The raw arbitrary returns the candidate or `null` (rejected) so the rejection rate can be measured, and `smoothCurvePoints` filters out the nulls
+    - A separate, deletable file `test/helpers/smooth-curve-generator.stats.test.ts` draws 1000 raw candidates with a fixed seed and prints the rejection count and elapsed time
     - Properties 13, 17, 26 and 44 and any constant-speed test use this generator
     - _Requirements: 3.7, 10.12_
 
