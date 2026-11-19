@@ -131,7 +131,7 @@ These rules apply to every task below.
     - Properties 13, 17, 26 and 44 and any constant-speed test use this generator
     - _Requirements: 3.7, 10.12_
 
-  - [ ] 4.2 Write property test for table size and length
+  - [x] 4.2 Write property test for table size and length
     - **Property 11: Arc-length table is bounded and consistent**
     - **Validates: Requirements 3.1, 3.2**
 
