@@ -84,7 +84,7 @@ export function rotationMinimizingFrames(curve: Curve, count: number, initialUp?
   return frames;
 }
 
-/** Frenet frames. Where curvature is below 1e-9, the previous normal is reused. */
+/** Frenet frames. Where the tangent derivative (per unit of t) is below 1e-6, the previous normal is reused. */
 export function frenetFrames(curve: Curve, count: number): Frame[] {
   checkCount(count);
   const frames: Frame[] = [];

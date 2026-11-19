@@ -13,7 +13,7 @@ const SLACK = 1e-4;
 const ABSOLUTE_BOUND = 0.02;
 
 describe('Property 17: RMF has less twist than Frenet frames', () => {
-  it('RMF total twist is at most Frenet total twist plus 1e-4 on smooth open curves', () => {
+  it('RMF total twist is at most the Frenet total plus 1e-4, and at most 0.02, on smooth open curves', () => {
     fc.assert(
       fc.property(smoothCurvePoints, ({ points, N }) => {
         const curve = createCurve(points, false);
