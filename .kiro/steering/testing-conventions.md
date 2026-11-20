@@ -16,3 +16,5 @@ Each rule exists because it already cost us time.
 4. **A passing test is not proof.** When you finish a property test, tell the user which source line, if broken, this test should catch, so they can break it once and confirm the test fails.
 
 5. **Speed.** A new test file that takes more than 5 seconds on the user's machine is a defect. Report it and find the cause before moving on.
+
+6. **Thrown SceneError assertions.** When asserting a thrown SceneError with toThrow(errorInstance), pass a SceneError instance, not a plain Error. Vitest compares class and name, not only the message.

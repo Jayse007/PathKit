@@ -81,7 +81,7 @@ function catchError(scene: Scene): unknown {
 
 // Asserts the exact message with toThrow and that the error is a SceneError with that exact message.
 function expectSceneError(scene: Scene, message: string): void {
-  expect(() => validateScene(scene)).toThrow(new Error(message));
+  expect(() => validateScene(scene)).toThrow(new SceneError(message));
   const error = catchError(scene);
   expect(error instanceof SceneError).toBe(true);
   expect((error as Error).message).toBe(message);
@@ -287,7 +287,7 @@ describe('axisVector', () => {
     const out: Vec3 = { x: 0, y: 0, z: 0 };
     const bad = '+W' as unknown as AxisToken;
     expect(() => axisVector(bad, out)).toThrow(SceneError);
-    expect(() => axisVector(bad, out)).toThrow(new Error(`"+W" is not an axis token ${TOKEN_HINT}`));
+    expect(() => axisVector(bad, out)).toThrow(new SceneError(`"+W" is not an axis token ${TOKEN_HINT}`));
   });
 });
 
