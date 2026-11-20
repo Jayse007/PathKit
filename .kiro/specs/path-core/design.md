@@ -249,7 +249,7 @@ export function motionLinter(
 - `speed-spike` (warning): the speed at frame f is the distance between the positions at frames f-1 and f, times fps; frame 0 has no speed. Held frames (frame `>= heldFromFrame` when `heldFromFrame >= 0`) are excluded from the speed list used for the median. The median of an even count is the average of the two middle values; an empty list has no median and so no `speed-spike`. Emit when speed `> 3 * median` and median `> 0`. Design note: path following runs at constant speed, so generated scenes are not expected to trigger `speed-spike`. Property 41 is expected to hold without ever exercising the emitting branch.
 - `aim-vertical` (warning): emitted only for frames where the stored aim direction (`aimDirections`) is non-zero and within 3 degrees of ±Y. The test uses the same constant as `bake`: `linter.ts` imports `VERTICAL_COS` (exported from `bake.ts`) and tests `Math.abs(y) >= VERTICAL_COS` on the stored aim direction (a unit vector when non-zero). The stored aim direction is that of the last `aimAt` in constraint order, and is the zero vector when there is no `aimAt` or the aim is coincident.
 - `rotation-conflict` (warning): emitted on frame 0 for entities where `rotationDrivers >= 2`. An `aimAt`, or a `followPath` with `alignToPath` true, counts as a driver when declared, regardless of influence.
-- Results are sorted by frame, then entity index in the scene, then code, comparing codes with plain `<` / `>` string comparison (not `localeCompare`). The inputs are only read.
+- Results are sorted by frame, then entity index in the scene, then code, comparing codes with plain `<` / `>` string comparison (not `localeCompare`). An entity in the scene that is missing from baked.entityIndex is skipped without a finding. The inputs are only read.
 
 ## Data Models
 
@@ -519,7 +519,7 @@ For any valid scene (including coincident aim targets, near-vertical aim, zero i
 
 ### Property 38: path-end-reached is emitted exactly once on open paths, inclusively
 
-For any valid scene with an open path and any entity with a `followPath` constraint, the linter emits exactly one `path-end-reached` Finding with severity `info` for that entity when its unclamped Travelled_Distance, computed from the first `followPath` in the entity's constraint order, reaches or exceeds the path length on some frame, and the Finding's frame is the first such frame. This includes the case where equality occurs on the last frame. It emits none when the distance stays below the length on every frame. The test computes the expected frame independently from `baked.travelled` and a separately built curve length (not from `baked.heldFromFrame`).
+For any valid scene with an open path and any entity with a `followPath` constraint, the linter emits exactly one `path-end-reached` Finding with severity `info` for that entity when its unclamped Travelled_Distance, computed from the first `followPath` in the entity's constraint order, reaches or exceeds the path length on some frame, and the Finding's frame is the first such frame. This includes the case where equality occurs on the last frame. It emits none when the distance stays below the length on every frame. The expected frame is computed from the scene (constraints sorted by `order`, the first followPath, travelled(f) = startOffset + speed * f / fps) and a separately built curve length; the test reads neither baked.travelled nor baked.heldFromFrame.
 
 **Validates: Requirements 8.3, 8.4, 8.6**
 

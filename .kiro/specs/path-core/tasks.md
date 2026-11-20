@@ -368,14 +368,14 @@ These rules apply to every task below.
     - **Property 38: path-end-reached is emitted exactly once on open paths, inclusively**
     - extend test/helpers/scene-generators.ts: Generators for Property 38 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - `travelled` is taken from the first `followPath` in the entity's constraint order; the generator includes scenes with several `followPath` constraints
-    - The linter emits at `baked.heldFromFrame`; the test computes the expected frame independently from `baked.travelled` and a separately built curve length (not from `heldFromFrame`)
+    - The linter emits at `baked.heldFromFrame`; the expected frame is computed from the scene (constraints sorted by `order`, the first followPath, travelled(f) = startOffset + speed * f / fps) and a separately built curve length; the test reads neither baked.travelled nor baked.heldFromFrame
     - **Validates: Requirements 8.3, 8.4, 8.6**
 
-  - [-] 10.3 Write property test for closed paths
+  - [x] 10.3 Write property test for closed paths
     - **Property 39: path-end-reached is never emitted on closed paths**
     - **Validates: Requirements 8.5**
 
-  - [-] 10.4 Write property test for roll and vertical findings
+  - [x] 10.4 Write property test for roll and vertical findings
     - **Property 40: Roll change and aim-vertical findings match their thresholds**
     - extend test/helpers/scene-generators.ts: Generators for Property 40 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - Compute roll change as in the design: F is the rotated `forwardAxis` at frame f; project the rotated `upAxis` of f-1 and of f onto the plane perpendicular to F, normalise each; angle in [0, pi] computed as `Math.atan2(length(cross(a, b)), dot(a, b))` (never `acos`); 0 if either projection is shorter than 1e-9. The threshold is converted from degrees to radians once and compared in radians with strict `>`
@@ -384,24 +384,24 @@ These rules apply to every task below.
     - Include a hand-built roll case where the forward direction changes between frames f-1 and f and a known angle results, and where using frame f-1's forward axis instead of frame f's would give a different answer
     - **Validates: Requirements 9.2, 9.5, 9.11**
 
-  - [-] 10.5 Write property test for speed spikes
+  - [x] 10.5 Write property test for speed spikes
     - **Property 41: Speed spike uses the median of non-held frames**
     - Constant-speed path following cannot trigger `speed-spike`, so this property is expected to hold without exercising the emitting branch (see the design note)
     - Because generated scenes cannot reach `speed-spike`, build `BakedData` by hand with `test/helpers/baked-builder.ts` (the helper named in 10.4) so the emitting branch is tested with known answers: speed at f is the distance between positions at f-1 and f times fps (frame 0 has none), held frames are excluded, the median of an even count is the average of the two middle values, an empty list has no median and no finding
     - **Validates: Requirements 9.3, 9.4, 9.9**
 
-  - [ ] 10.6 Write property test for rotation conflict
+  - [-] 10.6 Write property test for rotation conflict
     - **Property 42: Rotation conflict is reported on frame 0**
     - extend test/helpers/scene-generators.ts: Generators for Property 42 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - Count declared rotation-driving constraints (`aimAt`, or `followPath` with `alignToPath` true) regardless of influence; generators include constraints with influence 0 and below 1
     - **Validates: Requirements 9.6**
 
-  - [ ] 10.7 Write property test for finding shape and ordering
+  - [-] 10.7 Write property test for finding shape and ordering
     - **Property 43: Findings are well-formed, ordered and non-mutating**
     - The expected order is by frame, then entity index, then code, comparing codes with plain `<` / `>` (not `localeCompare`)
     - **Validates: Requirements 9.1, 9.7, 9.8, 9.10**
 
-  - [ ] 10.8 Write unit tests for linter edge cases
+  - [-] 10.8 Write unit tests for linter edge cases
     - Create `test/linter/unit.test.ts` covering zero median speed, equality of travelled distance and path length on the last frame, and an entity that never reaches the end
     - For the exact-equality case use `fps = frameCount - 1`, `startOffset` 0 and speed equal to the path length, so the last frame's distance equals the length exactly
     - _Requirements: 8.4, 8.6, 9.9_
