@@ -406,21 +406,21 @@ These rules apply to every task below.
     - For the exact-equality case use `fps = frameCount - 1`, `startOffset` 0 and speed equal to the path length, so the last frame's distance equals the length exactly
     - _Requirements: 8.4, 8.6, 9.9_
 
-- [ ] 11. Wire the public API
-  - [-] 11.1 Implement `src/index.ts`
+- [x] 11. Wire the public API
+  - [x] 11.1 Implement `src/index.ts`
     - Re-export the public types and functions from `math`, `curve`, `arclength`, `frames`, `scene`, `bake`, `evaluate` and `linter`
     - _Requirements: 7.1, 7.9, 9.1, 10.12_
 
-  - [-] 11.2 Write property test for NaN-free output
+  - [x] 11.2 Write property test for NaN-free output
     - **Property 37: No NaN in any output**
     - Import only from `src/index.ts`; cover coincident aim, near-vertical aim, zero influence, zero speed, held frames, closed paths and varied linter thresholds
     - **Validates: Requirements 7.14**
 
-- [ ] 12. Checkpoint - Ensure all tests pass
+- [x] 12. Checkpoint - Ensure all tests pass
   - Run `npm test` with `cwd` set to `spikes/path-core`. Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 13. Final verification
-  - [ ] 13.1 Run the full test suite and report results
+- [x] 13. Final verification
+  - [x] 13.1 Run the full test suite and report results
     - Run the single-line command `npm test` with `cwd` set to `spikes/path-core` (never watch mode)
     - Report the number of test files and tests passed, failed and skipped, and quote the failing test names and messages if any
     - Do not change code in this task beyond reporting. If tests fail, tell the user what failed
