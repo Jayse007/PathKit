@@ -422,3 +422,78 @@ export const invalidSceneByKind: Record<InvalidKind, fc.Arbitrary<InvalidSceneCa
 export const arbInvalidScene: fc.Arbitrary<InvalidSceneCase> = fc.oneof(
   ...INVALID_KINDS.map((k) => invalidSceneByKind[k]),
 );
+
+// ---------------------------------------------------------------------------
+// Property 24 variant: followPath positions
+// ---------------------------------------------------------------------------
+
+export interface FollowPathSceneOptions {
+  /** When false, no followPath in the scene has alignToPath true (no per-bake RMF table). */
+  allowAlign: boolean;
+  /** Forces an open (false) or closed (true) path. Omit for either. */
+  closed?: boolean;
+}
+
+/**
+ * One entity named "subject", one path, a static target "s0" and a keyframed target "k0".
+ * The entity holds a followPath under test with influence 1. It is the LAST followPath in
+ * constraint order, and every constraint after it is an aimAt (aimAt never drives position),
+ * so no later constraint drives the position channel. Up to 2 earlier constraints (followPath
+ * or aimAt, any influence) may exist. Orders are distinct and the list is in ascending order.
+ * The test finds the constraint under test as the followPath with the highest order.
+ * Its speed and startOffset are ordinary random values; a test that needs values scaled to
+ * the path length overwrites them.
+ */
+export function arbFollowPathScene(options: FollowPathSceneOptions): fc.Arbitrary<Scene> {
+  const maskAlign = (b: FollowBody): FollowBody =>
+    options.allowAlign || b.align !== true ? b : { ...b, align: false };
+  const arbHeader24 = fc.record({
+    fps: arbFps,
+    frameCount: fc.integer({ min: 1, max: 60 }),
+    closed: options.closed === undefined ? arbClosed : fc.constant(options.closed),
+  });
+  const arbEarlier = fc.oneof(
+    arbFollowBody.map((b) => ({ follow: maskAlign(b) as FollowBody | null, aim: null as { influence: number; target: string } | null })),
+    arbAimBody(['s0', 'k0']).map((b) => ({ follow: null as FollowBody | null, aim: b as { influence: number; target: string } | null })),
+  );
+  return arbHeader24.chain((h) =>
+    fc
+      .record({
+        points: arbPointList(h.closed),
+        staticPos: arbVec3,
+        keyA: arbVec3,
+        keyB: arbVec3,
+        axes: arbValidAxisPair,
+        earlier: arrayOfLength(arbEarlier, 0, 2),
+        later: arrayOfLength(arbAimBody(['s0', 'k0']), 0, 2),
+        under: arbFollowBody,
+        orders: fc.uniqueArray(arbOrder, { minLength: 5, maxLength: 5 }),
+      })
+      .map((r): Scene => {
+        const sorted = [...r.orders].slice(0, r.earlier.length + 1 + r.later.length).sort((a, b) => a - b);
+        const constraints: Constraint[] = [];
+        let next = 0;
+        for (const e of r.earlier) {
+          const order = sorted[next++];
+          constraints.push(e.follow !== null ? buildFollow(order, e.follow) : buildAim(order, e.aim as { influence: number; target: string }));
+        }
+        constraints.push(buildFollow(sorted[next++], { ...maskAlign(r.under), influence: 1 }));
+        for (const a of r.later) constraints.push(buildAim(sorted[next++], a));
+        return {
+          fps: h.fps,
+          frameCount: h.frameCount,
+          path: { points: r.points, closed: h.closed },
+          targets: {
+            s0: r.staticPos,
+            k0: {
+              keyframes: [
+                { frame: 0, position: r.keyA },
+                { frame: h.frameCount, position: r.keyB },
+              ],
+            },
+          },
+          entities: [{ id: 'subject', forwardAxis: r.axes[0], upAxis: r.axes[1], constraints }],
+        };
+      }),
+  );
+}

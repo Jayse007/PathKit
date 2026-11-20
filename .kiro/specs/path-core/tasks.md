@@ -240,7 +240,7 @@ These rules apply to every task below.
     - _Requirements: 5.1, 5.2, 5.8, 5.9, 5.13, 5.14, 5.15, 5.16_
 
 - [ ] 8. Implement baking
-  - [-] 8.1 Implement `src/bake.ts`
+  - [x] 8.1 Implement `src/bake.ts`
     - Implement `BakedData` and `bake(scene)`: call `validateScene`, stable-sort a copy of each entity's constraints by `order`, then per entity and frame apply constraints in order
     - Each frame's constraint stack starts from the rest pose (position at the origin, identity rotation). Previous-frame state is used only by the coincident-aim rule (6.9) and the near-vertical up rule (7.4), and never as the starting value of the stack
     - `followPath`: Travelled_Distance `startOffset + speed * frame / fps`, clamp (open) or wrap (closed), position from the arc-length table, `alignToPath` rotation from `forwardAxis`/`upAxis`: the forward direction is the exact `tangentAtDistance` of the arc-length table at the entity's distance; a 1024-sample RMF table is built once and supplies only the normal, interpolated at that distance (nearest lower and upper samples) and then re-orthogonalised against the exact tangent (remove the tangent component and normalise; if the remainder is shorter than 1e-9, use the guarded fallback of any unit vector perpendicular to the tangent); binormal is `tangent × normal`
@@ -255,23 +255,23 @@ These rules apply to every task below.
     - Apply the alignToPath default: omitted means false; test it
     - _Requirements: 5.8, 5.10, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.14, 8.1, 8.2, 8.7, 10.11_
 
-  - [ ] 8.2 Write property test for constraint order
+  - [-] 8.2 Write property test for constraint order
     - **Property 23: Constraint order is by order value**
     - **Validates: Requirements 5.10**
 
-  - [ ] 8.3 Write property test for followPath positions
+  - [-] 8.3 Write property test for followPath positions
     - **Property 24: followPath positions on the path**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 24 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - **Validates: Requirements 6.1, 8.2**
 
-  - [ ] 8.4 Write property test for open-path hold
+  - [-] 8.4 Write property test for open-path hold
     - **Property 25: Open-path hold**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 25 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - **Validates: Requirements 8.1, 8.7**
 
-  - [ ] 8.5 Write property test for alignToPath
+  - [-] 8.5 Write property test for alignToPath
     - **Property 26: alignToPath rotates the entity axes onto the path frame**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 26 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
