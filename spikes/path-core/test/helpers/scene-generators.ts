@@ -789,3 +789,116 @@ export const arbCoincidentAimCase: fc.Arbitrary<CoincidentAimCase> = arbClosed.c
       });
     }),
 );
+
+// ---------------------------------------------------------------------------
+// Property 38 variant: path end on open paths
+// ---------------------------------------------------------------------------
+
+interface PathEndFollowDesc {
+  influence: number;
+  align: boolean | undefined;
+  mode: number;
+  k: number;
+  speedPos: number;
+  speedFree: number;
+  factor: number;
+}
+
+const arbPathEndFollow: fc.Arbitrary<PathEndFollowDesc> = fc.record({
+  influence: arbInfluence,
+  align: fc.constantFrom<boolean | undefined>(undefined, true, false),
+  mode: fc.integer({ min: 0, max: 4 }),
+  k: fc.integer({ min: 0, max: 1000 }),
+  speedPos: coord(0.5, 10),
+  speedFree: coord(-10, 10),
+  factor: fc.integer({ min: -1000, max: 990 }).map((i) => i / 1000),
+});
+
+/**
+ * Speed and startOffset drawn from the real path length. Mode 0: the end is reached at frame h.
+ * Mode 1: speed 0 and startOffset exactly the length (equality on frame 0). Mode 2: startOffset
+ * beyond the length, any speed (reached on frame 0 or never again below it). Mode 3: free motion.
+ * Mode 4: negative speed from below the length (never reached).
+ */
+function pathEndMotion(d: PathEndFollowDesc, length: number, frameCount: number, fps: number): [number, number] {
+  const h = Math.min(frameCount - 1, Math.floor((d.k / 1001) * frameCount));
+  if (d.mode === 0) return [d.speedPos, length - (d.speedPos * h) / fps];
+  if (d.mode === 1) return [0, length];
+  if (d.mode === 2) return [d.speedFree, length * (1 + Math.abs(d.factor))];
+  if (d.mode === 3) return [d.speedFree, d.factor * length];
+  return [-d.speedPos, d.factor * length];
+}
+
+/**
+ * Scenes for Property 38. Open path only. 1..3 entities named "entity-<i>", each with 0..3 followPath
+ * constraints and 0..2 aimAt constraints (influence 0, 1 or in between), distinct orders and a shuffled
+ * list order (so the first followPath in constraint ORDER is often not the first in the list).
+ * Targets: static "s0", keyframed "k1" and "c0" at the origin (coincident with an entity that has no
+ * followPath or whose followPaths all have influence 0). Speed and
+ * startOffset of every followPath are drawn from the real path length (see pathEndMotion), so the
+ * end is reached at a chosen frame, on frame 0, with exact equality, or never. alignToPath may be true.
+ */
+export const arbPathEndScene: fc.Arbitrary<Scene> = fc
+  .record({ fps: arbFps, frameCount: fc.integer({ min: 2, max: 60 }) })
+  .chain((h) =>
+    fc
+      .record({
+        points: arbPointList(false),
+        staticPos: arbVec3,
+        keyA: arbVec3,
+        keyB: arbVec3,
+        entities: arrayOfLength(
+          fc.record({
+            axes: arbValidAxisPair,
+            follows: arrayOfLength(arbPathEndFollow, 0, 3),
+            aims: arrayOfLength(arbAimBody(['s0', 'k1', 'c0']), 0, 2),
+            orders: fc.uniqueArray(arbOrder, { minLength: 5, maxLength: 5 }),
+            keys: fc.array(fc.integer({ min: 0, max: 1000 }), { minLength: 5, maxLength: 5 }),
+          }),
+          1,
+          3,
+        ),
+      })
+      .map((r): Scene => {
+        const length = createArcLengthTable(createCurve(r.points, false)).length;
+        const entities: Entity[] = r.entities.map((body, i) => {
+          const items: { key: number; constraint: Constraint }[] = [];
+          let n = 0;
+          for (const d of body.follows) {
+            const [speed, startOffset] = pathEndMotion(d, length, h.frameCount, h.fps);
+            items.push({
+              key: body.keys[n],
+              constraint: buildFollow(body.orders[n], { influence: d.influence, speed, startOffset, align: d.align }),
+            });
+            n++;
+          }
+          for (const a of body.aims) {
+            items.push({ key: body.keys[n], constraint: buildAim(body.orders[n], a) });
+            n++;
+          }
+          items.sort((p, q) => p.key - q.key);
+          return {
+            id: `entity-${i}`,
+            forwardAxis: body.axes[0],
+            upAxis: body.axes[1],
+            constraints: items.map((x) => x.constraint),
+          };
+        });
+        return {
+          fps: h.fps,
+          frameCount: h.frameCount,
+          path: { points: r.points, closed: false },
+          targets: {
+            s0: r.staticPos,
+            k1: {
+              keyframes: [
+                { frame: 0, position: r.keyA },
+                { frame: h.frameCount, position: r.keyB },
+              ],
+            },
+            c0: { x: 0, y: 0, z: 0 },
+          },
+          entities,
+        };
+      }),
+  );

@@ -182,8 +182,8 @@ function checkSpeedSpikes(
   for (let i = 0; i < speeds.length; i++) {
     if (!(speeds[i] > limit)) continue;
     const frame = speedFrames[i];
-    const message = `Entity "${entity.id}" speed at frame ${frame} is ${speeds[i]} m/s, ` +
-      `more than ${SPEED_SPIKE_MULTIPLIER} times its median speed of ${median} m/s`;
+    const message = `Entity "${entity.id}" speed at frame ${frame} is ${speeds[i]} units per second, ` +
+      `more than ${SPEED_SPIKE_MULTIPLIER} times its median speed of ${median} units per second`;
     out.push({
       entityIndex,
       finding: makeFinding(frame, entity.id, 'warning', 'speed-spike', message),

@@ -356,7 +356,7 @@ These rules apply to every task below.
     - _Requirements: 7.9, 7.11_
 
 - [ ] 10. Implement the motion linter
-  - [-] 10.1 Implement `src/linter.ts`
+  - [x] 10.1 Implement `src/linter.ts`
     - Implement `Severity`, `Finding`, `motionLinter(scene, baked, options?)` with codes `path-end-reached` (info, once, emitted at frame `baked.heldFromFrame[e]` when it is `>= 0`, i.e. the first frame where `travelled >= length` using `travelled` from the first `followPath` in constraint order), `roll-change` (warning, threshold in degrees per frame converted to radians once on entry, compared in radians with strict `>`), `speed-spike` (warning, speed at frame f is the distance between the positions at f-1 and f times fps, frame 0 has none; 3x median excluding held frames, the median of an even count is the average of the two middle values; none when the list is empty or the median is 0), `aim-vertical`, `rotation-conflict` (frame 0)
     - Roll change between f-1 and f: F is the rotated `forwardAxis` at frame f; project the rotated `upAxis` of f-1 and of f onto the plane perpendicular to F and normalise each; the angle between them in [0, pi], computed as `Math.atan2(length(cross(a, b)), dot(a, b))` (never `acos`); 0 if either projection is shorter than 1e-9
     - `aim-vertical` is emitted only on frames where the stored `aimDirections` vector is non-zero and within 3 degrees of ±Y; export `VERTICAL_COS` from `src/bake.ts`, import it in `linter.ts` and test `Math.abs(y) >= VERTICAL_COS` on the stored aim direction (unit vector, non-zero)
@@ -364,18 +364,18 @@ These rules apply to every task below.
     - Sort by frame, entity index, then code, comparing codes with plain `<` / `>` (not `localeCompare`); never mutate inputs
     - _Requirements: 8.3, 8.4, 8.5, 8.6, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 9.10, 9.11_
 
-  - [ ] 10.2 Write property test for path-end-reached on open paths
+  - [-] 10.2 Write property test for path-end-reached on open paths
     - **Property 38: path-end-reached is emitted exactly once on open paths, inclusively**
     - extend test/helpers/scene-generators.ts: Generators for Property 38 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - `travelled` is taken from the first `followPath` in the entity's constraint order; the generator includes scenes with several `followPath` constraints
     - The linter emits at `baked.heldFromFrame`; the test computes the expected frame independently from `baked.travelled` and a separately built curve length (not from `heldFromFrame`)
     - **Validates: Requirements 8.3, 8.4, 8.6**
 
-  - [ ] 10.3 Write property test for closed paths
+  - [-] 10.3 Write property test for closed paths
     - **Property 39: path-end-reached is never emitted on closed paths**
     - **Validates: Requirements 8.5**
 
-  - [ ] 10.4 Write property test for roll and vertical findings
+  - [-] 10.4 Write property test for roll and vertical findings
     - **Property 40: Roll change and aim-vertical findings match their thresholds**
     - extend test/helpers/scene-generators.ts: Generators for Property 40 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - Compute roll change as in the design: F is the rotated `forwardAxis` at frame f; project the rotated `upAxis` of f-1 and of f onto the plane perpendicular to F, normalise each; angle in [0, pi] computed as `Math.atan2(length(cross(a, b)), dot(a, b))` (never `acos`); 0 if either projection is shorter than 1e-9. The threshold is converted from degrees to radians once and compared in radians with strict `>`
@@ -384,7 +384,7 @@ These rules apply to every task below.
     - Include a hand-built roll case where the forward direction changes between frames f-1 and f and a known angle results, and where using frame f-1's forward axis instead of frame f's would give a different answer
     - **Validates: Requirements 9.2, 9.5, 9.11**
 
-  - [ ] 10.5 Write property test for speed spikes
+  - [-] 10.5 Write property test for speed spikes
     - **Property 41: Speed spike uses the median of non-held frames**
     - Constant-speed path following cannot trigger `speed-spike`, so this property is expected to hold without exercising the emitting branch (see the design note)
     - Because generated scenes cannot reach `speed-spike`, build `BakedData` by hand with `test/helpers/baked-builder.ts` (the helper named in 10.4) so the emitting branch is tested with known answers: speed at f is the distance between positions at f-1 and f times fps (frame 0 has none), held frames are excluded, the median of an even count is the average of the two middle values, an empty list has no median and no finding
