@@ -331,27 +331,27 @@ These rules apply to every task below.
     - For every pair of consecutive frames where the earlier frame is not a held frame, `quatAngle` between the baked rotations is at most `2 * (speed / fps) / rMin + 0.001` radians, with `rMin` estimated from at least 4096 samples of the actual Catmull-Rom curve
     - **Validates: Requirements 6.10**
 
-- [ ] 9. Implement evaluation
-  - [-] 9.1 Implement `src/evaluate.ts`
+- [x] 9. Implement evaluation
+  - [x] 9.1 Implement `src/evaluate.ts`
     - Implement `OutBuffer` and `evaluateEntity(baked, entityId, frame, out)`: map lookup, frame validation, then seven reads written into `out.position` and `out.rotation`
     - No objects, arrays or closures on the success path; build error strings only when throwing (`Unknown entity id "<id>"`, `Frame <frame> is outside the valid range [0, <frameCount-1>]`)
     - _Requirements: 7.9, 7.10, 7.11, 7.12, 7.13_
 
-  - [-] 9.2 Write property test for returned values
+  - [x] 9.2 Write property test for returned values
     - **Property 34: Evaluator returns baked values**
     - **Validates: Requirements 7.9**
 
-  - [-] 9.3 Write property test for read-only, allocation-free evaluation
+  - [x] 9.3 Write property test for read-only, allocation-free evaluation
     - **Property 35: Evaluator is read-only and allocation-free**
     - Freeze only the plain objects and arrays of the baked data (never its typed arrays, since `Object.freeze` throws on typed arrays with elements); compare copies of the typed-array contents taken before and after the calls
     - The heap growth check fails (it is never skipped) if `globalThis.gc` is not available, with the message: "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']."
     - **Validates: Requirements 7.10, 7.11**
 
-  - [-] 9.4 Write property test for invalid arguments
+  - [x] 9.4 Write property test for invalid arguments
     - **Property 36: Evaluator rejects invalid arguments**
     - **Validates: Requirements 7.12, 7.13**
 
-  - [-] 9.5 Write unit tests for evaluator allocation
+  - [x] 9.5 Write unit tests for evaluator allocation
     - Create `test/evaluate/unit.test.ts` with the identity assertion on the returned `out`, a source check on the success path of `evaluateEntity` that flags `new` expressions, array literals and object literals used as values, and arrow functions, but does not flag index access (such as `t[i]`) or code blocks, and a 100,000-call heap growth check below 1 MB. If `globalThis.gc` is not available, the heap check fails (it is never skipped) with the message: "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']."
     - _Requirements: 7.9, 7.11_
 
