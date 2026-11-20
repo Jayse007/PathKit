@@ -240,7 +240,7 @@ These rules apply to every task below.
     - _Requirements: 5.1, 5.2, 5.8, 5.9, 5.13, 5.14, 5.15, 5.16_
 
 - [ ] 8. Implement baking
-  - [ ] 8.1 Implement `src/bake.ts`
+  - [-] 8.1 Implement `src/bake.ts`
     - Implement `BakedData` and `bake(scene)`: call `validateScene`, stable-sort a copy of each entity's constraints by `order`, then per entity and frame apply constraints in order
     - Each frame's constraint stack starts from the rest pose (position at the origin, identity rotation). Previous-frame state is used only by the coincident-aim rule (6.9) and the near-vertical up rule (7.4), and never as the starting value of the stack
     - `followPath`: Travelled_Distance `startOffset + speed * frame / fps`, clamp (open) or wrap (closed), position from the arc-length table, `alignToPath` rotation from `forwardAxis`/`upAxis`: the forward direction is the exact `tangentAtDistance` of the arc-length table at the entity's distance; a 1024-sample RMF table is built once and supplies only the normal, interpolated at that distance (nearest lower and upper samples) and then re-orthogonalised against the exact tangent (remove the tangent component and normalise; if the remainder is shorter than 1e-9, use the guarded fallback of any unit vector perpendicular to the tangent); binormal is `tangent × normal`
