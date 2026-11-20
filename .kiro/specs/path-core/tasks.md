@@ -280,51 +280,51 @@ These rules apply to every task below.
     - With `alignToPath` false or omitted and a prior rotation, the rotation is unchanged
     - **Validates: Requirements 5.8, 6.2, 6.3**
 
-  - [-] 8.6 Write property test for aimAt
+  - [x] 8.6 Write property test for aimAt
     - **Property 27: aimAt points the forward axis at the target**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 27 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation). The variants for Property 27 place the `aimAt` after any `followPath` in constraint order
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - The entity position is the position at that point in the stack (from earlier constraints in order, or the Rest_Pose origin); the generator places the `aimAt` after any `followPath`
     - **Validates: Requirements 6.4, 6.5**
 
-  - [-] 8.7 Write property test for influence blending
+  - [x] 8.7 Write property test for influence blending
     - **Property 28: Influence blends linearly**
     - Restrict to entities with a single constraint (state before is the rest pose), or compute the state before the constraint by baking a scene containing only that entity's earlier constraints
     - **Validates: Requirements 6.6, 6.7**
 
-  - [-] 8.8 Write property test for keyframed targets
+  - [x] 8.8 Write property test for keyframed targets
     - **Property 29: Keyframed targets interpolate and hold**
     - **Validates: Requirements 6.8**
 
-  - [-] 8.9 Write property test for coincident aim
+  - [x] 8.9 Write property test for coincident aim
     - **Property 30: Coincident aim keeps previous rotation**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 30 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation). The variants for Property 30 place the `aimAt` after any `followPath` in constraint order
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - The entity position is the position at that point in the stack (from earlier constraints in order, or the Rest_Pose origin); the generator places the `aimAt` after any `followPath`
     - **Validates: Requirements 6.9**
 
-  - [ ] 8.10 Write property test for near-vertical aim
+  - [-] 8.10 Write property test for near-vertical aim
     - **Property 31: Near-vertical aim uses the projected previous up vector**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 31 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - For f > 0 with the aim within 3 degrees of vertical, let u be the previous baked up direction projected perpendicular to the new aim direction and normalised. When the projection length is at least 1e-9, the baked up axis equals u within 1e-4. Otherwise it equals a unit vector perpendicular to the aim direction within 1e-4. The baked rotation basis is orthonormal in both cases
     - **Validates: Requirements 7.4, 7.5, 7.6**
 
-  - [ ] 8.11 Write property test for bake completeness and determinism
+  - [-] 8.11 Write property test for bake completeness and determinism
     - **Property 32: Bake is complete, deterministic and non-mutating**
     - Include the check that an entity whose only constraint has influence 0 bakes to the rest pose on every frame
     - **Validates: Requirements 7.1, 7.2, 7.3, 7.7, 7.8, 10.10, 10.11**
 
-  - [ ] 8.12 Write property test for invalid scenes in bake
+  - [-] 8.12 Write property test for invalid scenes in bake
     - **Property 33: Invalid scenes are rejected by bake**
     - Covers scene-level validation errors only (not path geometry errors from `createCurve`)
     - **Validates: Requirements 7.15**
 
-  - [ ] 8.13 Write unit tests for bake edge cases
+  - [-] 8.13 Write unit tests for bake edge cases
     - Create `test/bake/unit.test.ts` covering `alignToPath` default false, frame-0 coincident aim giving identity, vertical aim using the projected previous up vector (and the 1e-9 fallback), influence 0 giving the rest pose, zero speed
     - _Requirements: 5.8, 6.3, 6.7, 6.9, 7.4, 7.5, 7.7_
 
-  - [ ] 8.14 Write property test for orientation smoothness
+  - [-] 8.14 Write property test for orientation smoothness
     - **Property 44: alignToPath orientation changes smoothly**
     - extend test/helpers/scene-generators.ts: Provide a variant for Property 44: a path from `smoothCurvePoints` and an entity with a single `followPath` constraint (influence 1, `alignToPath` true, speed above 0, any valid axis pair), exposing `rMin`
     - Use the Property 44 scene variant above (path from `smoothCurvePoints`, single `followPath`, influence 1, `alignToPath` true, speed above 0, any valid axis pair)
