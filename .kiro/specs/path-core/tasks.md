@@ -194,42 +194,50 @@ These rules apply to every task below.
   - [ ] 7.1 Implement `src/scene.ts`
     - Define `AxisToken`, constraint types (`alignToPath` optional, default false), `Entity`, `Keyframe`, `Target`, `Scene`, `SceneError`
     - Implement `axisVector(token, out)` as the single token-to-vector point
-    - Implement `validateScene` in the designed order with the designed messages: fps/frameCount, duplicate ids, same-axis forward/up (naming both tokens), influence in [0,1] and finite, unknown aim target, integer keyframe frames; never mutate the scene
+    - Implement `validateScene` in the designed order with the designed messages: fps/frameCount, duplicate ids, forwardAxis and upAxis axis tokens, same-axis forward/up (naming both tokens), influence in [0,1] and finite, finite constraint order, unknown aim target, integer keyframe frames; never mutate the scene
+    - The first check reports `fps must be a positive integer, got X` and, only if `fps` is valid, `frameCount must be a positive integer, got X` (`fps` is checked first)
+    - After the duplicate-id check and before the same-axis check, add two axis-token checks, `forwardAxis` first and then `upAxis`: `Entity "<id>": forwardAxis "<value>" is not an axis token (use +X, -X, +Y, -Y, +Z or -Z)` and `Entity "<id>": upAxis "<value>" is not an axis token (use +X, -X, +Y, -Y, +Z or -Z)`
+    - After the influence check, add the order check: `Entity "<id>": order must be a finite number, got <value>`
+    - validateScene never mutates the scene and accepts a followPath constraint with alignToPath omitted. The default false is applied by bake as `alignToPath ?? false`.
     - After the integer-frame check, add two keyframe checks: `Target "<name>": keyframes must not be empty` and `Target "<name>": keyframe frames must be strictly increasing, got <a> then <b>` (first offending consecutive pair)
     - After the keyframe checks, add the finite-number checks in this order with these messages: `Entity "<id>": speed must be a finite number, got <value>`, `Entity "<id>": startOffset must be a finite number, got <value>`, `Path point <i> must have finite coordinates`, `Target "<name>": position must have finite coordinates`, `Target "<name>": keyframe <i> position must have finite coordinates`
     - Do not check path geometry (point count or coincident points) in `validateScene`; those errors come from `createCurve`
-    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.12, 5.13, 5.14, 10.5_
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.12, 5.13, 5.14, 5.15, 5.16, 10.5_
 
   - [ ] 7.2 Create shared test generators for scenes
     - Create `test/helpers/scene-generators.ts` with arbitraries for valid scenes (0 to 4 entities, mixed `followPath`/`aimAt` constraints, open or closed paths, keyframed and static targets, valid axis pairs) and for each kind of invalid scene
     - Bounds: `frameCount` at most 120, `fps` drawn from {24, 30, 60}, at most 12 path points, at most 4 entities
-    - Provide variants for Properties 24, 25, 26, 27, 30 and 31 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation). The variants for Properties 27 and 30 place the `aimAt` after any `followPath` in constraint order
     - Valid-scene generators produce only non-empty keyframe lists with strictly increasing integer frame numbers; invalid-scene generators include variants with an empty keyframe list and with non-increasing (equal or decreasing) frame numbers
-    - Generators for Properties 38, 40 and 42 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - Valid-scene generators produce only finite speed, startOffset, path point, target position and keyframe position values; invalid-scene generators include variants with NaN, Infinity and -Infinity in each of these fields
-    - Provide a variant for Property 44: a path from `smoothCurvePoints` and an entity with a single `followPath` constraint (influence 1, `alignToPath` true, speed above 0, any valid axis pair), exposing `rMin`
-    - _Requirements: 5.13, 5.14, 10.12_
+    - Invalid-scene generators also include a variant with a `forwardAxis` or `upAxis` that is not one of the six axis tokens, and a variant with a constraint `order` that is NaN, Infinity or -Infinity
+    - _Requirements: 5.13, 5.14, 5.15, 5.16, 10.12_
 
   - [ ] 7.3 Write property test for axis validation
     - **Property 20: Axis validation rejects same or opposite axes**
     - Use all 36 axis-token pairs (12 invalid, 24 valid)
-    - **Validates: Requirements 5.3, 5.4, 10.5**
+    - Include `forwardAxis` and `upAxis` values that are not one of the six axis tokens, checking the exact `Entity "<id>": forwardAxis "<value>" is not an axis token (use +X, -X, +Y, -Y, +Z or -Z)` message (and the same message with `upAxis`)
+    - **Validates: Requirements 5.3, 5.4, 5.15, 10.5**
 
   - [ ] 7.4 Write property test for numeric field validation
     - **Property 21: Scene validation rejects bad numeric fields**
+    - Include `fps` and `frameCount` values that are not positive integers, checking the exact messages `fps must be a positive integer, got X` and `frameCount must be a positive integer, got X` (`fps` is checked first)
     - Include empty keyframe lists and non-increasing (equal and decreasing) keyframe frames, checking the exact messages
     - Include NaN, Infinity and -Infinity in speed, startOffset, path point coordinates, static target coordinates and keyframe position coordinates, checking the exact Requirement 5.14 messages
-    - **Validates: Requirements 5.2, 5.6, 5.7, 5.11, 5.13, 5.14**
+    - Include NaN, Infinity and -Infinity as a constraint `order`, checking the exact message `Entity "<id>": order must be a finite number, got <value>`
+    - **Validates: Requirements 5.2, 5.6, 5.7, 5.11, 5.13, 5.14, 5.16**
 
   - [ ] 7.5 Write property test for reference and duplicate validation
     - **Property 22: Scene validation rejects bad references and duplicates**
     - **Validates: Requirements 5.5, 5.12**
 
   - [ ] 7.6 Write unit tests for scene validation messages
-    - Create `test/scene/unit.test.ts` covering each exact error message, the `alignToPath` default, and that validation does not mutate the scene
+    - Create `test/scene/unit.test.ts` covering each exact error message, that an omitted `alignToPath` is accepted and left undefined after validation, and that validation does not mutate the scene
+    - validateScene never mutates the scene and accepts a followPath constraint with alignToPath omitted. The default false is applied by bake as `alignToPath ?? false`.
+    - Add cases for `fps` and `frameCount` that are not positive integers, asserting `fps must be a positive integer, got X` and `frameCount must be a positive integer, got X` (when both are invalid, the `fps` message is thrown)
+    - Add one case each for a `forwardAxis` and an `upAxis` that is not an axis token, and for a non-finite constraint `order`, asserting the exact messages
     - Add cases for an empty keyframe list and for non-increasing keyframes (both equal and decreasing frame numbers), asserting the exact messages
     - Add one case per finite-number message (speed, startOffset, path point, static target position, keyframe position), each with NaN and with Infinity, asserting the exact messages
-    - _Requirements: 5.1, 5.8, 5.9, 5.13, 5.14_
+    - _Requirements: 5.1, 5.2, 5.8, 5.9, 5.13, 5.14, 5.15, 5.16_
 
 - [ ] 8. Implement baking
   - [ ] 8.1 Implement `src/bake.ts`
@@ -243,6 +251,7 @@ These rules apply to every task below.
     - NaN-free output comes from the guarded fallbacks in the design (projection-length checks, zero-length guards in `normalize`, `slerp` near-parallel fallback). Do not replace non-finite values with the previous frame's value
     - Carry history in local variables only; leave the scene unmodified
     - Let `createCurve` errors (too few points, coincident points) propagate unchanged
+    - Apply the alignToPath default: omitted means false; test it
     - _Requirements: 5.8, 5.10, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.14, 8.1, 8.2, 8.7, 10.11_
 
   - [ ] 8.2 Write property test for constraint order
@@ -251,16 +260,19 @@ These rules apply to every task below.
 
   - [ ] 8.3 Write property test for followPath positions
     - **Property 24: followPath positions on the path**
+    - extend test/helpers/scene-generators.ts: Provide variants for Property 24 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - **Validates: Requirements 6.1, 8.2**
 
   - [ ] 8.4 Write property test for open-path hold
     - **Property 25: Open-path hold**
+    - extend test/helpers/scene-generators.ts: Provide variants for Property 25 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - **Validates: Requirements 8.1, 8.7**
 
   - [ ] 8.5 Write property test for alignToPath
     - **Property 26: alignToPath rotates the entity axes onto the path frame**
+    - extend test/helpers/scene-generators.ts: Provide variants for Property 26 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - Use `smoothCurvePoints` from task 4.1a for the path and any valid axis pair with `alignToPath` true
     - The baked rotation applied to `forwardAxis` equals the path tangent at that distance within 1e-4; applied to `upAxis` it is perpendicular to that tangent within 1e-6 and within 1e-2 of a dense RMF normal at that distance
@@ -269,6 +281,7 @@ These rules apply to every task below.
 
   - [ ] 8.6 Write property test for aimAt
     - **Property 27: aimAt points the forward axis at the target**
+    - extend test/helpers/scene-generators.ts: Provide variants for Property 27 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation). The variants for Property 27 place the `aimAt` after any `followPath` in constraint order
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - The entity position is the position at that point in the stack (from earlier constraints in order, or the Rest_Pose origin); the generator places the `aimAt` after any `followPath`
     - **Validates: Requirements 6.4, 6.5**
@@ -284,12 +297,14 @@ These rules apply to every task below.
 
   - [ ] 8.9 Write property test for coincident aim
     - **Property 30: Coincident aim keeps previous rotation**
+    - extend test/helpers/scene-generators.ts: Provide variants for Property 30 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation). The variants for Property 30 place the `aimAt` after any `followPath` in constraint order
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - The entity position is the position at that point in the stack (from earlier constraints in order, or the Rest_Pose origin); the generator places the `aimAt` after any `followPath`
     - **Validates: Requirements 6.9**
 
   - [ ] 8.10 Write property test for near-vertical aim
     - **Property 31: Near-vertical aim uses the projected previous up vector**
+    - extend test/helpers/scene-generators.ts: Provide variants for Property 31 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - For f > 0 with the aim within 3 degrees of vertical, let u be the previous baked up direction projected perpendicular to the new aim direction and normalised. When the projection length is at least 1e-9, the baked up axis equals u within 1e-4. Otherwise it equals a unit vector perpendicular to the aim direction within 1e-4. The baked rotation basis is orthonormal in both cases
     - **Validates: Requirements 7.4, 7.5, 7.6**
@@ -310,7 +325,8 @@ These rules apply to every task below.
 
   - [ ] 8.14 Write property test for orientation smoothness
     - **Property 44: alignToPath orientation changes smoothly**
-    - Use the Property 44 scene variant from task 7.2 (path from `smoothCurvePoints`, single `followPath`, influence 1, `alignToPath` true, speed above 0, any valid axis pair)
+    - extend test/helpers/scene-generators.ts: Provide a variant for Property 44: a path from `smoothCurvePoints` and an entity with a single `followPath` constraint (influence 1, `alignToPath` true, speed above 0, any valid axis pair), exposing `rMin`
+    - Use the Property 44 scene variant above (path from `smoothCurvePoints`, single `followPath`, influence 1, `alignToPath` true, speed above 0, any valid axis pair)
     - For every pair of consecutive frames where the earlier frame is not a held frame, `quatAngle` between the baked rotations is at most `2 * (speed / fps) / rMin + 0.001` radians, with `rMin` estimated from at least 4096 samples of the actual Catmull-Rom curve
     - **Validates: Requirements 6.10**
 
@@ -348,6 +364,7 @@ These rules apply to every task below.
 
   - [ ] 10.2 Write property test for path-end-reached on open paths
     - **Property 38: path-end-reached is emitted exactly once on open paths, inclusively**
+    - extend test/helpers/scene-generators.ts: Generators for Property 38 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - `travelled` is taken from the first `followPath` in the entity's constraint order; the generator includes scenes with several `followPath` constraints
     - **Validates: Requirements 8.3, 8.4, 8.6**
 
@@ -357,6 +374,7 @@ These rules apply to every task below.
 
   - [ ] 10.4 Write property test for roll and vertical findings
     - **Property 40: Roll change and aim-vertical findings match their thresholds**
+    - extend test/helpers/scene-generators.ts: Generators for Property 40 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - Compute roll change as in the design: F is the rotated `forwardAxis` at frame f; project the rotated `upAxis` of f-1 and of f onto the plane perpendicular to F, normalise each; angle in [0, pi]; 0 if either projection is shorter than 1e-9
     - `aim-vertical` appears exactly on frames where the stored aim direction (last `aimAt` in order; zero when no `aimAt` or coincident) is non-zero and within 3 degrees of ±Y; generators include scenes with and without `aimAt` and with coincident aims
     - **Validates: Requirements 9.2, 9.5, 9.11**
@@ -368,6 +386,7 @@ These rules apply to every task below.
 
   - [ ] 10.6 Write property test for rotation conflict
     - **Property 42: Rotation conflict is reported on frame 0**
+    - extend test/helpers/scene-generators.ts: Generators for Property 42 include scenes with several `followPath` constraints, scenes with and without `aimAt`, coincident aims, and constraints with influence 0 or below 1
     - Count declared rotation-driving constraints (`aimAt`, or `followPath` with `alignToPath` true) regardless of influence; generators include constraints with influence 0 and below 1
     - **Validates: Requirements 9.6**
 

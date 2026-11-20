@@ -162,18 +162,22 @@ export class SceneError extends Error {}
 
 Validation order and messages:
 
-1. `fps` and `frameCount` are positive integers: `fps must be a positive integer, got X`.
+1. `fps` and `frameCount` are positive integers. `fps` is checked first, then `frameCount`. Messages: `fps must be a positive integer, got X` and `frameCount must be a positive integer, got X`.
 2. Duplicate entity ids: `Duplicate entity id "<id>"`.
-3. For each entity: the axis letter (last character) of `forwardAxis` and `upAxis` must differ. Message: `Entity "<id>": forwardAxis <f> and upAxis <u> must lie on different axes`.
-4. For each constraint: influence in `[0,1]` and finite: `Entity "<id>": influence <v> is outside [0,1]`. An `aimAt` target must exist: `Entity "<id>": unknown target "<name>"`.
-5. Each keyframe `frame` is an integer: `Target "<name>": keyframe frame must be an integer, got X`.
-6. A keyframed Target has at least one keyframe: `Target "<name>": keyframes must not be empty`.
-7. Keyframe frame numbers are strictly increasing: `Target "<name>": keyframe frames must be strictly increasing, got <a> then <b>`, where `<a>` and `<b>` are the first consecutive pair that is not increasing.
-8. Each `followPath` speed is finite: `Entity "<id>": speed must be a finite number, got <value>`.
-9. Each `followPath` startOffset is finite: `Entity "<id>": startOffset must be a finite number, got <value>`.
-10. Every Path point has finite coordinates: `Path point <i> must have finite coordinates`.
-11. Every static Target position has finite coordinates: `Target "<name>": position must have finite coordinates`.
-12. Every keyframe position has finite coordinates: `Target "<name>": keyframe <i> position must have finite coordinates`.
+3. For each entity: `forwardAxis` is one of the six axis tokens: `Entity "<id>": forwardAxis "<value>" is not an axis token (use +X, -X, +Y, -Y, +Z or -Z)`.
+4. For each entity: `upAxis` is one of the six axis tokens: `Entity "<id>": upAxis "<value>" is not an axis token (use +X, -X, +Y, -Y, +Z or -Z)`.
+5. For each entity: the axis letter (last character) of `forwardAxis` and `upAxis` must differ. Message: `Entity "<id>": forwardAxis <f> and upAxis <u> must lie on different axes`.
+6. For each constraint: influence in `[0,1]` and finite: `Entity "<id>": influence <v> is outside [0,1]`. The constraint `order` is a finite number: `Entity "<id>": order must be a finite number, got <value>`. An `aimAt` target must exist: `Entity "<id>": unknown target "<name>"`.
+7. Each keyframe `frame` is an integer: `Target "<name>": keyframe frame must be an integer, got X`.
+8. A keyframed Target has at least one keyframe: `Target "<name>": keyframes must not be empty`.
+9. Keyframe frame numbers are strictly increasing: `Target "<name>": keyframe frames must be strictly increasing, got <a> then <b>`, where `<a>` and `<b>` are the first consecutive pair that is not increasing.
+10. Each `followPath` speed is finite: `Entity "<id>": speed must be a finite number, got <value>`.
+11. Each `followPath` startOffset is finite: `Entity "<id>": startOffset must be a finite number, got <value>`.
+12. Every Path point has finite coordinates: `Path point <i> must have finite coordinates`.
+13. Every static Target position has finite coordinates: `Target "<name>": position must have finite coordinates`.
+14. Every keyframe position has finite coordinates: `Target "<name>": keyframe <i> position must have finite coordinates`.
+
+validateScene never mutates the scene and accepts a followPath constraint with alignToPath omitted. The default false is applied by bake as `alignToPath ?? false`.
 
 Design note: `validateScene` does not check path geometry (point count or coincident points). `bake` builds the curve with `createCurve` and lets its errors propagate unchanged. Property 33 covers scene-level validation errors only.
 
@@ -407,15 +411,15 @@ For any count that is less than 2 or not an integer, both frame builders throw a
 
 ### Property 20: Axis validation rejects same or opposite axes
 
-For any pair of Axis_Tokens, `validateScene` on an otherwise valid scene throws when both tokens share the same axis letter (identical or opposite), with a message containing both token strings, and does not throw otherwise.
+For any pair of Axis_Tokens, `validateScene` on an otherwise valid scene throws when both tokens share the same axis letter (identical or opposite), with a message containing both token strings, and does not throw otherwise. For any `forwardAxis` or `upAxis` value that is not one of the six Axis_Tokens, `validateScene` throws `Entity "<id>": forwardAxis "<value>" is not an axis token (use +X, -X, +Y, -Y, +Z or -Z)` or the same message with `upAxis`, as applicable.
 
-**Validates: Requirements 5.3, 5.4, 10.5**
+**Validates: Requirements 5.3, 5.4, 5.15, 10.5**
 
 ### Property 21: Scene validation rejects bad numeric fields
 
-For any scene where `fps` or `frameCount` is not a positive integer, validation throws. For any constraint influence, validation accepts it exactly when it lies in [0,1]; otherwise it throws an error naming the entity id and the influence value. For any keyframe with a non-integer frame, validation throws. For any keyframed Target with an empty keyframe list, validation throws `Target "<name>": keyframes must not be empty`. For any keyframed Target whose frame numbers are not strictly increasing, validation throws `Target "<name>": keyframe frames must be strictly increasing, got <a> then <b>` naming the first offending consecutive pair. For any `followPath` speed or startOffset, path point coordinate, static Target position coordinate or keyframe position coordinate that is NaN, Infinity or -Infinity, validation throws the matching Requirement 5.14 message (`Entity "<id>": speed must be a finite number, got <value>`, `Entity "<id>": startOffset must be a finite number, got <value>`, `Path point <i> must have finite coordinates`, `Target "<name>": position must have finite coordinates`, `Target "<name>": keyframe <i> position must have finite coordinates`).
+For any scene where `fps` or `frameCount` is not a positive integer, validation throws `fps must be a positive integer, got X` or `frameCount must be a positive integer, got X` (`fps` is checked first). For any constraint influence, validation accepts it exactly when it lies in [0,1]; otherwise it throws an error naming the entity id and the influence value. For any keyframe with a non-integer frame, validation throws. For any keyframed Target with an empty keyframe list, validation throws `Target "<name>": keyframes must not be empty`. For any keyframed Target whose frame numbers are not strictly increasing, validation throws `Target "<name>": keyframe frames must be strictly increasing, got <a> then <b>` naming the first offending consecutive pair. For any `followPath` speed or startOffset, path point coordinate, static Target position coordinate or keyframe position coordinate that is NaN, Infinity or -Infinity, validation throws the matching Requirement 5.14 message (`Entity "<id>": speed must be a finite number, got <value>`, `Entity "<id>": startOffset must be a finite number, got <value>`, `Path point <i> must have finite coordinates`, `Target "<name>": position must have finite coordinates`, `Target "<name>": keyframe <i> position must have finite coordinates`). For any constraint `order` that is NaN, Infinity or -Infinity, validation throws `Entity "<id>": order must be a finite number, got <value>`.
 
-**Validates: Requirements 5.2, 5.6, 5.7, 5.11, 5.13, 5.14**
+**Validates: Requirements 5.2, 5.6, 5.7, 5.11, 5.13, 5.14, 5.16**
 
 ### Property 22: Scene validation rejects bad references and duplicates
 
