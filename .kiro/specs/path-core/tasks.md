@@ -191,7 +191,7 @@ These rules apply to every task below.
   - Run `npm test` with `cwd` set to `spikes/path-core`. Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Implement scene types and validation
-  - [-] 7.1 Implement `src/scene.ts`
+  - [x] 7.1 Implement `src/scene.ts`
     - Define `AxisToken`, constraint types (`alignToPath` optional, default false), `Entity`, `Keyframe`, `Target`, `Scene`, `SceneError`
     - Implement `axisVector(token, out)` as the single token-to-vector point
     - Implement `validateScene` in the designed order with the designed messages: fps/frameCount, duplicate ids, forwardAxis and upAxis axis tokens, same-axis forward/up (naming both tokens), influence in [0,1] and finite, finite constraint order, unknown aim target, integer keyframe frames; never mutate the scene
