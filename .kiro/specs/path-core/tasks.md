@@ -239,7 +239,7 @@ These rules apply to every task below.
     - Add one case per finite-number message (speed, startOffset, path point, static target position, keyframe position), each with NaN and with Infinity, asserting the exact messages
     - _Requirements: 5.1, 5.2, 5.8, 5.9, 5.13, 5.14, 5.15, 5.16_
 
-- [ ] 8. Implement baking
+- [x] 8. Implement baking
   - [x] 8.1 Implement `src/bake.ts`
     - Implement `BakedData` and `bake(scene)`: call `validateScene`, stable-sort a copy of each entity's constraints by `order`, then per entity and frame apply constraints in order
     - Each frame's constraint stack starts from the rest pose (position at the origin, identity rotation). Previous-frame state is used only by the coincident-aim rule (6.9) and the near-vertical up rule (7.4), and never as the starting value of the stack
@@ -303,28 +303,28 @@ These rules apply to every task below.
     - The entity position is the position at that point in the stack (from earlier constraints in order, or the Rest_Pose origin); the generator places the `aimAt` after any `followPath`
     - **Validates: Requirements 6.9**
 
-  - [-] 8.10 Write property test for near-vertical aim
+  - [x] 8.10 Write property test for near-vertical aim
     - **Property 31: Near-vertical aim uses the projected previous up vector**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 31 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - For f > 0 with the aim within 3 degrees of vertical, let u be the previous baked up direction projected perpendicular to the new aim direction and normalised. When the projection length is at least 1e-9, the baked up axis equals u within 1e-4. Otherwise it equals a unit vector perpendicular to the aim direction within 1e-4. The baked rotation basis is orthonormal in both cases
     - **Validates: Requirements 7.4, 7.5, 7.6**
 
-  - [-] 8.11 Write property test for bake completeness and determinism
+  - [x] 8.11 Write property test for bake completeness and determinism
     - **Property 32: Bake is complete, deterministic and non-mutating**
     - Include the check that an entity whose only constraint has influence 0 bakes to the rest pose on every frame
     - **Validates: Requirements 7.1, 7.2, 7.3, 7.7, 7.8, 10.10, 10.11**
 
-  - [-] 8.12 Write property test for invalid scenes in bake
+  - [x] 8.12 Write property test for invalid scenes in bake
     - **Property 33: Invalid scenes are rejected by bake**
     - Covers scene-level validation errors only (not path geometry errors from `createCurve`)
     - **Validates: Requirements 7.15**
 
-  - [-] 8.13 Write unit tests for bake edge cases
+  - [x] 8.13 Write unit tests for bake edge cases
     - Create `test/bake/unit.test.ts` covering `alignToPath` default false, frame-0 coincident aim giving identity, vertical aim using the projected previous up vector (and the 1e-9 fallback), influence 0 giving the rest pose, zero speed
     - _Requirements: 5.8, 6.3, 6.7, 6.9, 7.4, 7.5, 7.7_
 
-  - [-] 8.14 Write property test for orientation smoothness
+  - [x] 8.14 Write property test for orientation smoothness
     - **Property 44: alignToPath orientation changes smoothly**
     - extend test/helpers/scene-generators.ts: Provide a variant for Property 44: a path from `smoothCurvePoints` and an entity with a single `followPath` constraint (influence 1, `alignToPath` true, speed above 0, any valid axis pair), exposing `rMin`
     - Use the Property 44 scene variant above (path from `smoothCurvePoints`, single `followPath`, influence 1, `alignToPath` true, speed above 0, any valid axis pair)
@@ -332,26 +332,27 @@ These rules apply to every task below.
     - **Validates: Requirements 6.10**
 
 - [ ] 9. Implement evaluation
-  - [ ] 9.1 Implement `src/evaluate.ts`
+  - [-] 9.1 Implement `src/evaluate.ts`
     - Implement `OutBuffer` and `evaluateEntity(baked, entityId, frame, out)`: map lookup, frame validation, then seven reads written into `out.position` and `out.rotation`
     - No objects, arrays or closures on the success path; build error strings only when throwing (`Unknown entity id "<id>"`, `Frame <frame> is outside the valid range [0, <frameCount-1>]`)
     - _Requirements: 7.9, 7.10, 7.11, 7.12, 7.13_
 
-  - [ ] 9.2 Write property test for returned values
+  - [-] 9.2 Write property test for returned values
     - **Property 34: Evaluator returns baked values**
     - **Validates: Requirements 7.9**
 
-  - [ ] 9.3 Write property test for read-only, allocation-free evaluation
+  - [-] 9.3 Write property test for read-only, allocation-free evaluation
     - **Property 35: Evaluator is read-only and allocation-free**
     - Freeze only the plain objects and arrays of the baked data (never its typed arrays, since `Object.freeze` throws on typed arrays with elements); compare copies of the typed-array contents taken before and after the calls
+    - The heap growth check fails (it is never skipped) if `globalThis.gc` is not available, with the message: "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']."
     - **Validates: Requirements 7.10, 7.11**
 
-  - [ ] 9.4 Write property test for invalid arguments
+  - [-] 9.4 Write property test for invalid arguments
     - **Property 36: Evaluator rejects invalid arguments**
     - **Validates: Requirements 7.12, 7.13**
 
-  - [ ] 9.5 Write unit tests for evaluator allocation
-    - Create `test/evaluate/unit.test.ts` with the identity assertion on the returned `out`, a source check on the success path of `evaluateEntity` that flags `new` expressions, array literals and object literals used as values, and arrow functions, but does not flag index access (such as `t[i]`) or code blocks, and a 100,000-call heap growth check below 1 MB when `gc` is available (skip the heap check otherwise)
+  - [-] 9.5 Write unit tests for evaluator allocation
+    - Create `test/evaluate/unit.test.ts` with the identity assertion on the returned `out`, a source check on the success path of `evaluateEntity` that flags `new` expressions, array literals and object literals used as values, and arrow functions, but does not flag index access (such as `t[i]`) or code blocks, and a 100,000-call heap growth check below 1 MB. If `globalThis.gc` is not available, the heap check fails (it is never skipped) with the message: "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']."
     - _Requirements: 7.9, 7.11_
 
 - [ ] 10. Implement the motion linter
