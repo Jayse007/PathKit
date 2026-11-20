@@ -190,7 +190,7 @@ These rules apply to every task below.
 - [x] 6. Checkpoint - Ensure all tests pass
   - Run `npm test` with `cwd` set to `spikes/path-core`. Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement scene types and validation
+- [x] 7. Implement scene types and validation
   - [x] 7.1 Implement `src/scene.ts`
     - Define `AxisToken`, constraint types (`alignToPath` optional, default false), `Entity`, `Keyframe`, `Target`, `Scene`, `SceneError`
     - Implement `axisVector(token, out)` as the single token-to-vector point
@@ -204,7 +204,7 @@ These rules apply to every task below.
     - Do not check path geometry (point count or coincident points) in `validateScene`; those errors come from `createCurve`
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.12, 5.13, 5.14, 5.15, 5.16, 10.5_
 
-  - [ ] 7.2 Create shared test generators for scenes
+  - [x] 7.2 Create shared test generators for scenes
     - Create `test/helpers/scene-generators.ts` with arbitraries for valid scenes (0 to 4 entities, mixed `followPath`/`aimAt` constraints, open or closed paths, keyframed and static targets, valid axis pairs) and for each kind of invalid scene
     - Bounds: `frameCount` at most 120, `fps` drawn from {24, 30, 60}, at most 12 path points, at most 4 entities
     - Valid-scene generators produce only non-empty keyframe lists with strictly increasing integer frame numbers; invalid-scene generators include variants with an empty keyframe list and with non-increasing (equal or decreasing) frame numbers
@@ -212,13 +212,13 @@ These rules apply to every task below.
     - Invalid-scene generators also include a variant with a `forwardAxis` or `upAxis` that is not one of the six axis tokens, and a variant with a constraint `order` that is NaN, Infinity or -Infinity
     - _Requirements: 5.13, 5.14, 5.15, 5.16, 10.12_
 
-  - [ ] 7.3 Write property test for axis validation
+  - [x] 7.3 Write property test for axis validation
     - **Property 20: Axis validation rejects same or opposite axes**
     - Use all 36 axis-token pairs (12 invalid, 24 valid)
     - Include `forwardAxis` and `upAxis` values that are not one of the six axis tokens, checking the exact `Entity "<id>": forwardAxis "<value>" is not an axis token (use +X, -X, +Y, -Y, +Z or -Z)` message (and the same message with `upAxis`)
     - **Validates: Requirements 5.3, 5.4, 5.15, 10.5**
 
-  - [ ] 7.4 Write property test for numeric field validation
+  - [x] 7.4 Write property test for numeric field validation
     - **Property 21: Scene validation rejects bad numeric fields**
     - Include `fps` and `frameCount` values that are not positive integers, checking the exact messages `fps must be a positive integer, got X` and `frameCount must be a positive integer, got X` (`fps` is checked first)
     - Include empty keyframe lists and non-increasing (equal and decreasing) keyframe frames, checking the exact messages
@@ -226,11 +226,11 @@ These rules apply to every task below.
     - Include NaN, Infinity and -Infinity as a constraint `order`, checking the exact message `Entity "<id>": order must be a finite number, got <value>`
     - **Validates: Requirements 5.2, 5.6, 5.7, 5.11, 5.13, 5.14, 5.16**
 
-  - [ ] 7.5 Write property test for reference and duplicate validation
+  - [x] 7.5 Write property test for reference and duplicate validation
     - **Property 22: Scene validation rejects bad references and duplicates**
     - **Validates: Requirements 5.5, 5.12**
 
-  - [-] 7.6 Write unit tests for scene validation messages
+  - [x] 7.6 Write unit tests for scene validation messages
     - Create `test/scene/unit.test.ts` covering each exact error message, that an omitted `alignToPath` is accepted and left undefined after validation, and that validation does not mutate the scene
     - validateScene never mutates the scene and accepts a followPath constraint with alignToPath omitted. The default false is applied by bake as `alignToPath ?? false`.
     - Add cases for `fps` and `frameCount` that are not positive integers, asserting `fps must be a positive integer, got X` and `frameCount must be a positive integer, got X` (when both are invalid, the `fps` message is thrown)
