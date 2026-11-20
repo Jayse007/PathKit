@@ -8,7 +8,7 @@ export type AxisToken = '+X' | '-X' | '+Y' | '-Y' | '+Z' | '-Z';
 
 export const MIN_POINT_SPACING = 0.1;
 
-const coord = (min: number, max: number) =>
+export const coord = (min: number, max: number) =>
   fc.integer({ min: -1000000, max: 1000000 }).map(i => min + (i + 1000000) / 2000000 * (max - min));
 
 export const arbT = fc.integer({ min: 0, max: 1000000 }).map(i => i / 1000000);

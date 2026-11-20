@@ -204,7 +204,7 @@ These rules apply to every task below.
     - Do not check path geometry (point count or coincident points) in `validateScene`; those errors come from `createCurve`
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.12, 5.13, 5.14, 5.15, 5.16, 10.5_
 
-  - [ ] 7.2 Create shared test generators for scenes
+  - [-] 7.2 Create shared test generators for scenes
     - Create `test/helpers/scene-generators.ts` with arbitraries for valid scenes (0 to 4 entities, mixed `followPath`/`aimAt` constraints, open or closed paths, keyframed and static targets, valid axis pairs) and for each kind of invalid scene
     - Bounds: `frameCount` at most 120, `fps` drawn from {24, 30, 60}, at most 12 path points, at most 4 entities
     - Valid-scene generators produce only non-empty keyframe lists with strictly increasing integer frame numbers; invalid-scene generators include variants with an empty keyframe list and with non-increasing (equal or decreasing) frame numbers
