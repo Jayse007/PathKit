@@ -255,23 +255,23 @@ These rules apply to every task below.
     - Apply the alignToPath default: omitted means false; test it
     - _Requirements: 5.8, 5.10, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.14, 8.1, 8.2, 8.7, 10.11_
 
-  - [-] 8.2 Write property test for constraint order
+  - [x] 8.2 Write property test for constraint order
     - **Property 23: Constraint order is by order value**
     - **Validates: Requirements 5.10**
 
-  - [-] 8.3 Write property test for followPath positions
+  - [x] 8.3 Write property test for followPath positions
     - **Property 24: followPath positions on the path**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 24 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - **Validates: Requirements 6.1, 8.2**
 
-  - [-] 8.4 Write property test for open-path hold
+  - [x] 8.4 Write property test for open-path hold
     - **Property 25: Open-path hold**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 25 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - **Validates: Requirements 8.1, 8.7**
 
-  - [-] 8.5 Write property test for alignToPath
+  - [x] 8.5 Write property test for alignToPath
     - **Property 26: alignToPath rotates the entity axes onto the path frame**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 26 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation)
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
@@ -280,23 +280,23 @@ These rules apply to every task below.
     - With `alignToPath` false or omitted and a prior rotation, the rotation is unchanged
     - **Validates: Requirements 5.8, 6.2, 6.3**
 
-  - [ ] 8.6 Write property test for aimAt
+  - [-] 8.6 Write property test for aimAt
     - **Property 27: aimAt points the forward axis at the target**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 27 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation). The variants for Property 27 place the `aimAt` after any `followPath` in constraint order
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this
     - The entity position is the position at that point in the stack (from earlier constraints in order, or the Rest_Pose origin); the generator places the `aimAt` after any `followPath`
     - **Validates: Requirements 6.4, 6.5**
 
-  - [ ] 8.7 Write property test for influence blending
+  - [-] 8.7 Write property test for influence blending
     - **Property 28: Influence blends linearly**
     - Restrict to entities with a single constraint (state before is the rest pose), or compute the state before the constraint by baking a scene containing only that entity's earlier constraints
     - **Validates: Requirements 6.6, 6.7**
 
-  - [ ] 8.8 Write property test for keyframed targets
+  - [-] 8.8 Write property test for keyframed targets
     - **Property 29: Keyframed targets interpolate and hold**
     - **Validates: Requirements 6.8**
 
-  - [ ] 8.9 Write property test for coincident aim
+  - [-] 8.9 Write property test for coincident aim
     - **Property 30: Coincident aim keeps previous rotation**
     - extend test/helpers/scene-generators.ts: Provide variants for Property 30 that enforce: the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation). The variants for Property 30 place the `aimAt` after any `followPath` in constraint order
     - Applies only to scenes where the constraint under test has influence 1 and no later constraint drives the same channel (position or rotation); the generator must enforce this

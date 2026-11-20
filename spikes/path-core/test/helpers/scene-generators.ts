@@ -1,4 +1,6 @@
 import fc from 'fast-check';
+import { createArcLengthTable } from '../../src/arclength.js';
+import { createCurve } from '../../src/curve.js';
 import type { Vec3 } from '../../src/math.js';
 import type {
   AimAtConstraint,
@@ -497,3 +499,293 @@ export function arbFollowPathScene(options: FollowPathSceneOptions): fc.Arbitrar
       }),
   );
 }
+
+// ---------------------------------------------------------------------------
+// Property 27 variant: aimAt
+// ---------------------------------------------------------------------------
+
+/** How an aim target is placed relative to the entity position: angle from +Y, azimuth, distance. */
+export interface AimSpec {
+  /** Degrees between the aim direction and +Y, in [3.1, 176.9]. */
+  theta: number;
+  /** Degrees around the Y axis, an integer in [0, 359]. */
+  azimuth: number;
+  /** Metres from the entity position. */
+  distance: number;
+}
+
+const AIM_DEG = Math.PI / 180;
+/** Aims closer than this to vertical are rejected (3 degrees is the cone in the spec; 3.05 leaves rounding margin). */
+const AIM_FILTER_COS = Math.cos(3.05 * AIM_DEG);
+const AIM_MIN_DISTANCE = 0.5;
+
+/**
+ * Angle from +Y. Weighted towards the band just outside the vertical cone
+ * (3.1 to 10 degrees from straight up or straight down), plus the generic
+ * range and exactly 5 degrees (up or down). Tenths of a degree, evenly spread.
+ */
+const arbAimAngle: fc.Arbitrary<number> = fc.oneof(
+  {
+    weight: 3,
+    arbitrary: fc
+      .tuple(fc.integer({ min: 31, max: 100 }), fc.boolean())
+      .map(([tenths, down]) => (down ? 180 - tenths / 10 : tenths / 10)),
+  },
+  { weight: 2, arbitrary: fc.integer({ min: 31, max: 1769 }).map((tenths) => tenths / 10) },
+  { weight: 1, arbitrary: fc.boolean().map((down) => (down ? 175 : 5)) },
+);
+
+function arbAimSpec(distance: fc.Arbitrary<number>): fc.Arbitrary<AimSpec> {
+  return fc.record({ theta: arbAimAngle, azimuth: fc.integer({ min: 0, max: 359 }), distance });
+}
+
+function aimDirectionOf(theta: number, azimuth: number): Vec3 {
+  const t = theta * AIM_DEG;
+  const a = azimuth * AIM_DEG;
+  return { x: Math.sin(t) * Math.cos(a), y: Math.cos(t), z: Math.sin(t) * Math.sin(a) };
+}
+
+const arbAimFollowBody: fc.Arbitrary<FollowBody> = fc.record({
+  influence: fc.oneof(fc.constant(1), coord(0, 1)),
+  speed: fc.oneof(fc.constant(0), coord(-3, 3)),
+  startOffset: coord(-20, 20),
+  align: fc.constantFrom<boolean | undefined>(undefined, false, true),
+});
+
+/** Position after the followPath list, one Vec3 per frame (own clamp/wrap; origin when the list is empty). */
+function followerPositions(
+  points: Vec3[],
+  closed: boolean,
+  fps: number,
+  frameCount: number,
+  followers: readonly FollowBody[],
+): Vec3[] {
+  const table = createArcLengthTable(createCurve(points, closed));
+  const len = table.length;
+  const p: Vec3 = { x: 0, y: 0, z: 0 };
+  const out: Vec3[] = [];
+  for (let f = 0; f < frameCount; f++) {
+    const pos: Vec3 = { x: 0, y: 0, z: 0 };
+    for (const b of followers) {
+      const d = b.startOffset + (b.speed * f) / fps;
+      const dist = closed ? d - len * Math.floor(d / len) : Math.min(Math.max(d, 0), len);
+      table.pointAtDistance(dist, p);
+      pos.x += (p.x - pos.x) * b.influence;
+      pos.y += (p.y - pos.y) * b.influence;
+      pos.z += (p.z - pos.z) * b.influence;
+    }
+    out.push(pos);
+  }
+  return out;
+}
+
+/** Target position at a frame: hold before the first and after the last keyframe, lerp between. */
+function aimTargetAt(target: Target, frame: number): Vec3 {
+  if (!('keyframes' in target)) return target;
+  const keys = target.keyframes;
+  if (frame <= keys[0].frame) return keys[0].position;
+  const last = keys[keys.length - 1];
+  if (frame >= last.frame) return last.position;
+  let i = 1;
+  while (keys[i].frame < frame) i++;
+  const k0 = keys[i - 1];
+  const k1 = keys[i];
+  const t = (frame - k0.frame) / (k1.frame - k0.frame);
+  return {
+    x: k0.position.x + (k1.position.x - k0.position.x) * t,
+    y: k0.position.y + (k1.position.y - k0.position.y) * t,
+    z: k0.position.z + (k1.position.z - k0.position.z) * t,
+  };
+}
+
+/**
+ * Scenes for Property 27. One entity "subject" with: 0..2 followPath constraints (any influence,
+ * alignToPath true, false or omitted), then ONE aimAt with influence 1 as the LAST constraint
+ * (orders ascending in list order), so no later constraint drives position or rotation.
+ * The aimAt position comes from the followPaths, or is the origin when there are none.
+ * The single target "goal" is static or keyframed (1..3 keyframes). Targets are built from an angle
+ * from vertical (see AimSpec), and the scene is rejected unless at EVERY frame the target is at
+ * least 0.5 m from the entity position and at least 3.05 degrees from vertical. With followPaths
+ * the targets are 15..60 m away so the movement rarely rejects a scene. No fc.double.
+ */
+export const arbAimAtScene: fc.Arbitrary<Scene> = fc
+  .record({ fps: arbFps, frameCount: fc.integer({ min: 3, max: 30 }), closed: arbClosed })
+  .chain((h) =>
+    fc
+      .record({
+        points: arbPointList(h.closed),
+        axes: arbValidAxisPair,
+        followers: arrayOfLength(arbAimFollowBody, 0, 2),
+        orders: fc.uniqueArray(arbOrder, { minLength: 3, maxLength: 3 }),
+        keyed: fc.boolean(),
+        keyFrames: fc.uniqueArray(fc.integer({ min: 0, max: h.frameCount + 3 }), { minLength: 3, maxLength: 3 }),
+      })
+      .chain((r) =>
+        arrayOfLength(arbAimSpec(r.followers.length > 0 ? coord(15, 60) : coord(0.5, 50)), 1, 3).map(
+          (specs): { scene: Scene; ok: boolean } => {
+            const positions = followerPositions(r.points, h.closed, h.fps, h.frameCount, r.followers);
+            const worldFor = (frame: number, spec: AimSpec): Vec3 => {
+              const p = positions[Math.min(frame, h.frameCount - 1)];
+              const d = aimDirectionOf(spec.theta, spec.azimuth);
+              return { x: p.x + d.x * spec.distance, y: p.y + d.y * spec.distance, z: p.z + d.z * spec.distance };
+            };
+            let target: Target;
+            if (!r.keyed) {
+              target = worldFor(0, specs[0]);
+            } else {
+              const frames = r.keyFrames.slice(0, specs.length).sort((a, b) => a - b);
+              target = { keyframes: frames.map((frame, i) => ({ frame, position: worldFor(frame, specs[i]) })) };
+            }
+            let ok = true;
+            for (let f = 0; f < h.frameCount && ok; f++) {
+              const t = aimTargetAt(target, f);
+              const p = positions[f];
+              const vx = t.x - p.x;
+              const vy = t.y - p.y;
+              const vz = t.z - p.z;
+              const len = Math.hypot(vx, vy, vz);
+              ok = len >= AIM_MIN_DISTANCE - 1e-9 && Math.abs(vy) < len * AIM_FILTER_COS;
+            }
+            const sorted = [...r.orders].slice(0, r.followers.length + 1).sort((a, b) => a - b);
+            const constraints: Constraint[] = r.followers.map((b, i) => buildFollow(sorted[i], b));
+            constraints.push(buildAim(sorted[r.followers.length], { influence: 1, target: 'goal' }));
+            return {
+              ok,
+              scene: {
+                fps: h.fps,
+                frameCount: h.frameCount,
+                path: { points: r.points, closed: h.closed },
+                targets: { goal: target },
+                entities: [{ id: 'subject', forwardAxis: r.axes[0], upAxis: r.axes[1], constraints }],
+              },
+            };
+          },
+        ),
+      ),
+  )
+  .filter((x) => x.ok)
+  .map((x) => x.scene);
+
+// ---------------------------------------------------------------------------
+// Property 30 variant: coincident aim
+// ---------------------------------------------------------------------------
+
+/** How the entity position at the aimAt is produced. */
+export type CoincidentAimMode = 'aimOnly' | 'afterFollow';
+
+export interface CoincidentAimParams {
+  /** aimOnly: no followPath, the position is the origin. afterFollow: a followPath (speed 0, startOffset 0, alignToPath false) comes first. */
+  mode: CoincidentAimMode;
+  /** One flag per frame. True: the target equals the entity position exactly on that frame. */
+  coincident: readonly boolean[];
+  points: Vec3[];
+  closed: boolean;
+  axes: readonly [AxisToken, AxisToken];
+  fps: number;
+  /** One spec per frame, used on the non-coincident frames (theta 10..170 degrees, distance >= 5 m). */
+  far: readonly AimSpec[];
+}
+
+export interface CoincidentAimCase {
+  scene: Scene;
+  mode: CoincidentAimMode;
+  coincident: readonly boolean[];
+  /** The entity position at the aimAt, on every frame: the origin, or table.pointAtDistance(0) exactly as bake computes it. */
+  position: Vec3;
+}
+
+/**
+ * Builds a scene for Property 30. One entity "subject": optionally one followPath (order 0, influence 1,
+ * speed 0, startOffset 0, alignToPath false), then ONE aimAt (influence 1) as the LAST constraint, so no
+ * later constraint drives position or rotation. The target "goal" has one keyframe per frame (every frame
+ * is exactly on a keyframe): the entity position (copied exactly) on coincident frames, a far point
+ * elsewhere.
+ */
+export function buildCoincidentAimCase(p: CoincidentAimParams): CoincidentAimCase {
+  const frameCount = p.coincident.length;
+  const position: Vec3 = { x: 0, y: 0, z: 0 };
+  const constraints: Constraint[] = [];
+  if (p.mode === 'afterFollow') {
+    const table = createArcLengthTable(createCurve(p.points, p.closed));
+    table.pointAtDistance(0, position);
+    constraints.push(buildFollow(0, { influence: 1, speed: 0, startOffset: 0, align: false }));
+    constraints.push(buildAim(1, { influence: 1, target: 'goal' }));
+  } else {
+    constraints.push(buildAim(0, { influence: 1, target: 'goal' }));
+  }
+  const keyframes: Keyframe[] = [];
+  for (let f = 0; f < frameCount; f++) {
+    if (p.coincident[f]) {
+      keyframes.push({ frame: f, position: { x: position.x, y: position.y, z: position.z } });
+    } else {
+      const d = aimDirectionOf(p.far[f].theta, p.far[f].azimuth);
+      const r = p.far[f].distance;
+      keyframes.push({
+        frame: f,
+        position: { x: position.x + d.x * r, y: position.y + d.y * r, z: position.z + d.z * r },
+      });
+    }
+  }
+  const scene: Scene = {
+    fps: p.fps,
+    frameCount,
+    path: { points: p.points, closed: p.closed },
+    targets: { goal: { keyframes } },
+    entities: [{ id: 'subject', forwardAxis: p.axes[0], upAxis: p.axes[1], constraints }],
+  };
+  return { scene, mode: p.mode, coincident: p.coincident, position };
+}
+
+const arbFarSpec: fc.Arbitrary<AimSpec> = fc.record({
+  theta: fc.integer({ min: 100, max: 1700 }).map((tenths) => tenths / 10),
+  azimuth: fc.integer({ min: 0, max: 359 }),
+  distance: fc.integer({ min: 50, max: 500 }).map((tenths) => tenths / 10),
+});
+
+/**
+ * Property 30 cases. frameCount 4..30, either mode, either path kind. The coincident pattern is random
+ * (about 40% of frames), then one structure is forced per run: kind 0 coincident on frame 0, kind 1 a
+ * run of 3 coincident frames right after a non-coincident frame, kind 2 a coincident frame right after
+ * a non-coincident frame.
+ */
+export const arbCoincidentAimCase: fc.Arbitrary<CoincidentAimCase> = arbClosed.chain((closed) =>
+  fc
+    .record({
+      mode: fc.constantFrom<CoincidentAimMode>('aimOnly', 'afterFollow'),
+      frameCount: fc.integer({ min: 4, max: 30 }),
+      kind: fc.integer({ min: 0, max: 2 }),
+      pick: fc.integer({ min: 0, max: 1_000_000 }),
+      bits: fc.array(fc.integer({ min: 0, max: 99 }), { minLength: 30, maxLength: 30 }),
+      points: arbPointList(closed),
+      axes: arbValidAxisPair,
+      fps: arbFps,
+      far: fc.array(arbFarSpec, { minLength: 30, maxLength: 30 }),
+    })
+    .map((r): CoincidentAimCase => {
+      const n = r.frameCount;
+      const pattern: boolean[] = [];
+      for (let f = 0; f < n; f++) pattern.push(r.bits[f] < 40);
+      if (r.kind === 0) {
+        pattern[0] = true;
+      } else if (r.kind === 1) {
+        const s = 1 + (r.pick % (n - 3));
+        pattern[s - 1] = false;
+        pattern[s] = true;
+        pattern[s + 1] = true;
+        pattern[s + 2] = true;
+      } else {
+        const k = 1 + (r.pick % (n - 1));
+        pattern[k - 1] = false;
+        pattern[k] = true;
+      }
+      return buildCoincidentAimCase({
+        mode: r.mode,
+        coincident: pattern,
+        points: r.points,
+        closed,
+        axes: r.axes,
+        fps: r.fps,
+        far: r.far.slice(0, n),
+      });
+    }),
+);

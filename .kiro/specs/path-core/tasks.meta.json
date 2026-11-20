@@ -817,6 +817,11 @@
         "executionId": "f330d2fb-0591-4c4d-8185-1f500cf1ab62",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1795164293712
+      },
+      {
+        "executionId": "f8e70627-4c27-421f-9173-d8f80b9456fc",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795165506142
       }
     ],
     "8.3 Write property test for followPath positions": [
@@ -829,6 +834,11 @@
         "executionId": "f330d2fb-0591-4c4d-8185-1f500cf1ab62",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1795164429039
+      },
+      {
+        "executionId": "f8e70627-4c27-421f-9173-d8f80b9456fc",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795165509958
       }
     ],
     "8.4 Write property test for open-path hold": [
@@ -841,6 +851,11 @@
         "executionId": "f330d2fb-0591-4c4d-8185-1f500cf1ab62",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1795164589977
+      },
+      {
+        "executionId": "f8e70627-4c27-421f-9173-d8f80b9456fc",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795165510842
       }
     ],
     "8.5 Write property test for alignToPath": [
@@ -853,6 +868,11 @@
         "executionId": "f330d2fb-0591-4c4d-8185-1f500cf1ab62",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1795164713180
+      },
+      {
+        "executionId": "f8e70627-4c27-421f-9173-d8f80b9456fc",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795165512056
       }
     ],
     "8.6 Write property test for aimAt": [
@@ -860,6 +880,11 @@
         "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1794913636014
+      },
+      {
+        "executionId": "f8e70627-4c27-421f-9173-d8f80b9456fc",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795165586953
       }
     ],
     "8.7 Write property test for influence blending": [
@@ -867,6 +892,11 @@
         "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1794913636628
+      },
+      {
+        "executionId": "f8e70627-4c27-421f-9173-d8f80b9456fc",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795165970207
       }
     ],
     "8.8 Write property test for keyframed targets": [
@@ -874,6 +904,11 @@
         "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1794913637086
+      },
+      {
+        "executionId": "f8e70627-4c27-421f-9173-d8f80b9456fc",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795166195878
       }
     ],
     "8.9 Write property test for coincident aim": [
@@ -881,6 +916,11 @@
         "executionId": "3384121a-5f23-4dc1-99a7-1b4964ae5323",
         "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
         "timestamp": 1794913638468
+      },
+      {
+        "executionId": "f8e70627-4c27-421f-9173-d8f80b9456fc",
+        "chatSessionId": "sess_ed7a85c5-1d10-4238-84d6-67482685b352",
+        "timestamp": 1795166364091
       }
     ],
     "8.10 Write property test for near-vertical aim": [
