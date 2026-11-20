@@ -182,7 +182,8 @@ describe('Property 35: Evaluator is read-only and allocation-free', () => {
     const total = 100000;
     // Numbers (the loop counter, the failure count and the heap readings) are fine here: V8 keeps small integers
     // and doubles in registers or as immediates, so they do not allocate on the heap. Objects, arrays, strings
-    // and closures do, and any of them created per iteration would show up as heap growth and invalidate the check.
+    // and closures do. heapUsed is measured after gc(), so discarded objects are already freed: this heap check
+    // detects retained memory (leaks) only. The source checker is the guard against per-call allocation.
     let mismatches = 0;
     let k = 0;
     gc();

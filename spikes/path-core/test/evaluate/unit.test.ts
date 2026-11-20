@@ -521,6 +521,8 @@ describe('evaluateEntity allocation', () => {
 
     const total = 100000;
     // Only numbers are created in the loop (counters and heap readings); no objects, arrays, strings or closures.
+    // heapUsed is measured after gc(), so discarded objects are already freed: this heap check detects retained
+    // memory (leaks) only. The source checker above is the guard against per-call allocation.
     let mismatches = 0;
     let k = 0;
     gc();

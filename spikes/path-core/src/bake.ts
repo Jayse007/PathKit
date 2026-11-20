@@ -28,7 +28,7 @@ const PERPENDICULAR_EPS = 1e-9;
 const TRANSFORM_STRIDE = 7;
 const AIM_STRIDE = 3;
 /** An aim whose |y| is at least this is within 3 degrees of straight up or down. */
-const VERTICAL_COS = Math.cos((3 * Math.PI) / 180);
+export const VERTICAL_COS = Math.cos((3 * Math.PI) / 180);
 /** World up. A world convention, not an entity axis. */
 const WORLD_UP: Vec3 = { x: 0, y: 1, z: 0 };
 

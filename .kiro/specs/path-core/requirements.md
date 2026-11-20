@@ -183,7 +183,7 @@ All code follows the project steering file `coordinate-conventions.md`: Y-up rig
 #### Acceptance Criteria
 
 1. THE Linter SHALL return a list of Findings, each with frame, entityId, severity, code and message.
-2. WHEN the roll change of an Entity between frames f-1 and f exceeds the supplied threshold in degrees per frame, THE Linter SHALL emit a Finding with code "roll-change" for the later frame.
+2. WHEN the roll change of an Entity between frames f-1 and f exceeds the supplied threshold, given in degrees per frame and converted to radians once on entry, with the comparison made in radians and strictly greater, THE Linter SHALL emit a Finding with code "roll-change" for the later frame.
 3. WHEN the speed of an Entity at a frame exceeds 3 times the median speed of that Entity, THE Linter SHALL emit a Finding with code "speed-spike" for that frame.
 4. THE Linter SHALL exclude Held_Frames from the median speed calculation.
 5. WHEN the stored aim direction of an Entity at a frame is non-zero and within the Vertical_Threshold of straight up or straight down, THE Linter SHALL emit a Finding with code "aim-vertical" for that frame, where the stored aim direction is the aim direction of the last aimAt Constraint in the Entity's Constraint order, or the zero vector when the Entity has no aimAt Constraint or the aim is coincident at that frame.
