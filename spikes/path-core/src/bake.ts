@@ -7,8 +7,8 @@ import { createCurve } from './curve.js';
 import type { Frame } from './frames.js';
 import { rotationMinimizingFrames } from './frames.js';
 import type { Quat, Vec3 } from './math.js';
-import { cross, dot, length, lerp, normalize, quatFromBasis, scale, slerp, sub } from './math.js';
-import type { AimAtConstraint, Constraint, Entity, FollowPathConstraint, Scene } from './scene.js';
+import { cross, dot, length, lerp, normalize, quatFromBasis, rotateVec, scale, slerp, sub } from './math.js';
+import type { AimAtConstraint, Constraint, Entity, FollowPathConstraint, Scene, Target } from './scene.js';
 import { SceneError, axisVector, validateScene } from './scene.js';
 
 export interface BakedData {
@@ -26,6 +26,11 @@ export interface BakedData {
 const RMF_SAMPLE_COUNT = 1024;
 const PERPENDICULAR_EPS = 1e-9;
 const TRANSFORM_STRIDE = 7;
+const AIM_STRIDE = 3;
+/** An aim whose |y| is at least this is within 3 degrees of straight up or down. */
+const VERTICAL_COS = Math.cos((3 * Math.PI) / 180);
+/** World up. A world convention, not an entity axis. */
+const WORLD_UP: Vec3 = { x: 0, y: 1, z: 0 };
 
 // ---------------------------------------------------------------------------
 // Small constraint helpers
@@ -95,6 +100,7 @@ function checkTravelled(entityId: string, frame: number, travelled: number): voi
  */
 function tableDistance(travelled: number, pathLength: number, closed: boolean): number {
   if (closed) return travelled;
+  // Redundant guard: the arc-length table clamps open distances itself.
   return Math.min(Math.max(travelled, 0), pathLength);
 }
 
@@ -222,6 +228,9 @@ interface EntityWork {
   readonly candidateRotation: Quat;
   readonly tangent: Vec3;
   readonly normal: Vec3;
+  readonly targetPosition: Vec3;
+  readonly aim: Vec3;
+  readonly aimUp: Vec3;
   readonly basis: BasisScratch;
 }
 
@@ -233,6 +242,9 @@ function createEntityWork(): EntityWork {
     candidateRotation: { x: 0, y: 0, z: 0, w: 1 },
     tangent: { x: 0, y: 0, z: 0 },
     normal: { x: 0, y: 0, z: 0 },
+    targetPosition: { x: 0, y: 0, z: 0 },
+    aim: { x: 0, y: 0, z: 0 },
+    aimUp: { x: 0, y: 0, z: 0 },
     basis: createBasisScratch(),
   };
 }
@@ -249,6 +261,11 @@ function blendCandidate(work: EntityWork, influence: number, withRotation: boole
   if (withRotation) {
     slerp(work.rotation, work.candidateRotation, influence, work.rotation);
   }
+}
+
+/** Blends only the rotation by influence. The position is left untouched. */
+function blendRotation(work: EntityWork, influence: number): void {
+  slerp(work.rotation, work.candidateRotation, influence, work.rotation);
 }
 
 /** Writes position and rotation into the flat transforms array. */
@@ -275,7 +292,122 @@ interface PathInfo {
 interface EntityOutput {
   readonly transforms: Float64Array;
   readonly travelled: Float64Array;
+  readonly aimDirections: Float64Array;
   heldFromFrame: number;
+}
+
+// ---------------------------------------------------------------------------
+// aimAt
+// ---------------------------------------------------------------------------
+
+/** Copies a vector into `out`. */
+function copyVec(a: Vec3, out: Vec3): Vec3 {
+  out.x = a.x; out.y = a.y; out.z = a.z;
+  return out;
+}
+
+/** Copies a quaternion into `out`. */
+function copyQuat(a: Quat, out: Quat): Quat {
+  out.x = a.x; out.y = a.y; out.z = a.z; out.w = a.w;
+  return out;
+}
+
+/**
+ * Writes the target position at a frame into `out`. A static target is
+ * returned as is. A keyframed target holds its first position before the
+ * first keyframe and its last after the last, and lerps in between.
+ * validateScene guarantees non-empty keyframes with increasing frames.
+ */
+function targetPositionAt(target: Target, frame: number, out: Vec3): Vec3 {
+  if (!('keyframes' in target)) return copyVec(target, out);
+
+  const keys = target.keyframes;
+  const first = keys[0];
+  const last = keys[keys.length - 1];
+  if (frame <= first.frame) return copyVec(first.position, out);
+  if (frame >= last.frame) return copyVec(last.position, out);
+
+  // First keyframe at or after this frame. It exists and is not the first key.
+  let next = 1;
+  while (keys[next].frame < frame) next++;
+  const k1 = keys[next];
+  if (k1.frame === frame) return copyVec(k1.position, out);
+
+  const k0 = keys[next - 1];
+  const t = (frame - k0.frame) / (k1.frame - k0.frame);
+  return lerp(k0.position, k1.position, t, out);
+}
+
+/** Writes into `out` the part of `v` that is perpendicular to the unit vector `dir`. */
+function removeComponent(v: Vec3, dir: Vec3, out: Vec3): Vec3 {
+  const along = dot(v, dir);
+  out.x = v.x - dir.x * along;
+  out.y = v.y - dir.y * along;
+  out.z = v.z - dir.z * along;
+  return out;
+}
+
+/**
+ * Writes into `out` the unit up vector for an aim. The reference is world up,
+ * or the previous baked up when the aim is near vertical after frame 0.
+ * The reference is made perpendicular to the aim. A too-short remainder
+ * falls back to any perpendicular unit vector.
+ */
+function aimUpVector(aim: Vec3, frame: number, prevUp: Vec3, out: Vec3): Vec3 {
+  const nearVertical = Math.abs(aim.y) >= VERTICAL_COS;
+  const reference = nearVertical && frame > 0 ? prevUp : WORLD_UP;
+  removeComponent(reference, aim, out);
+  if (length(out) < PERPENDICULAR_EPS) {
+    return anyPerpendicular(aim, out);
+  }
+  return normalize(out, out);
+}
+
+/**
+ * Applies one aimAt constraint at one frame. Only the rotation is blended.
+ * `prevRotation` holds this constraint's candidate from the previous frame
+ * (identity before frame 0) and is updated here. The unit aim direction is
+ * left in work.aim (zero when coincident). Returns true when coincident.
+ */
+function applyAimAt(
+  c: AimAtConstraint,
+  target: Target,
+  frame: number,
+  axes: LocalAxes,
+  prevUp: Vec3,
+  prevRotation: Quat,
+  work: EntityWork,
+): boolean {
+  targetPositionAt(target, frame, work.targetPosition);
+  sub(work.targetPosition, work.position, work.aim);
+  normalize(work.aim, work.aim);
+
+  const coincident = length(work.aim) === 0;
+  if (coincident) {
+    copyQuat(prevRotation, work.candidateRotation);
+  } else {
+    aimUpVector(work.aim, frame, prevUp, work.aimUp);
+    rotationFromAxes(axes, work.aim, work.aimUp, work.basis, work.candidateRotation);
+    copyQuat(work.candidateRotation, prevRotation);
+  }
+  blendRotation(work, c.influence);
+  return coincident;
+}
+
+/** Writes the aim direction of this frame into the flat aim array. */
+function writeAimDirection(aimDirections: Float64Array, frame: number, aim: Vec3): void {
+  const i = frame * AIM_STRIDE;
+  aimDirections[i] = aim.x;
+  aimDirections[i + 1] = aim.y;
+  aimDirections[i + 2] = aim.z;
+}
+
+/** Index of the last aimAt in the sorted constraints, or -1. */
+function lastAimIndexOf(constraints: readonly Constraint[]): number {
+  for (let i = constraints.length - 1; i >= 0; i--) {
+    if (isAimAt(constraints[i])) return i;
+  }
+  return -1;
 }
 
 /**
@@ -313,12 +445,14 @@ function isHeld(travelled: number, path: PathInfo): boolean {
 }
 
 /** Bakes one entity over all frames. */
-function bakeEntity(entity: Entity, frameCount: number, path: PathInfo): EntityOutput {
+function bakeEntity(
+  entity: Entity,
+  frameCount: number,
+  path: PathInfo,
+  targets: Readonly<Record<string, Target>>,
+): EntityOutput {
   const constraints = sortedCopy(entity.constraints);
-  for (const c of constraints) {
-    // Not implemented in this pass: fail loudly instead of skipping silently.
-    if (isAimAt(c)) throw new Error('aimAt not implemented yet');
-  }
+  const lastAimIndex = lastAimIndexOf(constraints);
 
   let firstFollowIndex = -1;
   for (let i = 0; i < constraints.length; i++) {
@@ -331,16 +465,28 @@ function bakeEntity(entity: Entity, frameCount: number, path: PathInfo): EntityO
   const output: EntityOutput = {
     transforms: new Float64Array(frameCount * TRANSFORM_STRIDE),
     travelled: new Float64Array(frameCount), // stays zero-filled when there is no followPath
+    aimDirections: new Float64Array(frameCount * AIM_STRIDE), // stays zero-filled when there is no aimAt
     heldFromFrame: -1,
   };
   const axes = localAxesOf(entity);
   const work = createEntityWork();
 
+  // Carried state. Neither value ever starts a frame's stack.
+  // Each aimAt's candidate rotation from the previous frame, indexed like
+  // `constraints` (identity until first written, which is the frame 0 rule).
+  const prevAimRotations: Quat[] = constraints.map(() => ({ x: 0, y: 0, z: 0, w: 1 }));
+  // The previous frame's final baked up direction (unused on frame 0).
+  const prevUp: Vec3 = { x: 0, y: 0, z: 0 };
+
   for (let frame = 0; frame < frameCount; frame++) {
     resetToRestPose(work);
     for (let i = 0; i < constraints.length; i++) {
       const c = constraints[i];
-      if (!isFollowPath(c)) continue;
+      if (isAimAt(c)) {
+        applyAimAt(c, targets[c.target], frame, axes, prevUp, prevAimRotations[i], work);
+        if (i === lastAimIndex) writeAimDirection(output.aimDirections, frame, work.aim);
+        continue;
+      }
       const travelled = applyFollowPath(entity, c, frame, axes, path, work);
       if (i === firstFollowIndex) {
         output.travelled[frame] = travelled;
@@ -350,6 +496,8 @@ function bakeEntity(entity: Entity, frameCount: number, path: PathInfo): EntityO
       }
     }
     writeTransform(output.transforms, frame, work);
+    // After the whole stack: this frame's baked up direction, for the next frame.
+    rotateVec(work.rotation, axes.u, prevUp);
   }
   return output;
 }
@@ -377,14 +525,14 @@ export function bake(scene: Scene): BakedData {
 
   for (let e = 0; e < scene.entities.length; e++) {
     const entity = scene.entities[e];
-    const output = bakeEntity(entity, scene.frameCount, path);
+    const output = bakeEntity(entity, scene.frameCount, path, scene.targets);
     entityIds.push(entity.id);
     entityIndex.set(entity.id, e);
     transforms.push(output.transforms);
     travelled.push(output.travelled);
     heldFromFrame.push(output.heldFromFrame);
     rotationDrivers.push(countRotationDrivers(entity.constraints));
-    aimDirections.push(new Float64Array(scene.frameCount * 3)); // filled once aimAt exists
+    aimDirections.push(output.aimDirections);
   }
 
   return {
