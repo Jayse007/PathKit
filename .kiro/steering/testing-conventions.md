@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "spikes/path-core/test/**/*.ts"
+fileMatchPattern: "packages/pathkit/test/**/*.ts"
 ---
 
 # Test conventions

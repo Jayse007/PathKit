@@ -2,7 +2,7 @@
 
 ## Overview
 
-Implement the dependency-free TypeScript library in `spikes/path-core` bottom-up: project setup, math, curve, arc-length, frames, scene validation, bake, evaluate, linter, then public exports. Each module is followed by its tests. The language is TypeScript (Node 24, ESM, strict). Property tests use `fast-check` with at least 100 runs and the tag `Feature: path-core, Property N: <title>`.
+Implement the dependency-free TypeScript library in `packages/pathkit` bottom-up: project setup, math, curve, arc-length, frames, scene validation, bake, evaluate, linter, then public exports. Each module is followed by its tests. The language is TypeScript (Node 24, ESM, strict). Property tests use `fast-check` with at least 100 runs and the tag `Feature: path-core, Property N: <title>`.
 
 ## Execution Rules
 
@@ -10,7 +10,7 @@ These rules apply to every task below.
 
 - Create and edit files only with the file tools. Never write files from the terminal (no redirection, heredocs, `Set-Content`, `Out-File` or multi-line strings).
 - Every terminal command must be a single line.
-- The shell is Windows PowerShell. Use `cwd` to select `spikes/path-core` instead of chaining `cd`.
+- The shell is Windows PowerShell. Use `cwd` to select `packages/pathkit` instead of chaining `cd`.
 - Run tests only with `npm test` or `vitest run` (optionally with a file path argument). Never use watch mode or any command that does not exit.
 - `npm install` is allowed as a single-line command. Dev dependencies are only `vitest` and `fast-check`. Add no runtime dependencies and no other dev dependencies.
 - If a terminal command seems stuck for more than 60 seconds, stop and tell the user.
@@ -31,14 +31,14 @@ These rules apply to every task below.
 
 - [x] 1. Set up the project
   - [x] 1.1 Create project configuration files
-    - Create `spikes/path-core/package.json` with `"type": "module"`, script `"test": "vitest run"`, no `dependencies`, and `devDependencies` of only `vitest` and `fast-check` (do not add `typescript`; vitest transpiles TypeScript itself)
-    - Create `spikes/path-core/tsconfig.json` with `strict: true`, `module`/`moduleResolution` `NodeNext`, `target` `ES2023`, `noEmit: true`, and `include` of `src` and `test`
-    - Create `spikes/path-core/vitest.config.ts` including `test/**/*.test.ts` and setting `testTimeout` to 30000
-    - Create `spikes/path-core/.gitignore` ignoring `node_modules`
+    - Create `packages/pathkit/package.json` with `"type": "module"`, script `"test": "vitest run"`, no `dependencies`, and `devDependencies` of only `vitest` and `fast-check` (do not add `typescript`; vitest transpiles TypeScript itself)
+    - Create `packages/pathkit/tsconfig.json` with `strict: true`, `module`/`moduleResolution` `NodeNext`, `target` `ES2023`, `noEmit: true`, and `include` of `src` and `test`
+    - Create `packages/pathkit/vitest.config.ts` including `test/**/*.test.ts` and setting `testTimeout` to 30000
+    - Create `packages/pathkit/.gitignore` ignoring `node_modules`
     - _Requirements: 10.6, 10.8, 10.9_
 
   - [x] 1.2 Install dev dependencies
-    - Run the single-line command `npm install` with `cwd` set to `spikes/path-core`
+    - Run the single-line command `npm install` with `cwd` set to `packages/pathkit`
     - Confirm `node_modules` exists and `package.json` still lists only `vitest` and `fast-check`
     - _Requirements: 10.6_
 
@@ -188,7 +188,7 @@ These rules apply to every task below.
     - **Validates: Requirements 4.8**
 
 - [x] 6. Checkpoint - Ensure all tests pass
-  - Run `npm test` with `cwd` set to `spikes/path-core`. Ensure all tests pass, ask the user if questions arise.
+  - Run `npm test` with `cwd` set to `packages/pathkit`. Ensure all tests pass, ask the user if questions arise.
 
 - [x] 7. Implement scene types and validation
   - [x] 7.1 Implement `src/scene.ts`
@@ -344,7 +344,7 @@ These rules apply to every task below.
   - [x] 9.3 Write property test for read-only, allocation-free evaluation
     - **Property 35: Evaluator is read-only and allocation-free**
     - Freeze only the plain objects and arrays of the baked data (never its typed arrays, since `Object.freeze` throws on typed arrays with elements); compare copies of the typed-array contents taken before and after the calls
-    - The heap growth check fails (it is never skipped) if `globalThis.gc` is not available, with the message: "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']."
+    - The heap growth check fails (it is never skipped) if `globalThis.gc` is not available, with the message: "globalThis.gc is not available: the heap check cannot run. Check that packages/pathkit/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']."
     - **Validates: Requirements 7.10, 7.11**
 
   - [x] 9.4 Write property test for invalid arguments
@@ -352,7 +352,7 @@ These rules apply to every task below.
     - **Validates: Requirements 7.12, 7.13**
 
   - [x] 9.5 Write unit tests for evaluator allocation
-    - Create `test/evaluate/unit.test.ts` with the identity assertion on the returned `out`, a source check on the success path of `evaluateEntity` that flags `new` expressions, array literals and object literals used as values, and arrow functions, but does not flag index access (such as `t[i]`) or code blocks, and a 100,000-call heap growth check below 1 MB. If `globalThis.gc` is not available, the heap check fails (it is never skipped) with the message: "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']."
+    - Create `test/evaluate/unit.test.ts` with the identity assertion on the returned `out`, a source check on the success path of `evaluateEntity` that flags `new` expressions, array literals and object literals used as values, and arrow functions, but does not flag index access (such as `t[i]`) or code blocks, and a 100,000-call heap growth check below 1 MB. If `globalThis.gc` is not available, the heap check fails (it is never skipped) with the message: "globalThis.gc is not available: the heap check cannot run. Check that packages/pathkit/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']."
     - _Requirements: 7.9, 7.11_
 
 - [x] 10. Implement the motion linter
@@ -417,14 +417,22 @@ These rules apply to every task below.
     - **Validates: Requirements 7.14**
 
 - [x] 12. Checkpoint - Ensure all tests pass
-  - Run `npm test` with `cwd` set to `spikes/path-core`. Ensure all tests pass, ask the user if questions arise.
+  - Run `npm test` with `cwd` set to `packages/pathkit`. Ensure all tests pass, ask the user if questions arise.
 
 - [x] 13. Final verification
   - [x] 13.1 Run the full test suite and report results
-    - Run the single-line command `npm test` with `cwd` set to `spikes/path-core` (never watch mode)
+    - Run the single-line command `npm test` with `cwd` set to `packages/pathkit` (never watch mode)
     - Report the number of test files and tests passed, failed and skipped, and quote the failing test names and messages if any
     - Do not change code in this task beyond reporting. If tests fail, tell the user what failed
     - _Requirements: 10.8, 10.12_
+
+- [x] 14. Update paths after the move to packages/pathkit
+  - Replace the exact text `spikes/path-core` with `packages/pathkit` in these files only, with these counts: README.md (3), .kiro/specs/path-core/requirements.md (2), .kiro/specs/path-core/design.md (4), .kiro/specs/path-core/tasks.md (12, not counting task 14 itself; the occurrence in this task stays as the text to find), .kiro/steering/testing-conventions.md (1, the fileMatchPattern line), packages/pathkit/test/evaluate/unit.test.ts (1, inside the error message string only), packages/pathkit/test/evaluate/property-35.test.ts (1, inside the error message string only)
+  - Change nothing else in those files. Do not edit tasks.meta.json
+  - Create apps/shot-rail/README.md with exactly this text: "Shot Rail: demo app 1 for PathKit (camera previz). Not built yet. It will use only packages/pathkit/src/index.ts."
+  - Create apps/skeleton-bench/README.md with exactly this text: "Skeleton Bench (working name): demo app 2 for PathKit (3D equipment workbench). Not built yet. It will use only packages/pathkit/src/index.ts."
+  - The user runs `npm.cmd test` with cwd set to packages/pathkit
+  - _Requirements: none (layout only, no behaviour change)_
 
 ## Notes
 

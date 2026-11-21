@@ -10,7 +10,7 @@ import type { Scene } from '../../src/scene.js';
 // grow heapUsed by less than 1 MB. Requirements 7.9, 7.10, 7.11.
 
 const GC_MISSING_MESSAGE =
-  "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc'].";
+  "globalThis.gc is not available: the heap check cannot run. Check that packages/pathkit/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc'].";
 
 // ---------------------------------------------------------------------------------------------------------------
 // Success-path source checker (test code, allocation is fine here)

@@ -11,7 +11,7 @@ import { arbValidScene } from '../helpers/scene-generators.js';
 // **Validates: Requirements 7.10, 7.11**
 
 const GC_MISSING_MESSAGE =
-  "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc'].";
+  "globalThis.gc is not available: the heap check cannot run. Check that packages/pathkit/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc'].";
 
 function makeOut(): OutBuffer {
   return { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0, w: 1 } };

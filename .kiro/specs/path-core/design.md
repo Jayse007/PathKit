@@ -2,7 +2,7 @@
 
 ## Overview
 
-path-core is a dependency-free TypeScript library (Node 24, ESM, strict) in `spikes/path-core`. It moves generic entities along a 3D path and orients them. The pipeline has two stages:
+path-core is a dependency-free TypeScript library (Node 24, ESM, strict) in `packages/pathkit`. It moves generic entities along a 3D path and orients them. The pipeline has two stages:
 
 1. `bake(scene)` validates the scene, then computes position and rotation for every entity on every frame. Rules that depend on history run only here.
 2. `evaluateEntity(baked, entityId, frame, out)` reads the baked arrays and writes into a caller-provided buffer. It allocates nothing.
@@ -36,7 +36,7 @@ flowchart LR
   scene --> linter
 ```
 
-Files under `spikes/path-core/src`:
+Files under `packages/pathkit/src`:
 
 | File | Responsibility |
 | --- | --- |
@@ -50,7 +50,7 @@ Files under `spikes/path-core/src`:
 | `linter.ts` | `motionLinter` |
 | `index.ts` | Public exports |
 
-Tests live in `spikes/path-core/test`, one file per module, using `vitest` and `fast-check`.
+Tests live in `packages/pathkit/test`, one file per module, using `vitest` and `fast-check`.
 
 ## Components and Interfaces
 
@@ -282,7 +282,7 @@ Numerical guards: `normalize` returns zero below 1e-12; `slerp` falls back to le
 - Generators for Properties 27 and 30 place the `aimAt` after any `followPath` in constraint order, so the aim position is the path position. The generator for Property 38 draws `travelled` from the first `followPath` in order, including scenes with several `followPath` constraints.
 - Scene generators: `frameCount` at most 120, `fps` drawn from {24, 30, 60}, at most 12 path points, at most 4 entities.
 - Typed arrays are never frozen, because `Object.freeze` throws on typed arrays that have elements. Tests freeze only plain objects and arrays, and for typed arrays compare copies of their contents taken before and after the calls.
-- Allocation test for `evaluateEntity`: call it 100,000 times with a reused `out`, and assert the returned object is `out` and that `process.memoryUsage().heapUsed` grows by less than 1 MB, run with `--expose-gc` calling `gc()` before and after. `vitest.config.ts` sets `pool: 'forks'` with `poolOptions.forks.execArgv: ['--expose-gc']` so `globalThis.gc` exists in every test. If `globalThis.gc` is not available, the heap check fails (it is never skipped) with the message "globalThis.gc is not available: the heap check cannot run. Check that spikes/path-core/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']." `heapUsed` is measured after `gc()`, so discarded objects are already freed; the heap check detects retained memory (leaks) only. The source checker is the guard against per-call allocation. Because heap measurement is noisy, the test is paired with the identity assertion and a structural check of the function source outside throw paths. The check flags `new` expressions, array literals and object literals used as values, and arrow functions. It must not flag index access (such as `t[i]`) or code blocks (such as `if (...) { ... }`).
+- Allocation test for `evaluateEntity`: call it 100,000 times with a reused `out`, and assert the returned object is `out` and that `process.memoryUsage().heapUsed` grows by less than 1 MB, run with `--expose-gc` calling `gc()` before and after. `vitest.config.ts` sets `pool: 'forks'` with `poolOptions.forks.execArgv: ['--expose-gc']` so `globalThis.gc` exists in every test. If `globalThis.gc` is not available, the heap check fails (it is never skipped) with the message "globalThis.gc is not available: the heap check cannot run. Check that packages/pathkit/vitest.config.ts sets pool: 'forks' with poolOptions.forks.execArgv ['--expose-gc']." `heapUsed` is measured after `gc()`, so discarded objects are already freed; the heap check detects retained memory (leaks) only. The source checker is the guard against per-call allocation. Because heap measurement is noisy, the test is paired with the identity assertion and a structural check of the function source outside throw paths. The check flags `new` expressions, array literals and object literals used as values, and arrow functions. It must not flag index access (such as `t[i]`) or code blocks (such as `if (...) { ... }`).
 - `smoothCurvePoints` generator: lives in its own helper file under `test` and returns `{ points, rMin, N }` for open curves only. It builds the points first, sampling 8 to 20 points at equal parameter steps from a smooth parametric curve made from the sum of 2 to 3 sinusoids per axis with amplitude 20 to 100, each sinusoid covering 0.25 to 1 full cycle over the whole curve. It builds the real Catmull-Rom curve and its arc-length table, estimates `rMin` (the minimum radius of curvature) from at least 4096 samples of that curve, and takes `length` from the table. With `nMin = max(50, ceil(3 * length / rMin))`, it rejects the curve only if `ceil(3 * length / rMin) > 200`; otherwise it chooses `N` uniformly in `[nMin, 200]`, chained after the curve, and returns `{ points, rMin, N }`. All numbers come from `fc.integer`, and consecutive points are never coincident. A raw arbitrary returns the candidate or `null` (rejected) so the rejection rate can be measured, and `smoothCurvePoints` filters out the nulls. Properties 13, 17 and 26, and any property that assumes constant speed, use this generator.
 - Properties 13, 17, 26 and 44 use `smoothCurvePoints`; Property 44 uses its `rMin`.
 - Valid-scene generators produce only finite numbers for speed, startOffset, path points, target positions and keyframe positions. Invalid-scene generators include variants with NaN and with Infinity (positive and negative) in each of these fields, a `forwardAxis` or `upAxis` that is not one of the six axis tokens, and a constraint `order` that is NaN, Infinity or -Infinity.

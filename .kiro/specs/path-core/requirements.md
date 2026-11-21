@@ -2,13 +2,13 @@
 
 ## Introduction
 
-path-core is a TypeScript library in `spikes/path-core` (Node 24, ESM, strict mode). It moves generic entities along 3D paths and orients them. An entity is anything with a position and a rotation. The library provides math helpers, a centripetal Catmull-Rom curve, arc-length parameterisation, rotation-minimizing frames, a scene description with ordered constraints (`followPath`, `aimAt`), a `bake` step, an allocation-free `evaluateEntity`, and a motion linter. The library contains no rendering code and no runtime dependencies. Its only dev dependencies are `vitest` and `fast-check`.
+path-core is a TypeScript library in `packages/pathkit` (Node 24, ESM, strict mode). It moves generic entities along 3D paths and orients them. An entity is anything with a position and a rotation. The library provides math helpers, a centripetal Catmull-Rom curve, arc-length parameterisation, rotation-minimizing frames, a scene description with ordered constraints (`followPath`, `aimAt`), a `bake` step, an allocation-free `evaluateEntity`, and a motion linter. The library contains no rendering code and no runtime dependencies. Its only dev dependencies are `vitest` and `fast-check`.
 
 All code follows the project steering file `coordinate-conventions.md`: Y-up right-handed coordinates, metres, radians internally, integer frames at a fixed fps, pure core functions, and no per-frame allocation in the evaluation path.
 
 ## Glossary
 
-- **Path_Core**: The library under `spikes/path-core`.
+- **Path_Core**: The library under `packages/pathkit`.
 - **Math_Module**: `src/math.ts`, containing Vec3 and Quaternion helpers.
 - **Vec3**: A three-component vector of numbers (x, y, z).
 - **Quaternion**: A four-component unit rotation (x, y, z, w).

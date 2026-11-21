@@ -13,15 +13,15 @@ In progress: scene validation, baking, evaluation and a motion linter. The two d
 Tested with Node.js 24.
 
 ```
-cd spikes/path-core
+cd packages/pathkit
 npm install
 npm test
 ```
 
 ## Layout
 
-- `spikes/path-core/src` the library
-- `spikes/path-core/test` property-based and unit tests
+- `packages/pathkit/src` the library
+- `packages/pathkit/test` property-based and unit tests
 - `.kiro/specs/path-core` requirements, design and task list written with Kiro
 - `.kiro/steering` rules Kiro follows when working on this project
 - `.kiro/docs/known-issues.md` problems found during development and how they were fixed
