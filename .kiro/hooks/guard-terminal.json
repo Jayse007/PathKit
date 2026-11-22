@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Guard terminal",
+      "trigger": "PreToolUse",
+      "description": "Blocks terminal tool calls and tells the agent to ask the user to run commands.",
+      "matcher": "^execute",
+      "action": {
+        "type": "command",
+        "command": "node scripts/guard-terminal.mjs"
+      }
+    }
+  ]
+}

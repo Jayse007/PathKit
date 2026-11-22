@@ -27,5 +27,5 @@ A missing `.js` therefore looks fine in the test run and only shows up later.
 
 - After creating or editing a `.ts` file, look at the editor's Problems/diagnostics for that file.
   If you cannot see diagnostics, say so in your report.
-- Before marking a task done, use the Grep tool (not the terminal) on the files you touched.
-  Look for relative imports that do not end in `.js'` or `.js"`.
+- Before marking a task done, open each `.ts` file you touched with read_file and check every relative import.
+  Look for relative imports that do not end in `.js'` or `.js"`. List the files you checked in your report.

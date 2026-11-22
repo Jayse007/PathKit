@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Guard frozen core",
+      "trigger": "PreToolUse",
+      "description": "Blocks file changes under packages/pathkit/src and packages/pathkit/test unless ~/.pathkit-unlock-core exists.",
+      "matcher": "write|replace|relocate|delete|remove|rename|move|append|insert|edit|patch|createHook",
+      "action": {
+        "type": "command",
+        "command": "node scripts/guard-core.mjs"
+      }
+    }
+  ]
+}

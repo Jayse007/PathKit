@@ -4,24 +4,18 @@ inclusion: always
 
 # Terminal and environment rules (Windows, PowerShell)
 
-## Files
-- Create and edit files only with your file tools. Never write files from the terminal (no redirection, heredocs, Set-Content, Out-File or multi-line strings).
+## You do not run commands
+- A project hook blocks every terminal tool, so you cannot run commands. Do not look for another way (no sub-agent, no script, no hook, no editor trick).
+- The user runs commands in their own terminal and pastes the output back. When a step needs a command, give the exact command on one line, say which folder to run it in, then wait.
+- If a hook blocks anything, stop and tell the user what was blocked. Do not work around it.
 
-## Commands
-- Keep every terminal command on one line.
-- Use npm.cmd instead of npm in PowerShell. Never run npx or npx.cmd, and never run tsc: they can try to download packages and hang. The only commands you may run are npm.cmd test, git status, and a diagnostic such as node -v. Do not run any other command without asking the user.
-- Use cwd to choose the folder instead of chaining cd.
-- Never start watch mode or any command that does not exit. Run tests once with npm.cmd test.
-- Never change PowerShell execution policy, environment variables or any system setting. Tell the user the exact command and let the user run it.
-
-## When something fails
-- If PowerShell says "running scripts is disabled", stop. Tell the user to run once in their own PowerShell: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned. Do not retry until the user confirms.
-- If a command returns exit code -1 with no output, run at most one diagnostic command (such as node -v), then stop and report. Never retry the same failing command more than once.
-- If npm install fails or returns -1, ask the user to run it in their own terminal and wait.
-- If a command seems stuck for more than 60 seconds, stop and tell the user.
+## Commands you ask the user to run
+- Use npm.cmd instead of npm, because PowerShell blocks npm.ps1. Never ask for npx, npx.cmd or tsc: they can try to download packages and hang.
+- To run the tests, ask for exactly: npm.cmd test, run from packages/pathkit. Add nothing to it.
+- Keep every command on one line. Never ask for watch mode or any command that does not exit.
+- If PowerShell says "running scripts is disabled", tell the user to run once in their own PowerShell: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned. Never suggest any other change to execution policy, environment variables or system settings.
+- If npm install fails, ask the user to run it in their own terminal and wait.
 
 ## Test output
-- Run tests with exactly: npm.cmd test. Add nothing to it.
-- Never add pipes, redirection or output cmdlets to any command (Out-String, Out-File, Tee-Object, Select-String, Format-List, >, >>, |).
-- If you cannot see the test output, do not try to work around it. Stop, ask the user to run npm test in their own terminal and paste the result, and wait.
-- Never say tests passed unless you have seen the results with your own eyes or the user has pasted them. Report the counts of tests passed, failed and skipped.
+- Never say tests passed unless the user has pasted the results. Report the counts of tests passed, failed and skipped from what they pasted.
+- If the pasted output is missing or cut off, ask the user to paste it again.

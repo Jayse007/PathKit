@@ -9,7 +9,7 @@ inclusion: always
 - Check the steering files and the spec's design decisions before asking a question. Ask only if they do not answer it.
 
 ## Dependencies
-- Install only the dev dependencies the spec names. If the spec gives no version, use the latest stable release and report the exact versions installed. Never add any other package.
+- You cannot install packages. If the spec names dev dependencies, give the user the exact npm.cmd install command (with versions if the spec names them) and wait. Never ask for any other package.
 - Keep package-lock.json.
 
 ## Tasks
@@ -20,4 +20,4 @@ inclusion: always
 - If a task is blocked, stop and ask the user instead of working around it.
 
 ## Reporting
-- Do not say a task is done unless its tests ran and passed. Report the counts of tests passed, failed and skipped.
+- Do not say a task is done until the user has run the tests and pasted passing results. When you finish a task, say which command to run (npm.cmd test) and which tests you expect to pass. Report the counts of tests passed, failed and skipped from the pasted output.
