@@ -10,7 +10,7 @@ Today `bakeEntity` and `drivesRotation` in `src/bake.ts` treat every constraint 
 
 All code follows the project steering files `coordinate-conventions.md` (Y-up right-handed coordinates, metres, radians internally, integer frames at a fixed fps, pure core functions, no per-frame allocation in the evaluation path) and `testing-conventions.md`. Degrees appear only in the `orbitAround` input fields.
 
-The path-core spec in `.kiro/specs/path-core/` is not changed. The 348 existing tests pass unchanged.
+The path-core spec in `.kiro/specs/path-core/` is not changed. The 348 existing tests pass unchanged. The only edit to an existing test file is the type-only change to `test/linter/property-42.test.ts` named in Requirement 7.7.
 
 Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, arbitrary axis vectors, any app code and any README change.
 
@@ -169,7 +169,7 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 4. THE source files under `packages/pathkit/src` SHALL contain no mention of cameras, in identifiers, types, comments or error messages. A case-insensitive search of those files for "camera" returns no match.
 5. THE Path_Core SHALL add no runtime dependency and no dev dependency. The `dependencies` and `devDependencies` entries of `packages/pathkit/package.json` are unchanged by the work.
 6. THE Path_Core change to `packages/pathkit/src` SHALL modify only `scene.ts`, `bake.ts` and `index.ts`. Every other file under `packages/pathkit/src` is byte-identical before and after the work.
-7. WHEN `npm.cmd test` is run from `packages/pathkit` after the change, THE Path_Core test suite SHALL pass all 348 existing tests with 0 failed, and with no edit to any existing test file.
+7. WHEN `npm.cmd test` is run from `packages/pathkit` after the change, THE Path_Core test suite SHALL pass all 348 existing tests with 0 failed, and with no edit to any existing test file, except one type-only edit to `test/linter/property-42.test.ts` (task 3.11 in `tasks.md`) that narrows its `alignToPath` checks to `followPath` constraints, keeps every assertion, label, run count and generator, and leaves the number of tests in that file unchanged.
 8. THE Path_Core SHALL use Y-up right-handed coordinates, metres for distances and radians internally. Degrees SHALL appear only in the `speed` and `startAngle` fields of the OrbitAround_Constraint, and the conversion from degrees to radians SHALL happen at the point where `cos` and `sin` are computed (see Requirement 2).
 9. WHEN the work is complete, THE repository files under `.kiro/specs/path-core/` SHALL be byte-identical to their content before the work began.
 

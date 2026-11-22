@@ -19,13 +19,13 @@ function expectedDrivers(entity: Entity): number {
   let count = 0;
   for (const c of entity.constraints) {
     if (c.type === 'aimAt') count++;
-    else if (c.alignToPath === true) count++;
+    else if (c.type === 'followPath' && c.alignToPath === true) count++;
   }
   return count;
 }
 
 function isDriver(c: Constraint): boolean {
-  return c.type === 'aimAt' || c.alignToPath === true;
+  return c.type === 'aimAt' || (c.type === 'followPath' && c.alignToPath === true);
 }
 
 function conflicts(findings: readonly Finding[]): Finding[] {
@@ -76,9 +76,9 @@ function checkScene(label: string, scene: Scene, seen: Seen): void {
     let betweenDriver = false;
     for (const c of entity.constraints) {
       if (c.type === 'aimAt') hasAim = true;
-      else if (c.alignToPath === true) alignedFollows++;
-      else if (c.alignToPath === undefined) hasOmitted = true;
-      else hasFalse = true;
+      else if (c.type === 'followPath' && c.alignToPath === true) alignedFollows++;
+      else if (c.type === 'followPath' && c.alignToPath === undefined) hasOmitted = true;
+      else if (c.type === 'followPath') hasFalse = true;
       if (isDriver(c)) {
         if (c.influence === 0) zeroDriver = true;
         if (c.influence > 0 && c.influence < 1) betweenDriver = true;

@@ -90,8 +90,9 @@ Files under `packages/pathkit`:
 | `src/linter.ts` and all other `src` files | None |
 | `test/bake/orbit-unit.test.ts`, `test/bake/orbit-property-1.test.ts` to `orbit-property-13.test.ts`, `test/scene/orbit-unit.test.ts` | New |
 | `test/bake/orbit-defensive.test.ts`, `test/helpers/orbit-generators.ts` | New. Both are named in Requirement 8.3 (the first is also covered by 5.12). |
+| `test/linter/property-42.test.ts` | Type-only change in task 3.11: `c.alignToPath` is read only on `followPath` constraints (`c.type === 'followPath' && c.alignToPath === true`). No assertion, label, run count or generator changes. |
 
-No existing test file is edited. No dev dependency is added.
+No existing test file is edited, except `test/linter/property-42.test.ts` as described above. No dev dependency is added.
 
 ## Components and Interfaces
 
@@ -647,7 +648,7 @@ The structural check cannot see allocation inside called functions. `axisVector`
 - **Types (1.1, 1.2):** a typed literal `const c: OrbitAroundConstraint = {...}` in the unit test and a `Constraint[]` that holds it. Vitest does not type-check these. The reviewer's type check does (Requirement 5.12), and Kiro cannot run it.
 - **No mention of the forbidden word and no axis token literal in `src` (7.4):** the existing `test/project/unit.test.ts` scans every `src` file. It also covers the new code in `bake.ts` (no quoted axis token appears there, by design).
 - **Dependencies (7.5):** the same existing test pins `dependencies` and `devDependencies`.
-- **Files changed (7.6, 7.9, 6.1):** a `git diff --stat` review by the user (Kiro cannot run it). Expected: `src/scene.ts`, `src/bake.ts`, `src/index.ts` and new test files only.
+- **Files changed (7.6, 7.9, 6.1):** a `git diff --stat` review by the user (Kiro cannot run it). Expected: `src/scene.ts`, `src/bake.ts`, `src/index.ts`, new test files, and the type-only change to `test/linter/property-42.test.ts` (task 3.11).
 - **Suite (7.7):** the full `npm.cmd test` run from `packages/pathkit` shows the 348 existing tests passing plus the new tests. Counts are reported only from pasted output.
 - **Timing (8.18):** each new file should run in under 5 seconds. Property loops are plain comparisons, generators are cheap integers, and frameCount is at most 120.
 

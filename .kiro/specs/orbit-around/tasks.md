@@ -2,7 +2,7 @@
 
 ## Overview
 
-Add the `orbitAround` constraint to the frozen core in `packages/pathkit` in three groups. Group 1 changes `src/scene.ts` and `src/index.ts` (interface, union, per-type validation, type export) and tests them. Group 2 changes `src/bake.ts` (explicit dispatch, `applyOrbitAround`, angle guard) and tests the geometry. Group 3 adds tests only: stack behaviour (influence, order, aim, bookkeeping, determinism) and the linter. Each code change is followed by its tests, and each group ends with a checkpoint where the user runs `npm.cmd test` from `packages/pathkit` and pastes the output.
+Add the `orbitAround` constraint to the frozen core in `packages/pathkit` in three groups. Group 1 changes `src/scene.ts` and `src/index.ts` (interface, union, per-type validation, type export) and tests them. Group 2 changes `src/bake.ts` (explicit dispatch, `applyOrbitAround`, angle guard), tests the geometry, and makes one type-only change to the existing test file `test/linter/property-42.test.ts` (task 3.11). Group 3 adds tests only: stack behaviour (influence, order, aim, bookkeeping, determinism) and the linter. Each code change is followed by its tests, and each group ends with a checkpoint where the user runs `npm.cmd test` from `packages/pathkit` and pastes the output.
 
 Under `packages/pathkit/src` only `scene.ts`, `bake.ts` and `index.ts` change. `src/linter.ts` is expected to need no change, and a test shows it. The language is TypeScript (ESM, strict). Property tests use `fast-check` with at least 100 runs and the tag `Feature: orbit-around, Property O<N>: <title>`. Property O<N> lives in `test/bake/orbit-property-<N>.test.ts`. Criterion numbers and Property names refer to `requirements.md` and `design.md` in this folder.
 
@@ -20,7 +20,7 @@ These rules apply to every task below.
 ### Scope
 
 - Change only the files a task names.
-- No existing test file may be edited. All 348 existing tests must keep passing. `test/bake/property-37.test.ts` must pass untouched. If it does not, stop and report the failing test name and its output (Requirement 1.6). If any other existing test fails, stop and report it. Never edit an existing test to make it pass.
+- No existing test file may be edited, with one exception: `test/linter/property-42.test.ts`, which only task 3.11 changes, in a type-only way. All 348 existing tests must keep passing. `test/bake/property-37.test.ts` must pass untouched. If it does not, stop and report the failing test name and its output (Requirement 1.6). If any other existing test fails, stop and report it. Never edit an existing test to make it pass.
 - Do not overwrite any `.config.kiro` file. Do not change anything in `.kiro/specs/path-core/`.
 - No mention of cameras anywhere in `src` (identifiers, types, comments, error messages). Follow `.kiro/steering/coordinate-conventions.md`: Y-up right-handed, metres, radians internally (degrees only in `speed` and `startAngle`), integer frames, pure functions, no per-frame allocation.
 
@@ -47,7 +47,7 @@ These rules apply to every task below.
 
 ## Tasks
 
-- [ ] 1. Group 1: scene.ts and index.ts
+- [x] 1. Group 1: scene.ts and index.ts
   - [x] 1.1 Add the constraint type and per-type validation in `src/scene.ts`
     - Change only `packages/pathkit/src/scene.ts`
     - Add `OrbitAroundConstraint` with the fields `type`, `order`, `influence`, `target`, `radius`, `axis`, `speed`, `startAngle` as in the design
@@ -66,7 +66,7 @@ These rules apply to every task below.
     - Ask the user to run `npm.cmd test` from `packages/pathkit`. `test/bake/property-37.test.ts` must pass untouched. If it fails, stop and report the failing test name and output, and make no edit to it
     - _Requirements: 1.3, 1.4, 1.5, 1.6, 7.6_
 
-  - [ ] 1.3 Create the shared orbit test helper
+  - [x] 1.3 Create the shared orbit test helper
     - Create `test/helpers/orbit-generators.ts` (the only new helper, Requirement 8.3). Imports use `.js`
     - Export `AXIS_UNIT` (six tokens to plain `[x, y, z]` unit vectors, written independently of `src`), `dot3`, `cross3`, `sub3`, `len3`, `arbOrbitCase(opts)`, `FORCED_ORBIT_CASES`, `buildOrbitScene(c, extra?)`, `centreAt(c, frame)`, `scaleOf(c)` and `bakedPosition(baked, entityIndex, frame, out)` as the design describes
     - `OrbitCase`: fps from 24, 30, 60; frameCount 1 to 120; six axes; radius an integer 0 to 300 divided by 10 (1 to 300 when above 0 is needed); speed an integer (`-720 * fps` to `720 * fps`, or `-179 * fps` to `179 * fps` when capped); startAngle an integer -720 to 720; centre static or linear, coordinates from integers divided by 10
@@ -75,7 +75,7 @@ These rules apply to every task below.
     - Add a small self-check test file `test/helpers/orbit-generators.test.ts` that checks the helper values (the six unit vectors have length 1 and satisfy side1 x side2 = axis written out in the test, `centreAt` of a linear case, `scaleOf`)
     - _Requirements: 8.1, 8.3, 8.20, 8.21_
 
-  - [ ] 1.4 Write the scene validation unit tests
+  - [x] 1.4 Write the scene validation unit tests
     - Create `test/scene/orbit-unit.test.ts`
     - One test per message, each asserting the exact string with `toThrow(new SceneError(...))`: unknown target (including the inherited name `toString`), axis not a token, radius NaN, Infinity, -Infinity and negative, speed NaN and Infinity, startAngle NaN and Infinity (Requirements 4.3 to 4.7)
     - Radius given as the string `"5"` (built with a cast) is rejected with the radius message ending `got 5` (Requirements 4.5, 8.25)
@@ -88,7 +88,7 @@ These rules apply to every task below.
     - Source line it should catch: the `typeof c.radius !== 'number'` test in `checkOrbitAround`, and the order of the checks inside `checkOrbitAround`
     - _Requirements: 3.12, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 4.11, 5.5, 5.6, 5.7, 5.8, 5.11, 7.1, 8.14, 8.24, 8.25_
 
-  - [ ] 1.5 Write property test for the order of defects
+  - [x] 1.5 Write property test for the order of defects
     - Create `test/bake/orbit-property-11.test.ts`
     - **Property O11: The first defect wins**
     - Generate a valid orbit Scene, then choose at least two defects from {unknown target, bad axis, bad radius, bad speed, bad startAngle} with `fc.subarray` or a bitmask over `fc.integer`. Assert that `validateScene` throws a `SceneError` with the message of the first defect only. Influence and order are always valid. Force all five defects together and each adjacent pair
@@ -96,7 +96,7 @@ These rules apply to every task below.
     - **Validates: Requirements 4.1, 4.2, 4.8**
     - _Requirements: 4.1, 4.2, 4.8, 8.14_
 
-  - [ ] 1.6 Write property test for invalid values
+  - [x] 1.6 Write property test for invalid values
     - Create `test/bake/orbit-property-12.test.ts`
     - **Property O12: Every invalid value is rejected with its exact message**
     - Generate a valid orbit Scene with one bad value in one field: target name (including `toString`), axis, radius (NaN, Infinity, -Infinity, a negative integer, the string `"5"`), speed and startAngle (NaN, Infinity, -Infinity, a non-number). Assert that both `validateScene` and `bake` throw a `SceneError` with the exact message for that field. Force radius exactly 0 (accepted) and the string `"5"`
@@ -104,14 +104,14 @@ These rules apply to every task below.
     - **Validates: Requirements 4.3, 4.4, 4.5, 4.6, 4.7, 4.9, 4.11, 8.14, 8.25**
     - _Requirements: 4.3, 4.4, 4.5, 4.6, 4.7, 4.9, 4.11, 8.14, 8.25_
 
-- [ ] 2. Checkpoint 1: scene validation and exports
+- [x] 2. Checkpoint 1: scene validation and exports
   - Ask the user to run `npm.cmd test` from `packages/pathkit` and paste the full output
   - Expected to pass: `test/scene/orbit-unit.test.ts`, `test/bake/orbit-property-11.test.ts`, `test/bake/orbit-property-12.test.ts`, `test/helpers/orbit-generators.test.ts`, `test/bake/property-37.test.ts` (untouched) and all 348 existing tests
   - Report passed, failed and skipped counts from the pasted output. Report any new file that took more than 5 seconds. If anything fails, follow the failure rules above. Ask the user if questions arise
   - _Requirements: 1.5, 7.7, 8.18_
 
 - [ ] 3. Group 2: bake.ts
-  - [ ] 3.1 Implement the dispatch and `applyOrbitAround` in `src/bake.ts`
+  - [x] 3.1 Implement the dispatch and `applyOrbitAround` in `src/bake.ts`
     - Change only `packages/pathkit/src/bake.ts`. Add no export. Add `OrbitAroundConstraint` to the type import from `./scene.js`
     - Add `unknownConstraintType(c: never): Error` returning `new Error('Unknown constraint type "<value>"')` through `String(...)`
     - Add `checkOrbitAngle(entityId, frame, angleDeg)` throwing the `SceneError` `Entity "<id>": orbitAround angle at frame <f> must be a finite number, got <value>`
@@ -203,9 +203,19 @@ These rules apply to every task below.
     - **Validates: Requirements 2.5, 2.18, 8.10**
     - _Requirements: 2.5, 2.18, 8.10, 8.21_
 
+  - [ ] 3.11 Narrow the `alignToPath` checks in `test/linter/property-42.test.ts` (type-only change)
+    - Change only `packages/pathkit/test/linter/property-42.test.ts`. This is the one existing test file this spec edits (Requirement 7.7). No other existing test file or helper is touched
+    - Reason: once `Constraint` includes `OrbitAroundConstraint`, TypeScript rejects `c.alignToPath` on a constraint that is only known not to be `aimAt`, because `OrbitAroundConstraint` has no `alignToPath`. Vitest does not type-check, so the run passes, but `tsc` reports four errors in this file (in `expectedDrivers`, in `isDriver` and in two branches of the regime bookkeeping loop). It is the same "if aimAt else followPath" shape that task 3.1 removes from `bake.ts`
+    - Replace each read of `c.alignToPath` on a constraint that is not narrowed to `followPath`: in `expectedDrivers` use `c.type === 'followPath' && c.alignToPath === true`; in `isDriver` use `c.type === 'aimAt' || (c.type === 'followPath' && c.alignToPath === true)`; in the regime loop use `c.type === 'followPath' && c.alignToPath === true` for `alignedFollows`, `c.type === 'followPath' && c.alignToPath === undefined` for `hasOmitted`, and `c.type === 'followPath'` for the final `hasFalse` branch. The scenes in this file contain only `aimAt` and `followPath`, so behaviour is identical
+    - Keep every assertion, test name, label, run count and generator exactly as they are. Add no test, remove no test, change no import. The number of tests in `property-42` stays the same as before this task
+    - Check diagnostics for the file and every relative import (each must end in `.js`). If diagnostics are not visible, say so in the report
+    - Ask the user to run `npm.cmd test` from `packages/pathkit`. All 348 existing tests must pass, `test/linter/property-42.test.ts` must pass with the same test count as before this task (9 tests in the runs pasted so far), and `test/bake/property-37.test.ts` must pass untouched. If any fails, stop and report the failing test name and output
+    - Source line it should catch: none, this is a type-only change
+    - _Requirements: 7.7, 8.2_
+
 - [ ] 4. Checkpoint 2: bake.ts and geometry
   - Ask the user to run `npm.cmd test` from `packages/pathkit` and paste the full output
-  - Expected to pass: `test/bake/orbit-unit.test.ts`, `test/bake/orbit-defensive.test.ts`, `test/bake/orbit-property-1.test.ts` to `orbit-property-6.test.ts`, everything from checkpoint 1, `test/bake/property-37.test.ts` (untouched) and all 348 existing tests
+  - Expected to pass: `test/bake/orbit-unit.test.ts`, `test/bake/orbit-defensive.test.ts`, `test/bake/orbit-property-1.test.ts` to `orbit-property-6.test.ts`, everything from checkpoint 1, `test/bake/property-37.test.ts` (untouched), `test/linter/property-42.test.ts` (type-only change from task 3.11, same test count as before) and all 348 existing tests
   - Report passed, failed and skipped counts from the pasted output. Report any new file that took more than 5 seconds. If anything fails, follow the failure rules above. Ask the user if questions arise
   - _Requirements: 5.12, 7.7, 8.18_
 
@@ -281,7 +291,7 @@ These rules apply to every task below.
     - Ask the user to run `npm.cmd test` from `packages/pathkit` and paste the full output. Wait
     - Report the totals (passed, failed, skipped) from the pasted output only. State whether all 348 existing tests plus the new tests passed, and whether `test/bake/property-37.test.ts` passed untouched, as the pasted output shows. If the output does not show a result, say so and do not claim it
     - List the files this spec changed under `packages/pathkit/src`: `scene.ts`, `bake.ts` and `index.ts`. State that `src/linter.ts` was only read. List the new test files created: `test/helpers/orbit-generators.ts`, `test/helpers/orbit-generators.test.ts`, `test/scene/orbit-unit.test.ts`, `test/bake/orbit-unit.test.ts`, `test/bake/orbit-defensive.test.ts` and `test/bake/orbit-property-1.test.ts` to `orbit-property-13.test.ts`
-    - Claim only what Kiro did and can check: Kiro made no edit to an existing test file, and the files above are the ones it wrote. Kiro cannot run `git diff`, so ask the user to confirm with `git diff --stat` (one line) that only the three `src` files changed, that `.kiro/specs/path-core/` is unchanged and that `package.json` is unchanged (Requirements 7.5, 7.6, 7.9)
+    - Claim only what Kiro did and can check: Kiro made no edit to an existing test file except the type-only change to `test/linter/property-42.test.ts` in task 3.11, and the files above are the ones it wrote. Kiro cannot run `git diff`, so ask the user to confirm with `git diff --stat` (one line) that only the three `src` files changed, that `.kiro/specs/path-core/` is unchanged and that `package.json` is unchanged (Requirements 7.5, 7.6, 7.9)
     - State that the reviewer will run a type check, which Kiro cannot. The type check covers the `never` exhaustiveness in the `default` branches of `bakeEntity` and `drivesRotation` (5.4, 5.12) and the typed literals (1.1, 1.2)
     - _Requirements: 1.5, 1.6, 5.4, 5.12, 6.1, 7.4, 7.5, 7.6, 7.7, 7.9, 8.2, 8.18_
 
@@ -313,14 +323,15 @@ These rules apply to every task below.
     { "id": 13, "tasks": ["3.8"] },
     { "id": 14, "tasks": ["3.9"] },
     { "id": 15, "tasks": ["3.10"] },
-    { "id": 16, "tasks": ["5.1"] },
-    { "id": 17, "tasks": ["5.2"] },
-    { "id": 18, "tasks": ["5.3"] },
-    { "id": 19, "tasks": ["5.4"] },
-    { "id": 20, "tasks": ["5.5"] },
-    { "id": 21, "tasks": ["5.6"] },
-    { "id": 22, "tasks": ["5.7"] },
-    { "id": 23, "tasks": ["7.1"] }
+    { "id": 16, "tasks": ["3.11"] },
+    { "id": 17, "tasks": ["5.1"] },
+    { "id": 18, "tasks": ["5.2"] },
+    { "id": 19, "tasks": ["5.3"] },
+    { "id": 20, "tasks": ["5.4"] },
+    { "id": 21, "tasks": ["5.5"] },
+    { "id": 22, "tasks": ["5.6"] },
+    { "id": 23, "tasks": ["5.7"] },
+    { "id": 24, "tasks": ["7.1"] }
   ]
 }
 ```

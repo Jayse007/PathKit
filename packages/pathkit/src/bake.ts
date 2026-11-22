@@ -8,7 +8,9 @@ import type { Frame } from './frames.js';
 import { rotationMinimizingFrames } from './frames.js';
 import type { Quat, Vec3 } from './math.js';
 import { cross, dot, length, lerp, normalize, quatFromBasis, rotateVec, scale, slerp, sub } from './math.js';
-import type { AimAtConstraint, Constraint, Entity, FollowPathConstraint, Scene, Target } from './scene.js';
+import type {
+  AimAtConstraint, Constraint, Entity, FollowPathConstraint, OrbitAroundConstraint, Scene, Target,
+} from './scene.js';
 import { SceneError, axisVector, validateScene } from './scene.js';
 
 export interface BakedData {
@@ -56,10 +58,20 @@ function alignsToPath(c: FollowPathConstraint): boolean {
   return c.alignToPath ?? false;
 }
 
+/** Builds the error for a constraint type that the explicit switches do not handle. */
+function unknownConstraintType(c: never): Error {
+  const value = (c as unknown as { type?: unknown }).type;
+  return new Error(`Unknown constraint type "${String(value)}"`);
+}
+
 /** True when the constraint drives rotation, whatever its influence. */
 function drivesRotation(c: Constraint): boolean {
-  if (isAimAt(c)) return true;
-  return alignsToPath(c);
+  switch (c.type) {
+    case 'aimAt': return true;
+    case 'followPath': return alignsToPath(c);
+    case 'orbitAround': return false;
+    default: throw unknownConstraintType(c);
+  }
 }
 
 /** Counts the rotation-driving constraints. */
@@ -90,6 +102,15 @@ function checkTravelled(entityId: string, frame: number, travelled: number): voi
   if (!Number.isFinite(travelled)) {
     throw new SceneError(
       `Entity "${entityId}": travelled distance at frame ${frame} must be a finite number, got ${travelled}`,
+    );
+  }
+}
+
+/** Throws a SceneError when the orbit angle (degrees) is not a finite number. */
+function checkOrbitAngle(entityId: string, frame: number, angleDeg: number): void {
+  if (!Number.isFinite(angleDeg)) {
+    throw new SceneError(
+      `Entity "${entityId}": orbitAround angle at frame ${frame} must be a finite number, got ${angleDeg}`,
     );
   }
 }
@@ -232,6 +253,7 @@ interface EntityWork {
   readonly aim: Vec3;
   readonly aimUp: Vec3;
   readonly basis: BasisScratch;
+  readonly axis: Vec3; // unit vector of the orbit axis, written by applyOrbitAround
 }
 
 function createEntityWork(): EntityWork {
@@ -246,6 +268,7 @@ function createEntityWork(): EntityWork {
     aim: { x: 0, y: 0, z: 0 },
     aimUp: { x: 0, y: 0, z: 0 },
     basis: createBasisScratch(),
+    axis: { x: 0, y: 0, z: 0 },
   };
 }
 
@@ -439,6 +462,45 @@ function applyFollowPath(
   return travelled;
 }
 
+/**
+ * Applies one orbitAround constraint at one frame. Only the position is blended.
+ * Position = centre + radius * (cos(angle) * side1 + sin(angle) * side2), where
+ * side1 x side2 equals the axis. For an axis a = s * e(i) (indexes cyclic):
+ * s = +1 gives side1 = e(i+1), side2 = e(i+2); s = -1 gives side1 = e(i+2), side2 = e(i+1).
+ * The sign test reads a number, so no axis token is quoted here.
+ */
+function applyOrbitAround(
+  entity: Entity,
+  c: OrbitAroundConstraint,
+  target: Target,
+  frame: number,
+  fps: number,
+  work: EntityWork,
+): void {
+  const angleDeg = c.startAngle + (c.speed * frame) / fps;
+  checkOrbitAngle(entity.id, frame, angleDeg);
+  const angle = (angleDeg / 180) * Math.PI; // the only degree-to-radian conversion
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+
+  const a = axisVector(c.axis, work.axis);
+  const centre = targetPositionAt(target, frame, work.targetPosition);
+  const p = work.candidatePosition;
+  const r = c.radius;
+  if (a.x + a.y + a.z > 0) {
+    // positive axis: side1 = (az, ax, ay), side2 = (ay, az, ax)
+    p.x = centre.x + r * (cos * a.z + sin * a.y);
+    p.y = centre.y + r * (cos * a.x + sin * a.z);
+    p.z = centre.z + r * (cos * a.y + sin * a.x);
+  } else {
+    // negative axis: side1 = (-ay, -az, -ax), side2 = (-az, -ax, -ay)
+    p.x = centre.x + r * (-cos * a.y - sin * a.z);
+    p.y = centre.y + r * (-cos * a.z - sin * a.x);
+    p.z = centre.z + r * (-cos * a.x - sin * a.y);
+  }
+  blendCandidate(work, c.influence, false);
+}
+
 /** True when the open path has been reached (inclusive) by this unclamped distance. */
 function isHeld(travelled: number, path: PathInfo): boolean {
   return !path.closed && travelled >= path.table.length;
@@ -482,17 +544,28 @@ function bakeEntity(
     resetToRestPose(work);
     for (let i = 0; i < constraints.length; i++) {
       const c = constraints[i];
-      if (isAimAt(c)) {
-        applyAimAt(c, targets[c.target], frame, axes, prevUp, prevAimRotations[i], work);
-        if (i === lastAimIndex) writeAimDirection(output.aimDirections, frame, work.aim);
-        continue;
-      }
-      const travelled = applyFollowPath(entity, c, frame, axes, path, work);
-      if (i === firstFollowIndex) {
-        output.travelled[frame] = travelled;
-        if (output.heldFromFrame < 0 && isHeld(travelled, path)) {
-          output.heldFromFrame = frame;
+      switch (c.type) {
+        case 'aimAt': {
+          applyAimAt(c, targets[c.target], frame, axes, prevUp, prevAimRotations[i], work);
+          if (i === lastAimIndex) writeAimDirection(output.aimDirections, frame, work.aim);
+          break;
         }
+        case 'followPath': {
+          const travelled = applyFollowPath(entity, c, frame, axes, path, work);
+          if (i === firstFollowIndex) {
+            output.travelled[frame] = travelled;
+            if (output.heldFromFrame < 0 && isHeld(travelled, path)) {
+              output.heldFromFrame = frame;
+            }
+          }
+          break;
+        }
+        case 'orbitAround': {
+          applyOrbitAround(entity, c, targets[c.target], frame, path.fps, work);
+          break;
+        }
+        default:
+          throw unknownConstraintType(c);
       }
     }
     writeTransform(output.transforms, frame, work);
