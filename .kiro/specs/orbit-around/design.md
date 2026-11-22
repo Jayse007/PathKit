@@ -8,7 +8,7 @@ The change touches three source files: `src/scene.ts` (interface, union, validat
 
 Design decisions:
 
-- **Explicit dispatch, with a compile-time exhaustiveness check.** Today `bakeEntity` and `drivesRotation` treat "not `aimAt`" as `followPath`. Both become a `switch (c.type)` with one case per type. The `default` branch passes `c` (which TypeScript narrows to `never`) to one shared helper, `unknownConstraintType(c: never): Error`. Adding a fourth type later makes `c` no longer `never` in those two places, so the reviewer's type check fails there. At run time the same branch throws a plain `Error` that names the type. (Requirement 5)
+- **Explicit dispatch, with a compile-time exhaustiveness check.** Today `bakeEntity` and `drivesRotation` treat "not `aimAt`" as `followPath`. Both become a `switch (c.type)` with one case per type. The `default` branch passes `c` (which TypeScript narrows to `never`) to one shared helper, `unknownConstraintType(c: never): Error`. Adding a fourth type later makes `c` no longer `never` in those two places, so the type check fails there (Requirement 5.4, 5.12). At run time the same branch throws a plain `Error` that names the type. (Requirement 5)
 - **The validator and the baker both reject unknown types.** `validateScene` rejects them first with a `SceneError`. The baker's branch is a second line of defence that a normal Scene cannot reach. (5.5, 5.8, 5.12)
 - **Per-type validation inside the existing per-constraint step.** Step 6 of `validateScene` keeps its order (influence, then order) and then calls one helper that switches on the type. `aimAt` and `followPath` behave exactly as today. (4.1, 5.6)
 - **Side vectors are derived from the axis vector, not looked up by token.** The brief suggests a table indexed by axis token. An existing test, `test/project/unit.test.ts` ("has no hard-coded axis tokens or axis defaults outside scene.ts"), scans every `src` file except `scene.ts` for quoted axis tokens such as `'+X'` and fails on a match. A token-keyed table in `bake.ts` would break that test, and existing tests must not be edited. So `applyOrbitAround` reads the axis through `axisVector` (the single place where a token becomes a vector) and computes the side vectors by a cyclic rule on the vector components. The result is identical to the table in the Glossary. The six hand-computed unit tests are what prove that. This is also why the rule "never hard-code a forward or up axis" stays satisfied: the orbit axis is read from the constraint.
@@ -17,15 +17,15 @@ Design decisions:
 - **Order trap.** `aimAt` reads the Entity position at the moment it runs. An `aimAt` that should face the Orbit_Centre needs a higher `order` than the `orbitAround`. The same trap already exists for `followPath` followed by `aimAt`. Equal orders run in list order, because `sortedCopy` uses a stable sort. (3.6, 3.7, 3.13)
 - **Tests use independent oracles.** Properties check invariants (distance, perpendicularity, angular step, direction, blend geometry) using plain arithmetic written in the test files. Positions are never recomputed with the baker's formula. Hand-computed numbers cover the six axes. (8.1)
 
-### New guard that is not in requirements.md (for the reviewer to accept or reject)
+### Finite-angle guard (Requirements 2.19 and 8.26)
 
 `followPath` throws a `SceneError` through `checkTravelled` when the travelled distance is not finite. The orbit angle can overflow in the same way: `speed * frame / fps` becomes `Infinity` for a finite but huge `speed` (for example `speed = 1e308` at frame 2), and `Math.cos(Infinity)` is `NaN`. That would break the no-NaN rule of path-core Requirement 7.14.
 
-**NEW, not in requirements.md:** `applyOrbitAround` calls `checkOrbitAngle`, which throws
+`applyOrbitAround` calls `checkOrbitAngle` (Requirement 2.19), which throws
 
 `SceneError`: `Entity "<id>": orbitAround angle at frame <f> must be a finite number, got <value>`
 
-when the Orbit_Angle in degrees is not finite. This guard, this message, and the unit test for them (listed in the Testing Strategy) are additions. If the reviewer rejects them, remove `checkOrbitAngle`, its call, and the test; nothing else depends on them.
+when the Orbit_Angle in degrees is not finite. The unit test for it is Requirement 8.26 (listed in the Testing Strategy).
 
 Position overflow (radius or centre near 1e308) is **accepted, not guarded**. `followPath` has the same exposure with huge path points, the validator already requires finite inputs, and a position can only overflow with magnitudes above about 1e300. The finite-angle guard is the one that matters, because a finite `speed` below the validator's limit is an ordinary-looking input.
 
@@ -89,7 +89,7 @@ Files under `packages/pathkit`:
 | `src/index.ts` | One added name in the existing `export type { ... } from './scene.js'` block |
 | `src/linter.ts` and all other `src` files | None |
 | `test/bake/orbit-unit.test.ts`, `test/bake/orbit-property-1.test.ts` to `orbit-property-13.test.ts`, `test/scene/orbit-unit.test.ts` | New |
-| `test/bake/orbit-defensive.test.ts`, `test/helpers/orbit-generators.ts` | New. Not named in Requirement 8.3. Permitted by 5.12 for the first, needed for reuse for the second. Flagged for the reviewer. |
+| `test/bake/orbit-defensive.test.ts`, `test/helpers/orbit-generators.ts` | New. Both are named in Requirement 8.3 (the first is also covered by 5.12). |
 
 No existing test file is edited. No dev dependency is added.
 
@@ -203,7 +203,7 @@ interface EntityWork {
 // createEntityWork(): axis: { x: 0, y: 0, z: 0 },
 ```
 
-No `isOrbitAround` type guard is added. The brief lists one, but the `switch (c.type)` narrows the union by itself, and a guard with no caller is dead code. `isFollowPath` and `isAimAt` stay because `sceneNeedsFrames` and `lastAimIndexOf` still use them. Flagged as a small deviation from the brief.
+No `isOrbitAround` type guard is added. The brief lists one, but the `switch (c.type)` narrows the union by itself, and a guard with no caller is dead code. `isFollowPath` and `isAimAt` stay because `sceneNeedsFrames` and `lastAimIndexOf` still use them. This is a decided deviation from the brief (see Decisions on the open points).
 
 Shared helper for both defensive branches:
 
@@ -215,7 +215,7 @@ function unknownConstraintType(c: never): Error {
 }
 ```
 
-Angle guard (the NEW guard described in the Overview):
+Angle guard (Requirement 2.19, described in the Overview):
 
 ```ts
 function checkOrbitAngle(entityId: string, frame: number, angleDeg: number): void {
@@ -424,7 +424,7 @@ This compares two bakes. It is a metamorphic check, valid because O1 to O4 and t
 
 ### Property O7: Influence blends the position
 
-For any orbit case with radius from 0.1 to 30, anchor position T (a static Target named `anchor`), and influence lambda from {0, 0.25, 0.5, 0.75, 1}, an Entity with a radius-0 `orbitAround` at the anchor (order 0, influence 1) followed by the orbit constraint (order 1, influence lambda) has, at every frame, a baked position R with `|R - ((1 - lambda) T + lambda C)| = lambda * radius` and `dot(R - ((1 - lambda) T + lambda C), axis) = 0`, within the O1 tolerance. For lambda 0 the position equals T. For lambda 1 the distance from C is `radius`. The rotation is the identity at every frame.
+For any orbit case with radius from 0.1 to 30, anchor position T (a static Target named `anchor`), and influence lambda from {0, 0.25, 0.5, 0.75, 1}, an Entity with a radius-0 `orbitAround` at the anchor (order 0, influence 1) followed by the orbit constraint (order 1, influence lambda) has, at every frame, a baked position R with `|R - ((1 - lambda) T + lambda C)| = lambda * radius` and `dot(R - ((1 - lambda) T + lambda C), axis) = 0`, within the O1 tolerance. For lambda 0 the position equals T within the O1 tolerance (`blendCandidate` computes `a + (b - a) * t`, so exact equality is not claimed). For lambda 1 the distance from C is `radius`. The rotation is the identity at every frame.
 
 **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 8.11**
 
@@ -460,7 +460,7 @@ For any valid orbit scene and any single bad value in one field (an unknown targ
 
 ### Property O13: Equal orders run in list order, and list order is irrelevant otherwise
 
-For any two orbit constraints A (radius 0 at a static Target T, influence 1) and B (radius r above 0 at centre C, influence 0.5), with equal `order`, the list [A, B] gives a position at distance `r / 2` from `(T + C) / 2` at every frame, and the list [B, A] gives exactly T at every frame. With distinct orders (A lower), the lists [A, B] and [B, A] give transforms that are equal element by element.
+For any two orbit constraints A (radius 0 at a static Target T, influence 1) and B (radius r above 0 at centre C, influence 0.5), with equal `order`, the list [A, B] gives a position at distance `r / 2` from `(T + C) / 2` at every frame, and the list [B, A] gives T at every frame, within the O1 tolerance (`blendCandidate` computes `a + (b - a) * t`, so exact equality is not claimed). With distinct orders (A lower), the lists [A, B] and [B, A] give positions that are equal within the O1 tolerance and the same identity rotation.
 
 **Validates: Requirements 3.6, 3.13, 8.22**
 
@@ -495,7 +495,7 @@ For any two orbit constraints A (radius 0 at a static Target T, influence 1) and
 | startAngle not a number or not finite | `validateScene` step 6 | `SceneError` | `Entity "<id>": orbitAround startAngle must be a finite number, got <value>` |
 | Constraint type is none of the three | `validateScene` step 6, after influence and order | `SceneError` | `Entity "<id>": unknown constraint type "<value>" (use followPath, aimAt or orbitAround)` |
 | Invalid orbit or unknown-type Scene passed to `bake` | `bake` calls `validateScene` first | the same `SceneError` | as above |
-| Orbit angle not finite at a frame (NEW, not in requirements.md) | `applyOrbitAround` through `checkOrbitAngle` | `SceneError` | `Entity "<id>": orbitAround angle at frame <f> must be a finite number, got <value>` |
+| Orbit angle not finite at a frame (Requirement 2.19) | `applyOrbitAround` through `checkOrbitAngle` | `SceneError` | `Entity "<id>": orbitAround angle at frame <f> must be a finite number, got <value>` |
 | Unknown type reaches `bakeEntity` (defensive) | `bakeEntity` default branch | `Error` | `Unknown constraint type "<value>"` |
 | Unknown type reaches `drivesRotation` (defensive) | `drivesRotation` default branch | `Error` | `Unknown constraint type "<value>"` (same helper) |
 
@@ -527,7 +527,7 @@ No test calls the baker's own maths to produce an expected value. Expected value
 - Centre at a frame: static, or `c0 + frame * step` for the linear case (keyframes at frame 0 and frame `frameCount`, so the centre at every integer frame is known from the Scene numbers without re-implementing the target lookup).
 - The influence and order properties use a radius-0 anchor constraint, whose position is exactly a Scene number, instead of a second formula.
 
-The signed angle about an axis is unique only below 180 degrees per frame. O3 and O4 therefore limit `|speed / fps|` to at most 179. Requirement 2.15 does not state this limit (see Open points).
+The signed angle about an axis is unique only below 180 degrees per frame. O3 and O4 therefore limit `|speed / fps|` to at most 179, which is below the 180 degrees per frame limit stated in Requirements 2.15, 2.17, 8.7 and 8.8. O4 also needs `speed` not zero (Requirements 2.17, 8.7).
 
 ### Generators
 
@@ -582,8 +582,8 @@ Inside a loop over frames or over consecutive frame pairs, a failed check throws
 | `sceneNeedsFrames` ignores `orbitAround` (5.9, 8.23) | unit | Two concrete Scenes |
 | `aimAt` with a lower `order` aims from the origin (order trap) | unit | One concrete Scene |
 | Linter tests (6.2 to 6.5) | unit | Two concrete Scenes |
-| Each validation message and the check order against influence and order (4.x, 5.5 to 5.7) | unit, in addition to O11 and O12 | The exact strings are written out once for the reviewer |
-| Angle guard (NEW) | unit | `speed 1e308`, fps 30, frameCount 3, frame 2 throws `Entity "<id>": orbitAround angle at frame 2 must be a finite number, got Infinity` |
+| Each validation message and the check order against influence and order (4.x, 5.5 to 5.7) | unit, in addition to O11 and O12 | The exact strings are written out once in the tests |
+| Angle guard (2.19, 8.26) | unit | `speed 1e308`, fps 30, frameCount 3, frame 2 throws `Entity "<id>": orbitAround angle at frame 2 must be a finite number, got Infinity` |
 | Allocation check of `applyOrbitAround` (7.3) | unit (structural) | Source text check |
 | Export surface (1.3) | unit (structural) | One text check of `src/index.ts` |
 
@@ -611,7 +611,7 @@ import { bake } from '../../src/index.js';
 
 `importOriginal` keeps every real export (`SceneError`, `axisVector`, the types) and replaces only `validateScene` with a no-op. `vi.mock` is hoisted and applies to the whole file, so this file holds only these tests. No source file gets a new export. The Unknown_Type constraint is built with `{ type: 'mystery', order: 0, influence: 1 } as unknown as Constraint`, in the same way existing tests build bad axis tokens. The test expects `toThrow(new Error('Unknown constraint type "mystery"'))`.
 
-**Finding for review.** In `bake()` the loop calls `bakeEntity` first and `countRotationDrivers` (which calls `drivesRotation`) after it. `bakeEntity` visits every constraint of the Entity on frame 0. Even with `validateScene` mocked, the Unknown_Type error therefore always comes from `bakeEntity`. The throw inside `drivesRotation` cannot be reached through `bake()`, and `drivesRotation` is not exported.
+**Finding (decided: option c).** In `bake()` the loop calls `bakeEntity` first and `countRotationDrivers` (which calls `drivesRotation`) after it. `bakeEntity` visits every constraint of the Entity on frame 0. Even with `validateScene` mocked, the Unknown_Type error therefore always comes from `bakeEntity`. The throw inside `drivesRotation` cannot be reached through `bake()`, and `drivesRotation` is not exported.
 
 | Option | What it does | Trade-off |
 | --- | --- | --- |
@@ -619,7 +619,7 @@ import { bake } from '../../src/index.js';
 | (b) In `bake()`, call `countRotationDrivers` before `bakeEntity` | `drivesRotation`'s throw becomes the one reached | The problem moves: now the `bakeEntity` branch is unreachable. It also changes the order of work in `bake()` for no functional gain. |
 | (c) Both branches call one helper, `unknownConstraintType(c: never)`, which builds the error with one message | The message and the error class are tested once, through the branch that is reached. Each `default` is one line, `throw unknownConstraintType(c)`. | The `drivesRotation` call site is still not run by any test. It is covered by a structural source check and by the compile-time `never` check. |
 
-**Recommendation: (c).** It keeps `bake()` unchanged, keeps the message in one place so 5.2 and 5.4 cannot drift, and adds the type-level exhaustiveness check. Requirement 5.4 can then be verified only by the structural check in the unit file: the text of `drivesRotation` in `src/bake.ts` contains `case 'aimAt'`, `case 'followPath'`, `case 'orbitAround'` and a `default:` that contains `unknownConstraintType(`. The same check is applied to the `bakeEntity` switch. This is an open point for the reviewer. Choosing (a) or (b) instead needs no other change to this design.
+**Decision: (c), as written in Requirements 5.2, 5.4 and 5.12.** It keeps `bake()` unchanged, keeps the message in one place so 5.2 and 5.4 cannot drift, and adds the type-level exhaustiveness check. Requirement 5.4 can then be verified only by the structural check in the unit file: the text of `drivesRotation` in `src/bake.ts` contains `case 'aimAt'`, `case 'followPath'`, `case 'orbitAround'` and a `default:` that contains `unknownConstraintType(`. The same check is applied to the `bakeEntity` switch.
 
 ### Allocation check (Requirement 7.3)
 
@@ -644,7 +644,7 @@ The structural check cannot see allocation inside called functions. `axisVector`
 ### Other process and project checks
 
 - **Export surface (1.3 to 1.6):** the existing `test/bake/property-37.test.ts` runs unchanged. A unit test reads `src/index.ts` and checks that `OrbitAroundConstraint` appears once, inside the `export type { ... } from './scene.js'` block, and that the block is the only place. If property-37 fails, work stops and the user gets the test name and output. No edit is made to it.
-- **Types (1.1, 1.2):** a typed literal `const c: OrbitAroundConstraint = {...}` in the unit test and a `Constraint[]` that holds it. Vitest does not type-check these. The reviewer's type check does, and Kiro cannot run it.
+- **Types (1.1, 1.2):** a typed literal `const c: OrbitAroundConstraint = {...}` in the unit test and a `Constraint[]` that holds it. Vitest does not type-check these. The reviewer's type check does (Requirement 5.12), and Kiro cannot run it.
 - **No mention of the forbidden word and no axis token literal in `src` (7.4):** the existing `test/project/unit.test.ts` scans every `src` file. It also covers the new code in `bake.ts` (no quoted axis token appears there, by design).
 - **Dependencies (7.5):** the same existing test pins `dependencies` and `devDependencies`.
 - **Files changed (7.6, 7.9, 6.1):** a `git diff --stat` review by the user (Kiro cannot run it). Expected: `src/scene.ts`, `src/bake.ts`, `src/index.ts` and new test files only.
@@ -672,9 +672,10 @@ U = `test/bake/orbit-unit.test.ts`. S = `test/scene/orbit-unit.test.ts`. D = `te
 | 2.12 | Six axes at 0 and 90 degrees | U |
 | 2.13 | Distance | P-1 |
 | 2.14 | Perpendicular offset | P-2 |
-| 2.15 | Angular step | P-3 |
+| 2.15 | Angular step, below 180 degrees per frame | P-3 (limit 179) |
 | 2.16 | Full lap | P-5 |
-| 2.17 | Right-hand direction | P-4 |
+| 2.17 | Right-hand direction, speed not zero, below 180 degrees per frame | P-4 (limit 179) |
+| 2.19 | `checkOrbitAngle` in `applyOrbitAround` | U angle-guard test (see 8.26) |
 | 2.18 | Keyframed centre | P-6 |
 | 3.1, 3.2, 3.3, 3.4, 3.5 | `blendCandidate(..., false)` | P-7; U hand examples for influence 0, 1, 0.5 |
 | 3.6 | Sorted order | P-13 (distinct orders) |
@@ -699,7 +700,7 @@ U = `test/bake/orbit-unit.test.ts`. S = `test/scene/orbit-unit.test.ts`. D = `te
 | 5.1 | `bakeEntity` switch | U per-type tests; U structural check |
 | 5.2 | `unknownConstraintType` in `bakeEntity` | D |
 | 5.3 | `drivesRotation` switch | P-9; U structural check |
-| 5.4 | `drivesRotation` default | U structural check (open point, option c) |
+| 5.4 | `drivesRotation` default through `unknownConstraintType` | U structural check (decision: option c) |
 | 5.5 | Validator unknown-type message | S exact string |
 | 5.6 | Check order in step 6 | S |
 | 5.7 | Influence, then order, then type | S (three Scenes, one error each) |
@@ -707,7 +708,7 @@ U = `test/bake/orbit-unit.test.ts`. S = `test/scene/orbit-unit.test.ts`. D = `te
 | 5.9 | `sceneNeedsFrames` | U (orbit-only bakes; orbit plus aligned `followPath` keeps the rotation); P-9 |
 | 5.10 | Per-type evidence | U |
 | 5.11 | Unknown type through `bake` | S |
-| 5.12 | Defensive branches | D |
+| 5.12 | Defensive branches; `bakeEntity` message through mocked `validateScene`, `drivesRotation` by source-text check and type check | D; U structural check |
 | 6.1 | `linter.ts` unchanged | Review; U linter tests |
 | 6.2 | Very fast orbit | U |
 | 6.3 | Gentle orbit | U |
@@ -725,12 +726,12 @@ U = `test/bake/orbit-unit.test.ts`. S = `test/scene/orbit-unit.test.ts`. D = `te
 | 7.9 | path-core spec unchanged | Review |
 | 8.1 | Oracle policy | All tests |
 | 8.2 | Conventions | All tests |
-| 8.3 | File names | Files table (plus D and the helper, flagged) |
+| 8.3 | File names, including D and the helper | Files table |
 | 8.4 | Distance | P-1 |
 | 8.5 | Perpendicular | P-2 |
 | 8.6 | Six axes | U |
-| 8.7 | Direction | P-4 |
-| 8.8 | Angular step | P-3 |
+| 8.7 | Direction (speed not zero, below 180 degrees per frame) | P-4 |
+| 8.8 | Angular step (below 180 degrees per frame) | P-3 |
 | 8.9 | Full lap | P-5 |
 | 8.10 | Keyframed centre | P-6 |
 | 8.11 | Influence 0, 1, 0.5 | P-7; U |
@@ -748,12 +749,15 @@ U = `test/bake/orbit-unit.test.ts`. S = `test/scene/orbit-unit.test.ts`. D = `te
 | 8.23 | `sceneNeedsFrames` | U |
 | 8.24 | Casts for unknown types | S, D, U |
 | 8.25 | String radius `"5"` | S; P-12 forced |
+| 8.26 | Huge `speed` (1e308) overflows the angle | U angle-guard test |
 
-## Open points for the reviewer
+## Decisions on the open points
 
-1. **New angle guard (NEW, not in requirements.md).** `checkOrbitAngle`, its message and its unit test. Accept or reject. Position overflow is accepted without a guard.
-2. **Defensive branch of `drivesRotation` is not reachable through `bake()`.** Option (c) is recommended, and 5.4 is then verified by a structural check only. Options (a) and (b) are described above.
-3. **Extra test files.** `orbit-defensive.test.ts` and `test/helpers/orbit-generators.ts` are additions to the three files named in 8.3. 5.12 permits the first.
-4. **Token table replaced by a derived rule.** The existing project test forbids quoted axis tokens outside `scene.ts`, so the brief's token-indexed table cannot be used in `bake.ts`. Behaviour is identical and is pinned by the six hand-computed tests.
-5. **No `isOrbitAround` guard.** The brief lists one. The `switch` narrows by itself and a guard with no caller would be dead code.
-6. **Requirement 2.15 limit.** The angular step is only unique below 180 degrees per frame. The properties limit the step to at most 179 degrees per frame. The requirement text has no such limit.
+All six open points are decided.
+
+1. **Angle guard: accepted.** `checkOrbitAngle`, its message and its unit test stay. They are Requirements 2.19 and 8.26. Position overflow is not guarded.
+2. **Defensive branch of `drivesRotation`: option (c) accepted.** Both defensive branches use the shared helper `unknownConstraintType` (Requirements 5.2, 5.4, 5.12). The `bakeEntity` message is tested with `validateScene` mocked. The `drivesRotation` branch is verified by a source-text check and the type check.
+3. **Extra test files: accepted.** `test/bake/orbit-defensive.test.ts` and `test/helpers/orbit-generators.ts` are named in Requirement 8.3.
+4. **Side vectors: derived rule accepted.** The side vectors come from `axisVector` and a cyclic rule on its components, so `bake.ts` holds no quoted axis token. Behaviour equals the Glossary table and is pinned by the six hand-computed tests.
+5. **No `isOrbitAround` guard: accepted.** The `switch` narrows by itself, and a guard with no caller would be dead code.
+6. **Limit of 180 degrees per frame: added to the requirements.** Requirements 2.15, 2.17, 8.7 and 8.8 state it, and 2.17 and 8.7 also require a non-zero `speed`. The properties use at most 179 degrees per frame.

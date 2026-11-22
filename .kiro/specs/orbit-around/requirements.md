@@ -80,10 +80,11 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 12. WHEN the Baker bakes an OrbitAround_Constraint with any of the six Axis_Tokens at the Orbit_Angles 0 and 90 degrees, THE Baker SHALL produce the positions that follow from the Side_Vectors table (hand-computed in the tests).
 13. WHEN the Baker bakes an OrbitAround_Constraint with influence 1 and a static Orbit_Centre, THE Baker SHALL produce at every frame a position whose distance from the Orbit_Centre equals the radius, within floating-point tolerance.
 14. WHEN the Baker bakes an OrbitAround_Constraint with influence 1, THE Baker SHALL produce at every frame a position whose offset from the Orbit_Centre is perpendicular to the axis vector, within floating-point tolerance.
-15. WHEN the Baker bakes an OrbitAround_Constraint with influence 1 and radius above 0, THE Baker SHALL produce for every pair of consecutive frames positions whose offsets from the Orbit_Centre differ by an angle, measured about the axis, equal to `speed / fps` degrees, within floating-point tolerance.
+15. WHEN the Baker bakes an OrbitAround_Constraint with influence 1, radius above 0 and an absolute value of `speed / fps` below 180 degrees per frame, THE Baker SHALL produce for every pair of consecutive frames positions whose offsets from the Orbit_Centre differ by an angle, measured about the axis, equal to `speed / fps` degrees, within floating-point tolerance.
 16. WHEN `speed * N / fps` equals 360 for an integer frame N inside the frame range, THE Baker SHALL produce at frame N the position it produced at frame 0, within floating-point tolerance.
-17. WHEN the Baker bakes an OrbitAround_Constraint with influence 1 and radius above 0, THE Baker SHALL produce for every pair of consecutive frames f and f+1 positions whose offsets from the Orbit_Centre have a cross product (offset at frame f x offset at frame f+1) pointing in the same direction as the axis vector (right-hand rule) when the speed is positive, and in the opposite direction when the speed is negative.
+17. WHEN the Baker bakes an OrbitAround_Constraint with influence 1, radius above 0, a `speed` that is not zero and an absolute value of `speed / fps` below 180 degrees per frame, THE Baker SHALL produce for every pair of consecutive frames f and f+1 positions whose offsets from the Orbit_Centre have a cross product (offset at frame f x offset at frame f+1) pointing in the same direction as the axis vector (right-hand rule) when the speed is positive, and in the opposite direction when the speed is negative.
 18. WHILE the Orbit_Centre moves because its Target is keyframed, THE Baker SHALL keep the offset between the baked position and the Orbit_Centre of the same frame equal to the offset computed from the Scene numbers, within floating-point tolerance.
+19. IF the Orbit_Angle at a frame is not finite, THEN THE Baker SHALL throw a Scene_Error with the message `Entity "<id>": orbitAround angle at frame <f> must be a finite number, got <value>`.
 
 ### Requirement 3: Behaviour in the constraint stack
 
@@ -130,9 +131,9 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 #### Acceptance Criteria
 
 1. THE Constraint_Dispatch in `bakeEntity` SHALL branch explicitly on each of the three Constraint_Types `followPath`, `aimAt` and `orbitAround`.
-2. IF `bakeEntity` meets an Unknown_Type, THEN THE Baker SHALL throw an `Error` whose message names the Unknown_Type, in the form `Unknown constraint type "<value>"`.
+2. IF `bakeEntity` meets an Unknown_Type, THEN THE Baker SHALL throw an `Error` with the message `Unknown constraint type "<value>"`, built by the shared helper `unknownConstraintType`, which both defensive branches use and which builds this one message.
 3. THE Constraint_Dispatch in `drivesRotation` SHALL decide explicitly for each of the three Constraint_Types: `aimAt` drives rotation, `followPath` drives rotation when `alignToPath` is true, and `orbitAround` does not.
-4. IF `drivesRotation` meets an Unknown_Type, THEN THE Baker SHALL throw an `Error` whose message names the Unknown_Type.
+4. IF `drivesRotation` meets an Unknown_Type, THEN THE Baker SHALL throw an `Error` with the same message `Unknown constraint type "<value>"`, built through the shared helper `unknownConstraintType`.
 5. IF a Scene contains a Constraint of an Unknown_Type, THEN THE Scene_Validator SHALL throw a Scene_Error with the message `Entity "<id>": unknown constraint type "<value>" (use followPath, aimAt or orbitAround)`.
 6. THE Scene_Validator SHALL check the Constraint_Type inside the per-constraint check, after the influence check and the order check.
 7. IF a Constraint has an Unknown_Type and also an invalid influence or an invalid order, THEN THE Scene_Validator SHALL report the influence error first, then the order error, and SHALL report the Unknown_Type error only when the influence and order checks both pass. The Scene_Validator SHALL throw exactly one Scene_Error per validation run.
@@ -140,7 +141,7 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 9. THE `sceneNeedsFrames` function in `src/bake.ts` SHALL NOT count an OrbitAround_Constraint as a constraint that needs path frames, so that THE Baker builds the path frames only for a `followPath` with `alignToPath` true. The three places that branch on Constraint_Type are `bakeEntity`, `drivesRotation` and `sceneNeedsFrames`.
 10. THE test suite SHALL contain, for each of the three Constraint_Types, a test that proves the constraint runs its own code. The test SHALL show a result that only that type can produce: a position on the path for `followPath`, a stored aim direction for `aimAt` and a position on the circle for `orbitAround`.
 11. THE test suite SHALL contain a test that proves `bake` rejects a Scene that contains an Unknown_Type.
-12. THE Path_Core SHALL keep the Unknown_Type branches in `bakeEntity` and `drivesRotation` as defensive branches, because `bake` validates the Scene before baking and a normal Scene cannot reach them. The approach for testing these defensive branches SHALL be decided in `design.md`, and `design.md` MAY test them by mocking `validateScene` with `vi.mock` in a separate test file, which needs no new export from any source file.
+12. THE Path_Core SHALL keep the Unknown_Type branches in `bakeEntity` and `drivesRotation` as defensive branches, because `bake` validates the Scene before baking and a normal Scene cannot reach them. The message SHALL be tested through `bakeEntity`, with `validateScene` mocked by `vi.mock` in a separate test file, which needs no new export from any source file. The `drivesRotation` branch cannot be reached through `bake()`, so it SHALL be verified by a source-text check and by the reviewer's type check.
 
 ### Requirement 6: Linter behaviour
 
@@ -180,12 +181,12 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 
 1. THE test suite SHALL use only a valid Test_Oracle for every expected value: a number from the Scene or a hand calculation. No test SHALL call the Baker's own maths to produce an expected value.
 2. THE test suite SHALL follow `.kiro/steering/testing-conventions.md`, including the rules stated in criteria 19 to 21.
-3. THE test suite SHALL place the new tests in `test/bake/orbit-unit.test.ts`, `test/bake/orbit-property-<N>.test.ts` (N counts from 1 inside this spec) and `test/scene/orbit-unit.test.ts`.
+3. THE test suite SHALL place the new tests in `test/bake/orbit-unit.test.ts`, `test/bake/orbit-property-<N>.test.ts` (N counts from 1 inside this spec), `test/scene/orbit-unit.test.ts` and `test/bake/orbit-defensive.test.ts`, and SHALL place shared generators in the helper `test/helpers/orbit-generators.ts`.
 4. THE test suite SHALL check that the distance from the Orbit_Centre equals the radius at every frame.
 5. THE test suite SHALL check that the offset from the Orbit_Centre is perpendicular to the axis at every frame.
 6. THE test suite SHALL check hand-computed positions at known Orbit_Angles for all six Axis_Tokens, with one test case per Axis_Token.
-7. THE test suite SHALL check the turning direction given by the sign of `speed`, with a cross product against the axis (right-hand rule), for both a positive `speed` and a negative `speed`.
-8. THE test suite SHALL check that the angle between consecutive frames equals `speed / fps` for every pair of consecutive frames.
+7. WHERE `speed` is not zero and the absolute value of `speed / fps` is below 180 degrees per frame, THE test suite SHALL check the turning direction given by the sign of `speed`, with a cross product against the axis (right-hand rule), for both a positive `speed` and a negative `speed`.
+8. WHERE the absolute value of `speed / fps` is below 180 degrees per frame, THE test suite SHALL check that the angle between consecutive frames equals `speed / fps` for every pair of consecutive frames.
 9. THE test suite SHALL check that a full lap (a total turn of exactly 360 degrees) returns to the start position.
 10. THE test suite SHALL check that the offset from the Orbit_Centre is unchanged at every frame while a keyframed Orbit_Centre moves.
 11. THE test suite SHALL check three cases: influence 0 (the pose from earlier constraints stays), influence 1 (the full orbit) and influence 0.5 after another position constraint (the midpoint of the two positions).
@@ -203,3 +204,4 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 23. THE test suite SHALL contain a test for Requirement 5 criterion 9: a Scene whose only constraint is an OrbitAround_Constraint bakes correctly, and a Scene that mixes an OrbitAround_Constraint with a `followPath` with `alignToPath` true still bakes the aligned rotation.
 24. THE test suite SHALL create each Unknown_Type constraint with a cast such as `as unknown as Constraint`, in the same way the existing tests build invalid Axis_Tokens.
 25. THE test suite SHALL contain a test that an OrbitAround_Constraint with the `radius` given as the string "5" (a value that is not of number type) is rejected with the exact radius message of Requirement 4 criterion 5, with the got value shown as it appears in the message template.
+26. THE test suite SHALL contain a test with a finite but huge `speed` (such as 1e308), whose Orbit_Angle overflows to a non-finite value, asserting the exact message of Requirement 2 criterion 19 and passing a SceneError instance to `toThrow`.
