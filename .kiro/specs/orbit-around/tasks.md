@@ -48,7 +48,7 @@ These rules apply to every task below.
 ## Tasks
 
 - [ ] 1. Group 1: scene.ts and index.ts
-  - [ ] 1.1 Add the constraint type and per-type validation in `src/scene.ts`
+  - [x] 1.1 Add the constraint type and per-type validation in `src/scene.ts`
     - Change only `packages/pathkit/src/scene.ts`
     - Add `OrbitAroundConstraint` with the fields `type`, `order`, `influence`, `target`, `radius`, `axis`, `speed`, `startAngle` as in the design
     - Change `Constraint` to `FollowPathConstraint | AimAtConstraint | OrbitAroundConstraint`

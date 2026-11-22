@@ -20,7 +20,7 @@ export type { Frame } from './frames.js';
 
 export { axisVector, validateScene, SceneError } from './scene.js';
 export type {
-  AxisToken, FollowPathConstraint, AimAtConstraint, Constraint,
+  AxisToken, FollowPathConstraint, AimAtConstraint, OrbitAroundConstraint, Constraint,
   Entity, Keyframe, Target, Scene,
 } from './scene.js';
 
