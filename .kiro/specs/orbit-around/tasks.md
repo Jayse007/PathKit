@@ -60,7 +60,7 @@ These rules apply to every task below.
     - Source line the later tests should catch: `typeof c.radius !== 'number' ||` in `checkOrbitAround`
     - _Requirements: 1.1, 1.2, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 5.5, 5.6, 5.7, 7.1, 7.6, 7.7, 7.8_
 
-  - [ ] 1.2 Export the new type from `src/index.ts`
+  - [x] 1.2 Export the new type from `src/index.ts`
     - Change only `packages/pathkit/src/index.ts`
     - Add the name `OrbitAroundConstraint` to the existing `export type { ... } from './scene.js'` block. Add no other export name and no runtime export
     - Ask the user to run `npm.cmd test` from `packages/pathkit`. `test/bake/property-37.test.ts` must pass untouched. If it fails, stop and report the failing test name and output, and make no edit to it
