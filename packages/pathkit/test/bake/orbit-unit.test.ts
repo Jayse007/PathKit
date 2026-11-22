@@ -626,3 +626,67 @@ describe('motionLinter on an orbit-only entity', () => {
     });
   }
 });
+
+// ---------------------------------------------------------------------------
+// Stack isolation (task 5.8; Requirements 3.9, 3.10, 3.11, 5.3, 8.13)
+// An orbit must leave the rotation and the followPath bookkeeping exactly as they are without it.
+// ---------------------------------------------------------------------------
+
+describe('an orbit does not disturb rotation or followPath bookkeeping', () => {
+  it('an aimAt (0.5) then an orbit (0.5) bakes exactly the rotation of the aimAt alone', () => {
+    // The aimAt runs first, at the origin, aiming at the centre (6, 8, 0). The orbit then only moves the position.
+    const c = orbitCase({
+      axis: '+Y',
+      radius: 4,
+      speed: 600,
+      startAngle: 20,
+      frameCount: 6,
+      centre: { kind: 'static', c: [6, 8, 0] },
+    });
+    const aim: Constraint = { type: 'aimAt', order: 0, influence: 0.5, target: 'centre' };
+
+    const combinedScene = buildOrbitScene(c, { orbitOrder: 1, orbitInfluence: 0.5, constraints: [aim] });
+    const aimOnlyScene = buildOrbitScene(c);
+    aimOnlyScene.entities[0].constraints = [aim];
+
+    const combined = bake(combinedScene).transforms[0];
+    const aimOnly = bake(aimOnlyScene).transforms[0];
+
+    let rotated = false;
+    for (let frame = 0; frame < c.frameCount; frame++) {
+      for (let k = 3; k < 7; k++) {
+        const i = frame * 7 + k;
+        if (combined[i] !== aimOnly[i]) {
+          throw new Error(`frame ${frame} rotation component ${k - 3}: with the orbit ${combined[i]}, aimAt alone ${aimOnly[i]}`);
+        }
+      }
+      const i = frame * 7;
+      if (Math.abs(aimOnly[i + 3]) + Math.abs(aimOnly[i + 4]) + Math.abs(aimOnly[i + 5]) > 1e-3) rotated = true;
+    }
+    expect(rotated).toBe(true);
+  });
+
+  it('an orbit (order 0) then a followPath (order 1) bakes exactly the travelled and heldFromFrame of the followPath alone', () => {
+    // 300 m/s at 30 fps is 10 m per frame, so the open path (about 35 m long) is reached within the 10 frames.
+    const c = orbitCase({ axis: '+Y', radius: 4, speed: 600, startAngle: 20, frameCount: 10 });
+    const follow: Constraint = { type: 'followPath', order: 1, influence: 1, speed: 300, startOffset: 0 };
+
+    const combinedScene = buildOrbitScene(c, { constraints: [follow] });
+    const followOnlyScene = buildOrbitScene(c);
+    followOnlyScene.entities[0].constraints = [follow];
+
+    const combined = bake(combinedScene);
+    const followOnly = bake(followOnlyScene);
+
+    const a = combined.travelled[0];
+    const b = followOnly.travelled[0];
+    let aboveZero = false;
+    for (let frame = 0; frame < c.frameCount; frame++) {
+      if (a[frame] !== b[frame]) throw new Error(`frame ${frame} travelled: with the orbit ${a[frame]}, followPath alone ${b[frame]}`);
+      if (b[frame] > 0) aboveZero = true;
+    }
+    expect(aboveZero).toBe(true);
+    expect(combined.heldFromFrame[0]).toBe(followOnly.heldFromFrame[0]);
+    expect(followOnly.heldFromFrame[0]).toBeGreaterThanOrEqual(0);
+  });
+});

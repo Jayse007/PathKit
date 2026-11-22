@@ -219,8 +219,8 @@ These rules apply to every task below.
   - Report passed, failed and skipped counts from the pasted output. Report any new file that took more than 5 seconds. If anything fails, follow the failure rules above. Ask the user if questions arise
   - _Requirements: 5.12, 7.7, 8.18_
 
-- [ ] 5. Group 3: stack behaviour and linter (tests only)
-  - [ ] 5.1 Write property test for influence blending
+- [x] 5. Group 3: stack behaviour and linter (tests only)
+  - [x] 5.1 Write property test for influence blending
     - Create `test/bake/orbit-property-7.test.ts`
     - **Property O7: Influence blends the position**
     - An Entity with a radius-0 `orbitAround` at static target `anchor` T (order 0, influence 1), then the orbit constraint (order 1, influence lambda from {0, 0.25, 0.5, 0.75, 1}, radius 1 to 30). At every frame `|R - ((1 - lambda) T + lambda C)| = lambda * radius` and the dot product with the axis is 0, within the O1 tolerance. Lambda 0 gives T within tolerance (not exact equality). Lambda 1 gives distance `radius` from C. Rotation is the identity (exact). Force lambda 0, 0.5 and 1, and the first and last frame. Also a unit-level case in this file: influence 0 with no earlier constraint leaves the Rest_Pose (0, 0, 0)
@@ -228,7 +228,7 @@ These rules apply to every task below.
     - **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 8.11**
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 8.11, 8.21_
 
-  - [ ] 5.2 Write property test for aimAt after orbit
+  - [x] 5.2 Write property test for aimAt after orbit
     - Create `test/bake/orbit-property-8.test.ts`
     - **Property O8: An aimAt with a higher order faces the centre**
     - Radius 1 to 30, influence 1, an `aimAt` on the same target with a higher `order`. At every frame the stored aim direction equals the unit vector from the baked position to the centre within 1e-9, computed with plain arithmetic in the test. Force the first and last frame and a keyframed centre
@@ -236,7 +236,7 @@ These rules apply to every task below.
     - **Validates: Requirements 3.7, 3.8, 8.12**
     - _Requirements: 3.7, 3.8, 8.12, 8.21_
 
-  - [ ] 5.3 Write property test for rotation and bookkeeping
+  - [x] 5.3 Write property test for rotation and bookkeeping
     - Create `test/bake/orbit-property-9.test.ts`
     - **Property O9: An orbit changes no rotation or bookkeeping**
     - An orbit-only Entity has the identity rotation (exact) at every frame, `travelled` all 0, `heldFromFrame` -1, `aimDirections` all 0 and `rotationDrivers` 0. Orbit plus `aimAt` gives `rotationDrivers` 1, `travelled` all 0, `heldFromFrame` -1. Orbit plus `aimAt` plus aligned `followPath` gives `rotationDrivers` 2. Compare typed arrays through copies, never freeze them
@@ -244,7 +244,7 @@ These rules apply to every task below.
     - **Validates: Requirements 3.9, 3.10, 3.11, 5.3, 5.9, 8.13**
     - _Requirements: 3.9, 3.10, 3.11, 5.3, 5.9, 8.13_
 
-  - [ ] 5.4 Write property test for purity and repeatability
+  - [x] 5.4 Write property test for purity and repeatability
     - Create `test/bake/orbit-property-10.test.ts`
     - **Property O10: Baking and validating do not modify the scene, and baking is repeatable**
     - Valid orbit Scenes with one to three Entities (orbit with optional `aimAt` and `followPath`). A deep copy taken before `validateScene` and `bake` equals the Scene afterwards. Two `bake` calls return transforms, `travelled`, `aimDirections`, `heldFromFrame` and `rotationDrivers` equal element by element with exact equality. Copy typed array contents for the comparison, never freeze them. Do not freeze the Scene objects of the Scene under test if that would stop the copy comparison from being meaningful. Freezing plain Scene objects and arrays is allowed
@@ -252,7 +252,7 @@ These rules apply to every task below.
     - **Validates: Requirements 4.10, 7.1, 7.2, 8.15**
     - _Requirements: 4.10, 7.1, 7.2, 8.15_
 
-  - [ ] 5.5 Write property test for equal and distinct order
+  - [x] 5.5 Write property test for equal and distinct order
     - Create `test/bake/orbit-property-13.test.ts`
     - **Property O13: Equal orders run in list order, and list order is irrelevant otherwise**
     - A is a radius-0 orbit at static target T with influence 1. B is an orbit with radius r above 0 at centre C with influence 0.5. With equal `order`, the list [A, B] gives a position at distance `r / 2` from `(T + C) / 2` at every frame, and [B, A] gives T at every frame, within the O1 tolerance. With distinct orders (A lower), both list orders give the same positions within tolerance and the identity rotation. Expected values are hand-derived in the test from T, C and r
@@ -260,7 +260,7 @@ These rules apply to every task below.
     - **Validates: Requirements 3.6, 3.13, 8.22**
     - _Requirements: 3.6, 3.13, 8.22_
 
-  - [ ] 5.6 Write stack behaviour unit tests
+  - [x] 5.6 Write stack behaviour unit tests
     - Append to `test/bake/orbit-unit.test.ts` (use `fs_append`, do not rewrite the file)
     - Influence by hand example: 0 with an earlier constraint keeps the earlier position, 0 with none leaves (0, 0, 0), 1 gives the full orbit, 0.5 after another position constraint gives the hand-computed midpoint (3.2 to 3.5, 8.11)
     - Order trap: an `aimAt` with a lower `order` than the orbit aims from the origin, and an `aimAt` with a higher `order` faces the centre, both by hand numbers (3.7)
@@ -271,7 +271,7 @@ These rules apply to every task below.
     - Source line it should catch: `sceneNeedsFrames` counting an orbit, or `sortedCopy` reversing equal orders
     - _Requirements: 3.2, 3.3, 3.4, 3.5, 3.7, 3.9, 3.10, 3.11, 3.13, 5.9, 7.1, 7.2, 8.11, 8.13, 8.15, 8.22, 8.23_
 
-  - [ ] 5.7 Write the linter tests
+  - [x] 5.7 Write the linter tests
     - First read `src/linter.ts` with `read_file` (reading only, never editing) and confirm it names no constraint type. Say so in the report. Do not edit `src/linter.ts`
     - Append to `test/bake/orbit-unit.test.ts` (use `fs_append`, do not rewrite the file) a describe block for the linter
     - Scene: one Entity `orbiter` (`forwardAxis '+Z'`, `upAxis '+Y'`), one `orbitAround` with influence 1, order 0, axis `+Y`, radius 4, startAngle 0, target `centre` static at (10, 2, -3), fps 30, frameCount 60, a valid open path
@@ -280,14 +280,23 @@ These rules apply to every task below.
     - Source line it should catch: `blendCandidate(work, c.influence, true)` (a roll or rotation change would show as a `roll-change` Finding)
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 8.17_
 
-- [ ] 6. Checkpoint 3: stack behaviour and linter
+  - [x] 5.8 Write two stack-isolation unit tests
+    - Append to `test/bake/orbit-unit.test.ts` (use `fs_append`, do not rewrite the file). Change nothing in `src`, and no other file
+    - Test 1, rotation: an `aimAt` with influence 0.5 and order 0, followed by an `orbitAround` with influence 0.5 and order 1, on a centre that is not the origin. At every frame the baked rotation (the four numbers at offsets 3 to 6 of each 7-number block) must equal, with exact equality, the rotation of the same scene baked with the `aimAt` alone. The test must also show that the rotation is not the identity at some frame, so it cannot pass on identity rotations
+    - Test 2, bookkeeping: an `orbitAround` with order 0, followed by a `followPath` with order 1 and no `alignToPath`. `travelled` and `heldFromFrame` must equal, with exact equality, those of the same scene baked with the `followPath` alone. `travelled` must have at least one value above 0, and `heldFromFrame` must be 0 or more, so the test cannot pass on zeros or on `-1`
+    - Compare typed arrays element by element with plain checks that throw an `Error` naming the frame and both values. Never freeze typed arrays
+    - Check diagnostics and every relative import, then ask the user to run `npm.cmd test` from `packages/pathkit`
+    - Source lines it should catch: (1) `blendCandidate(work, c.influence, false)` changed to `true` in `applyOrbitAround`; (2) the `firstFollowIndex` loop in `bakeEntity` also accepting `orbitAround`
+    - _Requirements: 3.9, 3.10, 3.11, 5.3, 8.13_
+
+- [x] 6. Checkpoint 3: stack behaviour and linter
   - Ask the user to run `npm.cmd test` from `packages/pathkit` and paste the full output
-  - Expected to pass: `test/bake/orbit-property-7.test.ts` to `orbit-property-13.test.ts`, the extended `test/bake/orbit-unit.test.ts` (including the linter tests), everything from checkpoints 1 and 2, `test/bake/property-37.test.ts` (untouched) and all 348 existing tests
+  - Expected to pass: `test/bake/orbit-property-7.test.ts` to `orbit-property-13.test.ts`, the extended `test/bake/orbit-unit.test.ts` (including the linter tests and the two stack-isolation tests of task 5.8), everything from checkpoints 1 and 2, `test/bake/property-37.test.ts` (untouched) and all 348 existing tests
   - Report passed, failed and skipped counts from the pasted output. Report any new file that took more than 5 seconds. If anything fails, follow the failure rules above. Ask the user if questions arise
   - _Requirements: 6.1, 7.7, 8.18_
 
-- [ ] 7. Final verification
-  - [ ] 7.1 Collect the full test output and report
+- [x] 7. Final verification
+  - [x] 7.1 Collect the full test output and report
     - Ask the user to run `npm.cmd test` from `packages/pathkit` and paste the full output. Wait
     - Report the totals (passed, failed, skipped) from the pasted output only. State whether all 348 existing tests plus the new tests passed, and whether `test/bake/property-37.test.ts` passed untouched, as the pasted output shows. If the output does not show a result, say so and do not claim it
     - List the files this spec changed under `packages/pathkit/src`: `scene.ts`, `bake.ts` and `index.ts`. State that `src/linter.ts` was only read. List the new test files created: `test/helpers/orbit-generators.ts`, `test/helpers/orbit-generators.test.ts`, `test/scene/orbit-unit.test.ts`, `test/bake/orbit-unit.test.ts`, `test/bake/orbit-defensive.test.ts` and `test/bake/orbit-property-1.test.ts` to `orbit-property-13.test.ts`
@@ -331,7 +340,8 @@ These rules apply to every task below.
     { "id": 21, "tasks": ["5.5"] },
     { "id": 22, "tasks": ["5.6"] },
     { "id": 23, "tasks": ["5.7"] },
-    { "id": 24, "tasks": ["7.1"] }
+    { "id": 24, "tasks": ["5.8"] },
+    { "id": 25, "tasks": ["7.1"] }
   ]
 }
 ```
