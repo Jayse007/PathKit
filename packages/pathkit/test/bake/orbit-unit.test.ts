@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { bake } from '../../src/bake.js';
+import { motionLinter } from '../../src/linter.js';
+import type { Finding, LinterOptions } from '../../src/linter.js';
 import { SceneError } from '../../src/scene.js';
 import type { AxisToken, Constraint, OrbitAroundConstraint, Scene, Target } from '../../src/scene.js';
 import { bakedPosition, buildOrbitScene } from '../helpers/orbit-generators.js';
@@ -435,4 +437,192 @@ describe('source text: no axis token and no camera in applyOrbitAround (Requirem
   it('does not mention a camera, in any letter case', () => {
     expect(body).not.toMatch(/camera/i);
   });
+});
+
+// ---------------------------------------------------------------------------
+// Stack behaviour by hand (Requirements 3.2 to 3.5, 3.7, 3.9 to 3.11, 3.13, 5.9, 7.1, 7.2, 8.11, 8.13, 8.15, 8.22, 8.23)
+// ---------------------------------------------------------------------------
+//
+// Numbers used below, all worked out by hand:
+//   anchor T = (2, 4, 6)                                   (a radius-0 orbit puts the position exactly on T)
+//   orbit under test: +Y axis, radius 4, startAngle 0, speed 0, centre C = (6, 8, 0)
+//   full orbit position = C + 4 * (0, 0, 1) = (6, 8, 4)    (side1 of +Y is +Z, angle 0)
+//   half way from T to the full position = (4, 6, 5)
+//   half way from the origin to the full position = (3, 4, 2)
+
+describe('stack behaviour by hand', () => {
+  const ORBIT_CASE = orbitCase({
+    axis: '+Y',
+    radius: 4,
+    speed: 0,
+    startAngle: 0,
+    frameCount: 2,
+    centre: { kind: 'static', c: [6, 8, 0] },
+  });
+
+  function anchorOrbit(order: number): Constraint {
+    return { type: 'orbitAround', order, influence: 1, target: 'anchor', radius: 0, axis: '+Y', speed: 0, startAngle: 0 };
+  }
+
+  function withAnchor(c: OrbitCase, orbitOrder: number, orbitInfluence: number, anchorOrder: number): Scene {
+    return buildOrbitScene(c, {
+      orbitOrder,
+      orbitInfluence,
+      targets: { anchor: { x: 2, y: 4, z: 6 } },
+      constraints: [anchorOrbit(anchorOrder)],
+    });
+  }
+
+  function expectEveryFrame(label: string, scene: Scene, frameCount: number, expected: readonly number[]): void {
+    const baked = bake(scene);
+    for (let f = 0; f < frameCount; f++) near(`${label}, frame ${f}`, bakedPosition(baked, 0, f, [0, 0, 0]), expected);
+  }
+
+  it('influence 0 after an earlier constraint keeps the earlier position (2, 4, 6)', () => {
+    expectEveryFrame('influence 0 after anchor', withAnchor(ORBIT_CASE, 1, 0, 0), 2, [2, 4, 6]);
+  });
+
+  it('influence 0 with no earlier constraint leaves the Rest_Pose (0, 0, 0)', () => {
+    expectEveryFrame('influence 0 alone', buildOrbitScene(ORBIT_CASE, { orbitInfluence: 0 }), 2, [0, 0, 0]);
+  });
+
+  it('influence 1 gives the full orbit position (6, 8, 4)', () => {
+    expectEveryFrame('influence 1', buildOrbitScene(ORBIT_CASE), 2, [6, 8, 4]);
+  });
+
+  it('influence 0.5 after another position constraint gives the midpoint (4, 6, 5)', () => {
+    expectEveryFrame('influence 0.5 after anchor', withAnchor(ORBIT_CASE, 1, 0.5, 0), 2, [4, 6, 5]);
+  });
+
+  it('influence 0.5 with no earlier constraint gives the midpoint (3, 4, 2)', () => {
+    expectEveryFrame('influence 0.5 alone', buildOrbitScene(ORBIT_CASE, { orbitInfluence: 0.5 }), 2, [3, 4, 2]);
+  });
+
+  describe('order trap for aimAt (Requirement 3.7)', () => {
+    // Orbit: +Y, radius 5, startAngle 0, centre (0, 0, 10). Position = (0, 0, 15). The aim target is the centre.
+    const c = orbitCase({ axis: '+Y', radius: 5, frameCount: 1, centre: { kind: 'static', c: [0, 0, 10] } });
+
+    it('an aimAt with a lower order than the orbit aims from the origin: direction (0, 0, 1)', () => {
+      const baked = bake(buildOrbitScene(c, { constraints: [{ type: 'aimAt', order: -1, influence: 1, target: 'centre' }] }));
+      const a = baked.aimDirections[0];
+      near('aim before the orbit', [a[0], a[1], a[2]], [0, 0, 1]);
+      near('orbit position', bakedPosition(baked, 0, 0, [0, 0, 0]), [0, 0, 15]);
+    });
+
+    it('an aimAt with a higher order than the orbit faces the centre from (0, 0, 15): direction (0, 0, -1)', () => {
+      const baked = bake(buildOrbitScene(c, { constraints: [{ type: 'aimAt', order: 1, influence: 1, target: 'centre' }] }));
+      const a = baked.aimDirections[0];
+      near('aim after the orbit', [a[0], a[1], a[2]], [0, 0, -1]);
+      near('orbit position', bakedPosition(baked, 0, 0, [0, 0, 0]), [0, 0, 15]);
+    });
+  });
+
+  describe('equal order runs in list order (Requirements 3.13, 8.22)', () => {
+    it('list [orbit with influence 0.5, anchor] ends on the anchor (2, 4, 6)', () => {
+      // buildOrbitScene lists the orbit first, then the anchor, both with order 0.
+      expectEveryFrame('[B, A]', withAnchor(ORBIT_CASE, 0, 0.5, 0), 2, [2, 4, 6]);
+    });
+
+    it('list [anchor, orbit with influence 0.5] ends half way to the full position (4, 6, 5)', () => {
+      const scene = withAnchor(ORBIT_CASE, 0, 0.5, 0);
+      scene.entities[0].constraints.reverse();
+      expect((scene.entities[0].constraints[0] as { target?: string }).target).toBe('anchor');
+      expectEveryFrame('[A, B]', scene, 2, [4, 6, 5]);
+    });
+  });
+
+  describe('sceneNeedsFrames ignores an orbit (Requirements 5.9, 8.23)', () => {
+    it('a scene whose only constraint is an orbit bakes correctly: (6, 8, 4)', () => {
+      expectEveryFrame('orbit only', buildOrbitScene(ORBIT_CASE), 2, [6, 8, 4]);
+    });
+
+    it('an orbit mixed with an aligned followPath still bakes the aligned rotation', () => {
+      const follow: Constraint = { type: 'followPath', order: 0, influence: 1, speed: 10, startOffset: 0, alignToPath: true };
+      const mixed = bake(buildOrbitScene(ORBIT_CASE, { orbitOrder: -1, constraints: [follow] }));
+      const followOnlyScene = buildOrbitScene(ORBIT_CASE);
+      followOnlyScene.entities[0].constraints = [follow];
+      const followOnly = bake(followOnlyScene);
+
+      const m = mixed.transforms[0];
+      const f = followOnly.transforms[0];
+      let rotated = false;
+      for (let frame = 0; frame < ORBIT_CASE.frameCount; frame++) {
+        for (let k = 3; k < 7; k++) {
+          const i = frame * 7 + k;
+          if (m[i] !== f[i]) throw new Error(`frame ${frame} rotation component ${k - 3}: mixed ${m[i]}, followPath alone ${f[i]}`);
+        }
+        if (Math.abs(m[frame * 7 + 3]) + Math.abs(m[frame * 7 + 4]) + Math.abs(m[frame * 7 + 5]) > 1e-3) rotated = true;
+      }
+      expect(rotated).toBe(true);
+      expect(mixed.rotationDrivers[0]).toBe(1);
+    });
+  });
+
+  it('an orbit-only entity has the identity rotation, rotationDrivers 0 and untouched bookkeeping (Requirements 3.9 to 3.11, 8.13)', () => {
+    const baked = bake(buildOrbitScene({ ...ORBIT_CASE, frameCount: 3, speed: 600 }));
+    const t = baked.transforms[0];
+    for (let frame = 0; frame < 3; frame++) {
+      const i = frame * 7;
+      if (t[i + 3] !== 0 || t[i + 4] !== 0 || t[i + 5] !== 0 || t[i + 6] !== 1) throw new Error(`frame ${frame} rotation is not the identity`);
+    }
+    expect(baked.rotationDrivers[0]).toBe(0);
+    expect(baked.heldFromFrame[0]).toBe(-1);
+    expect(Array.from(baked.travelled[0])).toEqual([0, 0, 0]);
+    expect(Array.from(baked.aimDirections[0])).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  });
+
+  it('bake leaves the scene unchanged and two bakes are identical (Requirements 7.1, 7.2, 8.15)', () => {
+    const scene = withAnchor({ ...ORBIT_CASE, speed: 100, startAngle: 33, frameCount: 5 }, 1, 0.75, 0);
+    const before = structuredClone(scene);
+    const first = bake(scene);
+    const second = bake(scene);
+    expect(scene).toEqual(before);
+    expect(Array.from(second.transforms[0])).toEqual(Array.from(first.transforms[0]));
+    expect(Array.from(second.travelled[0])).toEqual(Array.from(first.travelled[0]));
+    expect(Array.from(second.aimDirections[0])).toEqual(Array.from(first.aimDirections[0]));
+    expect(second.heldFromFrame).toEqual(first.heldFromFrame);
+    expect(second.rotationDrivers).toEqual(first.rotationDrivers);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Linter on an orbit-only entity (Requirements 6.1 to 6.7, 8.17)
+// src/linter.ts was read and names no constraint type, so it needs no change.
+// ---------------------------------------------------------------------------
+
+describe('motionLinter on an orbit-only entity', () => {
+  const BASE = orbitCase({
+    fps: 30,
+    frameCount: 60,
+    axis: '+Y',
+    radius: 4,
+    startAngle: 0,
+    centre: { kind: 'static', c: [10, 2, -3] },
+  });
+
+  function listFindings(findings: readonly Finding[]): string {
+    return findings.map((f) => `frame ${f.frame} entity ${f.entityId} code ${f.code}: ${f.message}`).join('; ');
+  }
+
+  const OPTION_SETS: [string, LinterOptions | undefined][] = [
+    ['default options', undefined],
+    ['rollThresholdDegPerFrame 0', { rollThresholdDegPerFrame: 0 }],
+  ];
+
+  for (const [name, speed] of [
+    ['a very fast orbit (100 degrees per frame)', 3000],
+    ['a gentle orbit (1 degree per frame)', 30],
+  ] as const) {
+    it(`${name} gives no findings`, () => {
+      const scene = buildOrbitScene({ ...BASE, speed });
+      const baked = bake(scene);
+      for (const [optionsName, options] of OPTION_SETS) {
+        const findings = motionLinter(scene, baked, options);
+        if (findings.length !== 0) {
+          throw new Error(`motionLinter with ${optionsName} reported ${findings.length} finding(s): ${listFindings(findings)}`);
+        }
+        expect(findings).toEqual([]);
+      }
+    });
+  }
 });

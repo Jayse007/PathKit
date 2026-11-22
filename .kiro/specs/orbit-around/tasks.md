@@ -110,7 +110,7 @@ These rules apply to every task below.
   - Report passed, failed and skipped counts from the pasted output. Report any new file that took more than 5 seconds. If anything fails, follow the failure rules above. Ask the user if questions arise
   - _Requirements: 1.5, 7.7, 8.18_
 
-- [ ] 3. Group 2: bake.ts
+- [x] 3. Group 2: bake.ts
   - [x] 3.1 Implement the dispatch and `applyOrbitAround` in `src/bake.ts`
     - Change only `packages/pathkit/src/bake.ts`. Add no export. Add `OrbitAroundConstraint` to the type import from `./scene.js`
     - Add `unknownConstraintType(c: never): Error` returning `new Error('Unknown constraint type "<value>"')` through `String(...)`
@@ -123,7 +123,7 @@ These rules apply to every task below.
     - Check diagnostics and every relative import, then ask the user to run `npm.cmd test` from `packages/pathkit`. All 348 existing tests must pass
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.19, 3.1, 3.6, 3.9, 3.10, 3.11, 3.13, 5.1, 5.2, 5.3, 5.4, 5.9, 5.12, 7.2, 7.3, 7.4, 7.6, 7.8_
 
-  - [ ] 3.2 Write hand-computed and dispatch unit tests
+  - [x] 3.2 Write hand-computed and dispatch unit tests
     - Create `test/bake/orbit-unit.test.ts`
     - The four brief examples (Requirements 2.8 to 2.11): `+Y` radius 5 at 0 degrees gives (0, 0, 5) and at 90 degrees gives (5, 0, 0); `+X` radius 2 at 90 degrees gives (0, 0, 2); `+Z` radius 3 at 90 degrees gives (0, 3, 0)
     - One test case per Axis_Token at 0 and 90 degrees, expected positions hand-computed from the Glossary table and written as literals, tolerance 1e-12 (2.4, 2.12, 8.6)
@@ -136,7 +136,7 @@ These rules apply to every task below.
     - Source lines it should catch: swapping the two side vectors of the negative-axis branch, and `(speed * frame) / fps` changed to `speed * frame`
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 2.1, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 2.12, 2.16, 2.18, 2.19, 5.1, 5.10, 8.6, 8.16, 8.21, 8.26_
 
-  - [ ] 3.3 Write source-text structure tests
+  - [x] 3.3 Write source-text structure tests
     - Append to `test/bake/orbit-unit.test.ts` (use `fs_append`, do not rewrite the file)
     - Read `src/bake.ts` with `readFileSync`. Extract the `switch` of `bakeEntity` and the body of `drivesRotation` by brace counting. Assert each contains `case 'aimAt'`, `case 'followPath'`, `case 'orbitAround'` and a `default:` containing `unknownConstraintType(`, and that there is no `else` fall-through that treats a non-`aimAt` as `followPath` (5.1, 5.3, 5.4, 5.12)
     - Assert `sceneNeedsFrames` still tests `isFollowPath(c)` and `alignsToPath(c)` and contains no `orbitAround` (5.9)
@@ -147,7 +147,7 @@ These rules apply to every task below.
     - Source line it should catch: adding `new` or `[...]` inside `applyOrbitAround`, or a second `Math.PI`
     - _Requirements: 2.2, 5.1, 5.3, 5.4, 5.9, 5.12, 7.3, 7.4, 7.8, 8.16_
 
-  - [ ] 3.4 Write the defensive branch test
+  - [x] 3.4 Write the defensive branch test
     - Create `test/bake/orbit-defensive.test.ts` containing only these tests
     - Use `vi.mock('../../src/scene.js', async (importOriginal) => ({ ...(await importOriginal<typeof import('../../src/scene.js')>()), validateScene: () => {} }))`, then import `bake` from `../../src/index.js`. Add no export to any source file
     - Build the constraint as `{ type: 'mystery', order: 0, influence: 1 } as unknown as Constraint` and assert `bake(scene)` throws `new Error('Unknown constraint type "mystery"')`. Add a case with a missing `type` (message with `"undefined"`)
@@ -155,7 +155,7 @@ These rules apply to every task below.
     - Source line it should catch: `default: throw unknownConstraintType(c)` in `bakeEntity` removed, or the message text changed
     - _Requirements: 5.2, 5.4, 5.12, 8.3, 8.16, 8.24_
 
-  - [ ] 3.5 Write property test for distance from the centre
+  - [x] 3.5 Write property test for distance from the centre
     - Create `test/bake/orbit-property-1.test.ts`
     - **Property O1: Distance from the centre equals the radius**
     - Use `arbOrbitCase` with influence 1, static or linear centre, all six axes. At every frame compare the distance from `centreAt(c, frame)` with `radius` within `1e-9 * scaleOf(c)`, using a plain comparison that throws an `Error` naming the frame and values. Radius 0 must place the position on the centre. Force radius 0, startAngle 0, `frameCount = 1`, one case per axis, and the last frame. Finish with one `expect(framesChecked).toBe(frameCount)`
@@ -163,7 +163,7 @@ These rules apply to every task below.
     - **Validates: Requirements 2.1, 2.3, 2.5, 2.6, 2.13, 8.4**
     - _Requirements: 2.1, 2.3, 2.5, 2.6, 2.13, 8.4, 8.21_
 
-  - [ ] 3.6 Write property test for perpendicular offset
+  - [x] 3.6 Write property test for perpendicular offset
     - Create `test/bake/orbit-property-2.test.ts`
     - **Property O2: The offset is perpendicular to the axis**
     - At every frame the dot product of the offset with the unit vector from the test's own `AXIS_UNIT` is 0 within the O1 tolerance. Force one case per axis, radius 0 and startAngle 0
@@ -171,7 +171,7 @@ These rules apply to every task below.
     - **Validates: Requirements 2.3, 2.4, 2.14, 8.5**
     - _Requirements: 2.3, 2.4, 2.14, 8.5, 8.21_
 
-  - [ ] 3.7 Write property test for the angular step
+  - [x] 3.7 Write property test for the angular step
     - Create `test/bake/orbit-property-3.test.ts`
     - **Property O3: Consecutive frames differ by speed / fps degrees**
     - Radius 1 to 30 (tenths 10 to 300), `|speed / fps| <= 179`. For every pair of consecutive frames the signed angle `Math.atan2(dot(cross(a, b), axis), dot(a, b))` equals `speed / fps` degrees in radians, within 1e-9. Force a turn of exactly 90 degrees per frame (`speed = 90 * fps`), startAngle 0, and `frameCount = 2` (first and last pair)
@@ -179,7 +179,7 @@ These rules apply to every task below.
     - **Validates: Requirements 2.1, 2.15, 8.8**
     - _Requirements: 2.1, 2.15, 8.8, 8.21_
 
-  - [ ] 3.8 Write property test for turning direction
+  - [x] 3.8 Write property test for turning direction
     - Create `test/bake/orbit-property-4.test.ts`
     - **Property O4: The sign of speed gives the turning direction**
     - Radius 1 to 30, non-zero `speed`, `|speed / fps| <= 179`. For every consecutive pair the dot product of `cross(offset at f, offset at f+1)` with the axis is positive for positive speed and negative for negative speed. Repeat with the sign of `speed` reversed and require the reversed sign. Force one case per axis and a 90-degree turn per frame
@@ -187,7 +187,7 @@ These rules apply to every task below.
     - **Validates: Requirements 2.4, 2.7, 2.17, 8.7**
     - _Requirements: 2.4, 2.7, 2.17, 8.7, 8.21_
 
-  - [ ] 3.9 Write property test for a full lap
+  - [x] 3.9 Write property test for a full lap
     - Create `test/bake/orbit-property-5.test.ts`
     - **Property O5: A full lap returns to the start**
     - Pick N from the divisors of 360 that are at most 119, laps L from 1 to 3, either direction, any axis, fps and startAngle, with `speed = +/- L * 360 * fps / N`. The position at frame N equals the position at frame 0 within the O1 tolerance. Force N = 1 with `speed = 360 * fps`, and the case `frameCount = N + 1` where N is the last frame
@@ -195,7 +195,7 @@ These rules apply to every task below.
     - **Validates: Requirements 2.16, 8.9**
     - _Requirements: 2.16, 8.9, 8.21_
 
-  - [ ] 3.10 Write property test for a keyframed centre
+  - [x] 3.10 Write property test for a keyframed centre
     - Create `test/bake/orbit-property-6.test.ts`
     - **Property O6: A moving centre carries the offset with it**
     - Linearly keyframed centre (keyframes at frame 0 and `frameCount`). At every frame the offset from `c0 + frame * step` equals, within the O1 tolerance, the offset from the same constraint baked with a static centre at the origin. Force radius 0, startAngle 0, first and last frame. Note in a comment that this compares two bakes and is valid because Properties O1 to O4 and the hand-computed unit tests pin the static case
@@ -203,7 +203,7 @@ These rules apply to every task below.
     - **Validates: Requirements 2.5, 2.18, 8.10**
     - _Requirements: 2.5, 2.18, 8.10, 8.21_
 
-  - [ ] 3.11 Narrow the `alignToPath` checks in `test/linter/property-42.test.ts` (type-only change)
+  - [x] 3.11 Narrow the `alignToPath` checks in `test/linter/property-42.test.ts` (type-only change)
     - Change only `packages/pathkit/test/linter/property-42.test.ts`. This is the one existing test file this spec edits (Requirement 7.7). No other existing test file or helper is touched
     - Reason: once `Constraint` includes `OrbitAroundConstraint`, TypeScript rejects `c.alignToPath` on a constraint that is only known not to be `aimAt`, because `OrbitAroundConstraint` has no `alignToPath`. Vitest does not type-check, so the run passes, but `tsc` reports four errors in this file (in `expectedDrivers`, in `isDriver` and in two branches of the regime bookkeeping loop). It is the same "if aimAt else followPath" shape that task 3.1 removes from `bake.ts`
     - Replace each read of `c.alignToPath` on a constraint that is not narrowed to `followPath`: in `expectedDrivers` use `c.type === 'followPath' && c.alignToPath === true`; in `isDriver` use `c.type === 'aimAt' || (c.type === 'followPath' && c.alignToPath === true)`; in the regime loop use `c.type === 'followPath' && c.alignToPath === true` for `alignedFollows`, `c.type === 'followPath' && c.alignToPath === undefined` for `hasOmitted`, and `c.type === 'followPath'` for the final `hasFalse` branch. The scenes in this file contain only `aimAt` and `followPath`, so behaviour is identical
@@ -213,7 +213,7 @@ These rules apply to every task below.
     - Source line it should catch: none, this is a type-only change
     - _Requirements: 7.7, 8.2_
 
-- [ ] 4. Checkpoint 2: bake.ts and geometry
+- [x] 4. Checkpoint 2: bake.ts and geometry
   - Ask the user to run `npm.cmd test` from `packages/pathkit` and paste the full output
   - Expected to pass: `test/bake/orbit-unit.test.ts`, `test/bake/orbit-defensive.test.ts`, `test/bake/orbit-property-1.test.ts` to `orbit-property-6.test.ts`, everything from checkpoint 1, `test/bake/property-37.test.ts` (untouched), `test/linter/property-42.test.ts` (type-only change from task 3.11, same test count as before) and all 348 existing tests
   - Report passed, failed and skipped counts from the pasted output. Report any new file that took more than 5 seconds. If anything fails, follow the failure rules above. Ask the user if questions arise
