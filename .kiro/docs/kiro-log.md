@@ -56,6 +56,8 @@ Numbers measured from the repository on 2026-11-20:
 | 2026-11-15 | 0 of 4,000 | Hackathon credits received |
 | 2026-11-19 | about 112.74 | As recorded in the project brief |
 | 2026-11-20 | 493.14 | Read the number from the Kiro usage page |
+| 2026-11-22 | 559.86 | Before the orbitAround implementation tasks. The spec files (requirements, design, tasks) and the hook work were already done |
+| 2026-11-22 | <number from the usage page> | After orbitAround finished (26 tasks, 3 checkpoints). Implementation cost: 606.54 minus 559.86 = 46.68 |
 
 One incident cost credits for no result: a multi-line PowerShell command hung Kiro's shell for 48 minutes
 (about 1.18 credits). It led to a steering rule (`windows-terminal.md`).
@@ -113,3 +115,17 @@ Keep entries short. Copy the facts from the repository, not from memory.
 - What went wrong or surprised me:
 - Change made because of it (file or rule):
 ```
+
+### 2026-11-22 - orbitAround constraint (spec orbit-around, implementation)
+- What Kiro did: executed the 26 tasks one at a time in three groups, each ending at a checkpoint where I ran
+  `npm.cmd test` and pasted the output. Changed `src/scene.ts`, `src/bake.ts` and `src/index.ts`, and added
+  133 tests (13 property tests). Kiro itself spotted, while reading the design, that a lookup table keyed by axis
+  tokens would break an existing test, so the design uses a rule derived from the axis vector instead.
+- Credits used: 46.68, read from the Kiro usage page before and after (559.86 before).
+- What went wrong or surprised me: (1) The type check, which Kiro cannot run, found four errors in an existing
+  test (`property-42`) that every test run missed, because the test runner does not type-check. (2) A mutation
+  check found two rules no test covered: an orbit must not change rotation when an earlier constraint has
+  influence below 1, and an orbit placed before a `followPath` must not alter that follow's bookkeeping.
+  (3) A break-test Kiro suggested ("remove `typeof` alone") cannot fail because the two guards overlap.
+- Change made because of it: task 3.11 (the one allowed edit to an existing test, a type-only change) and
+  task 5.8 (two extra tests). Both are recorded in `.kiro/specs/orbit-around/tasks.md`.
