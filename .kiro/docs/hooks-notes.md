@@ -184,3 +184,7 @@ the sub-agent's report and not on a trace line.
   `list_processes`, `remote_web_search`. None is known to write project files.
 - The guard protects against Kiro's tools only. It does not stop the developer,
   git, or another editor, which is intended.
+- PreTaskExec (tested 22 Nov 2026): fires before each spec task. The hook receives session_id, hook_event_name, cwd,
+  spec_name (the full path of tasks.md, despite the name) and task_name (the task text). Exit 0 did not stop the
+  task. Output printed on standard output was reported by the task's sub-agent as hook output, but the main agent
+  did not see it. That rests on the sub-agent's report. Payloads for Stop, SessionStart and UserPromptSubmit remain untested.
