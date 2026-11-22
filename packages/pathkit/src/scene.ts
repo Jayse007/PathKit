@@ -18,7 +18,18 @@ export interface AimAtConstraint {
   target: string;
 }
 
-export type Constraint = FollowPathConstraint | AimAtConstraint;
+export interface OrbitAroundConstraint {
+  type: 'orbitAround';
+  order: number;
+  influence: number;
+  target: string;      // name of the centre Target, static or keyframed
+  radius: number;      // metres, 0 or more
+  axis: AxisToken;     // the line the Entity circles around
+  speed: number;       // degrees per second, negative turns the other way
+  startAngle: number;  // degrees at frame 0
+}
+
+export type Constraint = FollowPathConstraint | AimAtConstraint | OrbitAroundConstraint;
 
 export interface Entity {
   id: string;
@@ -76,6 +87,54 @@ function hasKeyframes(target: Target): target is { keyframes: Keyframe[] } {
   return 'keyframes' in target;
 }
 
+function hasTarget(scene: Scene, name: string): boolean {
+  return Object.prototype.hasOwnProperty.call(scene.targets, name);
+}
+
+function checkOrbitAround(scene: Scene, entityId: string, c: OrbitAroundConstraint): void {
+  if (!hasTarget(scene, c.target)) {
+    throw new SceneError(`Entity "${entityId}": unknown target "${c.target}"`);
+  }
+  if (!isAxisToken(c.axis)) {
+    throw new SceneError(
+      `Entity "${entityId}": orbitAround axis "${String(c.axis)}" is not an axis token (use +X, -X, +Y, -Y, +Z or -Z)`,
+    );
+  }
+  // typeof first: "5" >= 0 is true in JavaScript, and the global isFinite("5") is true.
+  if (typeof c.radius !== 'number' || !Number.isFinite(c.radius) || c.radius < 0) {
+    throw new SceneError(
+      `Entity "${entityId}": orbitAround radius must be a finite number of 0 or more, got ${String(c.radius)}`,
+    );
+  }
+  if (typeof c.speed !== 'number' || !Number.isFinite(c.speed)) {
+    throw new SceneError(`Entity "${entityId}": orbitAround speed must be a finite number, got ${String(c.speed)}`);
+  }
+  if (typeof c.startAngle !== 'number' || !Number.isFinite(c.startAngle)) {
+    throw new SceneError(`Entity "${entityId}": orbitAround startAngle must be a finite number, got ${String(c.startAngle)}`);
+  }
+}
+
+function checkConstraintOfType(scene: Scene, entityId: string, c: Constraint): void {
+  switch (c.type) {
+    case 'followPath':
+      return; // speed and startOffset are checked in steps 10 and 11
+    case 'aimAt':
+      if (!hasTarget(scene, c.target)) {
+        throw new SceneError(`Entity "${entityId}": unknown target "${c.target}"`);
+      }
+      return;
+    case 'orbitAround':
+      checkOrbitAround(scene, entityId, c);
+      return;
+    default: {
+      const value = (c as unknown as { type?: unknown }).type; // c is never here
+      throw new SceneError(
+        `Entity "${entityId}": unknown constraint type "${String(value)}" (use followPath, aimAt or orbitAround)`,
+      );
+    }
+  }
+}
+
 /** Throws SceneError for the first defect found. Never mutates the scene. */
 export function validateScene(scene: Scene): void {
   const entities = scene.entities;
@@ -119,7 +178,7 @@ export function validateScene(scene: Scene): void {
     }
   }
 
-  // 6. per constraint: influence, then order, then aimAt target
+  // 6. per constraint: influence, then order, then the checks of the constraint's own type
   for (const entity of entities) {
     for (const c of entity.constraints) {
       if (!(c.influence >= 0 && c.influence <= 1)) {
@@ -128,9 +187,7 @@ export function validateScene(scene: Scene): void {
       if (!Number.isFinite(c.order)) {
         throw new SceneError(`Entity "${entity.id}": order must be a finite number, got ${c.order}`);
       }
-      if (c.type === 'aimAt' && !Object.prototype.hasOwnProperty.call(scene.targets, c.target)) {
-        throw new SceneError(`Entity "${entity.id}": unknown target "${c.target}"`);
-      }
+      checkConstraintOfType(scene, entity.id, c);
     }
   }
 
