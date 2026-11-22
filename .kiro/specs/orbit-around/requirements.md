@@ -103,6 +103,7 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 10. WHEN an Entity has an OrbitAround_Constraint and no other Rotation_Driver, THE Baker SHALL produce the identity rotation at every frame.
 11. THE Baker SHALL leave the `rotationDrivers` count of an Entity unchanged by an OrbitAround_Constraint, because an OrbitAround_Constraint drives no rotation.
 12. WHEN a Scene has a valid Path and no Entity that follows the Path, THE Scene_Validator SHALL accept the Scene, because the Baker always builds the curve.
+13. WHEN two constraints on one Entity have equal `order`, THE Baker SHALL run them in their list order in the constraint list of the Entity, because the Baker sorts a copy of the constraints (`sortedCopy`) with a stable sort.
 
 ### Requirement 4: Validation of orbitAround
 
@@ -136,9 +137,10 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 6. THE Scene_Validator SHALL check the Constraint_Type inside the per-constraint check, after the influence check and the order check.
 7. IF a Constraint has an Unknown_Type and also an invalid influence or an invalid order, THEN THE Scene_Validator SHALL report the influence error first, then the order error, and SHALL report the Unknown_Type error only when the influence and order checks both pass. The Scene_Validator SHALL throw exactly one Scene_Error per validation run.
 8. IF a Scene contains a Constraint of an Unknown_Type, THEN THE Baker SHALL reject the Scene by throwing the Scene_Error from criterion 5 or from criterion 7, and SHALL NOT produce Baked_Data.
-9. THE test suite SHALL contain, for each of the three Constraint_Types, a test that proves the constraint runs its own code. The test SHALL show a result that only that type can produce: a position on the path for `followPath`, a stored aim direction for `aimAt` and a position on the circle for `orbitAround`.
-10. THE test suite SHALL contain a test that proves `bake` rejects a Scene that contains an Unknown_Type.
-11. THE Path_Core SHALL keep the Unknown_Type branches in `bakeEntity` and `drivesRotation` as defensive branches, because `bake` validates the Scene before baking and a normal Scene cannot reach them. The approach for testing these defensive branches SHALL be decided in `design.md`.
+9. THE `sceneNeedsFrames` function in `src/bake.ts` SHALL NOT count an OrbitAround_Constraint as a constraint that needs path frames, so that THE Baker builds the path frames only for a `followPath` with `alignToPath` true. The three places that branch on Constraint_Type are `bakeEntity`, `drivesRotation` and `sceneNeedsFrames`.
+10. THE test suite SHALL contain, for each of the three Constraint_Types, a test that proves the constraint runs its own code. The test SHALL show a result that only that type can produce: a position on the path for `followPath`, a stored aim direction for `aimAt` and a position on the circle for `orbitAround`.
+11. THE test suite SHALL contain a test that proves `bake` rejects a Scene that contains an Unknown_Type.
+12. THE Path_Core SHALL keep the Unknown_Type branches in `bakeEntity` and `drivesRotation` as defensive branches, because `bake` validates the Scene before baking and a normal Scene cannot reach them. The approach for testing these defensive branches SHALL be decided in `design.md`, and `design.md` MAY test them by mocking `validateScene` with `vi.mock` in a separate test file, which needs no new export from any source file.
 
 ### Requirement 6: Linter behaviour
 
@@ -197,3 +199,7 @@ Out of scope: the guide `docs/adding-a-constraint.md`, any `spin` constraint, ar
 19. WHILE a test checks a value inside a per-frame loop, THE test suite SHALL use a plain comparison that throws an Error with a descriptive message naming the frame and the values compared, and SHALL use `expect` only for checks made once per run.
 20. WHERE a property test generates random geometry or scalar inputs, THE test suite SHALL generate them with `fc.integer` mapped onto the required range, and SHALL NOT use `fc.double` for those inputs.
 21. THE test suite SHALL force each of these special cases in at least one test, in addition to the random inputs: radius 0, startAngle 0, a turn of exactly 90 degrees, a turn of exactly 360 degrees, the first frame and the last frame.
+22. THE test suite SHALL contain a test for the equal-`order` rule of Requirement 3 criterion 13, using two position-setting constraints with equal `order` whose result depends on which one runs first (for example an OrbitAround_Constraint with influence 0.5 and a second position-setting constraint), run in both list orders, with a different expected position for each list order computed by hand.
+23. THE test suite SHALL contain a test for Requirement 5 criterion 9: a Scene whose only constraint is an OrbitAround_Constraint bakes correctly, and a Scene that mixes an OrbitAround_Constraint with a `followPath` with `alignToPath` true still bakes the aligned rotation.
+24. THE test suite SHALL create each Unknown_Type constraint with a cast such as `as unknown as Constraint`, in the same way the existing tests build invalid Axis_Tokens.
+25. THE test suite SHALL contain a test that an OrbitAround_Constraint with the `radius` given as the string "5" (a value that is not of number type) is rejected with the exact radius message of Requirement 4 criterion 5, with the got value shown as it appears in the message template.
