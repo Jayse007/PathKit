@@ -18,6 +18,8 @@ export const SRC = ['packages', 'pathkit', 'src'];
 export const SCENE_FILE = 'packages/pathkit/src/scene.ts';
 export const BAKE_FILE = 'packages/pathkit/src/bake.ts';
 export const INDEX_FILE = 'packages/pathkit/src/index.ts';
+export const SCENE_TESTS = 'packages/pathkit/test/scene';
+export const BAKE_TESTS = 'packages/pathkit/test/bake';
 export const CHECKLIST = 'docs/adding-a-constraint.md';
 // The places checked once for every constraint type, in report order.
 export const TYPE_PLACES = [
@@ -68,12 +70,17 @@ export function defaultBranch(body) {
   return match === null ? null : body.slice(match.index);
 }
 
+// The interface names listed in `export type Constraint = A | B;`, in order, or null when there is no union.
+function unionNamesOf(sceneText) {
+  const union = /export\s+type\s+Constraint\s*=\s*([^;]+);/.exec(sceneText);
+  if (union === null) return null;
+  return union[1].split('|').map((part) => part.trim()).filter((part) => part !== '');
+}
+
 // Finds the constraint types in scene.ts text: union order first, then interfaces the union does not list.
 export function findTypes(sceneText) {
-  const union = /export\s+type\s+Constraint\s*=\s*([^;]+);/.exec(sceneText);
-  const unionNames = union === null
-    ? []
-    : union[1].split('|').map((part) => part.trim()).filter((part) => part !== '');
+  const listedNames = unionNamesOf(sceneText);
+  const unionNames = listedNames ?? [];
 
   const interfaces = [];
   for (const match of sceneText.matchAll(/export\s+interface\s+(\w*Constraint)\s*\{([^}]*)\}/g)) {
@@ -93,7 +100,7 @@ export function findTypes(sceneText) {
       types.push({ iface: entry.iface, type: entry.type, listed: false });
     }
   }
-  return { types, orphans, unionFound: union !== null };
+  return { types, orphans, unionFound: listedNames !== null };
 }
 
 // The names inside every `export type { ... } from './scene.js'` block, or null when there is none.
@@ -108,4 +115,135 @@ export function exportedNames(indexText) {
     }
   }
   return names;
+}
+
+// Builds one finding. `type` is '' for a place that does not depend on the type.
+function gap(type, place, detail) {
+  return { type, place, detail };
+}
+
+// The entries to check: union order (an orphan name stays in its place), then interfaces the union does not list.
+function orderedEntries(sceneText) {
+  const { types, orphans } = findTypes(sceneText);
+  const entries = [];
+  for (const name of unionNamesOf(sceneText) ?? []) {
+    entries.push(orphans.includes(name) ? { orphan: name } : types.find((entry) => entry.iface === name));
+  }
+  for (const entry of types) {
+    if (!entry.listed) entries.push(entry);
+  }
+  return entries;
+}
+
+// The gaps of one type in the places that live in scene.ts, in report order.
+function checkTypeInScene(entry, ctx) {
+  const { type, iface } = entry;
+  const gaps = [];
+  if (ctx.unionFound && !entry.listed) {
+    gaps.push(gap(type, 'union', `${iface} is not in the Constraint union in ${SCENE_FILE}`));
+  }
+  if (ctx.validateBody !== null) {
+    if (!hasCase(ctx.validateBody, type)) {
+      gaps.push(gap(type, 'validate-case', `no case '${type}' in checkConstraintOfType, ${SCENE_FILE}`));
+    }
+    const branch = defaultBranch(ctx.validateBody);
+    if (branch === null || !hasWord(branch, type)) {
+      gaps.push(gap(
+        type, 'validate-message',
+        `the default message in checkConstraintOfType does not mention ${type}, ${SCENE_FILE}`,
+      ));
+    }
+  }
+  return gaps;
+}
+
+// The gaps of one type in the two switches of bake.ts, in report order.
+function checkTypeInBake(entry, ctx) {
+  const { type } = entry;
+  const gaps = [];
+  if (ctx.bakeBody !== null && !hasCase(ctx.bakeBody, type)) {
+    gaps.push(gap(type, 'bake-case', `no case '${type}' in bakeEntity, ${BAKE_FILE}`));
+  }
+  if (ctx.rotationBody !== null && !hasCase(ctx.rotationBody, type)) {
+    gaps.push(gap(type, 'rotation-case', `no case '${type}' in drivesRotation, ${BAKE_FILE}`));
+  }
+  return gaps;
+}
+
+// The gap of one type in the export block of index.ts, as a list of zero or one findings.
+function checkTypeInIndex(entry, ctx) {
+  if (ctx.exportNames === null || ctx.exportNames.includes(entry.iface)) return [];
+  return [gap(entry.type, 'export', `${entry.iface} is not exported from ${INDEX_FILE}`)];
+}
+
+// The gaps of one type in the two test folders: some file must mention the type as a whole word.
+function checkTypeInTests(entry, sources) {
+  const { type } = entry;
+  const gaps = [];
+  if (!sources.sceneTests.some((file) => hasWord(file.text, type))) {
+    gaps.push(gap(type, 'scene-test', `no file in ${SCENE_TESTS} mentions ${type}`));
+  }
+  if (!sources.bakeTests.some((file) => hasWord(file.text, type))) {
+    gaps.push(gap(type, 'bake-test', `no file in ${BAKE_TESTS} mentions ${type}`));
+  }
+  return gaps;
+}
+
+// The gap for a function whose `default:` branch does not call unknownConstraintType, or null when it does.
+function checkDefault(body, place, name) {
+  if (body === null) return null;
+  const branch = defaultBranch(body);
+  if (branch !== null && branch.includes('unknownConstraintType(')) return null;
+  return gap('', place, `${name} has no default branch calling unknownConstraintType, ${BAKE_FILE}`);
+}
+
+// Checks every place for every constraint type and returns the findings in report order.
+export function findGaps(sources) {
+  const ctx = {
+    unionFound: findTypes(sources.scene).unionFound,
+    validateBody: functionBody(sources.scene, 'checkConstraintOfType'),
+    bakeBody: functionBody(sources.bake, 'bakeEntity'),
+    rotationBody: functionBody(sources.bake, 'drivesRotation'),
+    exportNames: exportedNames(sources.index),
+  };
+
+  const perType = [];
+  for (const entry of orderedEntries(sources.scene)) {
+    if (entry.orphan !== undefined) {
+      perType.push(gap(
+        entry.orphan, 'union',
+        `${entry.orphan} is listed in the Constraint union but no interface declares it`,
+      ));
+    } else {
+      perType.push(
+        ...checkTypeInScene(entry, ctx),
+        ...checkTypeInBake(entry, ctx),
+        ...checkTypeInIndex(entry, ctx),
+        ...checkTypeInTests(entry, sources),
+      );
+    }
+  }
+
+  const defaults = [
+    checkDefault(ctx.bakeBody, 'bake-default', 'bakeEntity'),
+    checkDefault(ctx.rotationBody, 'rotation-default', 'drivesRotation'),
+  ].filter((finding) => finding !== null);
+
+  const anchors = [];
+  if (!ctx.unionFound) {
+    anchors.push(gap('', 'anchor', `cannot find the Constraint union in ${SCENE_FILE}`));
+  }
+  if (ctx.validateBody === null) {
+    anchors.push(gap('', 'anchor', `cannot find checkConstraintOfType in ${SCENE_FILE}`));
+  }
+  if (ctx.bakeBody === null) {
+    anchors.push(gap('', 'anchor', `cannot find bakeEntity in ${BAKE_FILE}`));
+  }
+  if (ctx.rotationBody === null) {
+    anchors.push(gap('', 'anchor', `cannot find drivesRotation in ${BAKE_FILE}`));
+  }
+  if (ctx.exportNames === null) {
+    anchors.push(gap('', 'anchor', `cannot find the export type block in ${INDEX_FILE}`));
+  }
+  return [...perType, ...defaults, ...anchors];
 }

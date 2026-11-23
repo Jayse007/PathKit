@@ -67,15 +67,15 @@ These rules apply to every task below.
     - Ask the user to run `node --test scripts/check-constraints.test.mjs` from the repository root and paste the output. Expect H1 to H5 to pass with 0 failed
     - Mark tasks 1.1 and 1.2 done only from that output. Tell the user the source lines named in 1.1 and 1.2, so they can break each once
 
-- [ ] 2. Group 2: findTypes
-  - [ ] 2.1 Add `findTypes` and its tests
+- [x] 2. Group 2: findTypes
+  - [x] 2.1 Add `findTypes` and its tests
     - Change only the two files of task 1.1
     - Script: export `findTypes(sceneText)` returning `{ types, orphans, unionFound }` as the design describes: union by `/export\s+type\s+Constraint\s*=\s*([^;]+);/`, split on `|`, trimmed; interfaces by `/export\s+interface\s+(\w*Constraint)\s*\{([^}]*)\}/g` with the `type:` literal in either quote style; an interface without a literal is ignored; `types` holds `{ iface, type, listed }` in union order, then unlisted interfaces in file order; a union name with no interface goes to `orphans`; when the union is not found every interface is added with `listed` false and `unionFound` is false. The script contains no list of real type names
     - Tests: F1 three types in a one-line union. F2 an interface with a `type:` literal that is not in the union is added last with `listed` false (T5, first half). F3 a name with no interface goes to `orphans` and is not in `types`. F4 an interface with no `type:` literal is ignored. F5 no union in the text gives `unionFound` false and all interfaces in `types`. T6 a union over several lines, with CRLF line endings in one variant, gives the same result as the one-line union
     - Source line it should catch: `[^;]+` in the union regex changed to `[^;\n]+` (fails T6)
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 12.7, 12.8_
 
-  - [ ] 2.2 Checkpoint 2
+  - [x] 2.2 Checkpoint 2
     - Ask the user to run `node --test scripts/check-constraints.test.mjs` and paste the output. Expect 0 failed
     - Mark task 2.1 done only from that output. Tell the user the source line named in 2.1
 
