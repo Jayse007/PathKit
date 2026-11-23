@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import {
   checkNodeVersion, npmCommand, stripEscapes, lastLines, combineOutput, formatVerdict, describeLimit,
-  buildSteps, skipReason, spawnOptions, resultFromSpawn,
+  buildSteps, skipReason, spawnOptions, resultFromSpawn, runSetup,
 } from './setup.mjs';
 
 // T01: the hand-written version table of requirement 67.
@@ -333,5 +333,232 @@ test('T07 resultFromSpawn gives failed for a signal', () => {
   assert.deepEqual(
     resultFromSpawn({ status: null, signal: 'SIGKILL', stdout: '', stderr: '' }),
     { status: 'failed', detail: 'ended by signal SIGKILL', output: '' },
+  );
+});
+
+// Builds a fake environment. `table` maps a step id to the result the fake run gives (default: ok, no output).
+// Returns the environment with `lines` (everything written) and `calls` (every step the fake run received).
+function makeEnv(overrides = {}, table = {}) {
+  const lines = [];
+  const calls = [];
+  const run = (step) => {
+    calls.push(step);
+    return table[step.id] ?? { status: 'ok', detail: '', output: '' };
+  };
+  const env = {
+    platform: 'linux',
+    nodeVersion: '24.0.0',
+    root: 'ROOT',
+    execPath: 'NODE_EXE',
+    run,
+    write: (line) => { lines.push(line); },
+    ...overrides,
+  };
+  return { env, lines, calls };
+}
+
+// Picks the step lines out of the written lines: those that start with PASS, WARN, FAIL or SKIP.
+function stepLines(lines) {
+  return lines.filter((line) => /^(PASS|WARN|FAIL|SKIP)\b/.test(line));
+}
+
+// Fails when any written line contains the escape character (T20 relies on this in every run test).
+function assertNoEscape(lines) {
+  for (const line of lines) assert.ok(!line.includes('\u001b'), `escape character in: ${JSON.stringify(line)}`);
+}
+
+// A failed run result with no output, for the fake run.
+const FAILED_1 = { status: 'failed', detail: 'exit code 1', output: '' };
+
+// T12: everything passes: the five steps run in order, six step lines, one verdict, exit code 0.
+test('T12 runSetup with everything passing', () => {
+  const { env, lines, calls } = makeEnv();
+  const code = runSetup(env);
+  assert.deepEqual(calls.map((step) => ({ id: step.id, command: step.command, args: step.args, cwd: step.cwd })), [
+    { id: 2, command: 'npm', args: ['--version'], cwd: 'ROOT' },
+    { id: 3, command: 'npm', args: ['ci'], cwd: PATHKIT },
+    { id: 4, command: 'npm', args: ['test'], cwd: PATHKIT },
+    { id: 5, command: 'NODE_EXE', args: ['--test', CHECK_TEST], cwd: 'ROOT' },
+    { id: 6, command: 'NODE_EXE', args: [CHECK_SCRIPT, '--strict'], cwd: 'ROOT' },
+  ]);
+  assert.deepEqual(lines, [
+    'Step 1/6: Node version ...',
+    'PASS 1/6 Node version: Node 24.0.0',
+    'Step 2/6: npm ...',
+    'PASS 2/6 npm: passed',
+    'Step 3/6: Install (npm ci) ...',
+    'PASS 3/6 Install (npm ci): passed',
+    'Step 4/6: PathKit tests ...',
+    'PASS 4/6 PathKit tests: passed',
+    'Step 5/6: Checklist tests ...',
+    'PASS 5/6 Checklist tests: passed',
+    'Step 6/6: Constraint checklist ...',
+    'PASS 6/6 Constraint checklist: passed',
+    'setup: all 6 steps passed.',
+  ]);
+  assert.equal(stepLines(lines).length, 6);
+  assert.ok(lines.every((line) => !line.includes('ROOT')));
+  assert.equal(code, 0);
+  assertNoEscape(lines);
+});
+
+// T13: a warning from step 1 still gives the all-passed verdict and exit code 0.
+test('T13 runSetup with a Node version warning still gives exit code 0', () => {
+  const { env, lines } = makeEnv({ nodeVersion: '23.0.0' });
+  const code = runSetup(env);
+  assert.equal(
+    stepLines(lines)[0],
+    'WARN 1/6 Node version: Node 23.0.0 should work, but PathKit is tested with Node 24.',
+  );
+  assert.equal(stepLines(lines).length, 6);
+  assert.equal(lines[lines.length - 1], 'setup: all 6 steps passed.');
+  assert.equal(code, 0);
+  assertNoEscape(lines);
+});
+
+// T14: a Node version that is too old stops the run: no step is run and steps 2 to 6 are skipped.
+test('T14 runSetup with a Node version that is too old', () => {
+  const { env, lines, calls } = makeEnv({ nodeVersion: '18.20.0' });
+  const code = runSetup(env);
+  assert.equal(calls.length, 0);
+  assert.deepEqual(lines, [
+    'Step 1/6: Node version ...',
+    'FAIL 1/6 Node version: Node 18.20.0 is too old. PathKit needs 20.19.0 or later, or 22.12.0 or later.',
+    `SKIP 2/6 npm: ${REASON_1}`,
+    `SKIP 3/6 Install (npm ci): ${REASON_1}`,
+    `SKIP 4/6 PathKit tests: ${REASON_1}`,
+    `SKIP 5/6 Checklist tests: ${REASON_1}`,
+    `SKIP 6/6 Constraint checklist: ${REASON_1}`,
+    'setup: 1 of 6 steps failed. 5 skipped.',
+  ]);
+  assert.equal(code, 1);
+  assertNoEscape(lines);
+});
+
+// T15: a missing npm stops the run after step 2: steps 3 to 6 are skipped.
+test('T15 runSetup with npm missing', () => {
+  const failedStart = { status: 'failed', detail: 'could not start: ENOENT', output: '' };
+  const { env, lines, calls } = makeEnv({}, { 2: failedStart });
+  const code = runSetup(env);
+  assert.deepEqual(calls.map((step) => step.id), [2]);
+  assert.deepEqual(stepLines(lines), [
+    'PASS 1/6 Node version: Node 24.0.0',
+    'FAIL 2/6 npm: could not start: ENOENT',
+    `SKIP 3/6 Install (npm ci): ${REASON_2}`,
+    `SKIP 4/6 PathKit tests: ${REASON_2}`,
+    `SKIP 5/6 Checklist tests: ${REASON_2}`,
+    `SKIP 6/6 Constraint checklist: ${REASON_2}`,
+  ]);
+  assert.equal(lines[lines.length - 1], 'setup: 1 of 6 steps failed. 4 skipped.');
+  assert.equal(code, 1);
+  assertNoEscape(lines);
+});
+
+// T16: a failed install skips step 4 only; steps 5 and 6 still run.
+test('T16 runSetup with a failed install', () => {
+  const { env, lines, calls } = makeEnv({}, { 3: FAILED_1 });
+  const code = runSetup(env);
+  assert.deepEqual(calls.map((step) => step.id), [2, 3, 5, 6]);
+  assert.deepEqual(stepLines(lines), [
+    'PASS 1/6 Node version: Node 24.0.0',
+    'PASS 2/6 npm: passed',
+    'FAIL 3/6 Install (npm ci): exit code 1',
+    `SKIP 4/6 PathKit tests: ${REASON_3}`,
+    'PASS 5/6 Checklist tests: passed',
+    'PASS 6/6 Constraint checklist: passed',
+  ]);
+  assert.equal(lines[lines.length - 1], 'setup: 1 of 6 steps failed. 1 skipped.');
+  assert.equal(code, 1);
+  assertNoEscape(lines);
+});
+
+// T18: a timeout on step 4 says it timed out after 5 minutes, and not "exit code".
+test('T18 runSetup reports a timeout of the PathKit tests', () => {
+  const { env, lines } = makeEnv({}, { 4: { status: 'timeout', detail: '', output: '' } });
+  const code = runSetup(env);
+  assert.equal(stepLines(lines)[3], 'FAIL 4/6 PathKit tests: timed out after 5 minutes');
+  assert.ok(!lines.some((line) => line.includes('exit code')));
+  assert.equal(code, 1);
+  assertNoEscape(lines);
+});
+
+// T18: a timeout on step 5 says it timed out after 60 seconds.
+test('T18 runSetup reports a timeout of the checklist tests', () => {
+  const { env, lines } = makeEnv({}, { 5: { status: 'timeout', detail: '', output: '' } });
+  const code = runSetup(env);
+  assert.equal(stepLines(lines)[4], 'FAIL 5/6 Checklist tests: timed out after 60 seconds');
+  assert.equal(code, 1);
+  assertNoEscape(lines);
+});
+
+// T19: output that was too large is reported as such, not as a generic failure.
+test('T19 runSetup reports output that was too large', () => {
+  const { env, lines } = makeEnv({}, { 4: { status: 'too-large', detail: '', output: '' } });
+  const code = runSetup(env);
+  assert.equal(stepLines(lines)[3], 'FAIL 4/6 PathKit tests: output was too large (over 64 MiB)');
+  assert.equal(code, 1);
+  assertNoEscape(lines);
+});
+
+// The labels of the three test steps, for the output tests.
+const TEST_STEP_LABELS = { 4: 'PathKit tests', 5: 'Checklist tests', 6: 'Constraint checklist' };
+
+// T17: a failed test step shows the last 30 of its 40 output lines, indented, and the later steps still run.
+for (const id of [4, 5, 6]) {
+  // One test per failing step (4, 5 and 6).
+  test(`T17 runSetup shows the last 30 output lines of failed step ${id}`, () => {
+    const output = [];
+    const expected = [];
+    for (let n = 1; n <= 40; n++) {
+      const text = n === 20 ? 'FAIL in suite' : `out ${n}`;
+      output.push(text);
+      if (n >= 11) expected.push(`    ${text}`);
+    }
+    const failedStep = { status: 'failed', detail: 'exit code 1', output: `${output.join('\n')}\n` };
+    const { env, lines, calls } = makeEnv({}, { [id]: failedStep });
+    const code = runSetup(env);
+    const at = lines.indexOf(`FAIL ${id}/6 ${TEST_STEP_LABELS[id]}: exit code 1`);
+    assert.ok(at >= 0, 'the FAIL line is missing');
+    assert.equal(expected.length, 30);
+    assert.deepEqual(lines.slice(at + 1, at + 31), expected);
+    assert.ok(!lines.some((line) => line.includes('out 10')));
+    assert.deepEqual(calls.map((step) => step.id), [2, 3, 4, 5, 6]);
+    assert.equal(stepLines(lines).length, 6);
+    assert.equal(code, 1);
+    assertNoEscape(lines);
+  });
+}
+
+// T20: escape sequences in the output of a failed step are removed, and the text between them is written indented.
+test('T20 runSetup removes escape sequences from the output of a failed step', () => {
+  const output = '\u001b[31mred line\u001b[0m\n\u001b]0;title\u0007title line\nlone\u001b mark\n';
+  const { env, lines } = makeEnv({}, { 4: { status: 'failed', detail: 'exit code 1', output } });
+  runSetup(env);
+  const at = lines.indexOf('FAIL 4/6 PathKit tests: exit code 1');
+  assert.deepEqual(lines.slice(at + 1, at + 4), ['    red line', '    title line', '    lone mark']);
+  assertNoEscape(lines);
+});
+
+// T21: steps 5 and 6 run with the given node path and no shell, on every platform.
+for (const platform of ['win32', 'linux']) {
+  // One test per platform.
+  test(`T21 runSetup runs steps 5 and 6 with execPath and no shell on ${platform}`, () => {
+    const { env, calls } = makeEnv({ platform });
+    runSetup(env);
+    for (const step of calls.filter((call) => call.id >= 5)) {
+      assert.equal(step.command, 'NODE_EXE');
+      assert.equal(step.shell, false);
+    }
+    assert.equal(calls.filter((call) => call.id >= 5).length, 2);
+  });
+}
+
+// T21: on Windows steps 2 to 4 are given to the runner as one command string and no arguments.
+test('T21 runSetup gives steps 2 to 4 as one command string on win32', () => {
+  const { env, calls } = makeEnv({ platform: 'win32' });
+  runSetup(env);
+  assert.deepEqual(
+    calls.filter((call) => call.id <= 4).map((step) => [step.command, step.args, step.shell]),
+    [['npm.cmd --version', [], true], ['npm.cmd ci', [], true], ['npm.cmd test', [], true]],
   );
 });

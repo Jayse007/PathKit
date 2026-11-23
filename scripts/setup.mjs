@@ -186,3 +186,57 @@ export function resultFromSpawn(spawned) {
   if (spawned.status !== 0) return { status: 'failed', detail: `exit code ${spawned.status}`, output };
   return { status: 'ok', detail: '', output };
 }
+
+// Four spaces printed before every line of captured output, so it never looks like a step line.
+export const OUTPUT_INDENT = '    ';
+
+// The word that starts the step line for each level.
+const LEVEL_WORDS = { ok: 'PASS', warn: 'WARN', fail: 'FAIL', skip: 'SKIP' };
+
+// Describes in words why a step failed, for its FAIL line.
+export function failText(result, step) {
+  if (result.status === 'timeout') return `timed out after ${describeLimit(step.timeoutMs)}`;
+  if (result.status === 'too-large') return `output was too large (over ${MAX_BUFFER / (1024 * 1024)} MiB)`;
+  return result.detail;
+}
+
+// Runs the six steps in order through env.run, writes every line through env.write and returns the exit code.
+export function runSetup(env) {
+  const levels = {};
+  let failed = 0;
+  let skipped = 0;
+
+  // Stores the level of a step, counts it and writes its step line.
+  function record(id, level, label, text) {
+    levels[id] = level;
+    if (level === 'fail') failed++;
+    if (level === 'skip') skipped++;
+    env.write(`${LEVEL_WORDS[level]} ${id}/${TOTAL_STEPS} ${label}: ${text}`);
+  }
+
+  env.write(`Step 1/${TOTAL_STEPS}: Node version ...`);
+  const nodeCheck = checkNodeVersion(env.nodeVersion);
+  record(1, nodeCheck.level, 'Node version', nodeCheck.message);
+
+  for (const step of buildSteps(env)) {
+    const reason = skipReason(step.id, levels);
+    if (reason !== null) {
+      record(step.id, 'skip', step.label, reason);
+      continue;
+    }
+    env.write(`Step ${step.id}/${TOTAL_STEPS}: ${step.label} ...`);
+    const result = env.run(step);
+    if (result.status === 'ok') {
+      record(step.id, 'ok', step.label, 'passed');
+    } else {
+      record(step.id, 'fail', step.label, failText(result, step));
+      const shown = lastLines(stripEscapes(result.output), MAX_OUTPUT_LINES);
+      if (shown !== '') {
+        for (const line of shown.split('\n')) env.write(OUTPUT_INDENT + line);
+      }
+    }
+  }
+
+  env.write(formatVerdict(failed, skipped));
+  return failed === 0 ? 0 : 1;
+}

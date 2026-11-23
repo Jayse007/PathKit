@@ -75,22 +75,22 @@ These rules apply to every task below.
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T06 and T11 to pass with 0 failed
     - Mark tasks 1.1 to 1.3 done only from that output. Tell the user the source lines named in 1.1, 1.2 and 1.3, so they can break each once
 
-- [ ] 2. Group 2: step descriptions and the spawn helpers
-  - [ ] 2.1 Add `buildSteps` and `skipReason`
+- [x] 2. Group 2: step descriptions and the spawn helpers
+  - [x] 2.1 Add `buildSteps` and `skipReason`
     - Change only the two files of task 1.1
     - Script: add the constants `MINUTE`, `LIMIT_LONG_MS` (5 minutes) and `LIMIT_SHORT_MS` (60 seconds) and the import of `node:path`. Export `buildSteps({ platform, root, execPath })` returning the five step descriptions of the design (steps 2 to 6) with `id`, `label`, `command`, `args`, `cwd`, `shell` and `timeoutMs`. For steps 2 to 4 with `npmCommand(platform).shell` true, `command` is the one string (`'npm.cmd --version'`, `'npm.cmd ci'`, `'npm.cmd test'`) and `args` is `[]`; otherwise `command` is `'npm'` and `args` holds the arguments. Steps 5 and 6 use `execPath`, `shell: false` and arguments built with `path.join('scripts', ...)`; `cwd` is built with `path.join`. Export `skipReason(id, levels)` with the three rules and texts of the design
     - Tests: T09 `buildSteps` for `win32` and for `linux` with root `'ROOT'` and execPath `'NODE_EXE'`: the exact objects of steps 2 to 6, in order, written by hand with `path.join` for the paths. T10 `skipReason` for each pair of id and earlier levels: step 1 failed gives a reason for 2 to 6; step 2 failed gives a reason for 3 to 6 and `null` for 2; step 3 failed gives a reason for 4 and `null` for 5 and 6; step 4 failed gives `null` for 5 and 6; step 5 failed gives `null` for 6; `warn` and `skip` levels never skip
     - Source lines it should catch: the entries of steps 5 and 6 swapped in `buildSteps` (fails T09); the step 3 rule of `skipReason` changed from `id === 4` to `id >= 4` (fails T10)
     - _Requirements: 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 36, 44, 62, 63, 64_
 
-  - [ ] 2.2 Add `spawnOptions` and `resultFromSpawn`
+  - [x] 2.2 Add `spawnOptions` and `resultFromSpawn`
     - Change only the two files of task 1.1
     - Script: add the constant `MAX_BUFFER = 64 * 1024 * 1024`. Export `spawnOptions(step, baseEnv)` returning `{ cwd, shell, timeout, maxBuffer, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, env }` with `env` a new object that is `baseEnv` plus `NO_COLOR: '1'`. Export `resultFromSpawn(spawned)` returning `{ status, detail, output }` in the order of the design: `ETIMEDOUT` is `timeout`, `ENOBUFS` is `too-large`, any other error is `failed` with `could not start: <code or message>`, status `null` is `failed` with `ended by signal <signal>`, a non-zero status is `failed` with `exit code <status>`, otherwise `ok`; `output` is `combineOutput(stdout, stderr)`
     - Tests: T08 for a step with `shell: false` and for a step with `shell: true` (`command: 'npm.cmd ci'`, `args: []`): the `stdio` array, `maxBuffer` 67108864, `timeout`, `shell` and `cwd` from the step, `env` equal to the base environment plus `NO_COLOR: '1'`, and the base environment object unchanged. T07 hand-made `spawnSync` result objects for status 0, status 1, `ETIMEDOUT`, `ENOBUFS`, `ENOENT` and a signal, with the status, the detail and the output (stdout then stderr) written by hand
     - Source lines it should catch: `'ignore'` changed to `'pipe'` as the first `stdio` entry (fails T08); the `ETIMEDOUT` branch returning `status: 'failed'` (fails T07)
     - _Requirements: 36, 37, 38, 42, 43, 44, 45, 46, 47, 60, 63, 64_
 
-  - [ ] 2.3 Checkpoint 2
+  - [x] 2.3 Checkpoint 2
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T11 to pass with 0 failed
     - Mark tasks 2.1 and 2.2 done only from that output. Tell the user the source lines named in 2.1 and 2.2
 
