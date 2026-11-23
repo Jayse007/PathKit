@@ -10,6 +10,13 @@ In progress: scene validation, baking, evaluation and a motion linter. The two d
 
 ## Run the tests
 
+### Quick start
+
+- Windows, in PowerShell: `.\setup.bat`
+- macOS and Linux: `sh setup.sh`
+
+It installs the PathKit packages with `npm ci`, runs every check and prints PASS or FAIL for each step. It builds nothing.
+
 Tested with Node.js 24.
 
 ```

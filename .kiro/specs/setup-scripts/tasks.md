@@ -140,16 +140,16 @@ These rules apply to every task below.
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T27 all to be present and passing, with 0 failed and 0 skipped. A test id may be split into several tests, so the total count can be higher than 27. Report the counts exactly as pasted
     - Do not start group 6 until the pasted output shows a pass. Mark tasks 5.1 done only from that output. Tell the user the source lines named in 5.1
 
-- [ ] 6. Group 6: the real run
-  - [ ] 6.1 Run the real setup once
+- [x] 6. Group 6: the real run
+  - [x] 6.1 Run the real setup once
     - Precondition: the pasted output of task 5.2 shows 27 passed and 0 failed
     - Run: `node scripts/setup.mjs`. Tell the user it installs the PathKit packages with `npm ci`, runs every check, and takes a minute or more, and that nothing is printed while a step runs except the "before" line. Ask for the whole output pasted
     - Report only what the pasted output shows: the six step lines, the verdict line and which warnings or failures there are. Do not call the run good unless the verdict is `setup: all 6 steps passed.`
     - If a step fails, say whether the script or the machine is the cause, using the printed captured output. A cause in the script follows the test rules above (at most 3 fix attempts, then stop). A cause in the machine (for example a missing `npm`) is reported and not worked around
     - _Requirements: 15, 53, 56, 80, 81, 84_
 
-- [ ] 7. Group 7: README and final report
-  - [ ] 7.1 Add the Quick start to `README.md`
+- [x] 7. Group 7: README and final report
+  - [x] 7.1 Add the Quick start to `README.md`
     - Change only `README.md`, in the section "## Run the tests" only. Directly under that heading, before the line "Tested with Node.js 24.", add a heading `### Quick start`, these two bullets, and one sentence, with a blank line between each part:
       - Bullet 1, as it appears in the README: - Windows, in PowerShell: `.\setup.bat`
       - Bullet 2: - macOS and Linux: `sh setup.sh`
@@ -157,7 +157,7 @@ These rules apply to every task below.
     - Read the file back with `read_file` and confirm that only those lines were added and no other line changed. No command to run
     - _Requirements: 9_
 
-  - [ ] 7.2 Write the final report
+  - [x] 7.2 Write the final report
     - List every file created and every file edited: `scripts/setup.mjs`, `scripts/setup.test.mjs`, `setup.bat`, `setup.sh`, `.gitattributes`, the spec files in `.kiro/specs/setup-scripts/` (`brief.md`, `requirements.md`, `design.md`, `tasks.md`, and any task-record file Kiro created), and the one edit to `README.md`. State that `doctor.mjs` was not created
     - Give the counts of tests passed, failed and skipped from the last pasted output of `node --test scripts/setup.test.mjs`, and the last pasted output of `node scripts/setup.mjs` (the six step lines and the verdict)
     - Say plainly what was not tested: the real run of `node scripts/setup.mjs` was done once by the user, on one machine, with one Node version; `setup.bat` on Windows is run by the user; `setup.sh` and the "Node missing" messages are run by the reviewer on Linux; no other operating system and no other Node version was tried, so the checks do not prove the project works on every machine; on Windows a timed-out step may leave the programs it started running, and this was not tested; the lost-line case of `writeSync` (D18), a `spawnSync` that throws (D13) and the 64 MiB limit with a real process were not tested; Kiro did not check the file footprint (nothing under `packages/pathkit`, no `package.json`, no `package-lock.json`, no `guard-` file changed): the reviewer checks it from the pushed commit
