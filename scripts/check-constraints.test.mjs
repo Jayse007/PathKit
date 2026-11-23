@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  hasWord, hasCase, functionBody, defaultBranch, exportedNames, findTypes, findGaps,
+  hasWord, hasCase, functionBody, defaultBranch, exportedNames, findTypes, findGaps, formatReport, runChecker,
 } from './check-constraints.mjs';
 
 // H1: hasWord counts only whole-word, case-sensitive matches.
@@ -497,6 +497,17 @@ test('T9 the test checks need the whole word', () => {
   assert.deepEqual(findGaps(sources), [
     { type: 'alpha', place: 'scene-test', detail: `no file in ${SCENE_TESTS} mentions alpha` },
   ]);
+
+  // The same two cases for the bake folder: only alphaExtra is a gap, a comment with alpha counts.
+  const bakeOnly = makeSources(['alpha', 'beta', 'gamma']);
+  bakeOnly.bakeTests = bakeOnly.bakeTests.map((file) =>
+    (file.name === 'alpha.test.ts' ? { name: file.name, text: "describe('alphaExtra', () => {});\n" } : file));
+  assert.deepEqual(findGaps(bakeOnly), [
+    { type: 'alpha', place: 'bake-test', detail: `no file in ${BAKE_TESTS} mentions alpha` },
+  ]);
+  bakeOnly.bakeTests = bakeOnly.bakeTests.map((file) =>
+    (file.name === 'alpha.test.ts' ? { name: file.name, text: '// alpha is only in a comment\n' } : file));
+  assert.deepEqual(findGaps(bakeOnly), []);
 });
 
 // T2: a fourth type added only to the union and its interface gives exactly seven gaps for it.
@@ -627,6 +638,126 @@ test('T10 findGaps leaves a frozen input alone and is repeatable', () => {
   assert.equal(first.length, 8);
   assert.deepEqual(second, first);
   assert.deepEqual(findGaps(deepFreeze(makeSources(['alpha', 'beta', 'gamma']))), []);
+});
+
+// T8: a checkConstraintOfType with no default branch at all gives one validate-message gap per type.
+test('T8 no default branch in checkConstraintOfType gives a validate-message gap per type', () => {
+  const sources = makeSources(['alpha', 'beta']);
+  sources.scene = swap(
+    sources.scene,
+    '    default: {\n' +
+      '      throw new SceneError(`Entity "${entityId}": unknown constraint type "${String(c.type)}" (use alpha or beta)`);\n' +
+      '    }\n',
+    '',
+  );
+  assert.deepEqual(findGaps(sources), [
+    {
+      type: 'alpha',
+      place: 'validate-message',
+      detail: `the default message in checkConstraintOfType does not mention alpha, ${SCENE}`,
+    },
+    {
+      type: 'beta',
+      place: 'validate-message',
+      detail: `the default message in checkConstraintOfType does not mention beta, ${SCENE}`,
+    },
+  ]);
+});
+
+// T12: with no findings the report is the single OK line, with the names in union order.
+test('T12 formatReport prints the OK line', () => {
+  const text = formatReport(makeSources(['alpha', 'beta', 'gamma']).scene, []);
+  assert.equal(text, 'constraint-checklist: 3 constraint types (alpha, beta, gamma), every place covered.');
+  assert.equal(text.includes('\u001b'), false);
+});
+
+// T12: with findings the report has a header, one line per finding and the pointer line.
+test('T12 formatReport prints the header, the finding lines and the pointer', () => {
+  const findings = [
+    { type: 'beta', place: 'bake-case', detail: `no case 'beta' in bakeEntity, ${BAKE}` },
+    { type: 'beta', place: 'export', detail: `BetaConstraint is not exported from ${INDEX}` },
+  ];
+  const text = formatReport(makeSources(['alpha', 'beta', 'gamma']).scene, findings);
+  assert.equal(text, [
+    'constraint-checklist: 2 gaps for 3 constraint types.',
+    "  - beta: bake-case (no case 'beta' in bakeEntity, packages/pathkit/src/bake.ts)",
+    '  - beta: export (BetaConstraint is not exported from packages/pathkit/src/index.ts)',
+    'Checklist: docs/adding-a-constraint.md',
+  ].join('\n'));
+  assert.equal(text.includes('\u001b'), false);
+});
+
+// T12: a finding with no type prints without the type prefix, and a missing anchor counts in the header.
+test('T12 formatReport prints a default place and a missing anchor without a type', () => {
+  const findings = [
+    {
+      type: '',
+      place: 'bake-default',
+      detail: `bakeEntity has no default branch calling unknownConstraintType, ${BAKE}`,
+    },
+    { type: '', place: 'anchor', detail: `cannot find drivesRotation in ${BAKE}` },
+  ];
+  const text = formatReport(makeSources(['alpha', 'beta', 'gamma']).scene, findings);
+  assert.equal(text, [
+    'constraint-checklist: 2 gaps for 3 constraint types.',
+    '  - bake-default (bakeEntity has no default branch calling unknownConstraintType, packages/pathkit/src/bake.ts)',
+    '  - anchor (cannot find drivesRotation in packages/pathkit/src/bake.ts)',
+    'Checklist: docs/adding-a-constraint.md',
+  ].join('\n'));
+});
+
+// T12: an orphan prints its interface name where the type would be, and is not counted as a type.
+test('T12 formatReport prints an orphan by its interface name', () => {
+  const scene = swap(makeSources(['alpha', 'beta', 'gamma']).scene, ABG_UNION, `${ABG_UNION} | DeltaConstraint`);
+  const findings = [{
+    type: 'DeltaConstraint',
+    place: 'union',
+    detail: 'DeltaConstraint is listed in the Constraint union but no interface declares it',
+  }];
+  assert.equal(formatReport(scene, findings), [
+    'constraint-checklist: 1 gaps for 3 constraint types.',
+    '  - DeltaConstraint: union (DeltaConstraint is listed in the Constraint union but no interface declares it)',
+    'Checklist: docs/adding-a-constraint.md',
+  ].join('\n'));
+});
+
+// T18: a loader that throws gives the cannot-run line, code 1 with strict and 0 without, and no stack.
+test('T18 runChecker turns an error into one line', () => {
+  const boom = () => { throw new Error('boom'); };
+  assert.deepEqual(runChecker(true, boom), { text: 'constraint-checklist: cannot run (boom)', code: 1 });
+  assert.deepEqual(runChecker(false, boom), { text: 'constraint-checklist: cannot run (boom)', code: 0 });
+});
+
+// T18: only the first line of the message is used, and a thrown non-error value is shown as text.
+test('T18 runChecker keeps the reason to one line', () => {
+  const twoLines = () => { throw new Error('first line\nsecond line\n    at somewhere'); };
+  assert.deepEqual(runChecker(false, twoLines), { text: 'constraint-checklist: cannot run (first line)', code: 0 });
+  const plain = () => { throw 'plain text'; };
+  assert.deepEqual(runChecker(true, plain), { text: 'constraint-checklist: cannot run (plain text)', code: 1 });
+});
+
+// T18b: a complete fixture gives the OK line and code 0, with and without strict.
+test('T18b runChecker with no findings exits 0 in both modes', () => {
+  const okText = 'constraint-checklist: 3 constraint types (alpha, beta, gamma), every place covered.';
+  const load = () => makeSources(['alpha', 'beta', 'gamma']);
+  assert.deepEqual(runChecker(false, load), { text: okText, code: 0 });
+  assert.deepEqual(runChecker(true, load), { text: okText, code: 0 });
+});
+
+// T18b: a fixture with a gap gives the gap text, code 0 without strict and code 1 with strict.
+test('T18b runChecker with a finding exits 1 only with strict', () => {
+  const load = () => {
+    const sources = makeSources(['alpha', 'beta', 'gamma']);
+    sources.bake = swap(sources.bake, BETA_BAKE_CASE, '');
+    return sources;
+  };
+  const text = [
+    'constraint-checklist: 1 gaps for 3 constraint types.',
+    "  - beta: bake-case (no case 'beta' in bakeEntity, packages/pathkit/src/bake.ts)",
+    'Checklist: docs/adding-a-constraint.md',
+  ].join('\n');
+  assert.deepEqual(runChecker(false, load), { text, code: 0 });
+  assert.deepEqual(runChecker(true, load), { text, code: 1 });
 });
 
 // T9: a message that mentions only a longer name does not satisfy the type.

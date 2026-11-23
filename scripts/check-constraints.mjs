@@ -247,3 +247,32 @@ export function findGaps(sources) {
   }
   return [...perType, ...defaults, ...anchors];
 }
+
+// Turns the findings into the text to print: one OK line, or a header, one line per finding and a pointer.
+export function formatReport(sceneText, findings) {
+  const names = findTypes(sceneText).types.map((entry) => entry.type);
+  if (findings.length === 0) {
+    return `constraint-checklist: ${names.length} constraint types (${names.join(', ')}), every place covered.`;
+  }
+  const lines = [`constraint-checklist: ${findings.length} gaps for ${names.length} constraint types.`];
+  for (const finding of findings) {
+    lines.push(finding.type === ''
+      ? `  - ${finding.place} (${finding.detail})`
+      : `  - ${finding.type}: ${finding.place} (${finding.detail})`);
+  }
+  lines.push(`Checklist: ${CHECKLIST}`);
+  return lines.join('\n');
+}
+
+// Runs the whole check on the sources that `load` returns. Never throws: a failure becomes one line.
+export function runChecker(strict, load) {
+  try {
+    const sources = load();
+    const findings = findGaps(sources);
+    return { text: formatReport(sources.scene, findings), code: strict && findings.length > 0 ? 1 : 0 };
+  } catch (error) {
+    const message = error && error.message ? error.message : String(error);
+    const reason = String(message).split(/\r?\n/)[0];
+    return { text: `constraint-checklist: cannot run (${reason})`, code: strict ? 1 : 0 };
+  }
+}

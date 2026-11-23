@@ -79,8 +79,8 @@ These rules apply to every task below.
     - Ask the user to run `node --test scripts/check-constraints.test.mjs` and paste the output. Expect 0 failed
     - Mark task 2.1 done only from that output. Tell the user the source line named in 2.1
 
-- [ ] 3. Group 3: findGaps
-  - [ ] 3.1 Add the fixture helper and the checks in `scene.ts`
+- [x] 3. Group 3: findGaps
+  - [x] 3.1 Add the fixture helper and the checks in `scene.ts`
     - Change only the two files of task 1.1
     - Test file: add `makeSources(types)` as the design describes (interfaces, union entry, a `case` in `checkConstraintOfType`, `bakeEntity` and `drivesRotation`, the default message `(use alpha, beta or gamma)`, the export block, one test text per folder that mentions each name, both defaults calling `unknownConstraintType(`). Build it from small strings
     - Script: export `findGaps(sources)`. In this task it looks up the union and `checkConstraintOfType`, and runs `union`, `validate-case` and `validate-message` for every entry of `types`, and the orphan gap, with the exact `detail` strings of the design. A missing union or a missing `checkConstraintOfType` gives the `cannot find ...` finding with `place: 'anchor'` and skips only the checks that need it. Never throw
@@ -88,35 +88,35 @@ These rules apply to every task below.
     - Source line it should catch: the orphan branch changed to guess `type` as the interface name without the `Constraint` suffix, lower-cased (fails T7)
     - _Requirements: 1.3, 1.4, 2.1, 2.2, 2.3, 2.11, 4.1, 4.2, 4.4, 4.5, 5.1, 5.2, 5.5, 12.3, 12.5, 12.7, 12.9, 12.17_
 
-  - [ ] 3.2 Add the checks in `bake.ts` and `index.ts`
+  - [x] 3.2 Add the checks in `bake.ts` and `index.ts`
     - Change only the two files of task 1.1
     - Script: look up `bakeEntity` and `drivesRotation` in `bake` and the export block in `index`. Run `bake-case`, `rotation-case` and `export` per type, in `TYPE_PLACES` order, with the exact `detail` strings of the design. Missing anchors give the `cannot find` findings and skip only the checks that need them
     - Tests: T3 (second part) removing only `case 'beta'` from `bakeEntity` gives exactly one `bake-case` gap for `beta`, the same for `drivesRotation` and `rotation-case`, and removing only `BetaConstraint` from the export block gives exactly one `export` gap. T8 (rest) no `bakeEntity`, no `drivesRotation` and no export block each give their `cannot find` finding, do not throw, and the other checks still run (all five anchors are now covered). An `export type { ... } from './other.js'` block does not satisfy `export`
     - Source line it should catch: `bakeEntity` looked up as `bakeEntry` (fails T3 and T8)
     - _Requirements: 2.4, 2.5, 2.6, 2.11, 4.2, 4.3, 4.4, 4.5, 12.5, 12.9_
 
-  - [ ] 3.3 Add the test-file checks
+  - [x] 3.3 Add the test-file checks
     - Change only the two files of task 1.1
     - Script: run `scene-test` and `bake-test` per type with `hasWord` over the `text` of each file in `sceneTests` and `bakeTests`, with the exact `detail` strings of the design
     - Tests: T3 (third part) removing the only mention of `beta` from the scene test text gives exactly one `scene-test` gap for `beta`, the same for `bake-test`. A mention in only one of two files counts. T9 (second part) a test text with only `alphaExtra` does not satisfy `alpha`, and a text with `alpha` in a comment does. T2 a fourth type `delta` added only to the union and its interface gives exactly seven gaps for `delta`, in the order `validate-case`, `validate-message`, `bake-case`, `rotation-case`, `export`, `scene-test`, `bake-test`, and none for `alpha`, `beta` and `gamma`
     - Source line it should catch: the `validate-message` check removed from the per-type loop (fails T2: six gaps instead of seven)
     - _Requirements: 2.7, 2.8, 2.9, 2.11, 12.4, 12.5, 12.10_
 
-  - [ ] 3.4 Add the default checks
+  - [x] 3.4 Add the default checks
     - Change only the two files of task 1.1
     - Script: run `bake-default` and `rotation-default` once, after the per-type checks, with `defaultBranch` and a search for `unknownConstraintType(` in the text it returns. A missing branch and a branch without the call are both gaps. Use the exact `detail` strings of the design. A missing function skips its default check
     - Tests: T3 (last part) removing only the `default` branch of `bakeEntity` gives exactly one `bake-default` gap, the same for `drivesRotation`. T4 a `default` branch that does not call `unknownConstraintType(` gives the gap for each function. With a fourth type `delta` added to the whole fixture, there is still exactly one `bake-default` gap and one `rotation-default` gap, not one per type. A default gap has `type` equal to `''`
     - Source line it should catch: the default check changed to test only for `default`, not for `unknownConstraintType(` (fails T4)
     - _Requirements: 3.1, 3.2, 3.3, 12.5, 12.6_
 
-  - [ ] 3.5 Fix the order of the findings and check that inputs are not modified
+  - [x] 3.5 Fix the order of the findings and check that inputs are not modified
     - Change only the two files of task 1.1
     - Script: make the result follow Requirement 7.5: per type (and orphan) in union order, unlisted interfaces last, per-type places in `TYPE_PLACES` order; then `bake-default`, `rotation-default`; then the missing anchors in the order union, `checkConstraintOfType`, `bakeEntity`, `drivesRotation`, export block. `findGaps` creates new arrays and strings and writes nothing into `sources`
     - Tests: T10 a deeply frozen `Sources` (freeze the object, the arrays and each `{ name, text }`) gives no throw and equal arrays on two calls. T11 a fixture with gaps in several places, including a default gap and a missing anchor, gives the findings in the hand-written order
     - Source lines it should catch: the missing anchors moved before the default checks (fails T11), and `sources.sceneTests.sort()` added to `findGaps` (fails T10)
     - _Requirements: 5.2, 5.3, 5.4, 7.5, 12.11_
 
-  - [ ] 3.6 Checkpoint 3
+  - [x] 3.6 Checkpoint 3
     - Ask the user to run `node --test scripts/check-constraints.test.mjs` and paste the output. Expect 0 failed
     - Mark tasks 3.1 to 3.5 done only from that output. Tell the user the source lines named in each of them
 
