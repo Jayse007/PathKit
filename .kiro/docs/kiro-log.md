@@ -3,25 +3,26 @@
 This file records how Kiro was used to build PathKit, with evidence you can check in this repository.
 It is written for the Kiroween 2026 judges and as the source for the Kiro write-up.
 
-Last updated: 2026-11-20. Items marked **[fill in]** are facts only the author can supply. Nothing in this
+Last updated: 2026-11-23. Items marked **[fill in]** are facts only the author can supply. Nothing in this
 file is estimated unless it says so.
 
 ## 1. Summary for judges
 
-PathKit's core library (`spikes/path-core`) was built spec-first in Kiro: requirements, then design, then a
-list of 79 tasks that Kiro executed one at a time. A human ran every test run and pushed every commit.
+PathKit's core library (`packages/pathkit`) was built spec-first in Kiro: requirements, then design, then a
+list of 79 tasks that Kiro executed one at a time. Three more specs followed (`orbit-around`,
+`constraint-checklist`, `setup-scripts`). A human ran every test run and pushed every commit.
 
 | Kiro feature | Used? | How it was used | Evidence in this repo |
 | --- | --- | --- | --- |
-| Spec-driven development | Yes, heavily | One spec (`path-core`) with requirements, design and tasks. Kiro wrote every source and test file from it, task by task. | `.kiro/specs/path-core/` |
+| Spec-driven development | Yes, heavily | Four specs (`path-core`, `orbit-around`, `constraint-checklist`, `setup-scripts`), each with requirements, design and tasks. Kiro wrote the source and test files from them, task by task. | `.kiro/specs/` |
 | Steering docs | Yes | Five steering files that stop Kiro repeating mistakes it had already made. Four always apply, one applies only to test files. | `.kiro/steering/` |
-| Property-based testing | Yes | The design states 45 numbered correctness properties. They are written as `fast-check` tests. Kiro's own property-test tracking recorded one result. | `.kiro/specs/path-core/design.md`, `spikes/path-core/test/`, `tasks.meta.json` |
+| Property-based testing | Yes | The path-core design states 45 numbered correctness properties and the orbit-around design 13 more (O1 to O13). They are written as `fast-check` tests. Kiro's own property-test tracking recorded one result. | `.kiro/specs/path-core/design.md`, `.kiro/specs/orbit-around/design.md`, `packages/pathkit/test/`, `tasks.meta.json` |
 | Known-issues log | Yes | Every time Kiro or its environment caused a problem, it was written down with the fix. 11 entries. | `.kiro/docs/known-issues.md` |
-| Agent hooks | Not yet | Planned: a hook that wires new constraints into the project. | none yet |
+| Agent hooks | Yes | Three command hooks, none of which uses credits: `guard-terminal` (blocks every terminal command Kiro tries to run), `guard-core` (blocks writes to the frozen core unless unlocked on purpose) and `constraint-checklist` (runs before each spec task and reports places a new constraint forgot; whether the agent always sees its output is not proven). | `.kiro/hooks/`, `.kiro/docs/hooks-notes.md` |
 | MCP server | Not yet | A small PathKit MCP server is a stretch goal only. | none yet |
 | Custom agents, powers, workflows | No | Not planned at the moment. | none |
 
-**[fill in]** Kiro version used: 1.4.154 (as last recorded in the brief). Models used: **[fill in]**.
+**[fill in]** Kiro version used: 1.4.154 (as last recorded in the brief). Models used: [Auto].
 
 ## 2. How the work was done
 
@@ -59,6 +60,7 @@ Numbers measured from the repository on 2026-11-20:
 | 2026-11-22 | 559.86 | Before the orbitAround implementation tasks. The spec files (requirements, design, tasks) and the hook work were already done |
 | 2026-11-22 | 606.54 | After orbitAround finished (26 tasks, 3 checkpoints). Implementation cost: 606.54 minus 559.86 = 46.68 |
 | 2026-11-23 | 676.55 | Before the setup-scripts implementation tasks. Since 606.54, the constraint-checklist spec and build and the setup-scripts requirements, design and tasks cost 70.01 together (676.55 minus 606.54) |
+| 2026-11-23 | 698.41 | After the setup-scripts implementation. Implementation cost: 698.41 minus 676.55 = 21.86 |
 
 One incident cost credits for no result: a multi-line PowerShell command hung Kiro's shell for 48 minutes
 (about 1.18 credits). It led to a steering rule (`windows-terminal.md`).
@@ -77,10 +79,14 @@ These are the useful parts of the log. Each one changed how the project is run.
 | One property test took 15.7 s because it called `expect` about 15 times per frame. | Rule: plain checks inside loops; a test file over 5 s counts as a defect. | KI-10, `testing-conventions.md` |
 | 23 tests failed because Kiro compared a custom error type to a plain `Error`. | Rule 6 in `testing-conventions.md`. | `testing-conventions.md` |
 | Kiro said some lines would be caught by a test. Breaking the code on purpose showed they would not. | Kiro now lists, for every test, the exact source line it should catch. Lines nobody can catch are listed honestly. | `testing-conventions.md` (rule 4) |
-| A test for path-end detection read its expected answer from the data it was checking, so it could not notice a wrong choice. | Test rewritten to compute the answer from the scene alone. | `spikes/path-core/test/linter/property-38.test.ts` |
+| A test for path-end detection read its expected answer from the data it was checking, so it could not notice a wrong choice. | Test rewritten to compute the answer from the scene alone. | `packages/pathkit/test/linter/property-38.test.ts` |
 | Kiro explained the heap-growth test wrongly: it only detects memory that is kept, not short-lived garbage. | Wording corrected in the design and the test comments. | `design.md`, `test/evaluate/` |
 | Kiro quoted source line numbers that were often wrong, and predicted test counts that were often wrong. | Line numbers are checked with a search. Real counts come from the author's run. | Not yet written into a steering file (to do) |
-| Kiro ran terminal commands it was told not to run. | The prompt repeats the rule; output is ignored. | **[fill in]** |
+| Kiro ran terminal commands it was told not to run. | A hook (`guard-terminal`) now blocks every terminal command, so the rule no longer depends on the prompt. | `.kiro/docs/hooks-notes.md` |
+| A hook's output did not always reach the agent: a sub-agent reported it on 2026-11-22, the main agent received nothing on 2026-11-23. | The checklist hook is kept as a reminder only. The real safeguard is the author running `node scripts/check-constraints.mjs --strict` before declaring a constraint finished. | `docs/adding-a-constraint.md`, `.kiro/docs/hooks-notes.md` |
+| Kiro could not check which files a task changed. | Each pushed commit is checked against the files the spec allows. | `.kiro/specs/constraint-checklist/`, `.kiro/specs/setup-scripts/` |
+| Design problems found in review before any code was written for the setup script: a deprecated way to start npm on Windows, output that can be lost when the program exits, a default output limit of 1 MiB, and a child program that could wait for keyboard input. | The design was edited first. | `.kiro/specs/setup-scripts/design.md` |
+| The first tests for both scripts missed real breaks (examples: a script that reads standard input would hang the hook; the exit code with two failures; the exit code of the setup function). | Tests added until each break failed a test. | `scripts/check-constraints.test.mjs`, `scripts/setup.test.mjs` |
 
 Known limits in the finished code are documented, not hidden. KI-11 describes a closed-path orientation
 snap that remains.
@@ -130,3 +136,17 @@ Keep entries short. Copy the facts from the repository, not from memory.
   (3) A break-test Kiro suggested ("remove `typeof` alone") cannot fail because the two guards overlap.
 - Change made because of it: task 3.11 (the one allowed edit to an existing test, a type-only change) and
   task 5.8 (two extra tests). Both are recorded in `.kiro/specs/orbit-around/tasks.md`.
+
+### 2026-11-23 - constraint checklist (spec constraint-checklist)
+- What Kiro did: wrote 14 requirements, a design and 9 task groups with 5 checkpoints, then
+  `scripts/check-constraints.mjs` (321 lines), 66 tests, the hook `.kiro/hooks/constraint-checklist.json` and one line in `docs/adding-a-constraint.md`.
+- Credits used: not measured separately. The spec and build, together with the setup-scripts requirements, design and tasks, cost 70.01 (see section 3).
+- What went wrong or surprised me: the independent reviewer broke about 125 single lines in clean copies and
+  found test gaps (a missing colon, a double-quoted type name, a missing `default` branch, whole-word matching, a script touching standard input). The hook's output did not always reach the agent.
+- Change made because of it: tests added for each gap; the claim about the hook was reduced to "runs the check and may show the agent the result".
+
+### 2026-11-23 - setup scripts (spec setup-scripts)
+- What Kiro did: wrote 84 requirements, a design with 19 decisions and the tasks, then `scripts/setup.mjs` (291 lines), `scripts/setup.test.mjs` (71 tests), `setup.bat`, `setup.sh`, `.gitattributes` and a README "Quick start".
+- Credits used: 21.86 for the implementation (see section 3).
+- What went wrong or surprised me: design problems caught in review (see section 4); about 140 broken lines in total across both scripts found more test gaps; for the `node --test` step only the last 30 lines of output are shown.
+- Change made because of it: design and tests edited; one README sentence tells readers to run the failing step's command by hand.
