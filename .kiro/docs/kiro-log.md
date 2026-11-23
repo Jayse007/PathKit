@@ -59,6 +59,8 @@ Numbers measured from the repository on 2026-11-20:
 | 2026-11-22 | 559.86 | Before the orbitAround implementation tasks. The spec files (requirements, design, tasks) and the hook work were already done |
 | 2026-11-22 | 606.54 | After orbitAround finished (26 tasks, 3 checkpoints). Implementation cost: 606.54 minus 559.86 = 46.68 |
 
+676.55 used 
+
 One incident cost credits for no result: a multi-line PowerShell command hung Kiro's shell for 48 minutes
 (about 1.18 credits). It led to a steering rule (`windows-terminal.md`).
 

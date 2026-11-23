@@ -13,6 +13,7 @@ inclusion: always
 - Use npm.cmd instead of npm, because PowerShell blocks npm.ps1. Never ask for npx, npx.cmd or tsc: they can try to download packages and hang.
 - To run the tests, ask for exactly: npm.cmd test, run from packages/pathkit. Add nothing to it.
 - Two more commands may be asked for, only when a spec task names them, one at a time, run from the repo root: `node --test scripts/check-constraints.test.mjs` (the script tests) and `node scripts/check-constraints.mjs --strict` (the constraint checklist). Add nothing to them. They need no install and cannot download anything.
+- Two more commands may be asked for, only when a spec task names them, from the repo root: `node --test scripts/setup.test.mjs` and, once at the end, `node scripts/setup.mjs`. Add nothing to them.
 - Keep every command on one line. Never ask for watch mode or any command that does not exit.
 - If PowerShell says "running scripts is disabled", tell the user to run once in their own PowerShell: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned. Never suggest any other change to execution policy, environment variables or system settings.
 - If npm install fails, ask the user to run it in their own terminal and wait.
