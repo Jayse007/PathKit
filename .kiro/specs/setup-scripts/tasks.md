@@ -114,8 +114,8 @@ These rules apply to every task below.
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T21 to pass with 0 failed
     - Mark tasks 3.1 and 3.2 done only from that output. Tell the user the source lines named in 3.1 and 3.2
 
-- [ ] 4. Group 4: the real parts
-  - [ ] 4.1 Add `runStep`, `createEnv` and the command-line part
+- [x] 4. Group 4: the real parts
+  - [x] 4.1 Add `runStep`, `createEnv` and the command-line part
     - Change only the two files of task 1.1
     - Script: add the imports of `spawnSync`, `writeSync`, `realpathSync`, `fileURLToPath` and `pathToFileURL`. Add `const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')`. Export `runStep(step)`: `resultFromSpawn(spawnSync(step.command, step.args, spawnOptions(step, process.env)))` inside a `try`, with a `catch` that returns `{ status: 'failed', detail: 'could not start: <message>', output: '' }`. Export `createEnv()` returning `platform: process.platform`, `nodeVersion: process.versions.node`, `root: ROOT`, `execPath: process.execPath`, `run: runStep` and `write: (line) => { try { writeSync(1, line + '\n'); } catch { /* ... */ } }`. Add `isMain()` exactly as in `scripts/check-constraints.mjs` and, below it, `if (isMain()) { process.exitCode = runSetup(createEnv()); }`. No `process.exit`, no `process.stdout`, anywhere in the file, comments included
     - Tests: T22 `createEnv()` has `platform === process.platform`, `nodeVersion === process.versions.node`, `execPath === process.execPath`, `root` equal to the parent folder of the test file's folder (computed in the test with `fileURLToPath` and `path`), and function values for `run` and `write`; the test does not call them. T23 `spawnSync(process.execPath, ['--input-type=module', '-e', code])` where `code` imports `scripts/setup.mjs` by its `pathToFileURL` and then writes `String(process.exitCode)`: stdout is exactly `undefined` and stderr is empty. T27 the test reads `scripts/setup.mjs` (path from `import.meta.url`): the text contains `writeSync(1` and does not contain `process.stdout`
@@ -123,12 +123,12 @@ These rules apply to every task below.
     - Source lines it should catch: `process.execPath` changed to `'node'` in `createEnv` (fails T22); a top-level `process.stdout.write('loaded\n')` added (fails T23 and T27); `writeSync(1, line + '\n')` replaced by `process.stdout.write(line + '\n')` in `createEnv` (fails T27). None of these starts `npm`
     - _Requirements: 33, 52, 59, 60, 61, 62, 63, 75, 76_
 
-  - [ ] 4.2 Checkpoint 4
+  - [x] 4.2 Checkpoint 4
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T23 and T27 to pass with 0 failed
     - Mark task 4.1 done only from that output. Tell the user the source lines named in 4.1
 
-- [ ] 5. Group 5: launchers and `.gitattributes`
-  - [ ] 5.1 Create `setup.sh`, `setup.bat` and `.gitattributes`
+- [x] 5. Group 5: launchers and `.gitattributes`
+  - [x] 5.1 Create `setup.sh`, `setup.bat` and `.gitattributes`
     - Create only these three files in the repository root, and change only the test file otherwise. Write `setup.sh` with LF line endings and no carriage return anywhere
     - `setup.sh`: the five lines of the design (`#!/bin/sh`, `cd "$(dirname "$0")" || exit 1`, the `command -v node` check with a plain message and `exit 1`, `node scripts/setup.mjs`, `exit $?`). `setup.bat`: the five lines of the design (`@echo off`, `cd /d "%~dp0"`, `where node >nul 2>nul`, the one-line `if errorlevel 1 echo ...& exit /b 1`, `node scripts\setup.mjs`, `exit /b %errorlevel%`). It has no `goto`, no label line and no `(` character. `.gitattributes`: exactly the two lines `setup.sh text eol=lf` and `setup.bat text eol=crlf`. The launchers contain nothing else: no download, no administrator request, no setting change
     - Tests: T24 `setup.sh` starts with `#!/bin/sh`, contains no `\r`, and contains `command -v node` and `scripts/setup.mjs`. T25 `setup.bat` contains `where node` and `scripts\setup.mjs`; the text is split with `/\r?\n/` and no line, after optional leading spaces, starts with `:`; it contains no `goto` (any case) and no `(`. T26 the non-empty trimmed lines of `.gitattributes` are exactly `['setup.sh text eol=lf', 'setup.bat text eol=crlf']`. All three read the files with paths built from `import.meta.url`
@@ -136,7 +136,7 @@ These rules apply to every task below.
     - Source lines it should catch: the `command -v node` line deleted from `setup.sh` (fails T24); a line `:done` added to `setup.bat` (fails T25); a third rule added to `.gitattributes` (fails T26)
     - _Requirements: 2, 3, 7, 14, 64, 77, 82_
 
-  - [ ] 5.2 Checkpoint 5: all tests
+  - [x] 5.2 Checkpoint 5: all tests
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T27 all to be present and passing, with 0 failed and 0 skipped. A test id may be split into several tests, so the total count can be higher than 27. Report the counts exactly as pasted
     - Do not start group 6 until the pasted output shows a pass. Mark tasks 5.1 done only from that output. Tell the user the source lines named in 5.1
 

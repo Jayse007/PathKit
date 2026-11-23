@@ -9,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import {
   checkNodeVersion, npmCommand, stripEscapes, lastLines, combineOutput, formatVerdict, describeLimit,
-  buildSteps, skipReason, spawnOptions, resultFromSpawn, runSetup, createEnv,
+  buildSteps, skipReason, spawnOptions, resultFromSpawn, runSetup, runStep, createEnv,
 } from './setup.mjs';
 
 // The folder of this test file (scripts) and the repository root above it, from import.meta.url.
@@ -380,7 +380,9 @@ const FAILED_1 = { status: 'failed', detail: 'exit code 1', output: '' };
 // T12: everything passes: the five steps run in order, six step lines, one verdict, exit code 0.
 test('T12 runSetup with everything passing', () => {
   const { env, lines, calls } = makeEnv();
+  const exitCodeBefore = process.exitCode;
   const code = runSetup(env);
+  assert.equal(process.exitCode, exitCodeBefore);
   assert.deepEqual(calls.map((step) => ({ id: step.id, command: step.command, args: step.args, cwd: step.cwd })), [
     { id: 2, command: 'npm', args: ['--version'], cwd: 'ROOT' },
     { id: 3, command: 'npm', args: ['ci'], cwd: PATHKIT },
@@ -481,9 +483,11 @@ test('T16 runSetup with a failed install', () => {
 
 // T18: a timeout on step 4 says it timed out after 5 minutes, and not "exit code".
 test('T18 runSetup reports a timeout of the PathKit tests', () => {
-  const { env, lines } = makeEnv({}, { 4: { status: 'timeout', detail: '', output: '' } });
+  const { env, lines } = makeEnv({}, { 4: { status: 'timeout', detail: '', output: 'out 1\nout 2' } });
   const code = runSetup(env);
   assert.equal(stepLines(lines)[3], 'FAIL 4/6 PathKit tests: timed out after 5 minutes');
+  const at = lines.indexOf('FAIL 4/6 PathKit tests: timed out after 5 minutes');
+  assert.deepEqual(lines.slice(at + 1, at + 3), ['    out 1', '    out 2']);
   assert.ok(!lines.some((line) => line.includes('exit code')));
   assert.equal(code, 1);
   assertNoEscape(lines);
@@ -500,9 +504,11 @@ test('T18 runSetup reports a timeout of the checklist tests', () => {
 
 // T19: output that was too large is reported as such, not as a generic failure.
 test('T19 runSetup reports output that was too large', () => {
-  const { env, lines } = makeEnv({}, { 4: { status: 'too-large', detail: '', output: '' } });
+  const { env, lines } = makeEnv({}, { 4: { status: 'too-large', detail: '', output: 'out 1\nout 2' } });
   const code = runSetup(env);
   assert.equal(stepLines(lines)[3], 'FAIL 4/6 PathKit tests: output was too large (over 64 MiB)');
+  const at = lines.indexOf('FAIL 4/6 PathKit tests: output was too large (over 64 MiB)');
+  assert.deepEqual(lines.slice(at + 1, at + 3), ['    out 1', '    out 2']);
   assert.equal(code, 1);
   assertNoEscape(lines);
 });
@@ -535,6 +541,16 @@ for (const id of [4, 5, 6]) {
     assertNoEscape(lines);
   });
 }
+
+// T17: two failed steps still give exit code exactly 1, and the verdict counts both.
+test('T17 runSetup with steps 4 and 5 both failed gives exit code 1 and the verdict 2 of 6', () => {
+  const { env, lines, calls } = makeEnv({}, { 4: FAILED_1, 5: FAILED_1 });
+  const code = runSetup(env);
+  assert.equal(code, 1);
+  assert.equal(lines[lines.length - 1], 'setup: 2 of 6 steps failed.');
+  assert.deepEqual(calls.map((step) => step.id), [2, 3, 4, 5, 6]);
+  assertNoEscape(lines);
+});
 
 // T20: escape sequences in the output of a failed step are removed, and the text between them is written indented.
 test('T20 runSetup removes escape sequences from the output of a failed step', () => {
@@ -577,7 +593,7 @@ test('T22 createEnv gives the real platform, Node version, node path and reposit
   assert.equal(env.nodeVersion, process.versions.node);
   assert.equal(env.execPath, process.execPath);
   assert.equal(env.root, REPO_ROOT);
-  assert.equal(typeof env.run, 'function');
+  assert.equal(env.run, runStep);
   assert.equal(typeof env.write, 'function');
 });
 
@@ -601,4 +617,31 @@ test('T27 setup.mjs uses writeSync(1 and never process.stdout', () => {
   const text = readFileSync(path.join(SCRIPTS_DIR, 'setup.mjs'), 'utf8');
   assert.ok(text.includes('writeSync(1'));
   assert.ok(!text.includes('process.stdout'));
+});
+
+// T24: setup.sh starts with the shell line, has no carriage return, checks for node and starts the script.
+test('T24 setup.sh starts with #!/bin/sh, has no carriage return and runs the script', () => {
+  const text = readFileSync(path.join(REPO_ROOT, 'setup.sh'), 'utf8');
+  assert.ok(text.startsWith('#!/bin/sh'), 'the first line is not #!/bin/sh');
+  assert.ok(!text.includes('\r'), 'setup.sh contains a carriage return (a defect in setup.sh)');
+  assert.ok(text.includes('command -v node'));
+  assert.ok(text.includes('scripts/setup.mjs'));
+});
+
+// T25: setup.bat checks for node and starts the script, with no goto, no label line and no ( character.
+test('T25 setup.bat has where node, runs the script and has no goto, label or (', () => {
+  const text = readFileSync(path.join(REPO_ROOT, 'setup.bat'), 'utf8');
+  assert.ok(text.includes('where node'));
+  assert.ok(text.includes('scripts\\setup.mjs'));
+  assert.ok(!/goto/i.test(text), 'setup.bat contains goto');
+  const labelLines = text.split(/\r?\n/).filter((line) => /^\s*:/.test(line));
+  assert.deepEqual(labelLines, []);
+  assert.ok(!text.includes('('), 'setup.bat contains a ( character');
+});
+
+// T26: .gitattributes holds exactly the two line-ending rules.
+test('T26 .gitattributes holds exactly the two rules', () => {
+  const text = readFileSync(path.join(REPO_ROOT, '.gitattributes'), 'utf8');
+  const rules = text.split(/\r?\n/).map((line) => line.trim()).filter((line) => line !== '');
+  assert.deepEqual(rules, ['setup.sh text eol=lf', 'setup.bat text eol=crlf']);
 });
