@@ -1,10 +1,10 @@
 # Kiro hooks: what we learned
 
-Tested on 21 November 2026, Kiro 1.4.154 (user setup), Windows, Node via nvm4w.
+Tested on 21 to 23 November 2026, Kiro 1.4.154 (user setup), Windows, Node via nvm4w.
 
 A **hook** is a small rule that Kiro runs automatically when something happens
 (a tool is about to run, a file is saved, a session starts). We used hooks to
-protect PathKit's frozen core and to stop Kiro from running terminal commands.
+protect PathKit's frozen core, to stop Kiro from running terminal commands, and to run a constraint checklist before each spec task.
 Kiro's documentation was incomplete on several points, so we measured the real
 behaviour with throwaway probe hooks that logged everything they received.
 This note records what we found, so nobody has to repeat the experiments.
@@ -75,10 +75,13 @@ An **exit code** is the number a program returns when it finishes.
 | Exit code | Effect | Status |
 | --- | --- | --- |
 | 2 on PreToolUse | **Blocks the tool call.** What the hook wrote to standard error is shown to the agent. Kiro stopped and obeyed. | tested |
-| 2 on UserPromptSubmit, PreTaskExec, PreCompact | Blocks, forwards standard error | untested (from Kiro's tool description) |
-| 0 on SessionStart, UserPromptSubmit, PreTaskExec, PreCompact, PostCompact | Standard output is forwarded to the agent | untested (from Kiro's tool description) |
+| 2 on UserPromptSubmit, PreCompact | Blocks, forwards standard error | untested (from Kiro's tool description) |
+| 0 on SessionStart, UserPromptSubmit, PreCompact, PostCompact | Standard output is forwarded to the agent | untested (from Kiro's tool description) |
+| 0 on PreTaskExec | The task goes ahead. Standard output was reported by a sub-agent on 2026-11-22. The main agent did not see it on 2026-11-22 or 2026-11-23. | tested; delivery to the main agent is not proven |
 | Any other code (for example 1) | Silent failure, nothing is blocked | per Kiro's description; exit 1 on PostFileSave delivered nothing (tested) |
 | Anything on PostFileSave | **A command hook cannot talk back from PostFileSave.** Neither exit 1 nor exit 2 delivered a message. | tested |
+
+Exit code 2 on PreTaskExec is untested, and the checklist hook never uses it.
 
 Kiro's public documentation disagrees with its own tool description on some of
 these rules. We trusted the installed version's tool description and confirmed
@@ -157,6 +160,14 @@ terminal command was reported blocked with the exact guard-terminal message,
 although that call did not appear in the sub-agent's trace, so that one rests on
 the sub-agent's report and not on a trace line.
 
+### The constraint-checklist hook (not a guard)
+
+Files: `scripts/check-constraints.mjs`, `.kiro/hooks/constraint-checklist.json`. Trigger `PreTaskExec`, matcher `.*`, command `node scripts/check-constraints.mjs` (no `--strict`).
+
+It reads the library sources and tests as text, finds every constraint type itself and reports the places that forget one. It blocks nothing, never edits a file and always exits 0 without `--strict`. It never reads standard input, because a hook that waits for input hangs the task. A test fails if the script touches standard input. It costs no credits.
+
+What we can and cannot claim: the hook runs the check before each spec task and may show the agent the result. We did not prove that the agent always sees it (section 9). The real safeguard is the author running `node scripts/check-constraints.mjs --strict` before declaring a constraint finished (`docs/adding-a-constraint.md`).
+
 ## 8. Traps we hit
 
 - Forward-slash matchers do nothing on Windows (section 2).
@@ -174,17 +185,16 @@ the sub-agent's report and not on a trace line.
 - Command hooks cost no Kiro credits. Building and testing the hooks cost
   roughly 4 credits in total by Kiro's own estimates (several sessions at
   0.1 to 0.5 credits each).
+- A hook that reads standard input can hang a spec task. Command hooks must finish without waiting for input.
+- Output from a `PreTaskExec` hook may never reach the main agent, so it cannot be used for enforcement. Use an exit-2 block on a Pre Tool Use hook when something must never happen, and a human-run check for the rest.
 
 ## 9. Not tested
 
-- Payloads and output delivery for PreTaskExec, PostTaskExec, Stop, SessionStart
+- Payloads and output delivery for PostTaskExec, Stop, SessionStart
   and UserPromptSubmit.
 - Other loadable tools Kiro listed but we did not inspect: `create_artifact`,
   `update_session_information`, `control_pwsh_process`, `get_process_output`,
   `list_processes`, `remote_web_search`. None is known to write project files.
 - The guard protects against Kiro's tools only. It does not stop the developer,
   git, or another editor, which is intended.
-- PreTaskExec (tested 22 Nov 2026): fires before each spec task. The hook receives session_id, hook_event_name, cwd,
-  spec_name (the full path of tasks.md, despite the name) and task_name (the task text). Exit 0 did not stop the
-  task. Output printed on standard output was reported by the task's sub-agent as hook output, but the main agent
-  did not see it. That rests on the sub-agent's report. Payloads for Stop, SessionStart and UserPromptSubmit remain untested.
+- PreTaskExec (tested 22 and 23 Nov 2026): fires before each spec task. The hook receives session_id, hook_event_name, cwd, spec_name (the full path of tasks.md, despite the name) and task_name (the task text). Exit 0 did not stop the task. On 22 Nov the task's sub-agent reported the output printed on standard output, but the main agent did not see it. On 23 Nov the main agent ran a probe task itself and received nothing (it wrote `NOTHING RECEIVED`). The script wrote no log, so that probe cannot show whether the hook fired. So the hook runs the command, but whether the agent sees the output is not proven. Payloads for Stop, SessionStart and UserPromptSubmit remain untested.
