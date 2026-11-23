@@ -3,7 +3,7 @@
 This file records how Kiro was used to build PathKit, with evidence you can check in this repository.
 It is written for the Kiroween 2026 judges and as the source for the Kiro write-up.
 
-Last updated: 2026-11-23. Items marked **[fill in]** are facts only the author can supply. Nothing in this
+Last updated: 2026-11-23. Nothing in this
 file is estimated unless it says so.
 
 ## 1. Summary for judges
@@ -22,7 +22,7 @@ list of 79 tasks that Kiro executed one at a time. Three more specs followed (`o
 | MCP server | Not yet | A small PathKit MCP server is a stretch goal only. | none yet |
 | Custom agents, powers, workflows | No | Not planned at the moment. | none |
 
-**[fill in]** Kiro version used: 1.4.154 (as last recorded in the brief). Models used: [Auto].
+Kiro version used: 1.4.154. Models used: Auto.
 
 ## 2. How the work was done
 
@@ -93,11 +93,7 @@ snap that remains.
 
 ## 5. Tools other than Kiro
 
-**[fill in, and confirm before submission]** The planning, the prompts given to Kiro, and an independent review
-of every commit were done with a separate AI assistant (Claude, from Anthropic) in a chat. The reviewer
-re-ran each commit in a clean copy, type-checked it, and broke the code on purpose to check that tests
-fail. All source and test files in this repository were written by Kiro. Some spec edits were suggested in
-the chat and applied by Kiro. **[fill in]** If any file was written or edited outside Kiro, list it here.
+The planning, the prompts given to Kiro and an independent review of every commit were done with a separate AI assistant (Claude, from Anthropic) in a chat. The reviewer re-ran each commit in a clean copy, type-checked it, and broke the code on purpose to check that tests fail (about 150 single-line breaks for the core, about 125 for the constraint checklist and about 140 in total across the checklist and the setup scripts). The reviewer wrote no file in this repository. Kiro wrote every source, test, script and hook file from the specs. The author typed no text of their own into the repository. Text that was written in the chat and then saved or applied by Kiro or the author: the two `brief.md` files (`.kiro/specs/constraint-checklist/` and `.kiro/specs/setup-scripts/`), the first version of `docs/adding-a-constraint.md`, one sentence in the README, two lines in `.kiro/steering/windows-terminal.md`, some spec edits, and the edits to this log dated 2026-11-23.
 
 The official rules page, as read on 2026-11-20, requires entrants to "build a working software application
 using Kiro" and to disclose other pre-existing code or work. It had no rule about using other AI tools.
