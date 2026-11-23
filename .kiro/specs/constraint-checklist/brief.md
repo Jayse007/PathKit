@@ -52,10 +52,16 @@ For every constraint type `t` the script then checks these places. Each place ha
 | `bake-default` | `bakeEntity` | it has a `default:` branch that calls `unknownConstraintType(` |
 | `rotation-default` | `drivesRotation` | same |
 | `export` | `index.ts` | the interface name is inside the `export type { ... } from './scene.js'` block |
-| `scene-test` | `packages/pathkit/test/scene/` | some `.ts` file there contains `'t'` in quotes |
-| `bake-test` | `packages/pathkit/test/bake/` | some `.ts` file there contains `'t'` in quotes |
+| `scene-test` | `packages/pathkit/test/scene/` | some `.ts` file there contains `t` as a whole word (letters on both sides do not count) |
+| `bake-test` | `packages/pathkit/test/bake/` | some `.ts` file there contains `t` as a whole word |
 
 The `default` checks do not depend on the type. They are reported once, with the id and no type name.
+
+The two test checks look for the type name as a whole word, not in quotes. This is deliberate. The real scene tests
+for `orbitAround` build their constraints through a helper and mention the name only in titles and messages, so a
+quoted-name check would report a false gap on the real repository. The cost is that a name in a comment would also
+count. The check shows that a test file mentions the type, not that it tests it well. Say this in the design
+and in the script's header comment.
 
 To get a function body, find `function name(`, then count curly braces until they balance. Strings and template
 literals in these functions contain balanced braces, so this is enough. If a function or the union cannot be
