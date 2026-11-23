@@ -4,10 +4,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { spawnSync } from 'node:child_process';
 import {
   checkNodeVersion, npmCommand, stripEscapes, lastLines, combineOutput, formatVerdict, describeLimit,
-  buildSteps, skipReason, spawnOptions, resultFromSpawn, runSetup,
+  buildSteps, skipReason, spawnOptions, resultFromSpawn, runSetup, createEnv,
 } from './setup.mjs';
+
+// The folder of this test file (scripts) and the repository root above it, from import.meta.url.
+const SCRIPTS_DIR = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(SCRIPTS_DIR, '..');
 
 // T01: the hand-written version table of requirement 67.
 const VERSION_TABLE = [
@@ -561,4 +568,37 @@ test('T21 runSetup gives steps 2 to 4 as one command string on win32', () => {
     calls.filter((call) => call.id <= 4).map((step) => [step.command, step.args, step.shell]),
     [['npm.cmd --version', [], true], ['npm.cmd ci', [], true], ['npm.cmd test', [], true]],
   );
+});
+
+// T22: createEnv gives this machine's values and functions for run and write. The test calls neither function.
+test('T22 createEnv gives the real platform, Node version, node path and repository root', () => {
+  const env = createEnv();
+  assert.equal(env.platform, process.platform);
+  assert.equal(env.nodeVersion, process.versions.node);
+  assert.equal(env.execPath, process.execPath);
+  assert.equal(env.root, REPO_ROOT);
+  assert.equal(typeof env.run, 'function');
+  assert.equal(typeof env.write, 'function');
+});
+
+// T23: importing the script in a separate Node process prints nothing and leaves process.exitCode unset.
+test('T23 importing setup.mjs prints nothing and sets no exit code', () => {
+  const url = pathToFileURL(path.join(SCRIPTS_DIR, 'setup.mjs')).href;
+  const code = `await import(${JSON.stringify(url)}); process.stdout.write(String(process.exitCode));`;
+  const result = spawnSync(process.execPath, ['--input-type=module', '-e', code], {
+    encoding: 'utf8',
+    timeout: 30000,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  assert.equal(result.error, undefined);
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout, 'undefined');
+  assert.equal(result.stderr, '');
+});
+
+// T27: the script writes with writeSync(1 and the text process.stdout appears nowhere in it.
+test('T27 setup.mjs uses writeSync(1 and never process.stdout', () => {
+  const text = readFileSync(path.join(SCRIPTS_DIR, 'setup.mjs'), 'utf8');
+  assert.ok(text.includes('writeSync(1'));
+  assert.ok(!text.includes('process.stdout'));
 });

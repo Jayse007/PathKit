@@ -94,8 +94,8 @@ These rules apply to every task below.
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T11 to pass with 0 failed
     - Mark tasks 2.1 and 2.2 done only from that output. Tell the user the source lines named in 2.1 and 2.2
 
-- [ ] 3. Group 3: runSetup
-  - [ ] 3.1 Add `runSetup` with the step lines, skips and verdict
+- [x] 3. Group 3: runSetup
+  - [x] 3.1 Add `runSetup` with the step lines, skips and verdict
     - Change only the two files of task 1.1
     - Test file first: add the helpers `makeEnv(overrides)` (`platform: 'linux'`, `nodeVersion: '24.0.0'`, `root: 'ROOT'`, `execPath: 'NODE_EXE'`, a fake `run` and a `write` that pushes to an array), `makeRun(table)` (records each step in `calls`, answers `table[step.id]` or an `ok` result with empty output), `stepLines(lines)` (lines starting with `PASS`, `WARN`, `FAIL` or `SKIP`, nothing else) and `assertNoEscape(lines)` (fails when a line contains `\u001b`)
     - Script: export `runSetup(env)` and the helper `failText(result, step)`. Follow the design: write `Step 1/6: Node version ...`, run `checkNodeVersion(env.nodeVersion)`, then for steps 2 to 6 ask `skipReason`, print a `SKIP <id>/6 <label>: <reason>` line or write the "before" line, call `env.run(step)` and print `PASS` or `FAIL` with `failText` (`detail`, `timed out after <describeLimit>` or `output was too large (over 64 MiB)`). A private `record` function stores the level, counts failed and skipped steps and writes the step line. End with the verdict line and return 0 when nothing failed, otherwise 1. `runSetup` does not set `process.exitCode`. It prints no path, user name or machine name. Captured output is printed in task 3.2, not here
@@ -103,14 +103,14 @@ These rules apply to every task below.
     - Source lines it should catch: the `write` of the "before" line deleted (fails T12); `warn` counted as a failure in `record` (fails T13); the step 1 rule deleted from `skipReason` (fails T14); the step 2 rule deleted from `skipReason` (fails T15); a skipped step handled without calling `record`, so no `SKIP` line (fails T16); `failText` returning `result.detail` for `timeout` (fails T18); the `too-large` text changed to `exit code 1` in `failText` (fails T19)
     - _Requirements: 16, 17, 23, 25, 27, 31, 32, 45, 46, 48, 49, 50, 53, 54, 55, 56, 57, 58, 59, 63, 64, 65, 69, 70, 71, 73_
 
-  - [ ] 3.2 Print the captured output of a failed step
+  - [x] 3.2 Print the captured output of a failed step
     - Change only the two files of task 1.1
     - Script: add the constant `OUTPUT_INDENT` (four spaces). After the `FAIL` line, when the result's output is not empty, write `OUTPUT_INDENT + line` for each of the last `MAX_OUTPUT_LINES` lines of `stripEscapes(result.output)`. This applies to `failed`, `timeout` and `too-large`
     - Tests: T17 for step 4, then step 5, then step 6 answering `failed` with 40 output lines `out 1` to `out 40`, where line 20 is `FAIL in suite` instead: the later steps still run; the lines written after the `FAIL` step line are exactly `    out 11` to `    out 40` with four spaces in front (line 20 is `    FAIL in suite`); no written line contains `out 10`; `stepLines` finds exactly six lines; the return value is 1. T20 a failing step whose output has a colour sequence, a cursor sequence, an OSC title sequence and a lone escape character: no written line contains `\u001b`, and the text between the sequences is written with its four-space indent. T21 the calls for steps 5 and 6 have `command` `'NODE_EXE'` and `shell` false, also with `platform: 'win32'`; with `platform: 'win32'` the calls for steps 2 to 4 have a one-string `command` and `args: []`
     - Source lines it should catch: `line` written instead of `OUTPUT_INDENT + line`, or the whole output written instead of `lastLines(..., 30)` (fails T17); the call to `stripEscapes` around the output removed (fails T20); `'node'` used instead of `execPath` for step 5 in `buildSteps` (fails T21 and T09)
     - _Requirements: 32, 33, 36, 37, 38, 40, 41, 51, 65, 72, 74_
 
-  - [ ] 3.3 Checkpoint 3
+  - [x] 3.3 Checkpoint 3
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T21 to pass with 0 failed
     - Mark tasks 3.1 and 3.2 done only from that output. Tell the user the source lines named in 3.1 and 3.2
 

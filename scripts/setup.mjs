@@ -11,7 +11,10 @@
 //  - Captured output of a step is all of its standard output followed by all of its standard error.
 //  - On Windows a timed-out step may leave the programs it started running.
 
+import { spawnSync } from 'node:child_process';
+import { realpathSync, writeSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 // The Node major version the project is tested with.
 export const TESTED_MAJOR = 24;
@@ -239,4 +242,50 @@ export function runSetup(env) {
 
   env.write(formatVerdict(failed, skipped));
   return failed === 0 ? 0 : 1;
+}
+
+// The repository root: the parent of the folder this file is in.
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+// Runs one step with spawnSync and turns the outcome into a run result. Never throws.
+export function runStep(step) {
+  try {
+    return resultFromSpawn(spawnSync(step.command, step.args, spawnOptions(step, process.env)));
+  } catch (error) {
+    const reason = error && error.message ? error.message : String(error);
+    return { status: 'failed', detail: `could not start: ${reason}`, output: '' };
+  }
+}
+
+// The real environment: this machine's values, the real runner and a writer. It starts nothing.
+export function createEnv() {
+  return {
+    platform: process.platform,
+    nodeVersion: process.versions.node,
+    root: ROOT,
+    execPath: process.execPath,
+    run: runStep,
+    write: (line) => {
+      try {
+        writeSync(1, line + '\n');
+      } catch {
+        // The output is gone (for example a closed pipe); there is nothing left to do.
+      }
+    },
+  };
+}
+
+// True when this file was started directly (node scripts/setup.mjs) and not imported.
+function isMain() {
+  if (process.argv[1] === undefined) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(path.resolve(process.argv[1]))).href;
+  } catch {
+    return false;
+  }
+}
+
+// The command-line part. It runs only when the file is started directly and sets the exit code through process.exitCode.
+if (isMain()) {
+  process.exitCode = runSetup(createEnv());
 }
