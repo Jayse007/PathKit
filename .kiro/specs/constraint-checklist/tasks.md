@@ -168,8 +168,8 @@ These rules apply to every task below.
     - Do not start group 6 until both pasted outputs show a pass. If any test fails, fix it under the rules above first. A failure of T13 follows the rule in task 5.1 instead: do not change the script to make it pass. Report the finding text and ask the user
     - Mark tasks 5.1 to 5.3 done only from that output
 
-- [ ] 6. Group 6: the hook
-  - [ ] 6.1 Create the hook file and its test
+- [x] 6. Group 6: the hook
+  - [x] 6.1 Create the hook file and its test
     - Precondition: the pasted output of task 5.4 shows 0 failed and the OK line from `--strict`
     - Create only `.kiro/hooks/constraint-checklist.json` with exactly the definition in `design.md` (version `v1`, name `Constraint checklist`, trigger `PreTaskExec`, matcher `.*`, command action `node scripts/check-constraints.mjs`). Create it with the file-write tool, not with the `createHook` tool. The command has no `--strict`. The file name and the name have no `guard-` prefix
     - Add test T20 to the test file: the hook file parses as JSON and equals the object in the brief, the command does not contain `--strict`, and neither the file name nor the `name` starts with `guard-`. Read the hook with `import.meta.url`-based paths
@@ -178,28 +178,28 @@ These rules apply to every task below.
     - Source line it should catch: `--strict` added to the hook command (fails T20)
     - _Requirements: 9.2, 9.3, 10.1, 10.2, 10.3, 10.4, 12.14_
 
-- [ ] 7. Group 7: the docs line
-  - [ ] 7.1 Add one line to `docs/adding-a-constraint.md`
+- [x] 7. Group 7: the docs line
+  - [x] 7.1 Add one line to `docs/adding-a-constraint.md`
     - Change only `docs/adding-a-constraint.md`. Add one line after `- [ ] Flag file deleted.`, the last item of the section "Checklist for the next constraint", in the same style: ``- [ ] `node scripts/check-constraints.mjs --strict` run before declaring the constraint finished. It prints one line and every place is covered.``
     - Read the file back with `read_file` and confirm that only that line was added. No other line changes. No command to run
     - _Requirements: 11.2_
 
-- [ ] 8. Group 8: check what the hook delivers
-  - [ ] 8.1 Hook delivery probe
+- [x] 8. Group 8: check what the hook delivers
+  - [x] 8.1 Hook delivery probe
     - This task exists to find out what the agent that does it receives from the `PreTaskExec` hook. The hook fires before this task starts
     - The agent doing this task creates only the file `.kiro/probe/checklist-received.txt` and writes into it the exact text it received from the hook, copied character for character, with nothing added, nothing removed and no explanation. If it received nothing from the hook, it writes exactly `NOTHING RECEIVED`. It does not run, edit or open the script to produce the text, and it does not write the text from memory of what the script prints
     - After writing the file, tell the user the file exists and stop. Do not delete it
     - _Requirements: 13.1_
 
-  - [ ] 8.2 The user checks the probe file
+  - [x] 8.2 The user checks the probe file
     - Ask the user to open `.kiro/probe/checklist-received.txt` and compare it with the output of `node scripts/check-constraints.mjs --strict`, run from the repository root. Ask for the file's content and the command's output pasted
     - If the file holds the single OK line, say that this supports delivery of the hook output to the agent that did task 8.1, and nothing more. The OK line is predictable, so a matching file does not rule out a guess. The earlier 22 November marker probe (a made-up string the sub-agent could not have guessed) is the stronger evidence. Say that delivery to the main agent is not shown either way
     - If the file is missing, holds `NOTHING RECEIVED`, or differs from the output, say that delivery is not proven, and do not claim that the agent sees the result
     - Ask the user to delete `.kiro/probe/checklist-received.txt` and the folder `.kiro/probe/` (Kiro has no delete tool here) and to confirm. Wait for the confirmation before going on
     - _Requirements: 13.2, 13.3, 13.4_
 
-- [ ] 9. Group 9: final report
-  - [ ] 9.1 Write the final report
+- [x] 9. Group 9: final report
+  - [x] 9.1 Write the final report
     - List every file created and every file edited: `scripts/check-constraints.mjs`, `scripts/check-constraints.test.mjs`, `.kiro/hooks/constraint-checklist.json`, `requirements.md`, `design.md` and `tasks.md` in `.kiro/specs/constraint-checklist/` (and any task-record file Kiro created), and the one edit to `docs/adding-a-constraint.md`. State that `.kiro/probe/` was created and deleted
     - Give the counts of tests passed, failed and skipped from the last pasted output of `node --test scripts/check-constraints.test.mjs`, and the last pasted output of `node scripts/check-constraints.mjs --strict`
     - Say plainly what was not tested: Kiro did not check the file footprint (nothing under `packages/pathkit`, no `package.json`, no `guard-` file changed). The reviewer checks it from the pushed commit. The hook delivery to the main agent is not shown by the probe, which shows only what the agent that did task 8.1 received. The OK line is predictable, so a matching probe file supports delivery to that agent but does not rule out a guess. The earlier 22 November marker probe (a made-up string the sub-agent could not have guessed) is the stronger evidence. If the probe failed, say that delivery is not proven. The two test checks show that a file mentions a type, not that the type is tested well. The script was run on Windows only, and only against the current repository. The checks are text matches and can be fooled by unusual formatting

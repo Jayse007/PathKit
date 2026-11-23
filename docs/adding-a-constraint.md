@@ -122,6 +122,7 @@ These are real findings from the `orbitAround` work. Each one would have shipped
 - [ ] Mutation check: each property has a named source line that, when broken, makes it fail.
 - [ ] `git diff --stat` shows only the files the spec names, and `package.json` is unchanged.
 - [ ] Flag file deleted.
+- [ ] `node scripts/check-constraints.mjs --strict` run before declaring the constraint finished. It prints one line and every place is covered.
 
 ## Where to look
 

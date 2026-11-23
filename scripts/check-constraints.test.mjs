@@ -3,8 +3,10 @@
 // Expected values are written by hand. Fixture names are alpha, beta, gamma and delta.
 import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { spawn, spawnSync } from 'node:child_process';
+import {
+  copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync,
+} from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -803,6 +805,45 @@ test('T14 the real repository prints the OK line and exits 0 from any folder', (
 test('T17 unreadable standard input changes nothing', () => {
   const run = runNode([SCRIPT], { cwd: REPO_ROOT, input: '\u0000{{not json' });
   assert.deepEqual(run, { status: 0, stdout: `${REAL_OK_LINE}\n`, stderr: '' });
+});
+
+// T17b: standard input that is written to but never closed does not make the program wait. It is killed after 3 s.
+test('T17b the program does not wait for standard input', async () => {
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  const child = spawn(process.execPath, [SCRIPT], { cwd: REPO_ROOT, env, stdio: ['pipe', 'pipe', 'pipe'] });
+  let stdout = '';
+  let stderr = '';
+  let killed = false;
+  child.stdout.setEncoding('utf8');
+  child.stderr.setEncoding('utf8');
+  child.stdout.on('data', (chunk) => { stdout += chunk; });
+  child.stderr.on('data', (chunk) => { stderr += chunk; });
+  child.stdin.on('error', () => {}); // the program may exit before it reads, which is fine
+  child.stdin.write('{"x":1}'); // written, and never ended
+  const timer = setTimeout(() => { killed = true; child.kill(); }, 3000);
+  const result = await new Promise((resolve) => {
+    child.on('close', (code, signal) => resolve({ code, signal }));
+  });
+  clearTimeout(timer);
+  assert.equal(killed, false, 'the program had to be killed: it waits for standard input');
+  assert.deepEqual(result, { code: 0, signal: null });
+  assert.equal(stdout, `${REAL_OK_LINE}\n`);
+  assert.equal(stderr, '');
+});
+
+// T13b: readSources returns the files of the right folders, with the right names and text.
+test('T13b readSources returns the names and text of the files in each test folder', () => {
+  const sources = readSources();
+  for (const [folder, files] of [['scene', sources.sceneTests], ['bake', sources.bakeTests]]) {
+    const dir = path.join(REPO_ROOT, 'packages', 'pathkit', 'test', folder);
+    const names = readdirSync(dir).filter((name) => name.endsWith('.ts')).sort();
+    assert.ok(names.length > 0, `no .ts files found in ${folder}`);
+    assert.deepEqual(files.map((file) => file.name), names, `file names for ${folder}`);
+    for (const file of files) {
+      assert.equal(file.text, readFileSync(path.join(dir, file.name), 'utf8'), `text of ${folder}/${file.name}`);
+    }
+  }
 });
 
 // T19: importing the module prints nothing and leaves the exit code at 0 (checked in a separate process).
