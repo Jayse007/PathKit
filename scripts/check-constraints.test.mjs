@@ -44,6 +44,8 @@ test('H2 hasCase rejects other text', () => {
   assert.equal(hasCase('// alpha is handled elsewhere', 'alpha'), false);
   assert.equal(hasCase("case 'alpha\":", 'alpha'), false);
   assert.equal(hasCase("showcase 'alpha':", 'alpha'), false);
+  assert.equal(hasCase("// add case 'alpha' here", 'alpha'), false);
+  assert.equal(hasCase("case 'alpha' ", 'alpha'), false);
 });
 
 // H3: functionBody returns the body with nested braces and a template literal, and stops at the match.
@@ -176,6 +178,17 @@ test('F4 findTypes ignores interfaces without a type literal or a Constraint nam
   const text = iface('AlphaConstraint', 'alpha') +
     'export interface PlainConstraint {\n  order: number;\n}\n' +
     "export interface Entity {\n  type: 'entity';\n}\n" +
+    'export type Constraint = AlphaConstraint;\n';
+  assert.deepEqual(findTypes(text), {
+    types: [{ iface: 'AlphaConstraint', type: 'alpha', listed: true }],
+    orphans: [],
+    unionFound: true,
+  });
+});
+
+// F4: a type literal in double quotes is found like one in single quotes.
+test('F4 findTypes reads a double-quoted type literal', () => {
+  const text = 'export interface AlphaConstraint {\n  type: "alpha";\n  order: number;\n}\n' +
     'export type Constraint = AlphaConstraint;\n';
   assert.deepEqual(findTypes(text), {
     types: [{ iface: 'AlphaConstraint', type: 'alpha', listed: true }],
