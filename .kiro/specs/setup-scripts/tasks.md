@@ -48,8 +48,8 @@ These rules apply to every task below.
 
 ## Tasks
 
-- [ ] 1. Group 1: small pure functions
-  - [ ] 1.1 Create the files with `checkNodeVersion` and `npmCommand`
+- [x] 1. Group 1: small pure functions
+  - [x] 1.1 Create the files with `checkNodeVersion` and `npmCommand`
     - Create `scripts/setup.mjs` and `scripts/setup.test.mjs`
     - Script: the header comment (see Code style), then export `checkNodeVersion(version)` and `npmCommand(platform)` as the design describes. `checkNodeVersion` returns `{ level, message }` and never throws: a value that is not a string or does not match `/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/` is `fail`; below 20.19.0, any 21.x and 22.x below 22.12.0 are `fail`; major 24 is `ok`; everything else is `warn`; the messages are the ones in the design. `npmCommand('win32')` is `{ command: 'npm.cmd', shell: true }`, any other platform `{ command: 'npm', shell: false }`
     - Test file: a header comment with the run command, imports of `node:test` and `node:assert/strict` and the script
@@ -57,21 +57,21 @@ These rules apply to every task below.
     - Source lines it should catch: `minor < 12` in the 22.x rule changed to `minor < 11` (fails T01); the `^` removed from the version pattern (fails T02); the compared platform `'win32'` changed to `'linux'` in `npmCommand` (fails T03)
     - _Requirements: 18, 19, 20, 21, 22, 34, 35, 63, 64, 67, 68_
 
-  - [ ] 1.2 Add `stripEscapes`, `lastLines` and `combineOutput`
+  - [x] 1.2 Add `stripEscapes`, `lastLines` and `combineOutput`
     - Change only the two files of task 1.1
     - Script: export the three pure functions as the design describes. `stripEscapes` applies, in order, the OSC, CSI and two-character replacements and then removes any remaining `\u001b`. `lastLines(text, count)` splits on `/\r?\n/`, drops one final empty element, keeps the last `count` and joins with `\n`. `combineOutput(stdout, stderr)` turns `null` and `undefined` into `''` and returns stdout text followed by stderr text. Add the constant `MAX_OUTPUT_LINES = 30`
     - Tests: T04 a colour sequence, a cursor sequence, an OSC title sequence and a lone escape character are removed, text without escapes comes back identical. T05 40 lines with count 30 give lines 11 to 40, 3 lines give all 3, a final newline adds no empty line, `\r\n` splits, `''` gives `''`. T06 `combineOutput('a\n', 'b\n')` is `'a\nb\n'`, `null` and `undefined` count as `''`, a `Buffer` is converted
     - Source lines it should catch: the last replacement (remaining `\u001b`) deleted from `stripEscapes` (fails T04); `slice(-count)` changed to `slice(-count + 1)` in `lastLines` (fails T05); `combineOutput` returning stderr text first (fails T06)
     - _Requirements: 38, 41, 40, 63, 64_
 
-  - [ ] 1.3 Add `formatVerdict` and `describeLimit`
+  - [x] 1.3 Add `formatVerdict` and `describeLimit`
     - Change only the two files of task 1.1
     - Script: export `formatVerdict(failed, skipped)` (no failure gives `setup: all 6 steps passed.`; otherwise `setup: <failed> of 6 steps failed.` plus ` <skipped> skipped.` when `skipped > 0`) and `describeLimit(ms)` (`ms >= 120000` and a whole number of minutes gives `<n> minutes`, otherwise `<n> seconds`). Add the constant `TOTAL_STEPS = 6` and use it in the text
     - Tests: T11 `formatVerdict(0, 0)`, `(0, 3)`, `(2, 0)`, `(2, 1)` and `(1, 5)` give the exact lines written by hand; `describeLimit(60000)` is `60 seconds` and `describeLimit(300000)` is `5 minutes`
     - Source line it should catch: the `skipped > 0` condition removed from `formatVerdict` (fails T11)
     - _Requirements: 45, 53, 54, 55, 63, 64_
 
-  - [ ] 1.4 Checkpoint 1
+  - [x] 1.4 Checkpoint 1
     - Run: `node --test scripts/setup.test.mjs`. Expect T01 to T06 and T11 to pass with 0 failed
     - Mark tasks 1.1 to 1.3 done only from that output. Tell the user the source lines named in 1.1, 1.2 and 1.3, so they can break each once
 

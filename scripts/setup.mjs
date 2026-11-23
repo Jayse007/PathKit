@@ -11,6 +11,8 @@
 //  - Captured output of a step is all of its standard output followed by all of its standard error.
 //  - On Windows a timed-out step may leave the programs it started running.
 
+import path from 'node:path';
+
 // The Node major version the project is tested with.
 export const TESTED_MAJOR = 24;
 
@@ -100,4 +102,87 @@ export function formatVerdict(failed, skipped) {
 export function describeLimit(ms) {
   if (ms >= 120000 && ms % 60000 === 0) return `${ms / 60000} minutes`;
   return `${ms / 1000} seconds`;
+}
+
+// One minute in milliseconds.
+export const MINUTE = 60 * 1000;
+// The time limit of the install and PathKit test steps (3 and 4).
+export const LIMIT_LONG_MS = 5 * MINUTE;
+// The time limit of steps 2, 5 and 6.
+export const LIMIT_SHORT_MS = MINUTE;
+
+// Builds the description of one npm step. With a shell the command is one string and args is empty.
+function npmStep(npm, { id, label, args, cwd, timeoutMs }) {
+  if (npm.shell) {
+    return { id, label, command: [npm.command, ...args].join(' '), args: [], cwd, shell: true, timeoutMs };
+  }
+  return { id, label, command: npm.command, args, cwd, shell: false, timeoutMs };
+}
+
+// Builds the descriptions of steps 2 to 6, in order. Every argument is a fixed constant.
+export function buildSteps({ platform, root, execPath }) {
+  const npm = npmCommand(platform);
+  const pathkit = path.join(root, 'packages', 'pathkit');
+  return [
+    npmStep(npm, { id: 2, label: 'npm', args: ['--version'], cwd: root, timeoutMs: LIMIT_SHORT_MS }),
+    npmStep(npm, { id: 3, label: 'Install (npm ci)', args: ['ci'], cwd: pathkit, timeoutMs: LIMIT_LONG_MS }),
+    npmStep(npm, { id: 4, label: 'PathKit tests', args: ['test'], cwd: pathkit, timeoutMs: LIMIT_LONG_MS }),
+    {
+      id: 5,
+      label: 'Checklist tests',
+      command: execPath,
+      args: ['--test', path.join('scripts', 'check-constraints.test.mjs')],
+      cwd: root,
+      shell: false,
+      timeoutMs: LIMIT_SHORT_MS,
+    },
+    {
+      id: 6,
+      label: 'Constraint checklist',
+      command: execPath,
+      args: [path.join('scripts', 'check-constraints.mjs'), '--strict'],
+      cwd: root,
+      shell: false,
+      timeoutMs: LIMIT_SHORT_MS,
+    },
+  ];
+}
+
+// Returns why a step must be skipped, or null. `levels` maps a finished step id to ok, warn, fail or skip.
+export function skipReason(id, levels) {
+  if (id >= 2 && levels[1] === 'fail') return 'not run because step 1 (Node version) failed';
+  if (id >= 3 && levels[2] === 'fail') return 'not run because step 2 (npm) failed';
+  if (id === 4 && levels[3] === 'fail') return 'not run because step 3 (install) failed';
+  return null;
+}
+
+// The most output kept from each stream of a step: 64 MiB.
+export const MAX_BUFFER = 64 * 1024 * 1024;
+
+// Builds the options for spawnSync: time limit, buffer size, closed input and NO_COLOR in a copy of the environment.
+export function spawnOptions(step, baseEnv) {
+  return {
+    cwd: step.cwd,
+    shell: step.shell,
+    timeout: step.timeoutMs,
+    maxBuffer: MAX_BUFFER,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    windowsHide: true,
+    env: { ...baseEnv, NO_COLOR: '1' },
+  };
+}
+
+// Turns the object that spawnSync returns into { status, detail, output }.
+export function resultFromSpawn(spawned) {
+  const output = combineOutput(spawned.stdout, spawned.stderr);
+  const error = spawned.error;
+  if (error && error.code === 'ETIMEDOUT') return { status: 'timeout', detail: '', output };
+  if (error && error.code === 'ENOBUFS') return { status: 'too-large', detail: '', output };
+  if (error) return { status: 'failed', detail: `could not start: ${error.code || error.message}`, output };
+  if (spawned.status === null || spawned.status === undefined) {
+    return { status: 'failed', detail: `ended by signal ${spawned.signal ?? 'unknown'}`, output };
+  }
+  if (spawned.status !== 0) return { status: 'failed', detail: `exit code ${spawned.status}`, output };
+  return { status: 'ok', detail: '', output };
 }

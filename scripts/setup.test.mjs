@@ -3,13 +3,17 @@
 // Expected values are written by hand. Nothing here runs npm, installs anything or uses the network.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import path from 'node:path';
 import {
   checkNodeVersion, npmCommand, stripEscapes, lastLines, combineOutput, formatVerdict, describeLimit,
+  buildSteps, skipReason, spawnOptions, resultFromSpawn,
 } from './setup.mjs';
 
 // T01: the hand-written version table of requirement 67.
 const VERSION_TABLE = [
   ['18.20.0', 'fail'],
+  ['19.9.9', 'fail'],
+  ['20.0.0', 'fail'],
   ['20.18.0', 'fail'],
   ['20.19.0', 'warn'],
   ['21.7.0', 'fail'],
@@ -35,7 +39,7 @@ for (const [version, level] of VERSION_TABLE) {
 
 // T02: values that are not a readable version fail and never throw.
 test('T02 checkNodeVersion fails without throwing for unreadable values', () => {
-  const unreadable = [undefined, null, 24, {}, Object.create(null), '24.0', 'v24.0.0'];
+  const unreadable = [undefined, null, 24, {}, Object.create(null), '24.0', 'v24.0.0', '24.0.0x', '24.0.0.1'];
   for (const value of unreadable) {
     let result;
     assert.doesNotThrow(() => { result = checkNodeVersion(value); });
@@ -43,6 +47,12 @@ test('T02 checkNodeVersion fails without throwing for unreadable values', () => 
     assert.equal(typeof result.message, 'string');
     assert.ok(result.message.length > 0);
   }
+});
+
+// T02: a version with a - or + suffix is still readable, and its major version decides the level.
+test('T02 checkNodeVersion reads a version with a suffix', () => {
+  assert.equal(checkNodeVersion('24.0.0-rc.1').level, 'ok');
+  assert.equal(checkNodeVersion('24.0.0+build5').level, 'ok');
 });
 
 // T03: Windows uses npm.cmd through a shell, every other platform uses plain npm.
@@ -68,6 +78,7 @@ test('T04 stripEscapes removes colour sequences', () => {
 // T04: a cursor sequence is removed.
 test('T04 stripEscapes removes cursor sequences', () => {
   assert.equal(stripEscapes('\u001b[2K\u001b[1Gdone'), 'done');
+  assert.equal(stripEscapes('\u001b[?25lx\u001b[?25h'), 'x');
 });
 
 // T04: operating system title sequences are removed, ended by BEL or by ESC backslash.
@@ -153,4 +164,174 @@ test('T11 formatVerdict gives the failure count and the skipped count', () => {
 test('T11 describeLimit gives seconds for 60 seconds and minutes for 5 minutes', () => {
   assert.equal(describeLimit(60000), '60 seconds');
   assert.equal(describeLimit(300000), '5 minutes');
+});
+
+// The fake folders and paths used by the step tests, written with path.join as the design says.
+const PATHKIT = path.join('ROOT', 'packages', 'pathkit');
+const CHECK_TEST = path.join('scripts', 'check-constraints.test.mjs');
+const CHECK_SCRIPT = path.join('scripts', 'check-constraints.mjs');
+
+// T09: on Windows steps 2 to 4 are one command string with an empty argument list and a shell.
+test('T09 buildSteps on win32 gives one-string npm commands and the node steps', () => {
+  assert.deepEqual(buildSteps({ platform: 'win32', root: 'ROOT', execPath: 'NODE_EXE' }), [
+    { id: 2, label: 'npm', command: 'npm.cmd --version', args: [], cwd: 'ROOT', shell: true, timeoutMs: 60000 },
+    { id: 3, label: 'Install (npm ci)', command: 'npm.cmd ci', args: [], cwd: PATHKIT, shell: true, timeoutMs: 300000 },
+    { id: 4, label: 'PathKit tests', command: 'npm.cmd test', args: [], cwd: PATHKIT, shell: true, timeoutMs: 300000 },
+    {
+      id: 5, label: 'Checklist tests', command: 'NODE_EXE', args: ['--test', CHECK_TEST],
+      cwd: 'ROOT', shell: false, timeoutMs: 60000,
+    },
+    {
+      id: 6, label: 'Constraint checklist', command: 'NODE_EXE', args: [CHECK_SCRIPT, '--strict'],
+      cwd: 'ROOT', shell: false, timeoutMs: 60000,
+    },
+  ]);
+});
+
+// T09: on Linux steps 2 to 4 are plain npm with an argument list and no shell.
+test('T09 buildSteps on linux gives npm with arguments and the node steps', () => {
+  assert.deepEqual(buildSteps({ platform: 'linux', root: 'ROOT', execPath: 'NODE_EXE' }), [
+    { id: 2, label: 'npm', command: 'npm', args: ['--version'], cwd: 'ROOT', shell: false, timeoutMs: 60000 },
+    { id: 3, label: 'Install (npm ci)', command: 'npm', args: ['ci'], cwd: PATHKIT, shell: false, timeoutMs: 300000 },
+    { id: 4, label: 'PathKit tests', command: 'npm', args: ['test'], cwd: PATHKIT, shell: false, timeoutMs: 300000 },
+    {
+      id: 5, label: 'Checklist tests', command: 'NODE_EXE', args: ['--test', CHECK_TEST],
+      cwd: 'ROOT', shell: false, timeoutMs: 60000,
+    },
+    {
+      id: 6, label: 'Constraint checklist', command: 'NODE_EXE', args: [CHECK_SCRIPT, '--strict'],
+      cwd: 'ROOT', shell: false, timeoutMs: 60000,
+    },
+  ]);
+});
+
+// The three skip reasons, written out by hand.
+const REASON_1 = 'not run because step 1 (Node version) failed';
+const REASON_2 = 'not run because step 2 (npm) failed';
+const REASON_3 = 'not run because step 3 (install) failed';
+
+// T10: a failed Node version skips steps 2 to 6 and never step 1.
+test('T10 skipReason after a failed step 1 skips steps 2 to 6', () => {
+  const levels = { 1: 'fail' };
+  assert.equal(skipReason(1, levels), null);
+  for (const id of [2, 3, 4, 5, 6]) assert.equal(skipReason(id, levels), REASON_1);
+});
+
+// T10: a failed npm check skips steps 3 to 6 and not step 2.
+test('T10 skipReason after a failed step 2 skips steps 3 to 6', () => {
+  const levels = { 1: 'ok', 2: 'fail' };
+  assert.equal(skipReason(2, levels), null);
+  for (const id of [3, 4, 5, 6]) assert.equal(skipReason(id, levels), REASON_2);
+});
+
+// T10: a failed install skips step 4 only.
+test('T10 skipReason after a failed step 3 skips step 4 only', () => {
+  const levels = { 1: 'ok', 2: 'ok', 3: 'fail' };
+  assert.equal(skipReason(4, levels), REASON_3);
+  assert.equal(skipReason(5, levels), null);
+  assert.equal(skipReason(6, levels), null);
+});
+
+// T10: a failed test step skips nothing after it.
+test('T10 skipReason after a failed step 4 or 5 skips nothing', () => {
+  assert.equal(skipReason(5, { 1: 'ok', 2: 'ok', 3: 'ok', 4: 'fail' }), null);
+  assert.equal(skipReason(6, { 1: 'ok', 2: 'ok', 3: 'ok', 4: 'ok', 5: 'fail' }), null);
+});
+
+// T10: warn and skip levels never cause a skip.
+test('T10 skipReason ignores warn and skip levels', () => {
+  assert.equal(skipReason(2, { 1: 'warn' }), null);
+  assert.equal(skipReason(5, { 1: 'warn', 2: 'ok', 3: 'ok', 4: 'skip' }), null);
+  assert.equal(skipReason(4, { 1: 'ok', 2: 'ok', 3: 'skip' }), null);
+});
+
+// T08: the options for a step without a shell, written out by hand.
+test('T08 spawnOptions for a step without a shell', () => {
+  const step = { id: 5, label: 'x', command: 'NODE_EXE', args: ['a'], cwd: 'ROOT', shell: false, timeoutMs: 60000 };
+  const base = Object.freeze({ A: '1', PATH: 'p' });
+  const options = spawnOptions(step, base);
+  assert.deepEqual(options, {
+    cwd: 'ROOT',
+    shell: false,
+    timeout: 60000,
+    maxBuffer: 67108864,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    windowsHide: true,
+    env: { A: '1', PATH: 'p', NO_COLOR: '1' },
+  });
+  assert.notEqual(options.env, base);
+  assert.deepEqual(base, { A: '1', PATH: 'p' });
+});
+
+// T08: the options for a step with a shell and a one-string command.
+test('T08 spawnOptions for a step with a shell', () => {
+  const step = {
+    id: 3, label: 'Install (npm ci)', command: 'npm.cmd ci', args: [], cwd: PATHKIT, shell: true, timeoutMs: 300000,
+  };
+  const options = spawnOptions(step, { NO_COLOR: '0' });
+  assert.deepEqual(options, {
+    cwd: PATHKIT,
+    shell: true,
+    timeout: 300000,
+    maxBuffer: 67108864,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    windowsHide: true,
+    env: { NO_COLOR: '1' },
+  });
+});
+
+// T07: exit code 0 is ok, and the output is standard output then standard error.
+test('T07 resultFromSpawn gives ok for status 0', () => {
+  assert.deepEqual(
+    resultFromSpawn({ status: 0, signal: null, stdout: 'out\n', stderr: 'err\n' }),
+    { status: 'ok', detail: '', output: 'out\nerr\n' },
+  );
+});
+
+// T07: a non-zero exit code is a failure that names the code.
+test('T07 resultFromSpawn gives failed for a non-zero status', () => {
+  assert.deepEqual(
+    resultFromSpawn({ status: 1, signal: null, stdout: 'o', stderr: 'e' }),
+    { status: 'failed', detail: 'exit code 1', output: 'oe' },
+  );
+});
+
+// T07: ETIMEDOUT is a timeout, and the partial output is kept.
+test('T07 resultFromSpawn gives timeout for ETIMEDOUT', () => {
+  assert.deepEqual(
+    resultFromSpawn({ error: { code: 'ETIMEDOUT' }, status: null, signal: 'SIGTERM', stdout: 'partial', stderr: '' }),
+    { status: 'timeout', detail: '', output: 'partial' },
+  );
+});
+
+// T07: ENOBUFS is output that was too large.
+test('T07 resultFromSpawn gives too-large for ENOBUFS', () => {
+  assert.deepEqual(
+    resultFromSpawn({ error: { code: 'ENOBUFS' }, status: null, signal: 'SIGTERM', stdout: 'big', stderr: '' }),
+    { status: 'too-large', detail: '', output: 'big' },
+  );
+});
+
+// T07: a program that cannot start is a failure that says so.
+test('T07 resultFromSpawn gives failed for ENOENT', () => {
+  assert.deepEqual(
+    resultFromSpawn({
+      error: { code: 'ENOENT', message: 'spawn npm ENOENT' }, status: null, signal: null, stdout: null, stderr: null,
+    }),
+    { status: 'failed', detail: 'could not start: ENOENT', output: '' },
+  );
+  assert.deepEqual(
+    resultFromSpawn({ error: { message: 'boom' }, status: null, signal: null, stdout: '', stderr: '' }),
+    { status: 'failed', detail: 'could not start: boom', output: '' },
+  );
+});
+
+// T07: a program ended by a signal has no exit code and is a failure.
+test('T07 resultFromSpawn gives failed for a signal', () => {
+  assert.deepEqual(
+    resultFromSpawn({ status: null, signal: 'SIGKILL', stdout: '', stderr: '' }),
+    { status: 'failed', detail: 'ended by signal SIGKILL', output: '' },
+  );
 });

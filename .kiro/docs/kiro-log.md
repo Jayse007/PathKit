@@ -58,8 +58,7 @@ Numbers measured from the repository on 2026-11-20:
 | 2026-11-20 | 493.14 | Read the number from the Kiro usage page |
 | 2026-11-22 | 559.86 | Before the orbitAround implementation tasks. The spec files (requirements, design, tasks) and the hook work were already done |
 | 2026-11-22 | 606.54 | After orbitAround finished (26 tasks, 3 checkpoints). Implementation cost: 606.54 minus 559.86 = 46.68 |
-
-676.55 used 
+| 2026-11-23 | 676.55 | Before the setup-scripts implementation tasks. Since 606.54, the constraint-checklist spec and build and the setup-scripts requirements, design and tasks cost 70.01 together (676.55 minus 606.54) |
 
 One incident cost credits for no result: a multi-line PowerShell command hung Kiro's shell for 48 minutes
 (about 1.18 credits). It led to a steering rule (`windows-terminal.md`).
