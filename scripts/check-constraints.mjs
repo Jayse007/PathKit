@@ -12,6 +12,10 @@
 //  - An interface body is read up to its first closing brace, so a field with an inline
 //    object type would end it early.
 
+import { readFileSync, readdirSync, realpathSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
 // Path segments below the repository root, joined with node:path when files are read.
 export const SRC = ['packages', 'pathkit', 'src'];
 // Repository paths as shown in messages (display text only, never used to read a file).
@@ -264,8 +268,30 @@ export function formatReport(sceneText, findings) {
   return lines.join('\n');
 }
 
+// Reads every .ts file of a test folder, sorted by name, as `{ name, text }`. Throws when it cannot.
+function readTestFiles(dir) {
+  return readdirSync(dir)
+    .filter((name) => name.endsWith('.ts'))
+    .sort()
+    .map((name) => ({ name, text: readFileSync(path.join(dir, name), 'utf8') }));
+}
+
+// Reads the real source and test files. The root comes from this file's location, so any folder works.
+export function readSources() {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const src = path.join(root, ...SRC);
+  const tests = path.join(root, 'packages', 'pathkit', 'test');
+  return {
+    scene: readFileSync(path.join(src, 'scene.ts'), 'utf8'),
+    bake: readFileSync(path.join(src, 'bake.ts'), 'utf8'),
+    index: readFileSync(path.join(src, 'index.ts'), 'utf8'),
+    sceneTests: readTestFiles(path.join(tests, 'scene')),
+    bakeTests: readTestFiles(path.join(tests, 'bake')),
+  };
+}
+
 // Runs the whole check on the sources that `load` returns. Never throws: a failure becomes one line.
-export function runChecker(strict, load) {
+export function runChecker(strict, load = readSources) {
   try {
     const sources = load();
     const findings = findGaps(sources);
@@ -275,4 +301,21 @@ export function runChecker(strict, load) {
     const reason = String(message).split(/\r?\n/)[0];
     return { text: `constraint-checklist: cannot run (${reason})`, code: strict ? 1 : 0 };
   }
+}
+
+// True when this file was started directly (node scripts/check-constraints.mjs) and not imported.
+function isMain() {
+  if (process.argv[1] === undefined) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(path.resolve(process.argv[1]))).href;
+  } catch {
+    return false;
+  }
+}
+
+// The command-line part. It does not read standard input and sets the exit code without calling process.exit.
+if (isMain()) {
+  const result = runChecker(process.argv.slice(2).includes('--strict'));
+  process.stdout.write(`${result.text}\n`);
+  process.exitCode = result.code;
 }

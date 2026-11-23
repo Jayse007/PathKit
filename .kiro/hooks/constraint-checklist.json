@@ -1,0 +1,11 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Constraint checklist",
+      "trigger": "PreTaskExec",
+      "matcher": ".*",
+      "action": { "type": "command", "command": "node scripts/check-constraints.mjs" }
+    }
+  ]
+}

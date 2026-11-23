@@ -1,10 +1,16 @@
 // Tests for scripts/check-constraints.mjs. Run from the repository root:
 //   node --test scripts/check-constraints.test.mjs
 // Expected values are written by hand. Fixture names are alpha, beta, gamma and delta.
-import test from 'node:test';
+import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   hasWord, hasCase, functionBody, defaultBranch, exportedNames, findTypes, findGaps, formatReport, runChecker,
+  readSources,
 } from './check-constraints.mjs';
 
 // H1: hasWord counts only whole-word, case-sensitive matches.
@@ -758,6 +764,131 @@ test('T18b runChecker with a finding exits 1 only with strict', () => {
   ].join('\n');
   assert.deepEqual(runChecker(false, load), { text, code: 0 });
   assert.deepEqual(runChecker(true, load), { text, code: 1 });
+});
+
+// T13: the real repository has every place covered, found by reading the real files.
+// Update these three type names (and the expected count) when a constraint type is added to PathKit.
+test('T13 the real repository has every place covered', () => {
+  assert.deepEqual(findGaps(readSources()), []);
+  assert.deepEqual(runChecker(false), {
+    text: 'constraint-checklist: 3 constraint types (followPath, aimAt, orbitAround), every place covered.',
+    code: 0,
+  });
+});
+
+const SCRIPT = fileURLToPath(new URL('./check-constraints.mjs', import.meta.url));
+const REPO_ROOT = path.resolve(path.dirname(SCRIPT), '..');
+// Update these three type names (and the expected count) when a constraint type is added to PathKit.
+const REAL_OK_LINE = 'constraint-checklist: 3 constraint types (followPath, aimAt, orbitAround), every place covered.';
+
+// Runs node in a separate process and returns its exit status, standard output and standard error.
+function runNode(args, options = {}) {
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  const result = spawnSync(process.execPath, args, { encoding: 'utf8', env, ...options });
+  return { status: result.status, stdout: result.stdout, stderr: result.stderr };
+}
+
+// T14: on the real repository the program prints the OK line and exits 0, from the root and from another folder.
+test('T14 the real repository prints the OK line and exits 0 from any folder', () => {
+  for (const flags of [[], ['--strict']]) {
+    const fromRoot = runNode(['scripts/check-constraints.mjs', ...flags], { cwd: REPO_ROOT });
+    const fromElsewhere = runNode([SCRIPT, ...flags], { cwd: os.tmpdir() });
+    assert.deepEqual(fromRoot, { status: 0, stdout: `${REAL_OK_LINE}\n`, stderr: '' });
+    assert.deepEqual(fromElsewhere, { status: 0, stdout: `${REAL_OK_LINE}\n`, stderr: '' });
+  }
+});
+
+// T17: text on standard input that is not JSON changes neither the output nor the exit code.
+test('T17 unreadable standard input changes nothing', () => {
+  const run = runNode([SCRIPT], { cwd: REPO_ROOT, input: '\u0000{{not json' });
+  assert.deepEqual(run, { status: 0, stdout: `${REAL_OK_LINE}\n`, stderr: '' });
+});
+
+// T19: importing the module prints nothing and leaves the exit code at 0 (checked in a separate process).
+test('T19 importing the module prints nothing and sets no exit code', () => {
+  const code = `await import(${JSON.stringify(pathToFileURL(SCRIPT).href)}); console.log('imported');`;
+  const run = runNode(['--input-type=module', '-e', code], { cwd: REPO_ROOT });
+  assert.deepEqual(run, { status: 0, stdout: 'imported\n', stderr: '' });
+});
+
+const tempDirs = [];
+
+// Removes the temporary folders that the tests below created under the system temporary folder.
+after(() => {
+  for (const dir of tempDirs) rmSync(dir, { recursive: true, force: true });
+});
+
+// Writes a file, creating its folder first.
+function put(file, text) {
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, text);
+}
+
+// Builds a temporary repository with a copy of the script and, when sources are given, the files it reads.
+function makeTempRepo(sources) {
+  const root = mkdtempSync(path.join(os.tmpdir(), 'check-constraints-'));
+  tempDirs.push(root);
+  const script = path.join(root, 'scripts', 'check-constraints.mjs');
+  mkdirSync(path.dirname(script), { recursive: true });
+  copyFileSync(SCRIPT, script);
+  if (sources !== undefined) {
+    const pkg = path.join(root, 'packages', 'pathkit');
+    put(path.join(pkg, 'src', 'scene.ts'), sources.scene);
+    put(path.join(pkg, 'src', 'bake.ts'), sources.bake);
+    put(path.join(pkg, 'src', 'index.ts'), sources.index);
+    for (const file of sources.sceneTests) put(path.join(pkg, 'test', 'scene', file.name), file.text);
+    for (const file of sources.bakeTests) put(path.join(pkg, 'test', 'bake', file.name), file.text);
+  }
+  return script;
+}
+
+// T15: a repository with one gap prints the gap and exits 1 only with --strict.
+test('T15 a repository with a gap exits 1 only with --strict', () => {
+  const sources = makeSources(['alpha', 'beta', 'gamma']);
+  sources.bake = swap(sources.bake, BETA_BAKE_CASE, '');
+  const script = makeTempRepo(sources);
+  const text = [
+    'constraint-checklist: 1 gaps for 3 constraint types.',
+    "  - beta: bake-case (no case 'beta' in bakeEntity, packages/pathkit/src/bake.ts)",
+    'Checklist: docs/adding-a-constraint.md',
+  ].join('\n') + '\n';
+  assert.deepEqual(runNode([script], { cwd: os.tmpdir() }), { status: 0, stdout: text, stderr: '' });
+  assert.deepEqual(runNode([script, '--strict'], { cwd: os.tmpdir() }), { status: 1, stdout: text, stderr: '' });
+});
+
+// T16: a repository with no source files prints one cannot-run line and no stack, and exits 1 only with --strict.
+test('T16 unreadable files give one line and no stack trace', () => {
+  const script = makeTempRepo(undefined);
+  for (const [flags, status] of [[[], 0], [['--strict'], 1]]) {
+    const run = runNode([script, ...flags], { cwd: os.tmpdir() });
+    assert.equal(run.status, status);
+    assert.equal(run.stderr, '');
+    assert.ok(run.stdout.startsWith('constraint-checklist: cannot run ('), run.stdout);
+    assert.ok(run.stdout.endsWith(')\n'), run.stdout);
+    assert.equal(run.stdout.trimEnd().split('\n').length, 1, run.stdout);
+    assert.equal(/^\s*at /m.test(run.stdout), false, run.stdout);
+  }
+});
+
+// T20: the hook file is the definition from the brief, runs the script without --strict, and is not a guard file.
+test('T20 the hook file is exactly the report-only definition', () => {
+  const hookFile = path.join(REPO_ROOT, '.kiro', 'hooks', 'constraint-checklist.json');
+  const hook = JSON.parse(readFileSync(hookFile, 'utf8'));
+  assert.deepEqual(hook, {
+    version: 'v1',
+    hooks: [
+      {
+        name: 'Constraint checklist',
+        trigger: 'PreTaskExec',
+        matcher: '.*',
+        action: { type: 'command', command: 'node scripts/check-constraints.mjs' },
+      },
+    ],
+  });
+  assert.equal(hook.hooks[0].action.command.includes('--strict'), false);
+  assert.equal(path.basename(hookFile).startsWith('guard-'), false);
+  assert.equal(hook.hooks[0].name.toLowerCase().startsWith('guard-'), false);
 });
 
 // T9: a message that mentions only a longer name does not satisfy the type.

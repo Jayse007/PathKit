@@ -120,27 +120,27 @@ These rules apply to every task below.
     - Ask the user to run `node --test scripts/check-constraints.test.mjs` and paste the output. Expect 0 failed
     - Mark tasks 3.1 to 3.5 done only from that output. Tell the user the source lines named in each of them
 
-- [ ] 4. Group 4: report text and runChecker
-  - [ ] 4.1 Add `formatReport` and its tests
+- [x] 4. Group 4: report text and runChecker
+  - [x] 4.1 Add `formatReport` and its tests
     - Change only the two files of task 1.1
     - Script: export `formatReport(sceneText, findings)` as the design describes. `n` counts the types from `findTypes` (orphans excluded) and `k` counts every finding. No findings gives the single OK line with the names in union order. Otherwise the header `constraint-checklist: <k> gaps for <n> constraint types.`, one line per finding (`  - <type>: <place> (<detail>)`, or `  - <place> (<detail>)` when `type` is empty), and the line `Checklist: docs/adding-a-constraint.md`. Plain text, no colour codes
     - Tests: T12 the exact OK line for three fixture types; the exact header, gap lines and `Checklist:` line for a fixture with two gaps (written out by hand); the line form for a default place and for a missing anchor; an orphan prints the interface name where the type would be; a missing anchor counts in `k`; no output contains an escape character (`\u001b`)
     - Source line it should catch: the `Checklist:` line removed, or `gaps for` changed to `gap for` (fails T12)
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-  - [ ] 4.2 Add `runChecker` and its tests
+  - [x] 4.2 Add `runChecker` and its tests
     - Change only the two files of task 1.1
     - Script: export `runChecker(strict, load)` returning `{ text, code }`. In a `try`: `sources = load()`, `findings = findGaps(sources)`, `text = formatReport(sources.scene, findings)`, `code = strict && findings.length > 0 ? 1 : 0`. In the `catch`: `text` is `constraint-checklist: cannot run (<reason>)` with the first line of the error message (or `String(error)` when there is none), and `code` is 1 with `strict`, otherwise 0. The default `load = readSources` is added in task 5.1
     - Tests: T18 `runChecker(true, () => { throw new Error('boom') })` gives the line `constraint-checklist: cannot run (boom)` and code 1; with `false` the code is 0 and the text is the same. T18b in-process exit codes with a loader that returns fixtures: a complete fixture gives the OK line and code 0 with and without strict; a fixture with a gap gives the gap text, code 0 without strict and code 1 with strict
     - Source lines it should catch: the `catch` branch changed to ignore `strict` (fails T18), and `code` set to 1 when `strict` is false and there are findings (fails T18b)
     - _Requirements: 8.1, 8.2, 8.3, 8.5, 9.1, 9.5, 12.13_
 
-  - [ ] 4.3 Checkpoint 4
+  - [x] 4.3 Checkpoint 4
     - Ask the user to run `node --test scripts/check-constraints.test.mjs` and paste the output. Expect 0 failed
     - Mark tasks 4.1 and 4.2 done only from that output. Tell the user the source lines named in each of them
 
-- [ ] 5. Group 5: reading the real files and the command line
-  - [ ] 5.1 Add `readSources` and the real-repository test
+- [x] 5. Group 5: reading the real files and the command line
+  - [x] 5.1 Add `readSources` and the real-repository test
     - Change only the two files of task 1.1
     - Script: export `readSources()`. Compute `root` from `import.meta.url` with `node:url` and `node:path` (`path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')`). Read `scene.ts`, `bake.ts` and `index.ts` from `packages/pathkit/src` and every `.ts` file, sorted by name and not recursive, in `packages/pathkit/test/scene` and `packages/pathkit/test/bake`, as UTF-8 `{ name, text }`. Use only `readFileSync` and `readdirSync`. A file or folder that cannot be read throws. Change `runChecker` to `load = readSources`
     - Tests: T13 `findGaps(readSources())` is `[]`, and `runChecker(false).text` equals `constraint-checklist: 3 constraint types (followPath, aimAt, orbitAround), every place covered.` Put this comment line directly above the test: `// Update these three type names (and the expected count) when a constraint type is added to PathKit.`
@@ -148,21 +148,21 @@ These rules apply to every task below.
     - Source line it should catch: the `export` check changed to look in `scene` instead of `index` (fails T13)
     - _Requirements: 6.1, 6.2, 6.4, 6.5, 12.12_
 
-  - [ ] 5.2 Add the command-line part and the real-program tests
+  - [x] 5.2 Add the command-line part and the real-program tests
     - Change only the two files of task 1.1
     - Script: add `isMain()` as the design describes (`process.argv[1]` defined and `import.meta.url` equal to `pathToFileURL(path.resolve(process.argv[1])).href`). When it is true, call `runChecker(process.argv.slice(2).includes('--strict'))`, write `text + '\n'` to standard output and set `process.exitCode` to `code`. Do not call `process.exit`. Do not touch `process.stdin`
     - Tests: T14 run `process.execPath` on `scripts/check-constraints.mjs` with `spawnSync`, in the real repository: the OK line is printed and the exit code is 0, with and without `--strict`, from the repository root and with `cwd` set to `os.tmpdir()`. T17 the same run with unreadable text (`\u0000{{not json`) given as standard input: the same OK line, exit code 0. T19 importing the script in the test printed nothing and left `process.exitCode` unchanged (checked by comparing it before and after a dynamic `import()` of the script with a query string, so the module is evaluated again)
     - Source lines it should catch: a path built with `process.cwd()` instead of `import.meta.url` (fails T14), a `process.stdin.read()` added (fails T17), and `isMain()` changed to always return `true` (fails T19)
     - _Requirements: 6.3, 8.1, 8.3, 8.4, 8.6, 12.13_
 
-  - [ ] 5.3 Add the temporary-tree tests
+  - [x] 5.3 Add the temporary-tree tests
     - Change only the test file
     - Test file: add a helper that creates a folder under `os.tmpdir()` with `scripts/check-constraints.mjs` (a copy of the real script) and a fake `packages/pathkit/src/*.ts` and `packages/pathkit/test/{scene,bake}/*.ts` tree written from the fixtures of task 3.1, and removes the folder in an `after` hook. The tests write nothing else
     - Tests: T15 a tree whose fixtures have one gap: the output has the header and the gap line and the `Checklist:` line, exit code 0 without `--strict` and 1 with it. T16 a tree with no `packages` folder: one line that starts with `constraint-checklist: cannot run (`, no line that starts with `at `, exit code 0, and 1 with `--strict`
     - Source lines it should catch: the `try` and `catch` in `runChecker` removed (fails T16), and `runChecker` returning code 1 without `--strict` (fails T15)
     - _Requirements: 8.1, 8.2, 8.5, 12.13_
 
-  - [ ] 5.4 Checkpoint 5: the script is complete
+  - [x] 5.4 Checkpoint 5: the script is complete
     - Ask the user to run `node --test scripts/check-constraints.test.mjs` and paste the whole output. Expect H1 to H5, F1 to F5 and T1 to T19 to pass (T20 comes in task 6.1) with 0 failed and 0 skipped. Report the counts from the pasted output only
     - Ask the user to run `node scripts/check-constraints.mjs --strict` and paste the output. Expect the single OK line and no error
     - Do not start group 6 until both pasted outputs show a pass. If any test fails, fix it under the rules above first. A failure of T13 follows the rule in task 5.1 instead: do not change the script to make it pass. Report the finding text and ask the user
