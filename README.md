@@ -17,6 +17,8 @@ In progress: scene validation, baking, evaluation and a motion linter. The two d
 
 It installs the PathKit packages with `npm ci`, runs every check and prints PASS or FAIL for each step. It builds nothing.
 
+If a step fails, run its command yourself to see the full output. The setup script shows only the last 30 lines of a failing step. The commands are `npm test` (inside `packages/pathkit`), `node --test scripts/check-constraints.test.mjs` and `node scripts/check-constraints.mjs --strict` (both from the repository root).
+
 Tested with Node.js 24.
 
 ```
