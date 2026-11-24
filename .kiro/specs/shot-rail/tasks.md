@@ -49,7 +49,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Kiro may read the steering file to check the line is there. Kiro does not edit it.
     - _Requirements: 1.5, 2.8, 23.1, 25.6_
 
-- [ ] 2. Scaffold the app
+- [x] 2. Scaffold the app
   - [x] 2.1 Create the app files
     - `package.json`: type module; exact versions with no `^` or `~`: runtime `three` 0.187.0; dev `@types/three` 0.187.0, `vite` 7.3.8, `vitest` 3.2.7, `typescript` 5.9.3; scripts `test` = `vitest run`, `build` = `vite build`, `dev` = `vite`, `preview` = `vite preview`.
     - Only the User runs `dev` and `preview`, in their own terminal. Kiro never runs them and never asks for them.
@@ -62,12 +62,12 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - `THIRD_PARTY.md` (three 0.187.0 MIT, @types/three 0.187.0 MIT, Vite 7.3.8 MIT, Vitest 3.2.7 MIT, TypeScript 5.9.3 Apache-2.0), and stubs for `docs/build-notes.md` and `docs/sources.md`.
     - Risk to confirm at the first build: Vite resolves the import from outside the app root, and the tsconfig type-checks PathKit source without new errors.
     - _Requirements: 1.1, 1.2, 1.6, 1.8, 1.9, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.10_
-  - [~] 2.2 User checkpoint: install
+  - [x] 2.2 User checkpoint: install
     - Kiro gives the one line `npm.cmd install` (run from `apps/shot-rail`; it installs the exact versions already pinned in `package.json`) and waits. No chained command. The User runs it and pastes the output. Kiro keeps `package-lock.json`.
     - _Requirements: 2.1, 2.8, 2.9_
 
 - [ ] 3. Constants consistency test
-  - [~] 3.1 Write `test/logic/constants.test.ts`
+  - [-] 3.1 Write `test/logic/constants.test.ts`
     - `BAKE_FPS` = 240, `BAKED_LAP_FRAMES` = 1920, `LAP_SECONDS` = 8, `SENSOR_HEIGHT_MM` = 20.25, `FRAME_INTERVAL_MS` = 1000/30 (hand-written numbers).
     - Thresholds: -10 < 10 < 60 and 35 < 70. Ranges: `SHOT_LENGTH_MIN` < `SHOT_LENGTH_DEFAULT` < `SHOT_LENGTH_MAX`; `CAMERA_RADIUS_MIN` < `CAMERA_RADIUS_MAX`; `CAMERA_HEIGHT_MIN` < `CAMERA_HEIGHT_MAX`; `ROAD_POINTS_MIN` < `DEFAULT_ROAD_POINT_COUNT` < `ROAD_POINTS_MAX`. `CAMERA_IDS` has `MAX_CAMERAS` entries. Camera forward and up axes lie on different axes; car forward and up axes lie on different axes.
     - The User runs `npm.cmd test` (expected: this file passes; report the counts).

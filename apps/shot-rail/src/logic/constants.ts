@@ -1,5 +1,7 @@
 // Named constants for Shot Rail. Values follow the design's Named constants table.
 
+import type { Vec3 } from './pathkit.js';
+
 // Axis names used by entity declarations.
 export type AxisName = '+X' | '-X' | '+Y' | '-Y' | '+Z' | '-Z';
 
@@ -59,13 +61,13 @@ export const CAMERA_HEIGHT_MAX = 40; // m, relative to subject centre
 export const ORBIT_SWEEP_DEG = 180;
 export const PUSH_IN_END_RATIO = 0.4;
 export const CRANE_RISE_M = 6;
-export const PLACEHOLDER_PATH = {
+export const PLACEHOLDER_PATH: { points: Vec3[]; closed: boolean } = {
   points: [
     { x: 0, y: 0, z: 0 },
     { x: 1, y: 0, z: 0 },
   ],
   closed: false,
-} as const;
+};
 export const NEAR_EPSILON = 1e-6; // m
 
 // Label thresholds
