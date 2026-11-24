@@ -4,78 +4,30 @@
 
 Shot Rail is a demo app in `apps/shot-rail/` that answers one question: "If I film this subject from here, with this lens and this movement, what will it look like?" A user places cameras around a moving subject, sees what each camera sees, picks one as the main camera, gives it a move, and gets a motion check. It is a rough planning tool and says so.
 
-The app uses PathKit for the work a plain camera cannot do: the subject follows a path and aligns to it with eased speed, several cameras sit around the subject and keep aiming at it, the main camera can follow its own path, and the motion linter checks the camera move.
+The app uses PathKit for the work a plain camera cannot do: the subject follows a closed road path and aligns to it, several cameras sit around the subject and keep aiming at it, the main camera can follow its own path, and the motion linter checks the camera move. PathKit `followPath` moves an entity at constant speed. The car's speeding up and slowing down is app code: a pure frame remap converts each frame number into a position along the road, and the remapped positions are then fed to PathKit.
 
-This document is derived from `.kiro/specs/shot-rail/brief.md` (DRAFT 1, 2026-11-24) and the steering files `agent-workflow`, `coordinate-conventions`, `testing-conventions`, `typescript-imports` and `windows-terminal`. Each requirement is marked P1 (must ship), P2 or P3 (only if time remains), or "All" for rules that apply across priorities. The brief's build order has phases 0 to 5 (Spike, Pure logic, Stage and views, Modes and timeline, Design pass, Manual and deploy). Phases appear here only as context. This document contains no tasks.
+This document is derived from `.kiro/specs/shot-rail/brief.md` (DRAFT 1, 2026-11-24), the decisions the User gave for the open questions, and the steering files `agent-workflow`, `coordinate-conventions`, `testing-conventions`, `typescript-imports` and `windows-terminal`. Each requirement is marked P1 (must ship), P2 or P3 (only if time remains), or "All" for rules that apply across priorities. The brief's build order has phases 0 to 5 (Spike, Pure logic, Stage and views, Modes and timeline, Design pass, Manual and deploy). Phases appear here only as context. This document contains no tasks.
 
 ## Open questions and conflicts
 
-Each item states the issue, the assumption used in this document, and who must decide. Requirements below follow the assumptions. If a decision changes an assumption, the affected requirements must be revised.
+Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 
-1. **Terminal commands.**
-   - Issue: the `windows-terminal` rule allows only `npm.cmd test` from `packages/pathkit`. The brief needs `npm.cmd install`, `npm.cmd test` and `npm.cmd run build` from `apps/shot-rail`.
-   - Assumption: Kiro asks for none of these in `apps/shot-rail` until the user adds the matching lines to `.kiro/steering/windows-terminal.md`.
-   - Decision: the user.
-2. **Dependency rule scope.**
-   - Issue: `coordinate-conventions` says the only dev dependencies are `vitest` and `fast-check` and that there are no runtime dependencies, for "all code". The app needs `three` (runtime), plus `vite`, `typescript` and `@types/three`.
-   - Assumption: that rule applies to `packages/pathkit` only. `fast-check` is not used in the app unless the user says so.
-   - Decision: the user confirms.
-3. **Module settings.**
-   - Issue: `typescript-imports` requires NodeNext and `.js` relative imports. Vite apps usually use Bundler resolution.
-   - Assumption: the app `tsconfig.json` uses NodeNext and `.js` relative imports, like the rest of the repository.
-   - Decision: the user confirms.
-4. **Test conventions scope.**
-   - Issue: `testing-conventions` auto-applies only to `packages/pathkit/test`.
-   - Assumption: its rules also apply to app tests: plain checks inside loops, forced edge cases, naming the source line a test should catch, a 5 second limit per test file, and `SceneError` instances in thrown-error assertions.
-   - Decision: the user confirms.
-5. **Frame rate and lengths.**
-   - Issue: the fixed frames per second (fps), the default shot length and the subject path length are not given. Time must be whole frames.
-   - Assumption: none. These values are left open and are named as required configuration constants in Requirement 11.
-   - Decision: the user decides before the design phase.
-6. **Label boundaries.**
-   - Issue: the brief's angle bands ("below -10", "-10 to 10", "above 10", "above 60") overlap at 10 and 60 and leave the edges undefined. The framing bands ("above 70%", "35 to 70%", "below 35%") leave the edges undefined.
-   - Assumption: overhead takes precedence over high angle. The values -10, 10, 35 and 70 belong to the middle band (eye level, medium). The value 60 belongs to high angle, so overhead is strictly above 60.
-   - Decision: the user confirms.
-7. **Subject fill definition.**
-   - Issue: "how much of the frame height the subject fills" does not say which bounding shape or projection is measured.
-   - Assumption: none. Requirement 6 requires a written definition before design.
-   - Decision: the user, with the design phase proposing candidates.
-8. **Camera height by shifting the target.**
-   - Issue: spike S4 shifts the aim target up or down to make a camera higher or lower. That also changes where the camera aims, not only its height. The angle label is measured to the subject centre.
-   - Assumption: none. Spike S4 decides it, and the result is recorded in `docs/build-notes.md`.
-   - Decision: the user, using the S4 result.
-9. **Coverage grid refresh during playback.**
-   - Issue: "rendered only when something changes" conflicts with a moving subject during playback.
-   - Assumption: while playing, the coverage grid also re-renders, at a reduced rate. The rate is a named constant and is not yet chosen.
-   - Decision: the user confirms and chooses the rate.
-10. **One path per scene.**
-    - Issue: PathKit allows one path per scene. Push-in and crane need a path for the main camera, while the other cameras use orbit and aim.
-    - Assumption: none. The spike must show whether the camera scene can hold one path camera plus orbiting cameras. If not, a separate scene or another arrangement is a design decision.
-    - Decision: the user, using the spike result.
-11. **Stored settings.**
-    - Issue: "nothing is stored except simple view settings" conflicts with "a hint the first time each mode opens", which needs a seen flag.
-    - Assumption: seen flags count as view settings. All storage is inside try/catch. The exact list of stored keys is documented in the README.
-    - Decision: the user confirms.
-12. **Documentation file locations.**
-    - Issue: the brief names `docs/build-notes.md`, `docs/sources.md` and `THIRD_PARTY.md` without a folder.
-    - Assumption: `build-notes.md` and `sources.md` live in `apps/shot-rail/docs/`. `THIRD_PARTY.md` lives in `apps/shot-rail/`. A root `THIRD_PARTY.md` would break the rule that new files go only inside `apps/shot-rail/`.
-    - Decision: the user confirms.
-13. **Deploy.**
-    - Issue: build-order phase 5 says "then deploy", while the brief says the deploy workflow is a later, separate task.
-    - Assumption: deploy is out of scope. Only the Vite `base` setting and a working build are in scope.
-    - Decision: the user confirms.
-14. **Package versions and fonts.**
-    - Issue: the brief gives no exact package versions, and no font is chosen.
-    - Assumption: per `agent-workflow`, Kiro gives the user one exact `npm.cmd install` line with pinned versions. Kiro does not guess versions. The user supplies or approves them. Fonts are proposed as open-licence candidates and the user checks each licence.
-    - Decision: the user.
-15. **Bake timing (S5).**
-    - Issue: "under 100 ms" depends on the machine.
-    - Assumption: the spike test records and prints the bake time for the user to report. It does not fail on timing, to avoid a flaky test.
-    - Decision: the user confirms.
-16. **Contrast checking.**
-    - Issue: contrast must be "checked, not guessed", and Kiro cannot inspect rendering.
-    - Assumption: a pure contrast-ratio function is tested over the palette's text and background pairs.
-    - Decision: the user confirms.
+1. **Terminal commands.** Decided: Kiro asks for no `npm.cmd` commands in `apps/shot-rail` until the User adds the matching lines to `.kiro/steering/windows-terminal.md`.
+2. **Dependency rule scope.** Decided: the dependency rule in `coordinate-conventions` covers `packages/pathkit` only.
+3. **Module settings.** Decided: the app `tsconfig.json` uses NodeNext and `.js` relative imports.
+4. **Test conventions scope.** Decided: the `testing-conventions` rules also apply to app tests.
+5. **Frame rate and lengths.** Decided: 30 fps; default Shot_Length 240 frames, allowed 60 to 600; the road is flat (y constant) with about 12 control points and about 120 m length; the car laps every 240 frames whatever the Shot_Length (a 600-frame shot is 2.5 laps, a 60-frame shot is a quarter lap).
+6. **Label boundaries.** Decided: overhead takes precedence over high angle; -10, 10, 35 and 70 belong to the middle band (eye level, medium); 60 belongs to high angle; overhead is strictly above 60.
+7. **Subject fill definition.** Decided: Fill_Fraction is the larger of (projected 3D bounding box height / frame height) and (projected width / frame width), as a percentage, computed by a pure function over projected points.
+8. **Camera height by shifting the target.** Decided: two targets. The orbit centre is the Subject position shifted up or down by the camera height; `aimAt` uses the true Subject position. The UI "distance" is the horizontal distance (the orbit radius); the straight-line distance is shown read-only. Spike S4 verifies the resulting height and aim.
+9. **Coverage grid refresh during playback.** Decided: while playing, the Coverage_Grid re-renders 10 times per second (named constant).
+10. **One path per scene.** Decided: Spike S6 tests whether one scene can hold a path camera plus orbiting cameras. If not, the Main_Camera gets its own scene without asking the User, and the result is recorded in Build_Notes.
+11. **Stored settings.** Decided: "hint seen" flags count as view settings; all storage is inside try/catch; the README lists every stored key.
+12. **Documentation file locations.** Decided: `build-notes.md` and `sources.md` live in `apps/shot-rail/docs/`; `THIRD_PARTY.md` lives at app level only (`apps/shot-rail/THIRD_PARTY.md`); the repository root file is handled outside this spec.
+13. **Deploy.** Decided: deploy is out of scope; only the Vite `base` setting and a working build are in scope.
+14. **Package versions and fonts.** Decided: pinned versions are three 0.187.0, @types/three 0.187.0, vite 7.3.8, vitest 3.2.7 and typescript 5.9.3; no font is added, the app uses the system font stack.
+15. **Bake timing (S5).** Decided: the spike records and prints the bake time and does not fail on timing.
+16. **Contrast checking.** Decided: a pure contrast-ratio function is tested over the palette's text and background pairs.
 17. **Constraint names.**
     - Issue: the brief names `followPath`, `alignToPath`, `orbitAround` and `aimAt`. PathKit's `index.ts` exports the types `FollowPathConstraint`, `AimAtConstraint` and `OrbitAroundConstraint`.
     - Assumption: requirements use the brief's names. The design must confirm the exact option names, for example how `alignToPath` is set.
@@ -84,41 +36,47 @@ Each item states the issue, the assumption used in this document, and who must d
     - Issue: the table was checked by hand against 2 x atan(18 / f) and 2 x atan(10.125 / f), and all eight values round correctly to 1 decimal place. The vertical angle at 24 mm is about 45.747 degrees before rounding, so it rounds to 45.7, not 45.8.
     - Assumption: tests use hand-computed expectations, with 45.747 (not 45.75) as the unrounded 24 mm vertical value.
     - Decision: none needed. Recorded for the test author.
-19. **Reduced motion.**
-    - Issue: "`prefers-reduced-motion` replaces playback easing" is ambiguous, because the subject's eased speed is PathKit data.
-    - Assumption: reduced motion removes interface transitions and makes interface changes jump. The subject's speed profile during playback is unchanged unless the user decides otherwise.
-    - Decision: the user.
+19. **Reduced motion.** Decided: reduced motion removes interface transitions and makes interface changes jump; the Subject's speed profile during playback is unchanged.
 
 ## Glossary
 
 - **Shot_Rail_App**: The browser app in `apps/shot-rail/`.
 - **PathKit**: The library in `packages/pathkit`, imported only through `packages/pathkit/src/index.ts`.
 - **Subject**: The moving thing being filmed. The car (P1), the walking figure (P2) or the abstract object (P3).
+- **Road**: The flat, closed path the car drives. All control points have the same y value.
+- **Road_Point_Limits**: The named constants for the minimum (3) and maximum (100) number of Road control points (known issue KI-11).
+- **Lap_Frames**: The named constant 240, the number of frames in one lap of the Road.
+- **Frame_Remap**: The pure app function that converts a whole frame number into a position along the Road, with easing. PathKit `followPath` itself has constant speed and does no easing.
 - **Camera**: A virtual camera placed around the Subject with bearing, height, distance and lens.
 - **Main_Camera**: The one Camera whose view fills the main camera view.
+- **Orbit_Centre**: The point a Camera orbits. It is the Subject position shifted up or down by the Camera height.
+- **Horizontal_Distance**: The distance of the Camera from the Orbit_Centre in the horizontal plane (the orbit radius). It is the "distance" control in the UI.
+- **Straight_Line_Distance**: The distance from the Camera to the true Subject position, shown read-only.
 - **Coverage_Grid**: The grid of up to 6 small Camera views.
 - **Angle_Mode**: The mode for placing and comparing Cameras.
 - **Move_Mode**: The mode for giving the Main_Camera a Shot_Type.
 - **Shot_Type**: One of push-in, orbit, tracking (fixed offset from the Subject) or crane (rises).
-- **Shot_Length**: The number of whole frames in a shot.
+- **Shot_Length**: The number of whole frames in a shot, from 60 to 600, default 240.
+- **Frame_Rate**: The named constant 30 frames per second.
 - **Lens_Module**: The pure logic that converts a lens focal length to fields of view.
 - **Label_Module**: The pure logic that produces the Angle_Label and Framing_Label.
 - **Angle_Label**: One of "low angle", "eye level", "high angle" or "overhead".
 - **Framing_Label**: One of "close-up", "medium" or "wide".
-- **Elevation**: The angle in degrees of the Camera above or below the Subject centre, as seen from the Subject centre.
-- **Fill_Fraction**: The share of the frame height that the Subject fills, as a percentage. Its exact definition is open (item 7).
+- **Elevation**: The angle in degrees of the Camera above or below the true Subject centre, as seen from the true Subject centre.
+- **Fill_Fraction**: The larger of (projected 3D bounding box height / frame height) and (projected 3D bounding box width / frame width), as a percentage, computed by a pure function over projected points.
 - **Frame_Mapper**: The pure logic that converts between frame numbers, time and the scrub value.
 - **Shot_Builder**: The pure logic that creates a PathKit scene for a Shot_Type.
 - **Target_Converter**: The pure logic that turns the Subject's baked positions into a keyframed target.
 - **Motion_Check**: The list of findings produced by PathKit's `motionLinter` on the camera scene, shown in plain words.
 - **Finding**: One item returned by `motionLinter`.
 - **Timeline**: The bottom control with play, pause, scrub, frame counter and Finding marks.
+- **Playback_Rate_Grid**: The named constant 10, the number of Coverage_Grid re-renders per second while the Timeline is playing.
 - **Shot_Strip**: Six small pictures taken along the shot (P2).
 - **Capture**: Saving the current frame as a PNG (P2).
 - **Stage_Overview**: The small top-down 3D view of Subject, road, Cameras and Camera paths.
 - **About_Panel**: The panel that shows the honest limits.
 - **Thirds_Guide**: The rule-of-thirds overlay. **Safe_Area_Guide**: The safe-area overlay.
-- **Spike**: Phase 0 tests S1 to S5 that prove facts about PathKit before any interface is built.
+- **Spike**: Phase 0 tests S1 to S6 that prove facts about PathKit before any interface is built.
 - **Build_Notes**: The file `apps/shot-rail/docs/build-notes.md`.
 - **Sources_File**: The file `apps/shot-rail/docs/sources.md`.
 - **Third_Party_File**: The file `apps/shot-rail/THIRD_PARTY.md`.
@@ -153,30 +111,39 @@ Each item states the issue, the assumption used in this document, and who must d
 
 #### Acceptance Criteria
 
-1. THE Shot_Rail_App SHALL use only `three`, `@types/three`, `vite`, `vitest` and `typescript` as dependencies, with exact pinned versions.
+1. THE Shot_Rail_App SHALL use exactly these five dependencies, each pinned to an exact version: `three` 0.187.0, `@types/three` 0.187.0, `vite` 7.3.8, `vitest` 3.2.7 and `typescript` 5.9.3.
 2. THE Shot_Rail_App SHALL make no network call at run time and send no analytics.
 3. THE Shot_Rail_App SHALL use no paid service.
 4. THE Shot_Rail_App SHALL use no image, icon or sound from outside the repository.
-5. THE Third_Party_File SHALL list `three` (MIT), `@types/three` (MIT), Vite (MIT), Vitest (MIT) and TypeScript (Apache-2.0), each with its version.
-6. WHEN the app adopts a font, THE Third_Party_File SHALL list that font with its licence, after the User has checked the licence.
-7. IF a new major version of TypeScript or Vite would be adopted after the Spike, THEN Kiro SHALL ask the User before adopting it.
-8. WHEN dependencies must be installed, Kiro SHALL give the User one exact `npm.cmd install` command with pinned versions and wait for the User to run it, per open questions 1 and 14.
+5. THE Third_Party_File SHALL list `three` 0.187.0 (MIT), `@types/three` 0.187.0 (MIT), Vite 7.3.8 (MIT), Vitest 3.2.7 (MIT) and TypeScript 5.9.3 (Apache-2.0).
+6. THE Shot_Rail_App SHALL use the system font stack and SHALL add no font file.
+7. IF a change of version of TypeScript or Vite would be adopted, THEN Kiro SHALL ask the User before adopting it.
+8. WHEN dependencies must be installed and the User has added the matching line to `.kiro/steering/windows-terminal.md`, Kiro SHALL give the User one exact `npm.cmd install` command with the pinned versions and wait for the User to run it (open question 1).
 9. THE Shot_Rail_App SHALL keep `package-lock.json` in `apps/shot-rail/`.
 10. THE Shot_Rail_App SHALL use the working name "Shot Rail" and SHALL state in the README that the name is not trademark-checked.
 
-### Requirement 3: Car subject on an eased closed road path (P1)
+### Requirement 3: Car subject on a closed road with eased speed (P1)
 
-**User Story:** As a planner, I want a car that drives a closed road with eased speed, so that I can see how cameras follow a moving subject.
+**User Story:** As a planner, I want a car that drives a closed road and speeds up and slows down, so that I can see how cameras follow a moving subject.
 
 #### Acceptance Criteria
 
 1. THE Shot_Rail_App SHALL draw the car from boxes and cylinders only.
 2. THE Shot_Rail_App SHALL draw the car with no real brand, logo or licence plate text.
-3. THE Shot_Rail_App SHALL move the car along a closed road path with PathKit `followPath` and `alignToPath`.
-4. WHILE the car moves along the road path, THE Shot_Rail_App SHALL vary the car's speed with easing, so that the car speeds up and slows down along the path.
-5. WHEN the Timeline frame equals the last frame of the shot, THE Shot_Rail_App SHALL show the car at a position on the closed road path that is a valid position for the same path.
-6. THE Shot_Rail_App SHALL express all coordinates in a Y-up, right-handed system with distances in metres and internal angles in radians.
-7. THE Shot_Rail_App SHALL declare the car's `forwardAxis` and `upAxis` on the car entity and SHALL NOT hard-code them in shared logic.
+3. THE Shot_Rail_App SHALL move the car along the Road with PathKit `followPath` and `alignToPath`.
+4. THE Frame_Remap SHALL convert each whole frame number into a position along the Road with easing, so that the car speeds up and slows down along the Road, and THE Shot_Rail_App SHALL feed the remapped positions to PathKit.
+5. THE Frame_Remap SHALL be pure: the same frame number SHALL always give the same position.
+6. THE Frame_Remap SHALL map frame 0 to the start of the Road.
+7. THE Frame_Remap SHALL map frame `Lap_Frames` (240) to the start of the next lap, which is the same point on the Road as frame 0.
+8. THE Frame_Remap SHALL never decrease the position along the Road as the frame number increases.
+9. THE Frame_Remap SHALL give different speeds (position change per frame) at different frames of one lap.
+10. THE Shot_Rail_App SHALL lap the Road every `Lap_Frames` (240) frames whatever the Shot_Length, so that a 600-frame shot is 2.5 laps and a 60-frame shot is a quarter lap.
+11. THE Shot_Rail_App SHALL use a Road whose control points all have the same y value.
+12. THE default Road SHALL have about 12 control points and a length of about 120 m.
+13. IF the Road has fewer than the minimum of `Road_Point_Limits` (3) or more than the maximum (100) control points, THEN THE Shot_Rail_App SHALL refuse the Road and show a message that names the control point count and the allowed range (known issue KI-11).
+14. THE Shot_Rail_App SHALL NOT describe PathKit as providing easing or changes of speed along the Road.
+15. THE Shot_Rail_App SHALL express all coordinates in a Y-up, right-handed system with distances in metres and internal angles in radians.
+16. THE Shot_Rail_App SHALL declare the car's `forwardAxis` and `upAxis` on the car entity and SHALL NOT hard-code them in shared logic.
 
 ### Requirement 4: Lens maths (P1)
 
@@ -216,7 +183,7 @@ Each item states the issue, the assumption used in this document, and who must d
 6. THE Shot_Rail_App SHALL show each threshold next to its label and describe the thresholds as "commonly used".
 7. THE Shot_Rail_App SHALL NOT state as fact what an angle does to the viewer.
 8. WHERE a note about the effect of an angle is shown, THE Shot_Rail_App SHALL mark it "commonly said" and the Sources_File SHALL record its source.
-9. THE Label_Module SHALL calculate Elevation from the Camera position to the Subject centre.
+9. THE Label_Module SHALL calculate Elevation from the Camera position to the true Subject centre, not to the shifted Orbit_Centre.
 
 ### Requirement 6: Framing label (P1)
 
@@ -229,8 +196,9 @@ Each item states the issue, the assumption used in this document, and who must d
 3. WHEN the Fill_Fraction is below 35 percent, THE Label_Module SHALL return "wide".
 4. THE Label_Module SHALL define the thresholds 35 and 70 as named constants in the same file as the angle thresholds.
 5. THE Shot_Rail_App SHALL show each threshold next to its label and describe the thresholds as "commonly used".
-6. THE design phase SHALL define in writing, before any code, which bounding shape and projection give the Fill_Fraction (open question 7).
-7. IF the Fill_Fraction is below 0 or above 100 percent, or is not a finite number, THEN THE Label_Module SHALL fail with an error message that names the invalid value.
+6. THE Fill_Fraction function SHALL return the larger of (projected 3D bounding box height / frame height) and (projected 3D bounding box width / frame width), as a percentage.
+7. THE Fill_Fraction function SHALL be pure and SHALL work over projected points passed in as input.
+8. IF the Fill_Fraction is below 0 or above 100 percent, or is not a finite number, THEN THE Label_Module SHALL fail with an error message that names the invalid value.
 
 ### Requirement 7: Angle mode and coverage grid (P1)
 
@@ -239,15 +207,17 @@ Each item states the issue, the assumption used in this document, and who must d
 #### Acceptance Criteria
 
 1. WHILE Angle_Mode is active, THE Shot_Rail_App SHALL show a Coverage_Grid of up to 6 small Camera views.
-2. THE Shot_Rail_App SHALL let the User set each Camera's bearing, height, distance and lens.
-3. THE Shot_Rail_App SHALL show the Angle_Label and the Framing_Label on each Camera view in the Coverage_Grid.
-4. WHEN the User clicks a Camera view, THE Shot_Rail_App SHALL make that Camera the Main_Camera.
-5. THE Shot_Rail_App SHALL keep each Camera aimed at the Subject with PathKit `orbitAround` and `aimAt`, with `orbitAround` listed before `aimAt` in the constraint order.
-6. WHEN a Camera setting changes, THE Shot_Rail_App SHALL re-render the Coverage_Grid.
-7. WHILE the Timeline is playing, THE Shot_Rail_App SHALL re-render the Coverage_Grid at a reduced rate defined as a named constant (open question 9).
-8. WHILE nothing changes and the Timeline is stopped, THE Shot_Rail_App SHALL NOT re-render the Coverage_Grid.
-9. IF the User tries to add a seventh Camera, THEN THE Shot_Rail_App SHALL refuse and show a message that states the limit of 6 Cameras.
-10. WHERE the User cannot drag, THE Shot_Rail_App SHALL offer the same placement by typing values or using keys.
+2. THE Shot_Rail_App SHALL let the User set each Camera's bearing, height, Horizontal_Distance and lens.
+3. THE Shot_Rail_App SHALL label the distance control as the horizontal distance (the orbit radius) and SHALL show the Straight_Line_Distance as a read-only value.
+4. THE Shot_Rail_App SHALL show the Angle_Label and the Framing_Label on each Camera view in the Coverage_Grid.
+5. WHEN the User clicks a Camera view, THE Shot_Rail_App SHALL make that Camera the Main_Camera.
+6. THE Shot_Rail_App SHALL keep each Camera aimed at the Subject with PathKit `orbitAround` and `aimAt`, with `orbitAround` listed before `aimAt` in the constraint order.
+7. THE Shot_Rail_App SHALL orbit each Camera around the Orbit_Centre (the Subject position shifted up or down by the Camera height) and SHALL aim each Camera at the true Subject position.
+8. WHEN a Camera setting changes, THE Shot_Rail_App SHALL re-render the Coverage_Grid.
+9. WHILE the Timeline is playing, THE Shot_Rail_App SHALL re-render the Coverage_Grid 10 times per second, using the named constant `Playback_Rate_Grid`.
+10. WHILE nothing changes and the Timeline is stopped, THE Shot_Rail_App SHALL NOT re-render the Coverage_Grid.
+11. IF the User tries to add a seventh Camera, THEN THE Shot_Rail_App SHALL refuse and show a message that states the limit of 6 Cameras.
+12. WHERE the User cannot drag, THE Shot_Rail_App SHALL offer the same placement by typing values or using keys.
 
 ### Requirement 8: Move mode and shot types (P1)
 
@@ -262,11 +232,14 @@ Each item states the issue, the assumption used in this document, and who must d
 5. WHEN the User selects crane, THE Shot_Builder SHALL create a scene in which the Main_Camera rises along a path.
 6. THE Shot_Builder SHALL create, for each Shot_Type, a scene that `validateScene` accepts.
 7. THE Shot_Builder SHALL list the entities and the constraints of each scene in a fixed, documented order, with `orbitAround` before `aimAt`.
-8. THE Shot_Rail_App SHALL let the User set the Shot_Length in whole frames.
-9. IF the Shot_Length is not a whole number of at least 1, THEN THE Shot_Rail_App SHALL refuse the value and show a message that states the valid range.
-10. THE Shot_Rail_App SHALL bake the Subject and the Cameras in two PathKit scenes, because PathKit allows one path per scene (open question 10).
+8. THE Shot_Rail_App SHALL let the User set the Shot_Length as a whole number of frames from 60 to 600, with a default of 240.
+9. IF the Shot_Length is not a whole number from 60 to 600, THEN THE Shot_Rail_App SHALL refuse the value and show a message that states the range 60 to 600.
+10. THE Shot_Rail_App SHALL bake the Subject in its own scene, and SHALL bake the Cameras in a camera scene.
 11. THE Target_Converter SHALL turn the Subject's baked positions into a keyframed target with exactly one keyframe per frame, each equal to the baked position at that frame.
 12. WHEN the Shot_Type or its settings change, THE Shot_Rail_App SHALL re-bake the Cameras before the next frame is shown.
+13. IF Spike S6 shows that one scene cannot hold a path camera plus orbiting Cameras, THEN THE Shot_Rail_App SHALL bake the Main_Camera in its own scene, without asking the User, and the result SHALL be recorded in Build_Notes.
+14. THE Shot_Builder SHALL give each orbiting Camera an Orbit_Centre equal to the Subject position shifted up or down by the Camera height, and SHALL give `aimAt` the true Subject position.
+15. WHEN the Shot_Type, its settings or the Shot_Length change, THE Shot_Rail_App SHALL leave the Timeline paused and SHALL NOT start playback after the re-bake.
 
 ### Requirement 9: Motion check (P1)
 
@@ -289,11 +262,12 @@ Each item states the issue, the assumption used in this document, and who must d
 
 #### Acceptance Criteria
 
-1. WHEN the Shot_Rail_App starts, THE Shot_Rail_App SHALL load a sample shot that contains the car, Cameras and a Main_Camera.
+1. WHEN the Shot_Rail_App starts, THE Shot_Rail_App SHALL load a sample shot that contains the car, Cameras and a Main_Camera, with the Timeline paused at frame 0.
 2. THE Shot_Rail_App SHALL provide three sample shots.
-3. WHEN the User selects a sample shot, THE Shot_Rail_App SHALL replace the current shot with the sample within one frame update.
+3. WHEN the User selects a sample shot, THE Shot_Rail_App SHALL replace the current shot with the sample within one frame update and SHALL leave the Timeline paused.
 4. WHEN the Shot_Rail_App starts, THE Shot_Rail_App SHALL show a visible result for the first action within about ten seconds of the page opening.
 5. THE three sample shots SHALL each produce a scene that `validateScene` accepts.
+6. THE Shot_Rail_App SHALL NOT start playback when a sample shot is loaded.
 
 ### Requirement 11: Timeline and frame mapping (P1)
 
@@ -301,18 +275,20 @@ Each item states the issue, the assumption used in this document, and who must d
 
 #### Acceptance Criteria
 
-1. THE Shot_Rail_App SHALL use a fixed frame rate in frames per second, defined as a named constant, with the value decided by the User (open question 5).
+1. THE Shot_Rail_App SHALL use a fixed frame rate of 30 frames per second, defined as the named constant `Frame_Rate`.
 2. THE Frame_Mapper SHALL represent time only as whole frames.
 3. WHEN the User moves the scrub control, THE Frame_Mapper SHALL convert the scrub value to a whole frame number, never a fractional one.
 4. IF the scrub value is below 0 or above the last frame, THEN THE Frame_Mapper SHALL clamp the frame number to the range from 0 to the last frame.
 5. IF the scrub value is not a finite number, THEN THE Frame_Mapper SHALL return an error that names the invalid value.
-6. THE Frame_Mapper SHALL convert a frame number to time in seconds, and the time in seconds back to the same frame number, without loss for every whole frame in the shot.
+6. THE Frame_Mapper SHALL convert a frame number to time in seconds at 30 frames per second, and the time in seconds back to the same frame number, without loss for every whole frame in the shot.
 7. THE Timeline SHALL provide play, pause, scrub, a frame counter, and marks at the frames of the Findings.
 8. WHEN the User presses play, THE Timeline SHALL advance one whole frame per frame interval.
 9. WHEN playback reaches the last frame, THE Timeline SHALL stop at the last frame.
 10. WHILE the Timeline is playing, THE Shot_Rail_App SHALL evaluate baked data only and SHALL NOT bake.
 11. THE Shot_Rail_App SHALL perform no memory allocation per frame in the evaluation path, by writing into preallocated output buffers.
 12. THE Timeline SHALL be operable from the keyboard, with the key shown beside each control.
+13. WHEN the Shot_Rail_App starts, THE Timeline SHALL be paused at frame 0.
+14. THE Timeline SHALL start playback only on an explicit User play action, and SHALL NOT start playback by itself at start, after loading a sample shot, after a change of mode, Shot_Type, Subject or Shot_Length, or after a re-bake.
 
 ### Requirement 12: Shot strip (P2)
 
@@ -324,8 +300,8 @@ Each item states the issue, the assumption used in this document, and who must d
 2. WHERE the Shot_Strip is provided, THE Shot_Rail_App SHALL take the six pictures at whole frame numbers spread from the first frame to the last frame.
 3. WHERE the Shot_Strip is provided, THE Shot_Rail_App SHALL label each picture with its frame number.
 4. WHEN the User activates a picture, THE Timeline SHALL move to that frame.
-5. WHERE the Shot_Length is less than 6 frames, THE Shot_Rail_App SHALL show one picture per frame instead of six.
-6. WHEN the shot changes, THE Shot_Rail_App SHALL redraw the Shot_Strip.
+5. WHEN the shot changes, THE Shot_Rail_App SHALL redraw the Shot_Strip.
+6. THE Shot_Rail_App SHALL take the six pictures at distinct frame numbers for every Shot_Length from 60 to 600.
 
 ### Requirement 13: Capture (P2)
 
@@ -349,7 +325,7 @@ Each item states the issue, the assumption used in this document, and who must d
 2. WHERE the walking figure is provided, THE Shot_Rail_App SHALL show the text "stand-in" next to the figure in the interface.
 3. WHERE the walking figure is provided, THE Shot_Rail_App SHALL move the figure along a path without a walking animation.
 4. WHERE the walking figure is provided, THE Shot_Rail_App SHALL let the User switch between the car and the figure.
-5. WHEN the User switches Subject, THE Shot_Rail_App SHALL re-bake the Subject and the Cameras.
+5. WHEN the User switches Subject, THE Shot_Rail_App SHALL re-bake the Subject and the Cameras and SHALL leave the Timeline paused.
 
 ### Requirement 15: Abstract subject (P3)
 
@@ -380,8 +356,8 @@ Each item states the issue, the assumption used in this document, and who must d
 
 1. THE Shot_Rail_App SHALL show a main camera view in a 16:9 frame, as the largest region.
 2. THE Shot_Rail_App SHALL show a Stage_Overview as a small top-down 3D view with the Subject, road, Cameras and Camera paths.
-3. THE Shot_Rail_App SHALL show controls on the left: mode tabs (Angle, Move), camera list, bearing, height, distance, lens, Shot_Type and Shot_Length.
-4. THE Shot_Rail_App SHALL show a readout on the right: Angle_Label, Framing_Label, field of view and the Motion_Check list.
+3. THE Shot_Rail_App SHALL show controls on the left: mode tabs (Angle, Move), camera list, bearing, height, horizontal distance, lens, Shot_Type and Shot_Length.
+4. THE Shot_Rail_App SHALL show a readout on the right: Angle_Label, Framing_Label, field of view, Straight_Line_Distance and the Motion_Check list.
 5. THE Shot_Rail_App SHALL show the Timeline at the bottom.
 6. THE Shot_Rail_App SHALL use a dark "previz desk" look with one warm amber accent reserved for warnings.
 7. WHEN the User toggles the Thirds_Guide, THE Shot_Rail_App SHALL show or hide the thirds lines on the main camera view.
@@ -409,11 +385,11 @@ Each item states the issue, the assumption used in this document, and who must d
 #### Acceptance Criteria
 
 1. THE Shot_Rail_App SHALL use text and background colour pairs with a contrast ratio of at least 4.5 to 1.
-2. THE Shot_Rail_App SHALL provide a pure contrast-ratio function, and the Test_Suite SHALL check every text and background pair in the palette against 4.5 to 1 (open question 16).
+2. THE Shot_Rail_App SHALL provide a pure contrast-ratio function, and the Test_Suite SHALL check every text and background pair in the palette against 4.5 to 1.
 3. THE Shot_Rail_App SHALL show a visible focus ring on every focusable control.
 4. THE Shot_Rail_App SHALL convey no meaning by colour alone.
 5. WHILE the User's system setting `prefers-reduced-motion` is "reduce", THE Shot_Rail_App SHALL replace animated interface transitions with jumps.
-6. WHILE `prefers-reduced-motion` is "reduce", THE Shot_Rail_App SHALL keep the Subject's speed profile unchanged during playback (open question 19).
+6. WHILE `prefers-reduced-motion` is "reduce", THE Shot_Rail_App SHALL keep the Subject's speed profile unchanged during playback.
 7. THE Shot_Rail_App SHALL offer a non-drag alternative for every drag action.
 
 ### Requirement 20: Stored settings and privacy (All)
@@ -422,7 +398,7 @@ Each item states the issue, the assumption used in this document, and who must d
 
 #### Acceptance Criteria
 
-1. THE Shot_Rail_App SHALL store only Stored_Settings in `localStorage`.
+1. THE Shot_Rail_App SHALL store only Stored_Settings in `localStorage`, and "hint seen" flags count as Stored_Settings.
 2. THE Shot_Rail_App SHALL perform every `localStorage` read and write inside try/catch.
 3. IF `localStorage` is unavailable or throws, THEN THE Shot_Rail_App SHALL continue with default settings and SHALL show no error that blocks use.
 4. THE README SHALL list every key that the Shot_Rail_App stores.
@@ -436,7 +412,7 @@ Each item states the issue, the assumption used in this document, and who must d
 
 1. THE About_Panel SHALL state that the Subject is a stand-in drawn from shapes and that there is no lighting, exposure or depth-of-field simulation.
 2. THE About_Panel SHALL state that angles are measured from the world axes and not from the car's heading, so a turning car changes its relation to a fixed-bearing Camera, unless Spike S3 shows otherwise.
-3. THE About_Panel SHALL state that PathKit allows one path per scene, so the Subject and the Cameras are baked in two scenes.
+3. THE About_Panel SHALL state that PathKit allows one path per scene, so the Subject and the Cameras are baked in separate scenes, and that the Main_Camera has its own scene if Spike S6 requires it.
 4. THE About_Panel SHALL state that the lens maths assumes the 36 mm sensor and that another sensor changes the angles.
 5. THE About_Panel SHALL state that the app is rough planning and not a prediction of real footage.
 6. THE README SHALL repeat the same limits as the About_Panel.
@@ -448,15 +424,18 @@ Each item states the issue, the assumption used in this document, and who must d
 
 #### Acceptance Criteria
 
-1. THE Test_Suite SHALL contain the Spike tests S1 to S5 as tests only, without an interface.
+1. THE Test_Suite SHALL contain the Spike tests S1 to S6 as tests only, without an interface.
 2. THE Spike test S1 SHALL bake a Subject scene (a car on a road path with `followPath` and `alignToPath`) and read it back with `evaluateEntity`.
-3. THE Spike test S2 SHALL turn the Subject's baked positions into a keyframed target and aim a Camera at it with `aimAt`.
-4. THE Spike test S3 SHALL show that `orbitAround` with a keyframed target and speed 0 keeps a fixed offset that moves with the Subject.
-5. THE Spike test S4 SHALL show whether shifting the target up or down makes a Camera higher or lower, and SHALL check the resulting height (open question 8).
-6. THE Spike test S5 SHALL bake the Subject plus six Cameras, measure the bake time, and print it for the User to report, without failing on timing (open question 15). The target is under 100 ms on the User's machine.
-7. THE Spike results SHALL be written in `apps/shot-rail/docs/build-notes.md`.
-8. IF a Spike test fails, THEN Kiro SHALL stop and ask the User and SHALL NOT invent a workaround.
-9. THE Spike results SHALL show whether the camera scene can hold one path camera plus orbiting Cameras (open question 10).
+3. THE Spike test S1 SHALL prove that PathKit `followPath` moves the car at constant speed, by showing equal distances between baked positions on equal steps of the path.
+4. THE Spike test S1 SHALL prove that the Frame_Remap, fed to PathKit, produces the eased positions, by showing different speeds at different frames.
+5. THE Spike test S2 SHALL turn the Subject's baked positions into a keyframed target and aim a Camera at it with `aimAt`.
+6. THE Spike test S3 SHALL show that `orbitAround` with a keyframed target and speed 0 keeps a fixed offset that moves with the Subject.
+7. THE Spike test S4 SHALL verify the two-target arrangement: the Orbit_Centre is the Subject position shifted up or down by the Camera height, and `aimAt` uses the true Subject position. It SHALL check the resulting Camera height and the aim direction.
+8. THE Spike test S5 SHALL bake the Subject plus six Cameras, measure the bake time, and print it for the User to report, without failing on timing. The target is under 100 ms on the User's machine.
+9. THE Spike test S6 SHALL test whether one scene can hold a path camera plus orbiting Cameras.
+10. IF Spike S6 shows that one scene cannot hold a path camera plus orbiting Cameras, THEN THE Shot_Rail_App SHALL give the Main_Camera its own scene without asking the User.
+11. THE Spike results, including the S6 result and the scene arrangement chosen, SHALL be written in `apps/shot-rail/docs/build-notes.md`.
+12. IF a Spike test S1 to S5 fails, THEN Kiro SHALL stop and ask the User and SHALL NOT invent a workaround.
 
 ### Requirement 23: Tests (P1)
 
@@ -473,12 +452,16 @@ Each item states the issue, the assumption used in this document, and who must d
 7. THE Test_Suite SHALL check that the Frame_Mapper converts a scrub value to a whole frame number, clamps it, and never returns a fractional one.
 8. THE Test_Suite SHALL check that each Shot_Builder result passes `validateScene`, with the exact entity list and constraint order (`orbitAround` before `aimAt`).
 9. THE Test_Suite SHALL check that the Target_Converter gives one keyframe per frame, equal to the baked position.
-10. THE Test_Suite SHALL keep the Spike results S1 to S5 as tests.
+10. THE Test_Suite SHALL keep the Spike results S1 to S6 as tests.
 11. THE Test_Suite SHALL give each task a "source line it should catch": one change that makes a named test fail.
-12. THE Test_Suite SHALL use plain checks inside loops, force edge cases on purpose, finish each test file in 5 seconds or less, and use `SceneError` instances in thrown-error assertions (open question 4).
-13. THE Test_Suite SHALL use `.js` on every relative import, per the TypeScript import rules (open question 3).
+12. THE Test_Suite SHALL use plain checks inside loops, force edge cases on purpose, finish each test file in 5 seconds or less, and use `SceneError` instances in thrown-error assertions.
+13. THE Test_Suite SHALL use `.js` on every relative import, per the TypeScript import rules.
 14. IF a property test fails, THEN Kiro SHALL say whether the code or the property is wrong, SHALL make at most 3 fix attempts, and SHALL then stop and report the seed and counterexample.
 15. THE Test_Suite SHALL NOT be weakened to make a test pass.
+16. THE Test_Suite SHALL check that the Frame_Remap is pure, maps frame 0 to the start of the Road, maps frame 240 to the start of the next lap, never decreases, and gives different speeds at different frames.
+17. THE Test_Suite SHALL check that a Road with 2 control points and a Road with 101 control points are refused with a message that names the count, and that a Road with 3 and a Road with 100 control points are accepted.
+18. THE Test_Suite SHALL check that the Shot_Length values 59 and 601 are refused with a message that states the range, and that 60, 240 and 600 are accepted.
+19. THE Test_Suite SHALL check the Fill_Fraction function with hand-computed projected points, including a case where the width decides and a case where the height decides.
 
 ### Requirement 24: Notes and manual (All)
 
