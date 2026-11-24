@@ -27,10 +27,11 @@ These rules apply to all code in this project.
 - Rules that depend on history may only run inside `bake()`.
 - `evaluateEntity` must only read baked data.
 
-## Dependencies
+## Dependencies (packages/pathkit only)
 
 - No runtime dependencies.
 - The only dev dependencies are `vitest` and `fast-check`. Do not add others.
+- The apps in apps/ may use: three (runtime) and vite, typescript, vitest, @types/three (dev), at the exact versions the user approves. Skeleton Bench may add @mediapipe/tasks-vision in Tier B.
 
 ## Performance
 

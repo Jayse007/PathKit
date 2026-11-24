@@ -21,3 +21,4 @@ inclusion: always
 ## Test output
 - Never say tests passed unless the user has pasted the results. Report the counts of tests passed, failed and skipped from what they pasted.
 - If the pasted output is missing or cut off, ask the user to paste it again.
+- Inside apps/shot-rail and apps/skeleton-bench only, a spec task may ask for these, one at a time, run from that app folder: npm.cmd install (the exact pinned line the task gives), npm.cmd test and npm.cmd run build. Add nothing to them.
