@@ -4,7 +4,7 @@
 
 Shot Rail is a demo app in `apps/shot-rail/` that answers one question: "If I film this subject from here, with this lens and this movement, what will it look like?" A user places cameras around a moving subject, sees what each camera sees, picks one as the main camera, gives it a move, and gets a motion check. It is a rough planning tool and says so.
 
-The app uses PathKit for the work a plain camera cannot do: the subject follows a closed road path and aligns to it, several cameras sit around the subject and keep aiming at it, the main camera can follow its own path, and the motion linter checks the camera move. PathKit `followPath` moves an entity at constant speed. The car's speeding up and slowing down is app code: a pure frame remap converts each frame number into a position along the road, and the remapped positions are then fed to PathKit.
+The app uses PathKit for the work a plain camera cannot do: the subject follows a closed road path and aligns to it, several cameras sit around the subject and keep aiming at it, the main camera can follow its own path, and the motion linter checks the camera move. PathKit `followPath` moves an entity at constant speed. The app bakes the subject at constant speed in finer steps (`Bake_Oversample` baked frames per displayed frame). The car's speeding up and slowing down is app code: a pure frame remap picks, for each displayed frame, which baked frame to read. The subject's position and orientation, and the keyframed target for the cameras, all come from that same baked frame.
 
 This document is derived from `.kiro/specs/shot-rail/brief.md` (DRAFT 1, 2026-11-24), the decisions the User gave for the open questions, and the steering files `agent-workflow`, `coordinate-conventions`, `testing-conventions`, `typescript-imports` and `windows-terminal`. Each requirement is marked P1 (must ship), P2 or P3 (only if time remains), or "All" for rules that apply across priorities. The brief's build order has phases 0 to 5 (Spike, Pure logic, Stage and views, Modes and timeline, Design pass, Manual and deploy). Phases appear here only as context. This document contains no tasks.
 
@@ -46,7 +46,9 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 - **Road**: The flat, closed path the car drives. All control points have the same y value.
 - **Road_Point_Limits**: The named constants for the minimum (3) and maximum (100) number of Road control points (known issue KI-11).
 - **Lap_Frames**: The named constant 240, the number of frames in one lap of the Road.
-- **Frame_Remap**: The pure app function that converts a whole frame number into a position along the Road, with easing. PathKit `followPath` itself has constant speed and does no easing.
+- **Frame_Remap**: The pure app function that converts a whole displayed frame number into a whole baked frame number (it picks which baked frame to read), with easing. PathKit `followPath` itself has constant speed and does no easing.
+- **Bake_Oversample**: The named constant 8, the number of baked frames per displayed frame.
+- **Baked_Frame**: One frame of the Subject scene as baked by PathKit, numbered as a whole number. The baked frame rate is `Frame_Rate` x `Bake_Oversample` = 240 fps. Displayed frames are the frames the User sees at `Frame_Rate`.
 - **Camera**: A virtual camera placed around the Subject with bearing, height, distance and lens.
 - **Main_Camera**: The one Camera whose view fills the main camera view.
 - **Orbit_Centre**: The point a Camera orbits. It is the Subject position shifted up or down by the Camera height.
@@ -66,7 +68,7 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 - **Fill_Fraction**: The larger of (projected 3D bounding box height / frame height) and (projected 3D bounding box width / frame width), as a percentage, computed by a pure function over projected points.
 - **Frame_Mapper**: The pure logic that converts between frame numbers, time and the scrub value.
 - **Shot_Builder**: The pure logic that creates a PathKit scene for a Shot_Type.
-- **Target_Converter**: The pure logic that turns the Subject's baked positions into a keyframed target.
+- **Target_Converter**: The pure logic that turns the Subject's positions at the baked frames picked by the Frame_Remap into a keyframed target.
 - **Motion_Check**: The list of findings produced by PathKit's `motionLinter` on the camera scene, shown in plain words.
 - **Finding**: One item returned by `motionLinter`.
 - **Timeline**: The bottom control with play, pause, scrub, frame counter and Finding marks.
@@ -131,12 +133,12 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 1. THE Shot_Rail_App SHALL draw the car from boxes and cylinders only.
 2. THE Shot_Rail_App SHALL draw the car with no real brand, logo or licence plate text.
 3. THE Shot_Rail_App SHALL move the car along the Road with PathKit `followPath` and `alignToPath`.
-4. THE Frame_Remap SHALL convert each whole frame number into a position along the Road with easing, so that the car speeds up and slows down along the Road, and THE Shot_Rail_App SHALL feed the remapped positions to PathKit.
-5. THE Frame_Remap SHALL be pure: the same frame number SHALL always give the same position.
-6. THE Frame_Remap SHALL map frame 0 to the start of the Road.
-7. THE Frame_Remap SHALL map frame `Lap_Frames` (240) to the start of the next lap, which is the same point on the Road as frame 0.
-8. THE Frame_Remap SHALL never decrease the position along the Road as the frame number increases.
-9. THE Frame_Remap SHALL give different speeds (position change per frame) at different frames of one lap.
+4. THE Frame_Remap SHALL convert each whole displayed frame number into a whole baked frame number with easing, so that the car speeds up and slows down along the Road, and THE Shot_Rail_App SHALL read the Subject's position and orientation, and the keyframed target for the Cameras, from that same baked frame.
+5. THE Frame_Remap SHALL be pure: the same displayed frame number SHALL always give the same baked frame number.
+6. THE Frame_Remap SHALL map displayed frame 0 to baked frame 0, which is the start of the Road.
+7. THE Frame_Remap SHALL map displayed frame `Lap_Frames` (240) to the baked frame at the start of the next lap, which is the same point on the closed Road as baked frame 0.
+8. THE Frame_Remap SHALL never decrease the baked frame number as the displayed frame number increases within a lap.
+9. THE Frame_Remap SHALL give different speeds (position change per displayed frame) at different displayed frames of one lap.
 10. THE Shot_Rail_App SHALL lap the Road every `Lap_Frames` (240) frames whatever the Shot_Length, so that a 600-frame shot is 2.5 laps and a 60-frame shot is a quarter lap.
 11. THE Shot_Rail_App SHALL use a Road whose control points all have the same y value.
 12. THE default Road SHALL have about 12 control points and a length of about 120 m.
@@ -144,6 +146,8 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 14. THE Shot_Rail_App SHALL NOT describe PathKit as providing easing or changes of speed along the Road.
 15. THE Shot_Rail_App SHALL express all coordinates in a Y-up, right-handed system with distances in metres and internal angles in radians.
 16. THE Shot_Rail_App SHALL declare the car's `forwardAxis` and `upAxis` on the car entity and SHALL NOT hard-code them in shared logic.
+17. IF the Frame_Remap input is not a whole number of 0 or more, THEN THE Frame_Remap SHALL fail with an error that names the invalid value.
+18. THE Shot_Rail_App SHALL bake the Subject scene at constant speed with a baked frame rate equal to `Frame_Rate` x `Bake_Oversample` (240 fps), and SHALL call `evaluateEntity` only with whole baked frame numbers.
 
 ### Requirement 4: Lens maths (P1)
 
@@ -427,7 +431,7 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 1. THE Test_Suite SHALL contain the Spike tests S1 to S6 as tests only, without an interface.
 2. THE Spike test S1 SHALL bake a Subject scene (a car on a road path with `followPath` and `alignToPath`) and read it back with `evaluateEntity`.
 3. THE Spike test S1 SHALL prove that PathKit `followPath` moves the car at constant speed, by showing equal distances between baked positions on equal steps of the path.
-4. THE Spike test S1 SHALL prove that the Frame_Remap, fed to PathKit, produces the eased positions, by showing different speeds at different frames.
+4. THE Spike test S1 SHALL prove (a) that PathKit `followPath` baked at the oversampled rate (`Frame_Rate` x `Bake_Oversample`) moves at constant speed, by showing equal distances between consecutive baked positions, and (b) that the Frame_Remap, used to pick the baked frame for each displayed frame, gives different speeds (position change per displayed frame) at different displayed frames, and that every picked baked frame is a whole number inside the baked range.
 5. THE Spike test S2 SHALL turn the Subject's baked positions into a keyframed target and aim a Camera at it with `aimAt`.
 6. THE Spike test S3 SHALL show that `orbitAround` with a keyframed target and speed 0 keeps a fixed offset that moves with the Subject.
 7. THE Spike test S4 SHALL verify the two-target arrangement: the Orbit_Centre is the Subject position shifted up or down by the Camera height, and `aimAt` uses the true Subject position. It SHALL check the resulting Camera height and the aim direction.
@@ -458,7 +462,7 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 13. THE Test_Suite SHALL use `.js` on every relative import, per the TypeScript import rules.
 14. IF a property test fails, THEN Kiro SHALL say whether the code or the property is wrong, SHALL make at most 3 fix attempts, and SHALL then stop and report the seed and counterexample.
 15. THE Test_Suite SHALL NOT be weakened to make a test pass.
-16. THE Test_Suite SHALL check that the Frame_Remap is pure, maps frame 0 to the start of the Road, maps frame 240 to the start of the next lap, never decreases, and gives different speeds at different frames.
+16. THE Test_Suite SHALL check that the Frame_Remap is pure, maps displayed frame 0 to baked frame 0, maps displayed frame 240 to the baked frame at the start of the next lap, never returns a lower baked frame number within a lap, gives different speeds at different displayed frames, and fails with an error that names the value when the input is not a whole number of 0 or more.
 17. THE Test_Suite SHALL check that a Road with 2 control points and a Road with 101 control points are refused with a message that names the count, and that a Road with 3 and a Road with 100 control points are accepted.
 18. THE Test_Suite SHALL check that the Shot_Length values 59 and 601 are refused with a message that states the range, and that 60, 240 and 600 are accepted.
 19. THE Test_Suite SHALL check the Fill_Fraction function with hand-computed projected points, including a case where the width decides and a case where the height decides.
