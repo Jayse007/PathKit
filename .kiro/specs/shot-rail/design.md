@@ -351,7 +351,20 @@ It calls `subjectBoxCorners`, then `projectToNdc`; if `projectToNdc` returns `fa
 | Width decides | [-0.9, 0.9] | [-0.1, 0.1] | (0.9-(-0.9))/2 = 0.9 | (0.1-(-0.1))/2 = 0.1 | 0.9 | 90 | close-up (>70) |
 | Partly outside | [-1.5, 0.5] | [-0.2, 0.2] | (min(0.5,1)-max(-1.5,-1))/2 = (0.5-(-1))/2 = 0.75 | (0.2-(-0.2))/2 = 0.2 | 0.75 | 75 | close-up (>70) |
 
-**Realistic-pose sample** (for the test author to re-derive by hand, matching Requirement 23.19's intent): camera on the `+Z` axis, 10 m from the origin, looking at a box centred on the origin with local forward `+Z`, half-extents `(0.9, 0.7, 2.2)` m (half of 1.8 × 1.4 × 4.4 m), 50 mm lens. Vertical half-angle tangent = `SENSOR_HEIGHT_MM/2 / focalLengthMm = 10.125/50 = 0.2025`. The box's near face (closest to the camera, `z = +2.2`, i.e. 7.8 m from the camera) spans `y in [-0.7, 0.7]`; its NDC `y` at the top edge is `(0.7 / 7.8) / 0.2025 ≈ 0.08974 / 0.2025 ≈ 0.4432`; the far face (`z = -2.2`, 12.2 m away) spans the same world height but projects smaller: `(0.7/12.2)/0.2025 ≈ 0.05738/0.2025 ≈ 0.2834`. The near face dominates the vertical extent, giving `h ≈ 0.4432` (half-height), so `height-based fill ≈ 88.6%` before accounting for the box's horizontal and corner extents, which the actual test must compute from all 8 projected corners, not just these two face centres; this hand pass is given to show the order of magnitude and the formula, and must be re-checked corner-by-corner (including the 1.8 m width, which at `aspect = 16/9` projects through `x_ndc = (local.x/-depth)/(tan(vfov/2)*aspect)`) by the test author before being used as an expected value.
+**Realistic-pose sample** (all 8 corners, hand-computed; Requirement 23.19). Setup: camera at world `(0, 0, 10)` aimed at the origin, so with `forwardAxis '-Z'` and `upAxis '+Y'` its rotation is the identity and camera space is `world − (0, 0, 10)`. Box centred on the origin with identity rotation (car forward `+Z` along its length), half-extents `(0.9, 0.7, 2.2)` m, i.e. 1.8 m wide, 1.4 m high, 4.4 m long. Lens 50 mm, aspect 16:9: `tan(vfov/2) = 10.125 / 50 = 0.2025`, `tan(vfov/2) × aspect = 0.2025 × 16/9 = 0.36`. Formulas: `depth = z_world − 10`, `x_ndc = (x / −depth) / 0.36`, `y_ndc = (y / −depth) / 0.2025`.
+
+| Corner | World (x, y, z) | depth (m) | x_ndc | y_ndc |
+| --- | --- | --- | --- | --- |
+| 1 | (−0.9, −0.7, +2.2) | −7.8 | −0.9 / 2.808 = −0.320513 | −0.7 / 1.5795 = −0.443178 |
+| 2 | (+0.9, −0.7, +2.2) | −7.8 | +0.320513 | −0.443178 |
+| 3 | (−0.9, +0.7, +2.2) | −7.8 | −0.320513 | +0.443178 |
+| 4 | (+0.9, +0.7, +2.2) | −7.8 | +0.320513 | +0.443178 |
+| 5 | (−0.9, −0.7, −2.2) | −12.2 | −0.9 / 4.392 = −0.204918 | −0.7 / 2.4705 = −0.283344 |
+| 6 | (+0.9, −0.7, −2.2) | −12.2 | +0.204918 | −0.283344 |
+| 7 | (−0.9, +0.7, −2.2) | −12.2 | −0.204918 | +0.283344 |
+| 8 | (+0.9, +0.7, −2.2) | −12.2 | +0.204918 | +0.283344 |
+
+(Denominators: `7.8 × 0.36 = 2.808`, `7.8 × 0.2025 = 1.5795`, `12.2 × 0.36 = 4.392`, `12.2 × 0.2025 = 2.4705`.) Every depth is at most `−NEAR_EPSILON`, so all corners are in front of the camera, and every `|x_ndc|` and `|y_ndc|` is below 1, so no clipping applies. Extremes come from the near corners: `minX = −0.320513`, `maxX = +0.320513`, `minY = −0.443178`, `maxY = +0.443178`. `w = (0.320513 − (−0.320513)) / 2 = 0.320513`; `h = (0.443178 − (−0.443178)) / 2 = 0.443178`. The height decides: `Fill = 100 × max(w, h) = 100 × 0.7 / 1.5795 = 44.3178`, i.e. **44.3 %** to 1 decimal place, label **"medium"** (35 to 70 inclusive). The test uses 44.3 to 1 decimal place as its hand-written expected value; it is not read from the code under test.
 
 ## Camera scene arrangement and spike S6
 

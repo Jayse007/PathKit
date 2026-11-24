@@ -4,7 +4,7 @@
 
 Skeleton Bench is a demo app in `apps/skeleton-bench/`. It is a browser workbench where a person turns a machine, zooms in, drags it across the screen, takes it apart and reads about each part. It works with mouse and keyboard first. Webcam gestures are a later upgrade and never a dependency. Three machines are built in code from Three.js shapes: a centrifugal pump, a shell-and-tube heat exchanger and a desk lamp.
 
-PathKit is used for the camera moves for orbit and zoom, which use `orbitAround`, `followPath` and `aimAt` as the design phase decides (see Requirement 11), for the curved part paths of the exploded view (one PathKit scene per part), and for the motion linter on the guided tour. PathKit `lerp` and `slerp` may be used for blending if the design chooses that. PathKit is not used for spinning a part in place (the impeller), dragging the machine, easing, or the cursor. PathKit cannot follow a live hand because it bakes ahead of time. A hand only chooses a frame number on a baked, checked path.
+PathKit is used for the camera moves for orbit and zoom, where the orbit camera uses `orbitAround` plus `aimAt` and zoom blends two neighbouring baked Orbit_Laps with PathKit `lerp` and `slerp` (see Requirement 11), for the curved part paths of the exploded view (one PathKit scene per part), and for the motion linter on the guided tour, where the Tour uses `followPath` plus `aimAt`. PathKit is not used for spinning a part in place (the impeller), dragging the machine, easing, or the cursor. PathKit cannot follow a live hand because it bakes ahead of time. A hand only chooses a frame number on a baked, checked path.
 
 This document is derived from `.kiro/specs/skeleton-bench/brief.md` (DRAFT 2, 2026-11-24) and the steering files `agent-workflow`, `coordinate-conventions`, `testing-conventions`, `typescript-imports` and `windows-terminal`. The User's decisions on the open questions were recorded on 2026-11-24 and are listed under "Decided items". Each requirement is marked Tier A (must ship), Tier B (after the User says go) or All (applies across tiers). Tier B requirements are blocked until the User says go. Deploy is out of scope. The brief's build order has phases 0 to 6 (Spike, Tier A logic, One machine then three, Interface and looks, Deploy Tier A, Tier B, Manual and notes). Phases appear here only as context. This document contains no tasks.
 
@@ -22,18 +22,6 @@ Each item states the issue, the assumption used in this document, and who must d
    - Issue: PathKit has no easing. `followPath` has constant speed and a `startOffset`.
    - Assumption: explode easing is app code that maps the explode amount to a baked frame. No requirement credits PathKit with easing.
    - Decision: none needed. Recorded for the design phase.
-21. **Camera mechanism for any orbit angle and zoom value.**
-    - Issue: the brief builds the Orbit_Lap and the zoom as two separate baked moves, which cannot be combined: zooming after turning the Machine to 90 degrees would jump to the fixed bearing of the zoom move.
-    - Assumption: none. The design phase compares options A, B and C (Requirement 11) and recommends one. The Reviewer recommends A.
-    - Decision: the User approves the design's choice.
-22. **Rounding of the angle to a frame.**
-    - Issue: the rule that turns a fractional angle into a whole frame is not given.
-    - Assumption: nearest whole frame, with .5 rounding up, then wrapped into the lap. With 360 frames, 359.9 degrees gives frame 0 and 0.4 degrees gives frame 0.
-    - Decision: the User.
-23. **Tour and the view pair.**
-    - Issue: the Tour is a further baked camera move. It is open where the camera is after the Tour, and whether the Tour keeps outside the Exploded_Box.
-    - Assumption: the Tour camera stays outside the Exploded_Box on every frame, and when the Tour stops or ends the view returns to the orbit angle and Zoom_Value that the User had before it started.
-    - Decision: the User.
 24. **When the explode gesture disarms and where it starts.**
     - Issue: after a fist has armed the gesture, it is not stated when it disarms or what happens to the current Explode_Amount at arming.
     - Assumption: the gesture disarms when a pinch starts, when two hands appear, when gestures are turned off, or when no hand has been seen for longer than the named constant NO_HAND_DISARM_MS (value open, to be set in the Gesture_Lab). On arming, the Explode_Amount follows the smoothed Openness from then on (a fist reads 0), with no jump beyond what the smoothing allows.
@@ -59,6 +47,9 @@ Each item states the issue, the assumption used in this document, and who must d
 18. **Selected-part second cue.** Decided: confirmed.
 19. **Reduced motion.** Decided: confirmed.
 20. **Webcam consent.** Decided: not stored, confirmed.
+21. **Camera mechanism.** Decided: option A, approved by the User: four Orbit_Laps at distances 6.5, 5.2, 3.9 and 2.6 m, and zoom blends two neighbouring laps with PathKit `lerp` and `slerp`.
+22. **Rounding of the angle to a frame.** Decided: nearest whole frame, .5 rounds up, then wrapped into the lap (359.9 degrees gives frame 0, 0.4 degrees gives frame 0).
+23. **Tour and the view pair.** Decided: the Tour camera stays outside the Exploded_Box on every frame, and when the Tour stops or ends the view returns to the earlier orbit angle and Zoom_Value.
 
 ## Glossary
 
@@ -73,12 +64,13 @@ Each item states the issue, the assumption used in this document, and who must d
 - **Control_Bar**: The bottom region with the controls.
 - **Motion_Check**: The small region that lists linter findings in plain words.
 - **Finding**: One item returned by `motionLinter`.
-- **Orbit_Lap**: A baked scene of one full turn around the Machine with `orbitAround` (axis +Y) and `aimAt` the Machine centre, 360 frames at 30 fps (1 degree per frame, 30 degrees per second). There may be more than one Orbit_Lap, depending on the Camera_Mechanism.
+- **Orbit_Lap**: A baked scene of one full turn around the Machine with `orbitAround` (axis +Y) and `aimAt` the Machine centre, 360 frames at 30 fps (1 degree per frame, 30 degrees per second). There are four Orbit_Laps, at distances 6.5, 5.2, 3.9 and 2.6 m, shared by all Machines.
 - **Zoom_Value**: A number from 0 (farthest) to 1 (nearest).
 - **View_Pair**: An orbit angle together with a Zoom_Value. Every View_Pair must give a valid camera pose.
-- **Camera_Mechanism**: The way the app turns a View_Pair into a camera pose (options A, B and C of Requirement 11).
+- **Camera_Mechanism**: The way the app turns a View_Pair into a camera pose: option A, as approved (Requirement 11).
 - **Bearing**: The camera's angle around the +Y axis through the Machine centre.
-- **Exploded_Box**: The bounding box that contains every Part at its end position (Explode_Amount 100 percent).
+- **Exploded_Box**: One fixed stage envelope centred on the Machine centre, with half-extents 1.2 m (x), 0.6 m (y) and 0.4 m (z). Every Machine is modelled to fit inside it at every frame of every Part_Path, so it contains every Part at its end position (Explode_Amount 100 percent).
+- **Parts_List**: The visible list of buttons, one per Part of the current Machine, in Part_Catalogue order.
 - **Part_Path**: The short, curved, baked PathKit scene of one Part for the exploded view.
 - **Explode_Amount**: A value from 0 to 100 percent set by the explode slider.
 - **Explode_Easing**: The app function that maps Explode_Amount to a frame of the Part_Paths.
@@ -173,7 +165,7 @@ Each item states the issue, the assumption used in this document, and who must d
 
 1. THE Spike SHALL run before any interface work begins.
 2. THE Spike S1 SHALL bake one full Orbit_Lap (360 frames, 30 fps, axis +Y, `aimAt` the Machine centre), SHALL read every whole frame with `evaluateEntity` without error, and SHALL check that frame f lies f degrees from the start angle, so that frame 360 would be the same angle as frame 0.
-3. THE Spike S2 SHALL bake the camera data of the Camera_Mechanism chosen under Requirement 11 and SHALL check, for every orbit frame from 0 to 359 crossed with Zoom_Value 0, Zoom_Value 1 and every intermediate test point that the design lists (including every point where the mechanism changes segment), that (a) the camera position lies outside the Exploded_Box, (b) the Bearing equals the requested orbit angle within a named tolerance constant fixed in the design, (c) the camera aims at the Machine centre, and (d) the camera distance from the centre never increases as the Zoom_Value increases.
+3. THE Spike S2 SHALL bake the camera data of the Camera_Mechanism chosen under Requirement 11 and SHALL check, for every orbit frame from 0 to 359 crossed with every Zoom_Value k/12 for k = 0 to 12 (the test grid: 13 values, named constant S2_ZOOM_GRID_STEPS = 12, including the lap joints at 1/3 and 2/3, where either of the two equivalent selections is accepted), that (a) the camera position lies outside the Exploded_Box, (b) the Bearing equals the requested orbit angle within a named tolerance constant fixed in the design, (c) the camera aims at the Machine centre, and (d) the camera distance from the centre never increases as the Zoom_Value increases.
 4. IF the check (a) of Spike S2 fails on any single frame, THEN THE Spike S2 SHALL fail.
 5. THE Spike S3 SHALL run `motionLinter` on the Tour and SHALL pass WHEN `motionLinter` does not throw and returns a findings list (decision 12).
 6. THE Spike S1 to S3 SHALL be kept as tests in the Test_Suite.
@@ -190,7 +182,7 @@ Each item states the issue, the assumption used in this document, and who must d
 #### Acceptance Criteria
 
 1. THE Orbit_Lap SHALL have 360 frames at 30 fps, SHALL advance 1 degree per frame, and SHALL use an `orbitAround` speed of 30 degrees per second.
-2. WHEN an angle is given in degrees, THE Frame_Mapper SHALL wrap it into 0 to 360 degrees, round it to the nearest whole frame with .5 rounding up, wrap the result into the lap, and return a whole frame number from 0 to 359 (decision 13, open question 22).
+2. WHEN an angle is given in degrees, THE Frame_Mapper SHALL wrap it into 0 to 360 degrees, round it to the nearest whole frame with .5 rounding up, wrap the result into the lap, and return a whole frame number from 0 to 359 (decision 13, decision 22).
 3. WHEN the angle is 0, 90, 180, 270, -90, 360, 359.9, 0.4, 0.5 or 720 degrees, THE Frame_Mapper SHALL return frame 0, 90, 180, 270, 270, 0, 0, 0, 1 or 0 respectively.
 4. WHEN the angle is 359.9 degrees, THE Frame_Mapper SHALL return frame 0, because the nearest frame 360 wraps to 0.
 5. WHEN the angle is negative, THE Frame_Mapper SHALL wrap it into 0 to 360 degrees first, so that -90 degrees gives the same frame as 270 degrees.
@@ -213,11 +205,11 @@ Each item states the issue, the assumption used in this document, and who must d
 7. THE Frame_Mapper SHALL return every frame number as a whole number inside the baked range, and only a blend weight or a radius factor SHALL be fractional.
 8. THE Frame_Mapper SHALL return a selection that does not depend on the orbit angle.
 9. THE Frame_Mapper SHALL be pure.
-10. THE hand-computed expected values for the Zoom_Value 0.5 SHALL be fixed by the design once the Camera_Mechanism is chosen.
+10. THE design SHALL fix the Zoom_Value 0.5 selection as laps 1 and 2 with weight 0.5 and a camera distance of 4.55 m, and the hand-computed expected values for the Zoom_Value 0.5 SHALL be those.
 
 ### Requirement 7: Drag range (Tier A)
 
-**User Story:** As a user, I want the move range bounded, so that the Machine and its exploded Parts cannot leave the screen.
+**User Story:** As a user, I want the move range bounded, so that the Machine stays reachable and Reset position always recovers it.
 
 #### Acceptance Criteria
 
@@ -233,6 +225,8 @@ Each item states the issue, the assumption used in this document, and who must d
 10. IF the offset or the Explode_Amount is not a finite number, THEN THE Drag_Range SHALL fail with an error message that names the invalid value.
 11. THE Fraction_To_Pixels function SHALL convert a fraction and a viewport size to pixels for the View_Offset, and for a 1000 x 800 px viewport the limits SHALL be 250 px horizontal and 200 px vertical at 0 percent, 175 px and 140 px at 50 percent, and 100 px and 80 px at 100 percent.
 12. THE Drag_Range and the Fraction_To_Pixels function SHALL be pure.
+13. WHEN the Zoom_Value is 0 and the viewport is at least as wide as it is tall, THE Skeleton_Bench_App SHALL keep the whole Exploded_Box on screen at every allowed offset.
+14. WHEN the Zoom_Value is above 0, THE Skeleton_Bench_App SHALL allow the Machine to extend past the screen edge, and the Reset position button and the key R SHALL still return the Machine to the zero offset.
 
 ### Requirement 8: Explode easing (Tier A)
 
@@ -285,14 +279,12 @@ Each item states the issue, the assumption used in this document, and who must d
 3. THE Skeleton_Bench_App SHALL keep the camera outside the Exploded_Box for every View_Pair, on every frame (decision 11).
 4. IF any frame at any tested View_Pair lies inside the Exploded_Box, THEN THE Test_Suite SHALL fail.
 5. THE Skeleton_Bench_App SHALL do all baking at load and SHALL NOT bake while the User drags or zooms.
-6. THE design SHALL compare the following options, SHALL recommend one with reasons, and the User SHALL approve the choice before tasks are written (open question 21):
-   - Option A: several Orbit_Laps at different radii, with zoom blending two neighbouring laps using PathKit `lerp` and `slerp` (the Reviewer recommends A).
-   - Option B: one Orbit_Lap with app-side radius scaling.
-   - Option C: zoom by lens (field of view) only.
+6. THE Camera_Mechanism SHALL be option A, as approved by the User (decision 21): four Orbit_Laps at distances 6.5, 5.2, 3.9 and 2.6 m, shared by all Machines, with zoom blending two neighbouring laps using PathKit `lerp` and `slerp`. The design compared option B (one Orbit_Lap with app-side radius scaling) and option C (zoom by lens only) and rejected both, and the User approved option A.
 7. THE comparison SHALL cover at least: Bearing kept for every pair; camera outside the Exploded_Box for every pair; number of baked scenes and bake time; memory; which part is PathKit and which is app code; per-frame allocation in the render loop; testability with hand-written expected values; and simplicity.
 8. THE Skeleton_Bench_App SHALL NOT describe app-side radius scaling or a lens change as PathKit.
 9. THE Skeleton_Bench_App SHALL keep the camera outside the Exploded_Box under every option.
 10. THE Skeleton_Bench_App SHALL leave zoom-to-part rails out of Tier A (decision 10).
+11. THE View_Pair tests SHALL use the test grid of Requirement 4.3: every orbit frame 0 to 359 crossed with every Zoom_Value k/12 for k = 0 to 12 (S2_ZOOM_GRID_STEPS = 12), and at a lap joint either of the two equivalent selections SHALL be accepted.
 
 ### Requirement 12: Move across the screen (Tier A)
 
@@ -318,7 +310,7 @@ Each item states the issue, the assumption used in this document, and who must d
 
 1. THE Control_Bar SHALL show an explode slider from 0 to 100 percent, and the key `E` SHALL toggle between 0 and 100 percent.
 2. WHEN the Explode_Amount changes, THE Skeleton_Bench_App SHALL show the frame that the Explode_Easing returns for every Part_Path.
-3. THE Skeleton_Bench_App SHALL build one PathKit scene per Part, and each scene SHALL give that Part a short, curved path.
+3. THE Skeleton_Bench_App SHALL build one PathKit scene per Part, and each scene SHALL give that Part a short, curved path. Every Part SHALL move at least 0.1 m (PART_MIN_EXPLODE_M), because the curve needs two distinct points.
 4. THE Skeleton_Bench_App SHALL bake all Part_Paths at load and SHALL NOT bake while the slider moves.
 5. THE Skeleton_Bench_App SHALL spin the impeller of the Pump with ordinary Three.js code and SHALL NOT use PathKit for the spin.
 6. WHEN the Explode_Amount changes, THE Skeleton_Bench_App SHALL apply the Drag_Range clamp of Requirement 7.9.
@@ -331,13 +323,14 @@ Each item states the issue, the assumption used in this document, and who must d
 #### Acceptance Criteria
 
 1. WHEN the User clicks a Part, THE Skeleton_Bench_App SHALL select it.
-2. WHEN the User presses Tab to focus a Part and then presses Enter, THE Skeleton_Bench_App SHALL select it.
+2. WHEN the User presses Tab to move focus to a button of the Parts_List and then presses Enter or Space, THE Skeleton_Bench_App SHALL select that Part.
 3. WHEN a Part is selected, THE Inspector SHALL show its name, job, material and typical position (as text).
 4. THE Inspector SHALL label the sample specifications "sample data".
 5. WHILE no Part is selected, THE Inspector SHALL show the text "Pick a part to read about it".
 6. WHEN the pointer moves 5 px or less (CLICK_THRESHOLD_PX = 5) between press and release, THE Skeleton_Bench_App SHALL treat the gesture as a click, and WHEN the pointer moves more than 5 px, THE Skeleton_Bench_App SHALL treat it as a drag (decision 15).
 7. WHEN a Part is selected, THE Skeleton_Bench_App SHALL show a second cue besides colour on that Part, such as a thicker outline (decision 18).
-8. THE Skeleton_Bench_App SHALL move keyboard focus through the Parts in the order of the Part_Catalogue.
+8. THE Parts_List SHALL follow the order of the Part_Catalogue.
+9. WHEN a Parts_List button has focus, THE Skeleton_Bench_App SHALL highlight that Part on the Stage.
 
 ### Requirement 15: Inventory (Tier A)
 
@@ -357,15 +350,16 @@ Each item states the issue, the assumption used in this document, and who must d
 #### Acceptance Criteria
 
 1. THE Control_Bar SHALL show a Tour button.
-2. WHEN the User activates the Tour button, THE Skeleton_Bench_App SHALL first set the Explode_Amount to 0 and the position to the zero offset, and then play a camera path that visits every Part of the current Machine in keyboard order (decision 16).
+2. WHEN the User activates the Tour button, THE Skeleton_Bench_App SHALL first set the Explode_Amount to 0 and the position to the zero offset, then jump (a cut) to the first Tour pose, and then play a camera path that visits every Part of the current Machine in keyboard order (decision 16).
 3. THE Skeleton_Bench_App SHALL build the Tour with `followPath` and `aimAt`.
 4. THE Control_Bar SHALL show Pause and Stop controls while the Tour plays.
-5. THE Skeleton_Bench_App SHALL keep the Tour camera outside the Exploded_Box on every frame (open question 23).
-6. WHEN the Tour stops or ends, THE Skeleton_Bench_App SHALL return the view to the orbit angle and Zoom_Value that the User had before the Tour started (open question 23).
+5. THE Skeleton_Bench_App SHALL keep the Tour camera outside the Exploded_Box on every frame (decision 23).
+6. WHEN the Tour stops or ends, THE Skeleton_Bench_App SHALL jump (a cut) back to the orbit angle and Zoom_Value that the User had before the Tour started (decision 23), and the Skeleton_Bench_App SHALL use no blend at the start or the end of the Tour, because a straight blend between two bearings can pass through the Exploded_Box.
 7. WHEN the Tour is baked, THE Skeleton_Bench_App SHALL run `motionLinter` on it and SHALL show the Findings in the Motion_Check in plain words.
 8. WHILE the linter returns no Findings, THE Motion_Check SHALL state that no findings were reported.
 9. IF the baking or the linting fails, THEN THE Skeleton_Bench_App SHALL show a message that states what failed and what the User can do next.
 10. WHERE the User has asked for reduced motion, THE Skeleton_Bench_App SHALL replace the Tour animation with a jump from one Part to the next (decision 19).
+11. WHILE the Tour plays, THE Skeleton_Bench_App SHALL disable the orbit, zoom, explode and move controls and SHALL show a visible label that says the Tour must be stopped to use them.
 
 ### Requirement 17: Theme toggle (Tier A)
 
@@ -462,7 +456,7 @@ Each item states the issue, the assumption used in this document, and who must d
 
 #### Acceptance Criteria
 
-1. THE About_Panel and the README SHALL state that the Machines are simplified models built from shapes.
+1. THE About_Panel and the README SHALL state that the Machines are simplified models built from shapes and are not to scale with each other, because they share one stage box.
 2. THE About_Panel and the README SHALL state that specifications are invented sample data.
 3. THE About_Panel and the README SHALL state that the impeller spin, the dragging and the cursor are ordinary Three.js and not PathKit.
 4. THE About_Panel and the README SHALL state that PathKit cannot follow a live hand because it bakes ahead of time.
@@ -624,11 +618,12 @@ Each item states the issue, the assumption used in this document, and who must d
 10. THE Test_Suite SHALL follow the `testing-conventions` rules: plain checks inside loops, forced edge cases, `SceneError` instances in thrown-error assertions and a 5 second limit per test file (decision 4).
 11. WHEN a task adds a test, THE task SHALL name the source line that the test should catch.
 12. THE Test_Suite SHALL NOT be weakened to make a test pass.
-13. IF a property test fails, THEN Kiro SHALL say whether the code or the property is wrong, SHALL make at most 3 fix attempts, and SHALL then stop and report the seed and the counterexample.
+13. IF an exhaustive check or a table check fails, THEN Kiro SHALL say whether the code or the check is wrong, SHALL make at most 3 fix attempts, and SHALL then stop and report the failing input values (the frame, the Zoom_Value or whatever the check loops over).
 14. THE Kiro SHALL say that a task is done only after the User has pasted passing test results, and SHALL report the counts of tests passed, failed and skipped from that output.
 15. THE Test_Suite SHALL test View_Pair validity: the Bearing is preserved, the camera is outside the Exploded_Box on every frame, the angle mapping does not depend on the Zoom_Value, and the zoom selection does not depend on the angle (Requirement 11).
 16. THE Test_Suite SHALL test the click threshold at 5 px (a click) and 6 px (a drag) (Requirement 14.6).
 17. THE Test_Suite SHALL test that the Tour start resets the Explode_Amount and the offset to zero (Requirement 16.2).
+18. THE Test_Suite SHALL NOT use random generators, and the Skeleton_Bench_App SHALL NOT depend on fast-check (decision 2).
 
 ### Requirement 36: Notes and sources (All)
 

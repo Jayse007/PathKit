@@ -12,7 +12,7 @@ Main design choices:
 - **PathKit supplies baked camera and part motion.** Four orbit laps, 20 part paths and 3 tours are baked once at load. Nothing is baked while the User drags, zooms or moves the explode slider.
 - **Everything that can be pure is pure.** Frame mapping, zoom selection, drag range, explode easing, click classification, contrast and shortcut guards are pure functions with hand-written test tables.
 - **One shared stage envelope.** All three machines are modelled to fit one fixed box, so one set of camera laps serves all of them.
-- **Recommended camera mechanism: option A** (four laps blended with PathKit `lerp` and `slerp`). The User must approve this before tasks are written (open question 21).
+- **Recommended camera mechanism: option A** (four laps blended with PathKit `lerp` and `slerp`). Option A was approved by the User (decision 21).
 
 ### Property testing without fast-check
 
@@ -117,7 +117,7 @@ Every Machine is modelled at "stage scale". All its Parts, at rest, at their end
 
 The camera always sits on a ray from the Machine centre at a constant elevation: sin(elevation) = 5/13 and cos(elevation) = 12/13 (about 22.62 degrees, defined by the ratio so no angle maths is needed). At bearing B and distance d the position is (d * (12/13) * sin B, d * (5/13), d * (12/13) * cos B). Vertical field of view is 35 degrees, near 0.1, far 100. Zoom_Value 0 is farthest and 1 is nearest. The camera entity declares `forwardAxis` -Z and `upAxis` +Y from named constants. Shared logic hard-codes neither.
 
-### Option A (recommended): four laps blended with `lerp` and `slerp`
+### Option A (approved): four laps blended with `lerp` and `slerp`
 
 - Laps are indexed 0 (farthest) to 3 (nearest).
 
@@ -195,7 +195,7 @@ Recommend **A**, for these reasons:
 3. Each lap can later have its own elevation or look without new code.
 4. The cost is small: about 93 KiB more memory and an estimated 9 to 36 ms more at load.
 
-A and B produce identical poses today. B is the simpler choice if the User prefers fewer moving parts and accepts "zoom is app code". C is not recommended. **The User must approve the choice before tasks are written (open question 21). The rest of this design assumes A.**
+A and B produce identical poses today. B is the simpler choice if the User prefers fewer moving parts and accepts "zoom is app code". C is not recommended. **Option A was approved by the User (decision 21). The recommendation text above stays as the record of why. The rest of this design assumes A.**
 
 ### Worked value: Zoom_Value 0.5 with option A
 
@@ -313,7 +313,7 @@ There are 20 scenes (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Each is 5,280 B (tr
 - **Length.** `TOUR_FRAMES_PER_PART` = 90 (3 s). Pump 720 frames, Heat_Exchanger and Desk_Lamp 540 frames each. Speed = ring length * 30 / frameCount.
 - **Memory** (88 bytes per frame): 63,360 + 47,520 + 47,520 = 158,400 B. Estimated bake 6 to 24 ms each (estimate, not measured).
 - **Start.** Set Explode_Amount 0 and offset 0 (decision 16). Save the User's orbit angle and Zoom_Value. Cut (jump) to the tour pose. A lerp between two arbitrary bearings could pass through the box, so no blend is used.
-- **Stop or end.** Jump back to the saved angle and Zoom_Value (open question 23).
+- **Stop or end.** Jump back to the saved angle and Zoom_Value (decision 23).
 - **Playback** uses whole frames from elapsed time at 30 fps.
 - **While the Tour plays**, the orbit, zoom, explode and move controls are disabled with a visible label: "Stop the tour to use this".
 - **Reduced motion.** Jump to the middle frame of each Part's slot and hold `TOUR_REDUCED_MOTION_HOLD_MS` = 3000.
@@ -675,10 +675,10 @@ Tier B waits for the User's "go" and the Gesture_Lab result. The same setters se
 
 ## Risks and items for the User
 
-1. **Option choice.** Approve A (recommended), or choose B (simpler, identical poses today). C is not recommended.
+1. **Option choice.** Done: option A was approved by the User (decision 21).
 2. **Estimates are not measured.** The total bake is about 30 to 180 ms across 27 scenes (4 laps, 20 part paths, 3 tours). If the measured total exceeds about 250 ms, bake the non-current Machines lazily.
 3. **Common stage envelope.** The three Machines are not to scale with each other. The About_Panel should say so.
-4. **Requirement 7 story wording.** Exploded Parts cannot always stay on screen at high zoom.
+4. **Requirement 7 story wording.** Done: the requirement edits were made. Exploded Parts cannot always stay on screen at high zoom.
 5. **No fixed Part.** Every Part moves at least 0.1 m.
 6. **Vite `server.fs.allow` and tsconfig strictness.** Confirm at the first build.
 7. **Narrow viewports.** An aspect ratio below about 3:4 may crop the Machine at Zoom_Value 0.
