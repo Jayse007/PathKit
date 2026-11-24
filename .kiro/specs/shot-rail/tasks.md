@@ -76,11 +76,11 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 
 ### Phase 0: Spike (stop and ask the User if S1 to S5 fails; record results in docs/build-notes.md)
 
-- [ ] 4. Default Road points
+- [x] 4. Default Road points
   - [x] 4.1 Add the default Road points
     - New file `src/logic/default-road.ts` (data only): 12 points, all with y = `SUBJECT_CENTRE_HEIGHT`, closed, about 120 m long, no bend tighter than about 8 m radius, no two consecutive points equal (including last to first). Hand-place the points on a smooth loop and write the coordinates in the file.
     - _Requirements: 3.11, 3.12 (design Property 13a)_
-  - [-] 4.2 Write the default Road tests
+  - [x] 4.2 Write the default Road tests
     - Count is 12 (`DEFAULT_ROAD_POINT_COUNT`). Every y equals `SUBJECT_CENTRE_HEIGHT`. No two consecutive points are equal.
     - Length from `createCurve` and `createArcLengthTable` is printed and lies within 110 to 130 m.
     - Minimum bend radius from the points: for every three consecutive points (wrapping round), the radius of the circle through them is at least 8 m. The radius formula is written by hand in the test (side lengths a, b, c; area from the cross product; R = abc / 4 area).
@@ -88,10 +88,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 3.11, 3.12 (design Property 13a)_
 
 - [ ] 5. Frame_Remap
-  - [~] 5.1 Implement `src/logic/frame-remap.ts`
+  - [x] 5.1 Implement `src/logic/frame-remap.ts`
     - `remapDisplayedFrame(displayedFrame, lapFrames, bakedLapFrames, easeAmplitude)` as in the design: `u = (f mod lap) / lap` (remainder first), `s = u + A sin(2 pi u) / (2 pi)`, `b = min(round(s * baked), baked - 1)`. Pure. A value that is not a whole number of 0 or more throws an Error that names the value.
     - _Requirements: 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.17_
-  - [~] 5.2 Write the Frame_Remap tests
+  - [-] 5.2 Write the Frame_Remap tests
     - Worked table (hand-written): f = 0, 1, 60, 120, 239, 240, 241, 599 give 0, 12, 633, 960, 1908, 0, 12, 956.
     - Sweep f = 0 to 599: called twice gives the same value; whole number; inside 0 to 1919; non-decreasing inside each 240-frame lap; at least two different step sizes occur. Throws naming the value for -1, 1.5, NaN, Infinity and -0.5.
     - Source line it should catch: remove the `min(..., baked - 1)` guard or take `(f / lap) mod 1` instead of the remainder first (the table fails at f = 240).

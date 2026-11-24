@@ -28,3 +28,15 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Broke: nothing known yet; tests not run by Kiro.
 - Kiro got wrong: nothing known yet.
 - PathKit used: `createCurve`, `createArcLengthTable` (length only).
+
+### Task 5.1: frame-remap.ts
+- Done: added `src/logic/frame-remap.ts` with `remapDisplayedFrame` (remainder first, ease, `min` guard, whole-number check that names the value). Not run yet; tests come in 5.2.
+- Broke: nothing known. Kiro normalises `-0` to `0` in the result.
+- Kiro got wrong: nothing yet.
+- PathKit feature used: none (pure app-side function).
+
+## Task 5.2: Frame_Remap tests
+- Done: added `test/logic/frame-remap.test.ts` (worked table, 0 to 599 sweep, invalid-value throws). Not yet run by the User.
+- What broke: nothing known yet.
+- What Kiro got wrong: nothing known yet.
+- PathKit feature used: none (pure remap only).
