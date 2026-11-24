@@ -1,0 +1,825 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 User checkpoint: confirm the steering line and the approved design": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529367434
+      },
+      {
+        "executionId": "def4624f-f19a-43dc-be3a-847350a2927a",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529585027
+      }
+    ],
+    "2.1 Create the app files": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529368336
+      },
+      {
+        "executionId": "def4624f-f19a-43dc-be3a-847350a2927a",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529597081
+      },
+      {
+        "executionId": "def4624f-f19a-43dc-be3a-847350a2927a",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529667962
+      }
+    ],
+    "2.2 User checkpoint: install": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529369493
+      }
+    ],
+    "3.1 Write `test/logic/constants.test.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529370575
+      }
+    ],
+    "4.1 Add the default Road points": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529371530
+      }
+    ],
+    "4.2 Write the default Road tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529371906
+      }
+    ],
+    "5.1 Implement `src/logic/frame-remap.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529372423
+      }
+    ],
+    "5.2 Write the Frame_Remap tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529373086
+      }
+    ],
+    "6.1 Write the S1 test, part (a) and part (b), with the spacing measured and printed": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529373969
+      }
+    ],
+    "6.2 User checkpoint: record the measured deviation": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529374511
+      }
+    ],
+    "6.3 Add the agreed tolerance to the S1 test": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529375331
+      }
+    ],
+    "7.1 Write the S2 test": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529376163
+      }
+    ],
+    "8.1 Write the S3 test": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529376807
+      }
+    ],
+    "9.1 Write the S4 test": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529377858
+      }
+    ],
+    "10.1 Write the S5 test": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529378203
+      }
+    ],
+    "10.2 User checkpoint: report the bake time": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529378981
+      }
+    ],
+    "11.1 Write the S6 test": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529379951
+      }
+    ],
+    "11.2 User checkpoint: record the S6 outcome": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529380807
+      }
+    ],
+    "12.1 Write the seam test": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529381680
+      }
+    ],
+    "13. Checkpoint: Phase 0 spike": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529382763
+      }
+    ],
+    "14.1 Implement `src/logic/lens.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529383249
+      }
+    ],
+    "14.2 Write the lens tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529383774
+      }
+    ],
+    "15.1 Implement `src/logic/labels.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529384618
+      }
+    ],
+    "15.2 Write the label tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529384944
+      }
+    ],
+    "16.1 Implement `src/logic/fill.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529385717
+      }
+    ],
+    "16.2 Write the Fill_Fraction tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529386421
+      }
+    ],
+    "17.1 Implement `src/logic/frame-mapper.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529386984
+      }
+    ],
+    "17.2 Write the Frame_Mapper tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529387374
+      }
+    ],
+    "18.1 Implement `src/logic/road-validation.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529388150
+      }
+    ],
+    "18.2 Write the Road validation tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529388580
+      }
+    ],
+    "19.1 Implement `src/logic/shot-length.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529389487
+      }
+    ],
+    "19.2 Write the Shot_Length tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529390099
+      }
+    ],
+    "20.1 Implement `src/logic/target-converter.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529390485
+      }
+    ],
+    "20.2 Write the Target_Converter tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529391080
+      }
+    ],
+    "21.1 Implement `src/logic/shot-builders.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529392286
+      }
+    ],
+    "21.2 Write the Shot_Builder tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529393113
+      }
+    ],
+    "22.1 Implement `src/logic/scene-set.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529393477
+      }
+    ],
+    "22.2 Write the Scene_Set tests (the S6 regression)": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529394117
+      }
+    ],
+    "23.1 Implement `src/logic/findings.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529394680
+      }
+    ],
+    "23.2 Write the findings tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529395255
+      }
+    ],
+    "24.1 Implement `src/logic/contrast.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529395786
+      }
+    ],
+    "24.2 Write the contrast function tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529396269
+      }
+    ],
+    "25.1 Implement `src/logic/storage.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529396960
+      }
+    ],
+    "25.2 Write the storage tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529397430
+      }
+    ],
+    "26.1 Write `test/logic/samples-integration.test.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529397868
+      }
+    ],
+    "27. Checkpoint: Phase 1": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529398362
+      }
+    ],
+    "28.1 Implement `src/view/camera-rig.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529398791
+      }
+    ],
+    "28.2 Write the CameraRig tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529399260
+      }
+    ],
+    "29.1 Implement `src/view/main-view.ts` and wire `index.html`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529400596
+      }
+    ],
+    "29.2 User checkpoint: view the empty stage": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529401172
+      }
+    ],
+    "29.3 User checkpoint: approve the safe-area size and its source": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529401836
+      }
+    ],
+    "29.4 Implement the guides": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529402901
+      }
+    ],
+    "29.5 Write the guides tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529403218
+      }
+    ],
+    "29.6 User checkpoint: view the guides": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529403749
+      }
+    ],
+    "30.1 Implement the car and the road in `src/view/subject-view.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529404169
+      }
+    ],
+    "30.2 User checkpoint: view the car on the road": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529404833
+      }
+    ],
+    "31.1 Implement `src/view/stage-overview.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529405267
+      }
+    ],
+    "31.2 User checkpoint: view the Stage_Overview": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529405804
+      }
+    ],
+    "32.1 Implement the grid rules in `src/view/coverage-grid-rules.ts` (pure)": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529406269
+      }
+    ],
+    "32.2 Write the grid rules tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529407331
+      }
+    ],
+    "32.3 Implement the grid view in `src/view/coverage-grid.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529407981
+      }
+    ],
+    "32.4 User checkpoint: view the Coverage_Grid": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529408413
+      }
+    ],
+    "33.1 Implement `src/logic/playback.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529409470
+      }
+    ],
+    "33.2 Write the playback tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529409845
+      }
+    ],
+    "34.1 Implement `src/view/timeline.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529410344
+      }
+    ],
+    "34.2 User checkpoint: try the Timeline": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529410825
+      }
+    ],
+    "35.1 Implement `src/logic/key-map.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529412210
+      }
+    ],
+    "35.2 Write the key map tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529413500
+      }
+    ],
+    "36.1 Implement the layout in `index.html` and `src/view/layout.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529414356
+      }
+    ],
+    "36.2 User checkpoint: view the layout": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529415206
+      }
+    ],
+    "37.1 Implement `src/view/controls.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529416039
+      }
+    ],
+    "37.2 Wire the keys in `src/view/keyboard.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529417288
+      }
+    ],
+    "37.3 User checkpoint: try the controls": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529418009
+      }
+    ],
+    "38.1 Implement `src/view/readout.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529419164
+      }
+    ],
+    "38.2 User checkpoint: view the readout and approve any angle notes": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529419566
+      }
+    ],
+    "39.1 Implement `src/logic/motion-check-model.ts` (pure) and `src/view/motion-check.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529420140
+      }
+    ],
+    "39.2 Write the motion check model tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529420638
+      }
+    ],
+    "39.3 User checkpoint: try the Motion_Check": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529421290
+      }
+    ],
+    "40.1 Implement loading in `src/view/samples-menu.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529421894
+      }
+    ],
+    "40.2 Write the loading tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529423227
+      }
+    ],
+    "40.3 User checkpoint: first-use check": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529424073
+      }
+    ],
+    "41.1 Implement `src/view/hints.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529425120
+      }
+    ],
+    "41.2 Write the hint tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529426071
+      }
+    ],
+    "42.1 Implement `src/view/about-panel.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529426694
+      }
+    ],
+    "42.2 Write the About_Panel text tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529427157
+      }
+    ],
+    "42.3 User checkpoint: approve the About text": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529427648
+      }
+    ],
+    "43. Checkpoint: P1 complete": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529428111
+      }
+    ],
+    "44.1 Implement the picker in `src/logic/strip-frames.ts` (pure)": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529428776
+      }
+    ],
+    "44.2 Write the picker tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529429552
+      }
+    ],
+    "44.3 Implement the strip view in `src/view/shot-strip.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529430143
+      }
+    ],
+    "44.4 User checkpoint: view the Shot_Strip": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529431298
+      }
+    ],
+    "45.1 Implement `src/view/capture.ts` and `src/logic/capture-name.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529431936
+      }
+    ],
+    "45.2 Write the file name tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529432327
+      }
+    ],
+    "45.3 User checkpoint: try Capture": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529432849
+      }
+    ],
+    "46.1 User checkpoint: approve the figure size": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529433378
+      }
+    ],
+    "46.2 Implement the figure": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529433863
+      }
+    ],
+    "46.3 Write the Subject switch tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529434390
+      }
+    ],
+    "46.4 User checkpoint: view the figure": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529434889
+      }
+    ],
+    "47.1 Define the palette in `src/view/palette.ts`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529435587
+      }
+    ],
+    "47.2 Write the palette contrast test": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529436576
+      }
+    ],
+    "48.1 Add focus rings and text labels": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529436963
+      }
+    ],
+    "48.2 Write the stylesheet check": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529437273
+      }
+    ],
+    "48.3 User checkpoint: keyboard-only walkthrough": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529437872
+      }
+    ],
+    "49.1 Implement `src/logic/motion-preference.ts` and wire it": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529438321
+      }
+    ],
+    "49.2 Write the reduced-motion tests": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529438858
+      }
+    ],
+    "49.3 User checkpoint: try reduced motion": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529439302
+      }
+    ],
+    "50.1 User checkpoint: screenshots, round 1": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529439743
+      }
+    ],
+    "50.2 Apply round 1 changes": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529440096
+      }
+    ],
+    "50.3 User checkpoint: screenshots, round 2": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529440485
+      }
+    ],
+    "51.1 Write `apps/shot-rail/README.md` (the only existing file that changes)": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529441027
+      }
+    ],
+    "51.2 User checkpoint: read the README": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529441877
+      }
+    ],
+    "52.1 Complete `docs/sources.md` and `docs/build-notes.md`": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529442318
+      }
+    ],
+    "53.1 Open every `.ts` file and check imports": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529443401
+      }
+    ],
+    "53.2 User checkpoint: final run and report": [
+      {
+        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529443832
+      }
+    ],
+    "1. Read-only checks before scaffolding": [
+      {
+        "executionId": "def4624f-f19a-43dc-be3a-847350a2927a",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795529586266
+      }
+    ]
+  }
+}
