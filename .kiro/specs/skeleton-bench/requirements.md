@@ -225,7 +225,7 @@ Each item states the issue, the assumption used in this document, and who must d
 10. IF the offset or the Explode_Amount is not a finite number, THEN THE Drag_Range SHALL fail with an error message that names the invalid value.
 11. THE Fraction_To_Pixels function SHALL convert a fraction and a viewport size to pixels for the View_Offset, and for a 1000 x 800 px viewport the limits SHALL be 250 px horizontal and 200 px vertical at 0 percent, 175 px and 140 px at 50 percent, and 100 px and 80 px at 100 percent.
 12. THE Drag_Range and the Fraction_To_Pixels function SHALL be pure.
-13. WHEN the Zoom_Value is 0 and the viewport is at least as wide as it is tall, THE Skeleton_Bench_App SHALL keep the whole Exploded_Box on screen at every allowed offset.
+13. WHEN the Zoom_Value is 0, the viewport is at least as wide as it is tall, and the Explode_Amount is 100 percent, THE Skeleton_Bench_App SHALL keep the whole Exploded_Box on screen at every allowed offset.
 14. WHEN the Zoom_Value is above 0, THE Skeleton_Bench_App SHALL allow the Machine to extend past the screen edge, and the Reset position button and the key R SHALL still return the Machine to the zero offset.
 
 ### Requirement 8: Explode easing (Tier A)

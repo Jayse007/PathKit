@@ -39,15 +39,17 @@ The plan follows the approved design (option A: four baked laps blended with `le
 
 ### Phase A: Setup
 
-- [ ] 1. Terminal commands for the app
-  - [ ] 1.1 User checkpoint: add the command lines to the steering file
+- [x] 1. Terminal commands for the app
+  - [x] 1.1 User checkpoint: add the command lines to the steering file
+    - Done: the User added the line to `.kiro/steering/windows-terminal.md`.
     - The User adds to `.kiro/steering/windows-terminal.md` the three allowed commands for `apps/skeleton-bench`: `npm.cmd install`, `npm.cmd test` and `npm.cmd run build`, each on one line, each run from `apps/skeleton-bench`.
     - Kiro does not edit that file. Kiro asks for no command in the app folder until the User confirms.
     - _Requirements: 2.1, 2.2 (decision 1)_
 
 - [ ] 2. Scaffold the app
   - [ ] 2.1 Create the app files
-    - `package.json`: type module; exact versions with no `^` or `~`: runtime `three` 0.187.0; dev `@types/three` 0.187.0, `vite` 7.3.8, `vitest` 3.2.7, `typescript` 5.9.3; scripts `test` = `vitest run`, `build` = `vite build`.
+    - `package.json`: type module; exact versions with no `^` or `~`: runtime `three` 0.187.0; dev `@types/three` 0.187.0, `vite` 7.3.8, `vitest` 3.2.7, `typescript` 5.9.3; scripts `test` = `vitest run`, `build` = `vite build`, `dev` = `vite`, `preview` = `vite preview`.
+    - Kiro never runs `dev` or `preview` and never asks the User for them. The User may start them in their own terminal to view the app.
     - `tsconfig.json`: strict, NodeNext, ES2023, noEmit, DOM lib, skipLibCheck, at least as strict as the PathKit tsconfig.
     - `vite.config.ts`: `base` `/PathKit/skeleton-bench/`; `server.fs.allow` includes the repository root.
     - `vitest.config.ts`: include `test/**/*.test.ts`, node environment.
@@ -215,13 +217,29 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - _Requirements: 15.3, 15.4, 16.2, 16.6, 16.11, 35.17 (design Property 19)_
 
 - [ ] 17. Render core
-  - [ ] 17.1 Build the Three.js rendering for the Pump
-    - Renderer with a WebGL-failure message; stage; bench grid at y = -0.6; camera from the blend (`position.set`, `quaternion.set`); view offset from the offset fraction; render-on-change loop; impeller spin (stopped under reduced motion).
-    - Pump model from shapes: eight named parts, each a named object with `userData.partId`. Parts placed from the baked Part scenes through Explode_Easing.
-    - Two Looks (palette objects, two material sets; X_Ray_Skeleton with cyan `EdgesGeometry` edges, Clean_Engineering with matte solids). Selection shell and focus shell. Picking by raycast on meshes only, with the click rule.
-    - _Requirements: 10.1, 10.2, 11.1, 12.2, 12.6, 13.2, 13.5, 14.1, 14.6, 14.7, 14.9, 17.1, 17.3, 17.4, 18.4, 18.5, 20.4, 21.5_
-  - [ ] 17.2 User checkpoint: view the Pump
-    - The User views the app in a browser in their own way and reports how it looks. Kiro states what was not tested.
+  - [ ] 17.1 Renderer, stage, camera and view offset
+    - Renderer with a WebGL-failure message; stage and bench grid at y = -0.6; camera from the blend (`position.set`, `quaternion.set`); view offset from the offset fraction; render-on-change loop.
+    - _Requirements: 10.1, 10.2, 11.1, 12.2, 12.6, 21.5, 20.4_
+  - [ ] 17.2 User checkpoint: view the empty stage
+    - The User views the empty stage in a browser in their own way: the grid, the camera orbit and zoom, and that the view offset moves the stage. Kiro states what was not tested.
+    - _Requirements: 37.1, 37.2_
+  - [ ] 17.3 Pump model and Part placement
+    - Pump model from shapes: eight named parts, each a named object with `userData.partId`. Parts placed from the baked Part scenes through Explode_Easing. Impeller spin (ordinary Three.js, stopped under reduced motion).
+    - _Requirements: 13.2, 13.5, 18.4, 18.5_
+  - [ ] 17.4 User checkpoint: view the Pump assembled and exploded
+    - The User views the Pump assembled and exploded in a browser in their own way. Kiro states what was not tested.
+    - _Requirements: 37.1, 37.2_
+  - [ ] 17.5 The two Looks
+    - Palette objects and two material sets. X_Ray_Skeleton with cyan `EdgesGeometry` edges; Clean_Engineering with matte solids.
+    - _Requirements: 17.1, 17.3, 17.4_
+  - [ ] 17.6 User checkpoint: view both Looks
+    - The User views both Looks in a browser in their own way. Kiro states what was not tested.
+    - _Requirements: 37.1, 37.2_
+  - [ ] 17.7 Picking and shells
+    - Raycast on meshes only; the click rule (5 px); selection shell and focus shell.
+    - _Requirements: 14.1, 14.6, 14.7, 14.9_
+  - [ ] 17.8 User checkpoint: click and focus a Part
+    - The User clicks and focuses a Part in a browser and checks the selection cue. Kiro states what was not tested.
     - _Requirements: 37.1, 37.2_
 
 ### Phase 3: Rest of Tier A
@@ -255,12 +273,23 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Tests with hand-written tables, including that shortcuts are ignored with text-field focus.
     - Source line it should catch: change the sign in `orbitAngleFromDrag`.
     - _Requirements: 10.3, 11.1, 12.1, 12.3, 12.5, 12.9, 13.1_
-  - [ ] 20.2 Build the layout and controls
-    - Inventory (three cards, SVG thumbnails drawn by us), Stage, Inspector (empty state "Pick a part to read about it", "sample data" label), Control_Bar, Motion_Check, About_Panel access; Parts_List buttons in catalogue order with focus highlight.
-    - Rotate / Move toggle (M), orbit scrub, zoom slider, keys and wheel, explode slider and key E (600 ms animation, jump under reduced motion), Reset position and key R, arrow keys per mode, Tour with Pause and Stop, Look toggle stored in try/catch, key hints beside every control, "hint seen" flags, error messages that say what to do. Gestures toggle absent or disabled with a label.
-    - _Requirements: 10.1, 10.3, 10.6, 11.1, 12.1, 12.3, 12.5, 12.8, 13.1, 14.2, 14.3, 14.4, 14.5, 14.8, 15.1, 15.2, 17.5, 17.7, 20.1, 20.2, 20.3, 20.5, 21.1, 21.2, 21.4, 21.5_
-  - [ ] 20.3 User checkpoint: try the interface
-    - The User tries the controls in a browser and reports problems. Kiro states what was not tested.
+  - [ ] 20.2 Layout and Inspector with Parts_List
+    - Inventory (three cards, SVG thumbnails drawn by us), Stage, Inspector (empty state "Pick a part to read about it", "sample data" label), Parts_List buttons in catalogue order with focus highlight, Motion_Check region, Control_Bar region.
+    - _Requirements: 14.2, 14.3, 14.4, 14.5, 14.8, 15.1, 15.2, 20.1, 21.1_
+  - [ ] 20.3 User checkpoint: view the layout, the Inspector and the Parts_List
+    - The User views the layout, the Inspector and the Parts_List in a browser in their own way and reports problems. Kiro states what was not tested.
+    - _Requirements: 21.3, 37.1_
+  - [ ] 20.4 Controls
+    - Rotate / Move toggle (M), orbit scrub, zoom slider, keys and wheel, explode slider and key E (600 ms animation, jump under reduced motion), Reset position and key R, arrow keys per mode, key hints beside every control, "hint seen" flags. Gestures toggle absent or disabled with a label.
+    - _Requirements: 10.1, 10.3, 10.6, 11.1, 12.1, 12.3, 12.5, 12.8, 13.1, 20.2, 20.3, 20.5, 21.2, 21.4_
+  - [ ] 20.5 User checkpoint: try the controls
+    - The User tries the controls in a browser in their own way and reports problems. Kiro states what was not tested.
+    - _Requirements: 21.3, 37.1_
+  - [ ] 20.6 Tour, Look toggle and About wiring
+    - Tour with Pause and Stop wired to the state; Look toggle stored in try/catch; About_Panel access from the main screen; error messages that say what to do.
+    - _Requirements: 17.5, 17.7, 21.5, 16.1 to 16.11, 22.5_
+  - [ ] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
+    - The User tries the Tour, the Look toggle and the About panel in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
 
 - [ ] 21. Accessibility pass
@@ -379,29 +408,39 @@ The plan follows the approved design (option A: four baked laps blended with `le
     { "id": 30, "tasks": ["16.2"] },
     { "id": 31, "tasks": ["17.1"] },
     { "id": 32, "tasks": ["17.2"] },
-    { "id": 33, "tasks": ["18.1"] },
-    { "id": 34, "tasks": ["18.2"] },
-    { "id": 35, "tasks": ["18.3"] },
-    { "id": 36, "tasks": ["18.4"] },
-    { "id": 37, "tasks": ["19.1"] },
-    { "id": 38, "tasks": ["19.2"] },
-    { "id": 39, "tasks": ["20.1"] },
-    { "id": 40, "tasks": ["20.2"] },
-    { "id": 41, "tasks": ["20.3"] },
-    { "id": 42, "tasks": ["21.1"] },
-    { "id": 43, "tasks": ["21.2"] },
-    { "id": 44, "tasks": ["21.3"] },
-    { "id": 45, "tasks": ["22.1"] },
-    { "id": 46, "tasks": ["23.1"] },
-    { "id": 47, "tasks": ["23.2"] },
-    { "id": 48, "tasks": ["24.1"] },
-    { "id": 49, "tasks": ["24.2"] },
-    { "id": 50, "tasks": ["24.3"] },
-    { "id": 51, "tasks": ["24.4"] },
-    { "id": 52, "tasks": ["24.5"] },
-    { "id": 53, "tasks": ["24.6"] },
-    { "id": 54, "tasks": ["24.7"] },
-    { "id": 55, "tasks": ["24.8"] }
+    { "id": 33, "tasks": ["17.3"] },
+    { "id": 34, "tasks": ["17.4"] },
+    { "id": 35, "tasks": ["17.5"] },
+    { "id": 36, "tasks": ["17.6"] },
+    { "id": 37, "tasks": ["17.7"] },
+    { "id": 38, "tasks": ["17.8"] },
+    { "id": 39, "tasks": ["18.1"] },
+    { "id": 40, "tasks": ["18.2"] },
+    { "id": 41, "tasks": ["18.3"] },
+    { "id": 42, "tasks": ["18.4"] },
+    { "id": 43, "tasks": ["19.1"] },
+    { "id": 44, "tasks": ["19.2"] },
+    { "id": 45, "tasks": ["20.1"] },
+    { "id": 46, "tasks": ["20.2"] },
+    { "id": 47, "tasks": ["20.3"] },
+    { "id": 48, "tasks": ["20.4"] },
+    { "id": 49, "tasks": ["20.5"] },
+    { "id": 50, "tasks": ["20.6"] },
+    { "id": 51, "tasks": ["20.7"] },
+    { "id": 52, "tasks": ["21.1"] },
+    { "id": 53, "tasks": ["21.2"] },
+    { "id": 54, "tasks": ["21.3"] },
+    { "id": 55, "tasks": ["22.1"] },
+    { "id": 56, "tasks": ["23.1"] },
+    { "id": 57, "tasks": ["23.2"] },
+    { "id": 58, "tasks": ["24.1"] },
+    { "id": 59, "tasks": ["24.2"] },
+    { "id": 60, "tasks": ["24.3"] },
+    { "id": 61, "tasks": ["24.4"] },
+    { "id": 62, "tasks": ["24.5"] },
+    { "id": 63, "tasks": ["24.6"] },
+    { "id": 64, "tasks": ["24.7"] },
+    { "id": 65, "tasks": ["24.8"] }
   ]
 }
 ```

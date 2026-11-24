@@ -10,7 +10,7 @@ This document is derived from `.kiro/specs/shot-rail/brief.md` (DRAFT 1, 2026-11
 
 ## Open questions and conflicts
 
-Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
+Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 
 1. **Terminal commands.** Decided: Kiro asks for no `npm.cmd` commands in `apps/shot-rail` until the User adds the matching lines to `.kiro/steering/windows-terminal.md`.
 2. **Dependency rule scope.** Decided: the dependency rule in `coordinate-conventions` covers `packages/pathkit` only.
@@ -38,13 +38,15 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
     - Decision: none needed. Recorded for the test author.
 19. **Reduced motion.** Decided: reduced motion removes interface transitions and makes interface changes jump; the Subject's speed profile during playback is unchanged.
 
+20. **Design defaults.** Decided (confirmed by the User with the design): `EASE_AMPLITUDE` 0.5 with the periodic ease `u + 0.5 sin(2 pi u) / (2 pi)`; the Subject is baked for one lap only and read by remainder (displayed frame mod 240); `ORBIT_SWEEP_DEG` 180; camera horizontal distance 3 to 60 m; camera height -0.5 to 40 m relative to the Subject centre; the push-in and crane rail anchors in the design (push-in ends at `PUSH_IN_END_RATIO` 0.4 of the start offset, crane rises `CRANE_RISE_M` 6 m); the three sample shots in the design as starting values.
+
 ## Glossary
 
 - **Shot_Rail_App**: The browser app in `apps/shot-rail/`.
 - **PathKit**: The library in `packages/pathkit`, imported only through `packages/pathkit/src/index.ts`.
 - **Subject**: The moving thing being filmed. The car (P1), the walking figure (P2) or the abstract object (P3).
 - **Road**: The flat, closed path the car drives. All control points have the same y value.
-- **Road_Point_Limits**: The named constants for the minimum (3) and maximum (100) number of Road control points (known issue KI-11).
+- **Road_Point_Limits**: The named constants for the minimum (3) and maximum (100) number of Road control points. The maximum comes from the accuracy note of PathKit's arc-length table, not from KI-11 (see Requirement 3.13).
 - **Lap_Frames**: The named constant 240, the number of frames in one lap of the Road.
 - **Frame_Remap**: The pure app function that converts a whole displayed frame number into a whole baked frame number (it picks which baked frame to read), with easing. PathKit `followPath` itself has constant speed and does no easing.
 - **Bake_Oversample**: The named constant 8, the number of baked frames per displayed frame.
@@ -68,7 +70,7 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 - **Fill_Fraction**: The larger of (projected 3D bounding box height / frame height) and (projected 3D bounding box width / frame width), as a percentage, computed by a pure function over projected points.
 - **Frame_Mapper**: The pure logic that converts between frame numbers, time and the scrub value.
 - **Shot_Builder**: The pure logic that creates a PathKit scene for a Shot_Type.
-- **Target_Converter**: The pure logic that turns the Subject's positions at the baked frames picked by the Frame_Remap into a keyframed target.
+- **Target_Converter**: The pure logic that turns the Subject's baked positions into a keyframed target with one keyframe per displayed frame, each equal to the baked position at the baked frame the Frame_Remap picks for that displayed frame.
 - **Motion_Check**: The list of findings produced by PathKit's `motionLinter` on the camera scene, shown in plain words.
 - **Finding**: One item returned by `motionLinter`.
 - **Timeline**: The bottom control with play, pause, scrub, frame counter and Finding marks.
@@ -142,7 +144,7 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 10. THE Shot_Rail_App SHALL lap the Road every `Lap_Frames` (240) frames whatever the Shot_Length, so that a 600-frame shot is 2.5 laps and a 60-frame shot is a quarter lap.
 11. THE Shot_Rail_App SHALL use a Road whose control points all have the same y value.
 12. THE default Road SHALL have about 12 control points and a length of about 120 m.
-13. IF the Road has fewer than the minimum of `Road_Point_Limits` (3) or more than the maximum (100) control points, THEN THE Shot_Rail_App SHALL refuse the Road and show a message that names the control point count and the allowed range (known issue KI-11).
+13. IF the Road has fewer than the minimum of `Road_Point_Limits` (3) or more than the maximum (100) control points, THEN THE Shot_Rail_App SHALL refuse the Road and show a message that names the control point count and the allowed range. The minimum of 3 is the least a closed PathKit curve accepts. The maximum of 100 comes from the accuracy note of PathKit's arc-length table (`packages/pathkit/src/arclength.ts`): the table always has 1024 entries, so above about 100 control points there are fewer than about 10 entries per segment and length and position accuracy degrade. Known issue KI-11 (an orientation snap once per lap on twisted 3D closed loops) is the separate reason the Road must stay flat (criterion 11).
 14. THE Shot_Rail_App SHALL NOT describe PathKit as providing easing or changes of speed along the Road.
 15. THE Shot_Rail_App SHALL express all coordinates in a Y-up, right-handed system with distances in metres and internal angles in radians.
 16. THE Shot_Rail_App SHALL declare the car's `forwardAxis` and `upAxis` on the car entity and SHALL NOT hard-code them in shared logic.
@@ -239,7 +241,7 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 8. THE Shot_Rail_App SHALL let the User set the Shot_Length as a whole number of frames from 60 to 600, with a default of 240.
 9. IF the Shot_Length is not a whole number from 60 to 600, THEN THE Shot_Rail_App SHALL refuse the value and show a message that states the range 60 to 600.
 10. THE Shot_Rail_App SHALL bake the Subject in its own scene, and SHALL bake the Cameras in a camera scene.
-11. THE Target_Converter SHALL turn the Subject's baked positions into a keyframed target with exactly one keyframe per frame, each equal to the baked position at that frame.
+11. THE Target_Converter SHALL turn the Subject's baked positions into a keyframed target with exactly one keyframe per displayed frame, each equal to the baked position at the baked frame the Frame_Remap picks for that displayed frame.
 12. WHEN the Shot_Type or its settings change, THE Shot_Rail_App SHALL re-bake the Cameras before the next frame is shown.
 13. IF Spike S6 shows that one scene cannot hold a path camera plus orbiting Cameras, THEN THE Shot_Rail_App SHALL bake the Main_Camera in its own scene, without asking the User, and the result SHALL be recorded in Build_Notes.
 14. THE Shot_Builder SHALL give each orbiting Camera an Orbit_Centre equal to the Subject position shifted up or down by the Camera height, and SHALL give `aimAt` the true Subject position.
@@ -421,6 +423,7 @@ Items 1 to 16 and 19 are decided. Items 17 and 18 remain as written.
 5. THE About_Panel SHALL state that the app is rough planning and not a prediction of real footage.
 6. THE README SHALL repeat the same limits as the About_Panel.
 7. THE Shot_Rail_App SHALL give the User access to the About_Panel from the main screen.
+8. THE About_Panel SHALL state that rail cameras (push-in and crane) move along a fixed rail, do not follow the car, and only aim at it.
 
 ### Requirement 22: Spike (P1, phase 0)
 

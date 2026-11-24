@@ -328,7 +328,7 @@ There are 20 scenes (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Each is 5,280 B (tr
 - **Applying it:** `camera.setViewOffset(W, H, -fx * W, -fy * H, W, H)` then `updateProjectionMatrix`. Reset with `clearView`. The sign (shifting the sub-window by -dx moves the picture by +dx) is the expected Three.js behaviour. The manual Spike S4 confirms it.
 - **Fallback if S4 fails (Requirement 4.8):** move the Machine group in world space and re-bake the camera data when the drag ends.
 - **Non-drag path:** arrow keys in Move mode and the Reset button (Requirements 12.8, 22.7). The orbit scrub and the zoom slider are the non-drag alternatives for orbit and zoom.
-- **Note on Requirement 7's story:** exploded Parts stay on screen only at Zoom_Value 0 with a viewport at least as wide as tall. A rough check: at d = 6.5 the half height seen at the centre is 6.5 * tan(17.5 degrees) = 2.05 m, against R = 1.4 m plus an offset of at most 0.10 of the height at 100 percent explode. At higher zoom the Machine is bigger than the screen anyway. Reset position and key R recover the view. The story wording should be softened (change list).
+- **Note on Requirement 7's story:** the on-screen guarantee is Requirement 7.13: Zoom_Value 0, a viewport at least as wide as tall, and Explode_Amount 100 percent. Below about 50 percent explode the fixed box may leave the screen at zoom 0 (acceptable, see the risk list). A rough check: at d = 6.5 the half height seen at the centre is 6.5 * tan(17.5 degrees) = 2.05 m, against R = 1.4 m plus an offset of at most 0.10 of the height at 100 percent explode. At higher zoom the Machine is bigger than the screen anyway. Reset position and key R recover the view. The story wording should be softened (change list).
 
 ### Picking and the Parts list
 
@@ -686,6 +686,7 @@ Tier B waits for the User's "go" and the Gesture_Lab result. The same setters se
 9. **Tour entry and exit are cuts.** No blend is used.
 10. **Open question 24** waits for the Gesture_Lab.
 11. **fast-check is not used.** Properties are checked by exhaustive loops and tables.
+12. **Fixed box below about 50 percent explode.** At Zoom_Value 0, below about 50 percent explode, the offset limit is larger (up to 0.25 of the viewport at 0 percent) and the fixed Exploded_Box may leave the screen at the largest offsets. This is acceptable because the Parts are smaller (closer to the Machine centre) at low explode amounts. Requirement 7.13 guarantees the whole box on screen only at 100 percent explode.
 
 ## Requirement wording that needs a change
 
@@ -694,7 +695,7 @@ The design does not change the requirements. These items should be changed by th
 | Requirement | Issue | Suggested change |
 | --- | --- | --- |
 | 24.1 | The three Machines share one stage envelope and are not to scale with each other. | Add: the About_Panel and the README state that the Machines are not to scale with each other. |
-| 7 (user story) | "Exploded Parts cannot leave the screen" is true only at Zoom_Value 0 on a viewport at least as wide as tall. | Reword the story, for example: "so that the Machine and its exploded Parts stay within a bounded area, and Reset position brings them back". |
+| 7 (user story) | "Exploded Parts cannot leave the screen" is true only at Zoom_Value 0 on a viewport at least as wide as tall and 100 percent explode. | Reword the story, for example: "so that the Machine and its exploded Parts stay within a bounded area, and Reset position brings them back". |
 | 14.2 | "Press Tab to focus a Part" implies tabbing to objects in the canvas. The design uses a Parts list of buttons. | Reword: "WHEN the User presses Tab to focus a Part in the Parts list and then presses Enter or Space, THE Skeleton_Bench_App SHALL select it". |
 | 35.13 | Mentions a failing "property test" and a seed and counterexample. The app has no random property tests. | Reword: "IF a check fails, Kiro SHALL say whether the code or the check is wrong, make at most 3 fix attempts, then stop and report the failing inputs". |
 | 11.6 and 4.3 | Fine as written, but the intermediate test points are now fixed by design (`S2_ZOOM_GRID_STEPS` = 12). | Optional: add a reference to the 13-point grid. |
