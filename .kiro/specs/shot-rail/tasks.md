@@ -66,8 +66,8 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Kiro gives the one line `npm.cmd install` (run from `apps/shot-rail`; it installs the exact versions already pinned in `package.json`) and waits. No chained command. The User runs it and pastes the output. Kiro keeps `package-lock.json`.
     - _Requirements: 2.1, 2.8, 2.9_
 
-- [ ] 3. Constants consistency test
-  - [-] 3.1 Write `test/logic/constants.test.ts`
+- [x] 3. Constants consistency test
+  - [x] 3.1 Write `test/logic/constants.test.ts`
     - `BAKE_FPS` = 240, `BAKED_LAP_FRAMES` = 1920, `LAP_SECONDS` = 8, `SENSOR_HEIGHT_MM` = 20.25, `FRAME_INTERVAL_MS` = 1000/30 (hand-written numbers).
     - Thresholds: -10 < 10 < 60 and 35 < 70. Ranges: `SHOT_LENGTH_MIN` < `SHOT_LENGTH_DEFAULT` < `SHOT_LENGTH_MAX`; `CAMERA_RADIUS_MIN` < `CAMERA_RADIUS_MAX`; `CAMERA_HEIGHT_MIN` < `CAMERA_HEIGHT_MAX`; `ROAD_POINTS_MIN` < `DEFAULT_ROAD_POINT_COUNT` < `ROAD_POINTS_MAX`. `CAMERA_IDS` has `MAX_CAMERAS` entries. Camera forward and up axes lie on different axes; car forward and up axes lie on different axes.
     - The User runs `npm.cmd test` (expected: this file passes; report the counts).
@@ -77,10 +77,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 ### Phase 0: Spike (stop and ask the User if S1 to S5 fails; record results in docs/build-notes.md)
 
 - [ ] 4. Default Road points
-  - [~] 4.1 Add the default Road points
+  - [x] 4.1 Add the default Road points
     - New file `src/logic/default-road.ts` (data only): 12 points, all with y = `SUBJECT_CENTRE_HEIGHT`, closed, about 120 m long, no bend tighter than about 8 m radius, no two consecutive points equal (including last to first). Hand-place the points on a smooth loop and write the coordinates in the file.
     - _Requirements: 3.11, 3.12 (design Property 13a)_
-  - [~] 4.2 Write the default Road tests
+  - [-] 4.2 Write the default Road tests
     - Count is 12 (`DEFAULT_ROAD_POINT_COUNT`). Every y equals `SUBJECT_CENTRE_HEIGHT`. No two consecutive points are equal.
     - Length from `createCurve` and `createArcLengthTable` is printed and lies within 110 to 130 m.
     - Minimum bend radius from the points: for every three consecutive points (wrapping round), the radius of the circle through them is at least 8 m. The radius formula is written by hand in the test (side lengths a, b, c; area from the cross product; R = abc / 4 area).

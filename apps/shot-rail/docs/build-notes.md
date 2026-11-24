@@ -16,3 +16,15 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Broke: nothing known yet.
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: none (constants only).
+
+## Task 4.1 Default Road points
+- Done: added `src/logic/default-road.ts` with 12 hand-placed points on a 44 m by 32 m oval (y = SUBJECT_CENTRE_HEIGHT), closed. Hand estimate: about 120 m round, tightest bend radius about 12 m.
+- Broke: nothing known. Not run yet; the length and radius are checked in task 4.2.
+- Kiro got wrong: nothing yet.
+- PathKit feature used: only the `Vec3` type (through `pathkit.ts`).
+
+### Task 4.2: default Road tests
+- Done: added `test/logic/default-road.test.ts` (count 12, every y, no equal consecutive points, length 110 to 130 m printed, bend radius at least 8 m by a hand-written circle formula).
+- Broke: nothing known yet; tests not run by Kiro.
+- Kiro got wrong: nothing known yet.
+- PathKit used: `createCurve`, `createArcLengthTable` (length only).
