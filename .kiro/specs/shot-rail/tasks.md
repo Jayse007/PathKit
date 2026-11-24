@@ -98,16 +98,16 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 3.5, 3.6, 3.7, 3.8, 3.9, 3.17, 23.16 (design Property 6)_
 
 - [ ] 6. Spike S1: constant spacing and the remap
-  - [-] 6.1 Write the S1 test, part (a) and part (b), with the spacing measured and printed
+  - [x] 6.1 Write the S1 test, part (a) and part (b), with the spacing measured and printed
     - File `test/spike/s1.test.ts`, scene built inline through `src/logic/pathkit.ts`: the default Road, one entity `subject` (forward +Z, up +Y) with `followPath` (speed = road length / `LAP_SECONDS`, `alignToPath` true), fps `BAKE_FPS`, frameCount `BAKED_LAP_FRAMES`. `validateScene` passes. The baked data is read back with `evaluateEntity`.
     - Part (a): the distance between consecutive baked positions over all 1920 frames is measured. The largest relative deviation from the mean is printed. For now the test asserts only that every step is above 0 (the tolerance comes in 6.3).
     - Part (b): for displayed frames 0 to 599 the remapped baked frame is whole and inside 0 to 1919. Over one lap (displayed frames 0 to 240), the largest distance between the baked positions picked for consecutive displayed frames divided by the smallest is above 2. Hand check: the ideal steps are about 12 baked frames near f = 0 and about 4 near f = 120, a ratio of 3; rounding moves each step by at most one baked frame, so the worst case is 11 / 5 = 2.2. With `EASE_AMPLITUDE` 0 every step is 8 baked frames and the ratio is about 1, so a plain "not all equal" check would not catch it.
     - Source line it should catch: set `EASE_AMPLITUDE` to 0 in `constants.ts` (part b then finds equal steps and fails).
     - _Requirements: 22.2, 22.3, 22.4, 3.18, 23.10 (design Property 6)_
-  - [~] 6.2 User checkpoint: record the measured deviation
+  - [x] 6.2 User checkpoint: record the measured deviation
     - The User runs `npm.cmd test` and pastes the output with the printed deviation. Kiro records the value in the build notes and proposes a tolerance. The User agrees or changes it. If the deviation looks wrong, stop and ask.
     - _Requirements: 22.3, 22.12_
-  - [~] 6.3 Add the agreed tolerance to the S1 test
+  - [-] 6.3 Add the agreed tolerance to the S1 test
     - Assert that every baked step is within the agreed tolerance of the mean step, and that the sum of all 1920 steps (including frame 1919 back to frame 0) equals the Road length within the agreed tolerance. Write the numbers in the test with a comment giving the measured values and the date.
     - The User runs `npm.cmd test` (expected: S1 passes).
     - Source line it should catch: change `LAP_SECONDS` in `constants.ts` from 8 to 4 (the speed doubles and the sum of the steps becomes twice the Road length).

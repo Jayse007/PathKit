@@ -1,6 +1,19 @@
 // Spike S1: constant spacing of the baked subject, and the remap.
-// Part (a) measures and prints the spacing deviation. The tolerance is added in task 6.3.
+// Part (a) measures the spacing deviation, prints it, and asserts the agreed tolerances.
 // Part (b) checks the remap is whole, in range, and really eases.
+//
+// Agreed tolerances (User, 2026-11-24):
+//   - each step's relative deviation from the mean step is at most 2% (0.02);
+//   - the absolute difference between the sum of all 1920 steps and the road length is at most 0.001 m.
+// Measured values (2026-11-24):
+//   road length                      120.0016939269426 m
+//   sum of all 1920 steps            120.00182472320051 m
+//   mean step                        0.06250095037666693 m
+//   min step                         0.061645873853354564 m
+//   max step                         0.06335471825121827 m
+//   largest relative deviation       0.013681016339098564 (at step 138)
+//   sum minus road length            about 0.000131 m
+//   remap step ratio (part b)        2.9999836394771395
 
 import { describe, expect, it } from 'vitest';
 import {
@@ -23,6 +36,9 @@ import {
 } from '../../src/logic/constants.js';
 import { DEFAULT_ROAD_CLOSED, DEFAULT_ROAD_POINTS } from '../../src/logic/default-road.js';
 import { remapDisplayedFrame } from '../../src/logic/frame-remap.js';
+
+const MAX_RELATIVE_STEP_DEVIATION = 0.02;
+const MAX_SUM_DIFFERENCE_METRES = 0.001;
 
 const roadLength = createArcLengthTable(
   createCurve(DEFAULT_ROAD_POINTS, DEFAULT_ROAD_CLOSED),
@@ -122,6 +138,15 @@ describe('S1: constant spacing and the remap', () => {
     console.log(`S1 mean step (m): ${mean}`);
     console.log(`S1 min step (m): ${minStep}, max step (m): ${maxStep}`);
     console.log(`S1 largest relative deviation from the mean: ${maxDev} (at step ${maxDevIndex})`);
+
+    expect(
+      maxDev,
+      `S1a: step ${maxDevIndex} deviates ${maxDev} from the mean, limit ${MAX_RELATIVE_STEP_DEVIATION}`,
+    ).toBeLessThanOrEqual(MAX_RELATIVE_STEP_DEVIATION);
+    expect(
+      Math.abs(sum - roadLength),
+      `S1a: sum of steps ${sum} m, road length ${roadLength} m, limit ${MAX_SUM_DIFFERENCE_METRES} m`,
+    ).toBeLessThanOrEqual(MAX_SUM_DIFFERENCE_METRES);
   });
 
   it('part (b): the remap is whole and in range, and the steps ease', () => {

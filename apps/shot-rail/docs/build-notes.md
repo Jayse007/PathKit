@@ -40,3 +40,11 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - What broke: nothing known yet.
 - What Kiro got wrong: nothing known yet.
 - PathKit feature used: none (pure remap only).
+
+## Task 6.3: S1 tolerance
+- Done: added the agreed tolerances to `test/spike/s1.test.ts` part (a), with a comment holding the measured values. Date: 2026-11-24. Not yet run by the User.
+- Agreed tolerances (User): each step's relative deviation from the mean at most 2% (0.02); absolute difference between the sum of all 1920 steps and the road length at most 0.001 m.
+- Measured values: road length 120.0016939269426 m; sum of steps 120.00182472320051 m; mean step 0.06250095037666693 m; min step 0.061645873853354564 m; max step 0.06335471825121827 m; largest relative deviation 0.013681016339098564 at step 138; sum minus road length about 0.000131 m; remap step ratio 2.9999836394771395.
+- Broke: nothing known.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: `bake`, `evaluateEntity`, `createArcLengthTable`, `followPath`.
