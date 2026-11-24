@@ -87,18 +87,18 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: move one point so two points sit 2 m apart at a sharp turn, or change one y value.
     - _Requirements: 3.11, 3.12 (design Property 13a)_
 
-- [ ] 5. Frame_Remap
+- [x] 5. Frame_Remap
   - [x] 5.1 Implement `src/logic/frame-remap.ts`
     - `remapDisplayedFrame(displayedFrame, lapFrames, bakedLapFrames, easeAmplitude)` as in the design: `u = (f mod lap) / lap` (remainder first), `s = u + A sin(2 pi u) / (2 pi)`, `b = min(round(s * baked), baked - 1)`. Pure. A value that is not a whole number of 0 or more throws an Error that names the value.
     - _Requirements: 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.17_
-  - [-] 5.2 Write the Frame_Remap tests
+  - [x] 5.2 Write the Frame_Remap tests
     - Worked table (hand-written): f = 0, 1, 60, 120, 239, 240, 241, 599 give 0, 12, 633, 960, 1908, 0, 12, 956.
     - Sweep f = 0 to 599: called twice gives the same value; whole number; inside 0 to 1919; non-decreasing inside each 240-frame lap; at least two different step sizes occur. Throws naming the value for -1, 1.5, NaN, Infinity and -0.5.
     - Source line it should catch: remove the `min(..., baked - 1)` guard or take `(f / lap) mod 1` instead of the remainder first (the table fails at f = 240).
     - _Requirements: 3.5, 3.6, 3.7, 3.8, 3.9, 3.17, 23.16 (design Property 6)_
 
 - [ ] 6. Spike S1: constant spacing and the remap
-  - [~] 6.1 Write the S1 test, part (a) and part (b), with the spacing measured and printed
+  - [-] 6.1 Write the S1 test, part (a) and part (b), with the spacing measured and printed
     - File `test/spike/s1.test.ts`, scene built inline through `src/logic/pathkit.ts`: the default Road, one entity `subject` (forward +Z, up +Y) with `followPath` (speed = road length / `LAP_SECONDS`, `alignToPath` true), fps `BAKE_FPS`, frameCount `BAKED_LAP_FRAMES`. `validateScene` passes. The baked data is read back with `evaluateEntity`.
     - Part (a): the distance between consecutive baked positions over all 1920 frames is measured. The largest relative deviation from the mean is printed. For now the test asserts only that every step is above 0 (the tolerance comes in 6.3).
     - Part (b): for displayed frames 0 to 599 the remapped baked frame is whole and inside 0 to 1919. Over one lap (displayed frames 0 to 240), the largest distance between the baked positions picked for consecutive displayed frames divided by the smallest is above 2. Hand check: the ideal steps are about 12 baked frames near f = 0 and about 4 near f = 120, a ratio of 3; rounding moves each step by at most one baked frame, so the worst case is 11 / 5 = 2.2. With `EASE_AMPLITUDE` 0 every step is 8 baked frames and the ratio is about 1, so a plain "not all equal" check would not catch it.
