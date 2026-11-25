@@ -12,3 +12,15 @@
 - Broke: nothing known. Not run yet (no terminal). If Vitest fails to start, esbuild's postinstall was not approved (allowScripts warning), which is a possible cause.
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: none.
+
+## Task 4.1: Implement angleToFrame
+- Done: added src/logic/frame-mapper.ts with `angleToFrame` (wrap with ((a % 360) + 360) % 360, floor(x + 0.5), then % 360; non-finite throws with the value in the message). No imports, no zoom input. `roundHalfUp` from the design table is not added yet (nothing needs it).
+- Broke: nothing known. Not run (no terminal); tests are task 4.2.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: none.
+
+## Task 4.2: Angle tests
+- Done: wrote test/angle-to-frame.test.ts (10-row table with hand-written frames, sweep -720 to 720 step 0.25 for whole frames 0 to 359, NaN/Infinity/-Infinity throw with the value in the message, repeat-call check).
+- Broke: nothing known. Not run (no terminal). Mutation to try once: remove the final `% 360` in angleToFrame; the 359.9 table row must fail.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: none.

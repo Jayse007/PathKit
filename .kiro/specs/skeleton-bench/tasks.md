@@ -62,8 +62,8 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Kiro gives the one line `npm.cmd install` (run from `apps/skeleton-bench`) and waits. The User runs it and pastes the output. Kiro keeps `package-lock.json`.
     - _Requirements: 2.3, 2.6_
 
-- [ ] 3. Constants consistency test
-  - [-] 3.1 Write `test/constants.test.ts`
+- [x] 3. Constants consistency test
+  - [x] 3.1 Write `test/constants.test.ts`
     - R = sqrt(1.2^2 + 0.6^2 + 0.4^2) = 1.4. `ORBIT_SPEED_DEG_PER_S` = 360 * 30 / 360 = 30.
     - For each lap, r = d * 12/13 and h = d * 5/13 (6.0 / 2.5, 4.8 / 2.0, 3.6 / 1.5, 2.4 / 1.0) and r^2 + h^2 = d^2.
     - `LAP_DISTANCES` strictly decreasing, and every d - R >= `CAMERA_MIN_CLEARANCE_M`. Sin^2 + cos^2 of the elevation = 1.
@@ -74,10 +74,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
 ### Phase 0: Spike (stop and ask the User if any check fails; record results in docs/build-notes.md)
 
 - [ ] 4. Frame_Mapper, angle half
-  - [~] 4.1 Implement `angleToFrame` in `src/logic`
+  - [x] 4.1 Implement `angleToFrame` in `src/logic`
     - Wrap into 0 to 360, round half up, wrap again, return a whole frame 0 to 359. Non-finite input throws an Error that names the value. Pure and independent of the zoom.
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8_
-  - [~] 4.2 Write the angle tests
+  - [-] 4.2 Write the angle tests
     - Table: 0, 90, 180, 270, -90, 360, 359.9, 0.4, 0.5, 720 give 0, 90, 180, 270, 270, 0, 0, 0, 1, 0.
     - A sweep over -720 to 720 in steps of 0.25 gives only whole frames 0 to 359. NaN, Infinity and -Infinity throw with the value in the message. Same input gives the same output.
     - Source line it should catch: remove the final `% 360`, so 359.9 returns 360 (the 359.9 case fails).
