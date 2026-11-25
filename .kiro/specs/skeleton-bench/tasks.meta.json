@@ -1,0 +1,414 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "2.1 Create the app files": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583556030
+      },
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583598705
+      },
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583653600
+      }
+    ],
+    "2.2 User checkpoint: install": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583556723
+      }
+    ],
+    "3.1 Write `test/constants.test.ts`": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583557393
+      }
+    ],
+    "4.1 Implement `angleToFrame` in `src/logic`": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583557895
+      }
+    ],
+    "4.2 Write the angle tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583558308
+      }
+    ],
+    "5.1 Implement `zoomSelection` and `zoomDistance`": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583558809
+      }
+    ],
+    "5.2 Write the zoom tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583559262
+      }
+    ],
+    "6.1 Build and bake the four lap scenes in the PathKit adapter": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583559766
+      }
+    ],
+    "6.2 Write the Spike S1 tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583560277
+      }
+    ],
+    "7.1 Implement the blend with preallocated buffers": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583560699
+      }
+    ],
+    "7.2 Write the Spike S2 and View_Pair tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583561162
+      }
+    ],
+    "8.1 Implement the tour builder and the finding text mapping": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583561628
+      }
+    ],
+    "8.2 Write the Spike S3 tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583562204
+      }
+    ],
+    "9.1 Write the S4 check page": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583562615
+      }
+    ],
+    "9.2 User checkpoint: run the S4 check": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583563035
+      }
+    ],
+    "10.1 Implement them in `src/logic`": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583563446
+      }
+    ],
+    "10.2 Write the tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583564149
+      }
+    ],
+    "11.1 Implement `explodeFrame` and the path-point function": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583564737
+      }
+    ],
+    "11.2 Write the tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583565203
+      }
+    ],
+    "12.1 Implement them": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583565591
+      }
+    ],
+    "12.2 Write the tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583566039
+      }
+    ],
+    "13.1 Define the types and data layout (no facts yet)": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583566565
+      }
+    ],
+    "13.2 Write the catalogue checks": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583567087
+      }
+    ],
+    "14.1 Research and write the Pump entries": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583568003
+      }
+    ],
+    "14.2 User checkpoint: approve the Pump text": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583568958
+      }
+    ],
+    "14.3 Run the catalogue tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583569958
+      }
+    ],
+    "15.1 Build and bake one scene per Part": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583570717
+      }
+    ],
+    "15.2 Write the tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583571417
+      }
+    ],
+    "16.1 Implement the state functions": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583572363
+      }
+    ],
+    "16.2 Write the tests": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583573141
+      }
+    ],
+    "17.1 Renderer, stage, camera and view offset": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583573667
+      }
+    ],
+    "17.2 User checkpoint: view the empty stage": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583574151
+      }
+    ],
+    "17.3 Pump model and Part placement": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583574790
+      }
+    ],
+    "17.4 User checkpoint: view the Pump assembled and exploded": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583575360
+      }
+    ],
+    "17.5 The two Looks": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583575910
+      }
+    ],
+    "17.6 User checkpoint: view both Looks": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583577118
+      }
+    ],
+    "17.7 Picking and shells": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583577575
+      }
+    ],
+    "17.8 User checkpoint: click and focus a Part": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583577973
+      }
+    ],
+    "18.1 Research and write the facts": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583578588
+      }
+    ],
+    "18.2 User checkpoint: approve the texts": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583579091
+      }
+    ],
+    "18.3 Build the models and scenes": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583579631
+      }
+    ],
+    "18.4 Rerun the tests and User checkpoint: visual check": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583580165
+      }
+    ],
+    "19.1 Bake and wire the Tours": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583581040
+      }
+    ],
+    "19.2 Write the tests with the real catalogue": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583581495
+      }
+    ],
+    "20.1 Implement and test the pure UI helpers": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583582539
+      }
+    ],
+    "20.2 Layout and Inspector with Parts_List": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583583326
+      }
+    ],
+    "20.3 User checkpoint: view the layout, the Inspector and the Parts_List": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583583813
+      }
+    ],
+    "20.4 Controls": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583584467
+      }
+    ],
+    "20.5 User checkpoint: try the controls": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583585641
+      }
+    ],
+    "20.6 Tour, Look toggle and About wiring": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583586673
+      }
+    ],
+    "20.7 User checkpoint: try the Tour, the Look toggle and the About panel": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583587199
+      }
+    ],
+    "21.1 Choose the palettes and write the contrast test": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583587773
+      }
+    ],
+    "21.2 Apply the accessibility rules": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583588261
+      }
+    ],
+    "21.3 User checkpoint: keyboard-only walkthrough": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583588742
+      }
+    ],
+    "22.1 Write the honest limits and the README": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583589349
+      }
+    ],
+    "23.1 Check imports and files": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583590406
+      }
+    ],
+    "23.2 User checkpoint: final run and report": [
+      {
+        "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795583591113
+      }
+    ]
+  }
+}

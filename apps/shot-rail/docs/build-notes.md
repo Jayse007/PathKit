@@ -48,3 +48,11 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Broke: nothing known.
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: `bake`, `evaluateEntity`, `createArcLengthTable`, `followPath`.
+
+## Task 8.1: S3 test (orbitAround, speed 0, keyframed target)
+- Done: wrote `test/spike/s3.test.ts`. Target runs a straight line over 60 frames. Camera orbits it (axis +Y, radius 8, speed 0, startAngle 30). Test checks camera minus target equals (4, 0, 6.9282032) within 1e-9 on every frame, and that the camera moves 118 m in x.
+- Broke: not run yet (Kiro cannot run commands).
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: `orbitAround` with a keyframed target.
+- Fix attempt 1: the test's expected z was the rounded literal 6.9282032 (true 6.92820323027551), so the 1e-9 check failed by 3.03e-8; the baked value was correct. The expected offset is now computed as radius*sin and radius*cos of the start angle in radians (30 degrees converted once). Tolerance unchanged. Not yet re-run by the User.
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.

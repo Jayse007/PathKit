@@ -113,8 +113,8 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: change `LAP_SECONDS` in `constants.ts` from 8 to 4 (the speed doubles and the sum of the steps becomes twice the Road length).
     - _Requirements: 22.3 (design Property 6)_
 
-- [ ] 7. Spike S2: keyframed target and aimAt
-  - [-] 7.1 Write the S2 test
+- [x] 7. Spike S2: keyframed target and aimAt
+  - [x] 7.1 Write the S2 test
     - File `test/spike/s2.test.ts`, scene inline: bake the subject as in S1. For displayed frames 0 to 59 build a keyframed target (frame, position) by hand from the baked position at the remapped frame. A camera entity (forward -Z, up +Y) with `aimAt` on that target at a fixed position (0, 5, 0), fps 30, frameCount 60. `validateScene` passes; bake succeeds.
     - For every frame, the camera's forward vector (the -Z axis rotated by the baked quaternion, using `rotateVec`) matches the unit direction from the camera to the target position within 1e-9 (compare vectors, not raw quaternion components).
     - Target has exactly 60 keyframes with frames 0 to 59 in order.
@@ -122,7 +122,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 22.5, 8.11 (design Property 9)_
 
 - [ ] 8. Spike S3: orbitAround with speed 0 and a keyframed target
-  - [~] 8.1 Write the S3 test
+  - [-] 8.1 Write the S3 test
     - File `test/spike/s3.test.ts`, scene inline: a keyframed target moving along a straight line, and a camera with `orbitAround` (axis +Y, radius 8, speed 0, `startAngle` 30) on that target.
     - For every frame, camera minus target equals (8 sin 30 deg, 0, 8 cos 30 deg) = (4, 0, 6.9282032) within 1e-9 (hand-written numbers), and the camera position changes as the target moves.
     - Source line it should catch: set `speed` to 10 in the scene (the offset then changes with the frame).
