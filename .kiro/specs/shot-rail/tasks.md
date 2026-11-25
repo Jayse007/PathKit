@@ -97,7 +97,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: remove the `min(..., baked - 1)` guard or take `(f / lap) mod 1` instead of the remainder first (the table fails at f = 240).
     - _Requirements: 3.5, 3.6, 3.7, 3.8, 3.9, 3.17, 23.16 (design Property 6)_
 
-- [ ] 6. Spike S1: constant spacing and the remap
+- [x] 6. Spike S1: constant spacing and the remap
   - [x] 6.1 Write the S1 test, part (a) and part (b), with the spacing measured and printed
     - File `test/spike/s1.test.ts`, scene built inline through `src/logic/pathkit.ts`: the default Road, one entity `subject` (forward +Z, up +Y) with `followPath` (speed = road length / `LAP_SECONDS`, `alignToPath` true), fps `BAKE_FPS`, frameCount `BAKED_LAP_FRAMES`. `validateScene` passes. The baked data is read back with `evaluateEntity`.
     - Part (a): the distance between consecutive baked positions over all 1920 frames is measured. The largest relative deviation from the mean is printed. For now the test asserts only that every step is above 0 (the tolerance comes in 6.3).
@@ -107,14 +107,14 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 6.2 User checkpoint: record the measured deviation
     - The User runs `npm.cmd test` and pastes the output with the printed deviation. Kiro records the value in the build notes and proposes a tolerance. The User agrees or changes it. If the deviation looks wrong, stop and ask.
     - _Requirements: 22.3, 22.12_
-  - [-] 6.3 Add the agreed tolerance to the S1 test
+  - [x] 6.3 Add the agreed tolerance to the S1 test
     - Assert that every baked step is within the agreed tolerance of the mean step, and that the sum of all 1920 steps (including frame 1919 back to frame 0) equals the Road length within the agreed tolerance. Write the numbers in the test with a comment giving the measured values and the date.
     - The User runs `npm.cmd test` (expected: S1 passes).
     - Source line it should catch: change `LAP_SECONDS` in `constants.ts` from 8 to 4 (the speed doubles and the sum of the steps becomes twice the Road length).
     - _Requirements: 22.3 (design Property 6)_
 
 - [ ] 7. Spike S2: keyframed target and aimAt
-  - [~] 7.1 Write the S2 test
+  - [-] 7.1 Write the S2 test
     - File `test/spike/s2.test.ts`, scene inline: bake the subject as in S1. For displayed frames 0 to 59 build a keyframed target (frame, position) by hand from the baked position at the remapped frame. A camera entity (forward -Z, up +Y) with `aimAt` on that target at a fixed position (0, 5, 0), fps 30, frameCount 60. `validateScene` passes; bake succeeds.
     - For every frame, the camera's forward vector (the -Z axis rotated by the baked quaternion, using `rotateVec`) matches the unit direction from the camera to the target position within 1e-9 (compare vectors, not raw quaternion components).
     - Target has exactly 60 keyframes with frames 0 to 59 in order.
