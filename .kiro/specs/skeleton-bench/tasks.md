@@ -73,21 +73,21 @@ The plan follows the approved design (option A: four baked laps blended with `le
 
 ### Phase 0: Spike (stop and ask the User if any check fails; record results in docs/build-notes.md)
 
-- [ ] 4. Frame_Mapper, angle half
+- [x] 4. Frame_Mapper, angle half
   - [x] 4.1 Implement `angleToFrame` in `src/logic`
     - Wrap into 0 to 360, round half up, wrap again, return a whole frame 0 to 359. Non-finite input throws an Error that names the value. Pure and independent of the zoom.
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8_
-  - [-] 4.2 Write the angle tests
+  - [x] 4.2 Write the angle tests
     - Table: 0, 90, 180, 270, -90, 360, 359.9, 0.4, 0.5, 720 give 0, 90, 180, 270, 270, 0, 0, 0, 1, 0.
     - A sweep over -720 to 720 in steps of 0.25 gives only whole frames 0 to 359. NaN, Infinity and -Infinity throw with the value in the message. Same input gives the same output.
     - Source line it should catch: remove the final `% 360`, so 359.9 returns 360 (the 359.9 case fails).
     - _Requirements: 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 35.2 (design Property 1, 2)_
 
 - [ ] 5. Frame_Mapper, zoom half
-  - [~] 5.1 Implement `zoomSelection` and `zoomDistance`
+  - [x] 5.1 Implement `zoomSelection` and `zoomDistance`
     - Clamp Z to 0 to 1; p = Z * 3; lower lap = min(floor(p), 2); upper lap = lower + 1; weight = p - lower; distance = 6.5 - 3.9 * Z. Non-finite throws naming the value. Independent of the angle.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10_
-  - [~] 5.2 Write the zoom tests
+  - [-] 5.2 Write the zoom tests
     - Design table: Z of -0.2, 0, 0.25, 0.5, 0.75, 1, 1.5 give (0,1,0), (0,1,0), (0,1,0.75), (1,2,0.5), (2,3,0.25), (2,3,1), (2,3,1).
     - Weight in [0, 1]; lap indices valid; distance never increases over a sweep of Z from -0.5 to 1.5 in steps of 1/120; Z = 0.5 gives 4.55 m. Independent of the angle (loop over 360 angles and the 13-point grid).
     - Source line it should catch: change `min(floor(p), 2)` to `min(floor(p), 3)`.

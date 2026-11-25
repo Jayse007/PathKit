@@ -128,8 +128,8 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: set `speed` to 10 in the scene (the offset then changes with the frame).
     - _Requirements: 22.6, 7.6 (design Property 11)_
 
-- [ ] 9. Spike S4: two targets, height and aim
-  - [-] 9.1 Write the S4 test
+- [x] 9. Spike S4: two targets, height and aim
+  - [x] 9.1 Write the S4 test
     - File `test/spike/s4.test.ts`, scene inline: a `subject` keyframed target on a straight line, and a `centre` target equal to it shifted by (0, h, 0). One camera: `orbitAround` order 0 on `centre` (radius r, axis +Y, speed 0), then `aimAt` order 1 on `subject`. Cases (h, r): (1.5, 8), (-0.3, 12), (0, 5), (40, 60), (-0.5, 3).
     - For every case and frame: camera y = subject y + h within 1e-9; horizontal distance to the subject = r within 1e-9; elevation atan2(h, r) in degrees matches hand-written values (10.6197, -1.4321, 0, 33.6901, -9.4623 degrees, each within 1e-3); the camera's forward vector points at the true subject position within 1e-9.
     - Include one wrong-target scene (aimAt on `centre`): for h = 1.5 its forward vector is level (y component 0) and the test checks that it differs from the correct one, so the check has teeth.
@@ -137,7 +137,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 22.7, 5.9, 7.7, 8.14 (design Property 11)_
 
 - [ ] 10. Spike S5: bake time for the subject plus six cameras
-  - [~] 10.1 Write the S5 test
+  - [-] 10.1 Write the S5 test
     - File `test/spike/s5.test.ts`, scene inline: the subject bake (1920 frames at 240 fps) and one camera scene with six orbiting cameras (`cam-1` to `cam-6`) at 240 frames, each with `orbitAround` then `aimAt`. Measure with a clock around the two `bake` calls. Print the time and `S5_TARGET_MS`. Assert that the bakes succeed and that the baked camera scene has exactly six entities with the ids `cam-1` to `cam-6` in that order. Never assert the time.
     - Source line it should catch: bake only five cameras (the test that counts six entities in the baked scene fails).
     - _Requirements: 22.8, 7.1 (design Property 12)_
