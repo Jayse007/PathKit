@@ -68,3 +68,9 @@
 - PathKit feature used: `evaluateEntity` (agreement check), through `blendCamera` (`lerp`, `slerp`).
 - Source line it should catch: replace the lerp weight `weight` with `1 - weight` in blendCamera (distance check and the Z = 0.5 table fail), or set a lap distance below R (clearance check fails).
 - Not tested: the look, WebGL, view offset, clicking, load time, per-frame allocation.
+
+## Task 8.1: tour builder and finding text
+- Done: `src/pathkit/tour.ts` (`buildTourScene`, ring of 12 points, `followPath` + `aimAt` with a keyframed target at each slot middle) and `src/logic/finding-text.ts` (five codes, unknown-code fallback, empty list text).
+- Broke: nothing known. Not run (no terminal); tests are task 8.2.
+- Kiro assumption to check: ring speed is taken from the arc-length table of the closed curve, in metres per second, so one turn spans the frame count. Ring bearing 0 is +Z, as in the laps.
+- PathKit features: `followPath`, `aimAt`, keyframed target, `createCurve`, `createArcLengthTable`.

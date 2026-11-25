@@ -278,6 +278,11 @@
         "executionId": "de7befed-ca35-4747-a78d-7d37bb35326f",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795585681499
+      },
+      {
+        "executionId": "955de24d-03f7-46e0-a702-a1182cb6d961",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795587202467
       }
     ],
     "11.2 User checkpoint: record the S6 outcome": [
@@ -285,6 +290,16 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529380807
+      },
+      {
+        "executionId": "955de24d-03f7-46e0-a702-a1182cb6d961",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795587207291
+      },
+      {
+        "executionId": "955de24d-03f7-46e0-a702-a1182cb6d961",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795587237630
       }
     ],
     "12.1 Write the seam test": [
@@ -292,6 +307,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529381680
+      },
+      {
+        "executionId": "955de24d-03f7-46e0-a702-a1182cb6d961",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795587247249
       }
     ],
     "13. Checkpoint: Phase 0 spike": [
@@ -1027,6 +1047,13 @@
         "executionId": "de7befed-ca35-4747-a78d-7d37bb35326f",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795585677284
+      }
+    ],
+    "11. Spike S6: one scene or two": [
+      {
+        "executionId": "955de24d-03f7-46e0-a702-a1182cb6d961",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795587238626
       }
     ]
   }

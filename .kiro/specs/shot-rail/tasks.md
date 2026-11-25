@@ -145,19 +145,19 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User runs `npm.cmd test` and pastes the output with the printed time. Kiro records it in the build notes and says whether it is under 100 ms. No failure on timing.
     - _Requirements: 22.8_
 
-- [ ] 11. Spike S6: one scene or two
-  - [-] 11.1 Write the S6 test
+- [x] 11. Spike S6: one scene or two
+  - [x] 11.1 Write the S6 test
     - File `test/spike/s6.test.ts`, scene inline: a combined scene with one rail camera (`followPath` order 0, `alignToPath` false, then `aimAt` order 1) plus three orbiting cameras, with a two-point open rail path. The same cameras baked alone (rail camera alone with the rail; the three orbit cameras together with `PLACEHOLDER_PATH`).
     - For every camera and every frame, all 7 baked values (3 position, 4 rotation) in the combined bake equal the separate bake within 1e-9. Counts per camera are printed.
     - The test prints "S6 Outcome A" when all match. On a mismatch it fails with the camera, frame and component, and Kiro uses Outcome B (no question to the User).
     - Source line it should catch: give two cameras the same target name with different keyframes in the combined scene (the comparison fails).
     - _Requirements: 22.9, 22.10 (design Property 12)_
-  - [~] 11.2 User checkpoint: record the S6 outcome
+  - [x] 11.2 User checkpoint: record the S6 outcome
     - The User runs `npm.cmd test` and pastes the output. Kiro writes Outcome A or Outcome B, with the measured result, in the build notes. The recorded outcome is hard-coded in Task 22. If the test fails, Outcome B applies without asking.
     - _Requirements: 22.10, 22.11, 8.13_
 
 - [ ] 12. Lap seam check (KI-11 regression)
-  - [~] 12.1 Write the seam test
+  - [-] 12.1 Write the seam test
     - File `test/spike/lap-seam.test.ts`, scene inline.
     - (a) Default Road, one-lap bake as in S1: the angle between the rotation at baked frame 1919 and baked frame 0 (`quatAngle` of `quatInverse(a)` times `b`) is at most 2 degrees.
     - (b) A twisted closed 3D loop (a 3D figure-eight with points of different y, hand-written, at least 8 points), baked directly with `bake` and bypassing Road validation (test only): the same angle is above 40 degrees.

@@ -85,3 +85,16 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Done: `test/spike/s5.test.ts` now times the subject bake and the camera bake separately. Each runs 5 times through one helper (`timeBake`). Run 1 is printed as cold (includes JavaScript warm-up); the median of runs 2 to 5 is printed as warm. Four lines are printed: subject, cameras, total cold, total warm (target `S5_TARGET_MS`, printed, not asserted).
 - Why: the first measurement (task 10.2) was 155.03 ms as one number, so it did not show which bake is slow or how much was warm-up. This split shows both.
 - Assertions unchanged (frame counts, ids `cam-1` to `cam-6`, constants test); they run on the first run's result. Time is never asserted. No source or packages/ file changed. Not yet run by the User.
+
+## Task 11.2: S6 outcome and S5 re-measurement (user checkpoint)
+- Outcome recorded: **S6 Outcome A**. One combined scene gives the same baked values as separate scenes. Task 22 hard-codes Outcome A: one scene with every camera.
+- S6 measured result: cam-1 to cam-4 each compared 1920 frames x 7 values = 13440 values. Largest difference per camera 0; largest difference over all cameras 0; mismatching values 0; tolerance 1e-9.
+- Run: `npm.cmd test` from apps/shot-rail, 47 passed, 0 failed, 0 skipped (pasted by the User).
+- S5 re-measurement (timing split from the extra change above):
+  - Subject bake (1920 frames): cold 56.65 ms, warm median 15.03 ms.
+  - Camera bake (6 cameras, 240 frames): cold 26.23 ms, warm median 5.30 ms.
+  - Total cold: 82.88 ms; total warm: 20.33 ms; target 100 ms (printed, not asserted).
+  - Both totals are under 100 ms. The earlier single-number run (task 10.2) measured 155.03 ms. Timing varies between runs (machine load). Only one run of each is recorded, so neither figure is a stable average.
+- Broke: nothing. No code changed in this step; no task status changed.
+- Kiro got wrong: nothing known.
+- PathKit features used: `bake` (combined scene vs separate scenes), `followPath`, `orbitAround`, `aimAt`.

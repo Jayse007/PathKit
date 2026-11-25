@@ -104,11 +104,11 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: change the orbit speed or `startAngle` in the lap builder.
     - _Requirements: 4.2, 4.6, 4.10, 5.1, 10.4, 35.7, 35.8 (design Property 7, 8)_
 
-- [ ] 7. Camera blend (Spike S2)
+- [x] 7. Camera blend (Spike S2)
   - [x] 7.1 Implement the blend with preallocated buffers
     - Read two laps with `evaluateEntity` at the same whole frame; `lerp` the positions and `slerp` the rotations into caller buffers. No per-frame allocation.
     - _Requirements: 4.3, 10.2, 11.1, 11.2, 11.5, 11.6_
-  - [-] 7.2 Write the Spike S2 and View_Pair tests
+  - [x] 7.2 Write the Spike S2 and View_Pair tests
     - Over every frame 0 to 359 crossed with Z = k/12 for k = 0 to 12 (joints accepted either way): Bearing within tolerance; camera aims at the centre within `AIM_TOLERANCE_DEG` (compare the rotated -Z forward vector with the direction to the centre, not raw quaternion components); distance equals 6.5 - 3.9 * Z within 1e-9.
     - Clearance (Euclidean distance to the nearest point of the box, corners included) is at least `CAMERA_MIN_CLEARANCE_M` and at least d - R - 1e-9.
     - At Z = 1 the minimum clearance over all 360 frames is 1.2035 m (tolerance 0.001) near frame 72. Assert the all-bearing minimum is below 1.2649 - 0.05, so a four-bearing check cannot pass.
@@ -118,11 +118,11 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - _Requirements: 4.3, 4.4, 6.10, 11.2, 11.3, 11.4, 11.11, 35.15 (design Property 5, 6, 9)_
 
 - [ ] 8. Tour scene builder (Spike S3)
-  - [~] 8.1 Implement the tour builder and the finding text mapping
+  - [x] 8.1 Implement the tour builder and the finding text mapping
     - Generic: takes a list of Part rest positions. Closed ring of 12 points at radius 3.6 m and height 1.5 m; `followPath` at constant speed, one turn over frameCount = parts * 90; `aimAt` a keyframed target with one keyframe per Part at the middle of its 90-frame slot (strictly increasing integer frames).
     - Plain-words mapping for the linter codes `path-end-reached`, `rotation-conflict`, `aim-vertical`, `speed-spike`, `roll-change`; an unknown code falls back to the finding's own message; an empty list gives "No findings reported."
     - _Requirements: 4.5, 16.3, 16.5, 16.7, 16.8_
-  - [~] 8.2 Write the Spike S3 tests
+  - [-] 8.2 Write the Spike S3 tests
     - Fixtures of 8 and of 6 rest positions: `validateScene` passes; bake succeeds; `motionLinter(scene, baked)` does not throw and returns an array; every baked frame has clearance at least `CAMERA_MIN_CLEARANCE_M` and lies outside the envelope; `followPath` order is below `aimAt` order.
     - Finding text table: the five codes, one unknown code, and the empty list.
     - Source line it should catch: set the ring radius below 1.5.
