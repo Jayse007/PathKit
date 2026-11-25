@@ -83,21 +83,21 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: remove the final `% 360`, so 359.9 returns 360 (the 359.9 case fails).
     - _Requirements: 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 35.2 (design Property 1, 2)_
 
-- [ ] 5. Frame_Mapper, zoom half
+- [x] 5. Frame_Mapper, zoom half
   - [x] 5.1 Implement `zoomSelection` and `zoomDistance`
     - Clamp Z to 0 to 1; p = Z * 3; lower lap = min(floor(p), 2); upper lap = lower + 1; weight = p - lower; distance = 6.5 - 3.9 * Z. Non-finite throws naming the value. Independent of the angle.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10_
-  - [-] 5.2 Write the zoom tests
+  - [x] 5.2 Write the zoom tests
     - Design table: Z of -0.2, 0, 0.25, 0.5, 0.75, 1, 1.5 give (0,1,0), (0,1,0), (0,1,0.75), (1,2,0.5), (2,3,0.25), (2,3,1), (2,3,1).
     - Weight in [0, 1]; lap indices valid; distance never increases over a sweep of Z from -0.5 to 1.5 in steps of 1/120; Z = 0.5 gives 4.55 m. Independent of the angle (loop over 360 angles and the 13-point grid).
     - Source line it should catch: change `min(floor(p), 2)` to `min(floor(p), 3)`.
     - _Requirements: 6.1 to 6.10, 5.8, 35.3, 35.15 (design Property 3, 4)_
 
 - [ ] 6. Lap scene builder (Spike S1)
-  - [~] 6.1 Build and bake the four lap scenes in the PathKit adapter
+  - [x] 6.1 Build and bake the four lap scenes in the PathKit adapter
     - Each scene: fps 30, 360 frames, one entity `cam`, forward -Z and up +Y from constants. `orbitAround` order 0, `aimAt` order 1, static targets `orbitCentre` (0, h, 0) and `machineCentre` (0, 0, 0), a dummy 2-point path. Bake all four at load, not during interaction.
     - _Requirements: 4.2, 5.1, 10.4, 10.5, 11.5, 11.6, 2.10_
-  - [~] 6.2 Write the Spike S1 tests
+  - [-] 6.2 Write the Spike S1 tests
     - `validateScene` passes. `orbitAround` order is below `aimAt` order. Forward and up lie on different axes.
     - Every frame is readable with `evaluateEntity`. Frames 0, 90, 180, 270 give (0, h, r), (r, h, 0), (0, h, -r), (-r, h, 0) within 1e-9 for each lap. For all 360 frames the Bearing (atan2 of x, z) equals the frame number in degrees within `BEARING_TOLERANCE_DEG`.
     - The User pastes the bake time per lap; Kiro records it in the build notes. No timing assertion.

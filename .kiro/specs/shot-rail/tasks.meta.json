@@ -244,6 +244,11 @@
         "executionId": "fff3c145-8ebe-43a2-8ce2-c11740bef09e",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795584374013
+      },
+      {
+        "executionId": "de7befed-ca35-4747-a78d-7d37bb35326f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795585642883
       }
     ],
     "10.2 User checkpoint: report the bake time": [
@@ -251,6 +256,16 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529378981
+      },
+      {
+        "executionId": "de7befed-ca35-4747-a78d-7d37bb35326f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795585649695
+      },
+      {
+        "executionId": "de7befed-ca35-4747-a78d-7d37bb35326f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795585676596
       }
     ],
     "11.1 Write the S6 test": [
@@ -258,6 +273,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529379951
+      },
+      {
+        "executionId": "de7befed-ca35-4747-a78d-7d37bb35326f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795585681499
       }
     ],
     "11.2 User checkpoint: record the S6 outcome": [
@@ -1000,6 +1020,13 @@
         "executionId": "fff3c145-8ebe-43a2-8ce2-c11740bef09e",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795584368630
+      }
+    ],
+    "10. Spike S5: bake time for the subject plus six cameras": [
+      {
+        "executionId": "de7befed-ca35-4747-a78d-7d37bb35326f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795585677284
       }
     ]
   }

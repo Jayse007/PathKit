@@ -72,3 +72,11 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Done: added one test to `test/logic/constants.test.ts` checking `CAMERA_IDS` equals `cam-1` to `cam-6` in order, written as literal text. No source file changed. Not yet run by the User.
 - Broke: nothing known.
 - PathKit feature used: none.
+
+## Task 10.2: S5 bake time measurement
+- Measured: S5 bake time (subject + 6 cameras) was 155.03 ms in the Vitest Node process, one run. The target is 100 ms (`S5_TARGET_MS`).
+- Result: OVER the target by about 55 ms.
+- The test does not fail on timing. It only prints the time and the target; it asserts the six camera ids, not the duration.
+- This is one run only and may vary between runs and machines. The run had 45 tests passed, 0 failed, 0 skipped.
+- Broke: nothing. No code changed in this step.
+- PathKit features used: `bake`, `followPath`, `orbitAround`, `aimAt`.

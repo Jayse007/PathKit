@@ -136,17 +136,17 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: point `aimAt` at `centre` instead of `subject`, or `orbitAround` at `subject` instead of `centre`.
     - _Requirements: 22.7, 5.9, 7.7, 8.14 (design Property 11)_
 
-- [ ] 10. Spike S5: bake time for the subject plus six cameras
-  - [-] 10.1 Write the S5 test
+- [x] 10. Spike S5: bake time for the subject plus six cameras
+  - [x] 10.1 Write the S5 test
     - File `test/spike/s5.test.ts`, scene inline: the subject bake (1920 frames at 240 fps) and one camera scene with six orbiting cameras (`cam-1` to `cam-6`) at 240 frames, each with `orbitAround` then `aimAt`. Measure with a clock around the two `bake` calls. Print the time and `S5_TARGET_MS`. Assert that the bakes succeed and that the baked camera scene has exactly six entities with the ids `cam-1` to `cam-6` in that order. Never assert the time.
     - Source line it should catch: bake only five cameras (the test that counts six entities in the baked scene fails).
     - _Requirements: 22.8, 7.1 (design Property 12)_
-  - [~] 10.2 User checkpoint: report the bake time
+  - [x] 10.2 User checkpoint: report the bake time
     - The User runs `npm.cmd test` and pastes the output with the printed time. Kiro records it in the build notes and says whether it is under 100 ms. No failure on timing.
     - _Requirements: 22.8_
 
 - [ ] 11. Spike S6: one scene or two
-  - [~] 11.1 Write the S6 test
+  - [-] 11.1 Write the S6 test
     - File `test/spike/s6.test.ts`, scene inline: a combined scene with one rail camera (`followPath` order 0, `alignToPath` false, then `aimAt` order 1) plus three orbiting cameras, with a two-point open rail path. The same cameras baked alone (rail camera alone with the rail; the three orbit cameras together with `PLACEHOLDER_PATH`).
     - For every camera and every frame, all 7 baked values (3 position, 4 rotation) in the combined bake equal the separate bake within 1e-9. Counts per camera are printed.
     - The test prints "S6 Outcome A" when all match. On a mismatch it fails with the camera, frame and component, and Kiro uses Outcome B (no question to the User).

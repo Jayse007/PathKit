@@ -36,3 +36,18 @@
 - Broke: nothing known. Not run (no terminal). Mutation to try once: change `Math.min(Math.floor(p), LAP_COUNT - 2)` to `LAP_COUNT - 1` in zoomSelection; the Z = 1 table row must fail.
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: none.
+
+## Task 6.1: Build and bake the four lap scenes
+- Done: added src/pathkit/laps.ts with `buildLapScene(lap)` (fps 30, 360 frames, entity `cam`, forward -Z, up +Y from constants, `orbitAround` order 0 around `orbitCentre` (0, h, 0), `aimAt` order 1 at `machineCentre` (0, 0, 0), dummy 2-point open path), `bakeLaps()` (bakes all four; call once at load), `lapRadius` and `lapHeight` (r = d * 12/13, h = d * 5/13 from the constants). Orbit speed and start angle come from constants, so frame f is f degrees.
+- Broke: nothing known. Not run (no terminal); tests are task 6.2.
+- Kiro got wrong: first tried to read this file with a terminal command and the hook blocked it. Nothing else known yet.
+- PathKit feature used: `bake`, `Scene` and `BakedData` types, `orbitAround` and `aimAt` constraints (validation runs inside `bake`).
+- Not tested: the look, WebGL, view offset, clicking, load time. Nothing in this task is tested yet.
+
+## Task 6.2: Spike S1 tests
+- Done: wrote test/laps.test.ts (7 tests): validateScene passes for four laps; orbitAround order below aimAt; forward and up on different axes; every frame of every lap readable (finite, unit rotation); frames 0, 90, 180, 270 at (0,h,r), (r,h,0), (0,h,-r), (-r,h,0) within 1e-9 using hand-written r and h; Bearing equals frame in degrees on all 360 frames within BEARING_TOLERANCE_DEG; bake time per lap logged with console.log, no timing assertion.
+- Bake time per lap (ms): not yet measured. The User pastes the `S1 bake time lap N` lines from the test output; Kiro records them here.
+- Broke: nothing known. Not run (no terminal). Mutation to try once: change ORBIT_START_ANGLE_DEG or ORBIT_SPEED_DEG_PER_S in constants (the lap builder reads them); the four-frame table and the bearing sweep must fail.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: `validateScene`, `bake`, `evaluateEntity`, `OutBuffer`.
+- Not tested: the look, WebGL, view offset, clicking, load time, the aim rotation (checked for finite and unit length only; aim accuracy is in task 7.2).
