@@ -93,11 +93,11 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: change `min(floor(p), 2)` to `min(floor(p), 3)`.
     - _Requirements: 6.1 to 6.10, 5.8, 35.3, 35.15 (design Property 3, 4)_
 
-- [ ] 6. Lap scene builder (Spike S1)
+- [x] 6. Lap scene builder (Spike S1)
   - [x] 6.1 Build and bake the four lap scenes in the PathKit adapter
     - Each scene: fps 30, 360 frames, one entity `cam`, forward -Z and up +Y from constants. `orbitAround` order 0, `aimAt` order 1, static targets `orbitCentre` (0, h, 0) and `machineCentre` (0, 0, 0), a dummy 2-point path. Bake all four at load, not during interaction.
     - _Requirements: 4.2, 5.1, 10.4, 10.5, 11.5, 11.6, 2.10_
-  - [-] 6.2 Write the Spike S1 tests
+  - [x] 6.2 Write the Spike S1 tests
     - `validateScene` passes. `orbitAround` order is below `aimAt` order. Forward and up lie on different axes.
     - Every frame is readable with `evaluateEntity`. Frames 0, 90, 180, 270 give (0, h, r), (r, h, 0), (0, h, -r), (-r, h, 0) within 1e-9 for each lap. For all 360 frames the Bearing (atan2 of x, z) equals the frame number in degrees within `BEARING_TOLERANCE_DEG`.
     - The User pastes the bake time per lap; Kiro records it in the build notes. No timing assertion.
@@ -105,10 +105,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - _Requirements: 4.2, 4.6, 4.10, 5.1, 10.4, 35.7, 35.8 (design Property 7, 8)_
 
 - [ ] 7. Camera blend (Spike S2)
-  - [~] 7.1 Implement the blend with preallocated buffers
+  - [x] 7.1 Implement the blend with preallocated buffers
     - Read two laps with `evaluateEntity` at the same whole frame; `lerp` the positions and `slerp` the rotations into caller buffers. No per-frame allocation.
     - _Requirements: 4.3, 10.2, 11.1, 11.2, 11.5, 11.6_
-  - [~] 7.2 Write the Spike S2 and View_Pair tests
+  - [-] 7.2 Write the Spike S2 and View_Pair tests
     - Over every frame 0 to 359 crossed with Z = k/12 for k = 0 to 12 (joints accepted either way): Bearing within tolerance; camera aims at the centre within `AIM_TOLERANCE_DEG` (compare the rotated -Z forward vector with the direction to the centre, not raw quaternion components); distance equals 6.5 - 3.9 * Z within 1e-9.
     - Clearance (Euclidean distance to the nearest point of the box, corners included) is at least `CAMERA_MIN_CLEARANCE_M` and at least d - R - 1e-9.
     - At Z = 1 the minimum clearance over all 360 frames is 1.2035 m (tolerance 0.001) near frame 72. Assert the all-bearing minimum is below 1.2649 - 0.05, so a four-bearing check cannot pass.

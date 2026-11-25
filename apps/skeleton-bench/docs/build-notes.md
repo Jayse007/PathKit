@@ -46,8 +46,25 @@
 
 ## Task 6.2: Spike S1 tests
 - Done: wrote test/laps.test.ts (7 tests): validateScene passes for four laps; orbitAround order below aimAt; forward and up on different axes; every frame of every lap readable (finite, unit rotation); frames 0, 90, 180, 270 at (0,h,r), (r,h,0), (0,h,-r), (-r,h,0) within 1e-9 using hand-written r and h; Bearing equals frame in degrees on all 360 frames within BEARING_TOLERANCE_DEG; bake time per lap logged with console.log, no timing assertion.
-- Bake time per lap (ms): not yet measured. The User pastes the `S1 bake time lap N` lines from the test output; Kiro records them here.
+- Bake time per lap (ms), from the User's pasted run (all 25 tests passed): lap 0: 2.21, lap 1: 6.43, lap 2: 1.78, lap 3: 1.62.
 - Broke: nothing known. Not run (no terminal). Mutation to try once: change ORBIT_START_ANGLE_DEG or ORBIT_SPEED_DEG_PER_S in constants (the lap builder reads them); the four-frame table and the bearing sweep must fail.
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: `validateScene`, `bake`, `evaluateEntity`, `OutBuffer`.
 - Not tested: the look, WebGL, view offset, clicking, load time, the aim rotation (checked for finite and unit length only; aim accuracy is in task 7.2).
+
+## Task 7.1: Implement the camera blend
+- Done: added src/pathkit/camera-blend.ts with `createCameraBlender()` (two OutBuffers plus one result position and rotation, allocated once) and `blendCamera(laps, frame, zoom, blender)`. It reads laps i and i+1 with `evaluateEntity` at the same whole frame, then `lerp` and `slerp` into the blender's result buffers. Throws for non-finite zoom; `evaluateEntity` throws for a bad frame.
+- Decision: the lap selection (p = Z * 3, i = min(floor(p), 2), w = p - i) is written inline, not via `zoomSelection`, because `zoomSelection` returns a new object and the blend path must not allocate. Task 7.2 should check the two agree.
+- Broke: nothing known. Not run (no terminal); tests are task 7.2.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: `evaluateEntity`, `OutBuffer`, `lerp`, `slerp` (always with `out`).
+- Not tested: everything in this task (tests are 7.2); also the look, WebGL, view offset, clicking, load time.
+
+## Task 7.2: Spike S2 and View_Pair tests
+
+- Done: wrote test/camera-blend.test.ts (9 tests). Over 360 frames x 13 zoom points: Bearing, aim (angle between the rotated -Z vector and the direction to the centre, via atan2 of cross and dot), distance 6.5 - 3.9 * Z within 1e-9. Clearance to the box (corners included) at least 1.0 and at least d - R - 1e-9. Z = 1 minimum clearance 1.2035 (tolerance 0.001) within 2 frames of 72, below 1.2649 - 0.05, and the four side-on frames alone give at least 1.2649. Z = 0.5 positions and forward vectors from the design. Monotone distance, zoom keeps Bearing, angle keeps distance. Agreement check: blendCamera against a blend rebuilt from `zoomSelection` (14 zoom values including joints and out-of-range, 5 frames, 1e-12). Non-finite zoom throws.
+- Broke: nothing known. Not run (no terminal).
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: `evaluateEntity` (agreement check), through `blendCamera` (`lerp`, `slerp`).
+- Source line it should catch: replace the lerp weight `weight` with `1 - weight` in blendCamera (distance check and the Z = 0.5 table fail), or set a lap distance below R (clearance check fails).
+- Not tested: the look, WebGL, view offset, clicking, load time, per-frame allocation.
