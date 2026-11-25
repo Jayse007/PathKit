@@ -80,3 +80,8 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - This is one run only and may vary between runs and machines. The run had 45 tests passed, 0 failed, 0 skipped.
 - Broke: nothing. No code changed in this step.
 - PathKit features used: `bake`, `followPath`, `orbitAround`, `aimAt`.
+
+## Extra change: S5 timing split (user request, outside task 11.1)
+- Done: `test/spike/s5.test.ts` now times the subject bake and the camera bake separately. Each runs 5 times through one helper (`timeBake`). Run 1 is printed as cold (includes JavaScript warm-up); the median of runs 2 to 5 is printed as warm. Four lines are printed: subject, cameras, total cold, total warm (target `S5_TARGET_MS`, printed, not asserted).
+- Why: the first measurement (task 10.2) was 155.03 ms as one number, so it did not show which bake is slow or how much was warm-up. This split shows both.
+- Assertions unchanged (frame counts, ids `cam-1` to `cam-6`, constants test); they run on the first run's result. Time is never asserted. No source or packages/ file changed. Not yet run by the User.

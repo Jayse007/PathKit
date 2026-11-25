@@ -1,7 +1,8 @@
 // Spike S5: bake time for the subject plus six cameras.
-// Two bakes are timed together: the subject (1920 frames at 240 fps) and one camera scene
+// Two bakes are timed separately: the subject (1920 frames at 240 fps) and one camera scene
 // (six orbiting cameras, 240 frames at 30 fps, each orbitAround then aimAt).
-// The time is printed with S5_TARGET_MS. The time is never asserted.
+// Each is run 5 times: the first run is printed as cold, the median of the other 4 as warm.
+// The times are printed with S5_TARGET_MS. Time is never asserted.
 
 import { describe, expect, it } from 'vitest';
 import { bake } from '../../src/logic/pathkit.js';
@@ -109,20 +110,44 @@ function buildCameraScene(cameraCount: number): Scene {
   };
 }
 
+// Bakes the scene 5 times. Run 1 is "cold" (includes JavaScript warm-up).
+// "warm" is the median of runs 2 to 5 (mean of the middle two of four values).
+// Each run must succeed (bake throws otherwise). The first result is returned for assertions.
+const BAKE_RUNS = 5;
+
+function timeBake(scene: Scene): { firstResult: ReturnType<typeof bake>; coldMs: number; warmMedianMs: number } {
+  const times: number[] = [];
+  let firstResult: ReturnType<typeof bake> | undefined;
+  for (let run = 0; run < BAKE_RUNS; run++) {
+    const start = performance.now();
+    const result = bake(scene);
+    times.push(performance.now() - start);
+    if (run === 0) firstResult = result;
+  }
+  const warm = times.slice(1).sort((a, b) => a - b);
+  const warmMedianMs = (warm[1] + warm[2]) / 2;
+  return { firstResult: firstResult as ReturnType<typeof bake>, coldMs: times[0], warmMedianMs };
+}
+
 describe('S5: bake time for the subject plus six cameras', () => {
   it('the constants agree: six cameras, six ids', () => {
     expect(S5_CAMERA_COUNT).toBe(CAMERA_IDS.length);
   });
 
-  it('bakes the subject and six cameras, and prints the time', () => {
+  it('bakes the subject and six cameras, and prints the times', () => {
     const cameraScene = buildCameraScene(S5_CAMERA_COUNT);
 
-    const start = performance.now();
-    const bakedSubject = bake(subjectScene);
-    const bakedCameras = bake(cameraScene);
-    const elapsedMs = performance.now() - start;
+    const subject = timeBake(subjectScene);
+    const cameras = timeBake(cameraScene);
+    const bakedSubject = subject.firstResult;
+    const bakedCameras = cameras.firstResult;
 
-    console.log(`S5 bake time (subject + ${S5_CAMERA_COUNT} cameras): ${elapsedMs.toFixed(2)} ms, target ${S5_TARGET_MS} ms (printed, not asserted)`);
+    const totalCold = subject.coldMs + cameras.coldMs;
+    const totalWarm = subject.warmMedianMs + cameras.warmMedianMs;
+    console.log(`S5 subject bake (${BAKED_LAP_FRAMES} frames): cold ${subject.coldMs.toFixed(2)} ms, warm median ${subject.warmMedianMs.toFixed(2)} ms`);
+    console.log(`S5 camera bake (${S5_CAMERA_COUNT} cameras, ${LAP_FRAMES} frames): cold ${cameras.coldMs.toFixed(2)} ms, warm median ${cameras.warmMedianMs.toFixed(2)} ms`);
+    console.log(`S5 total (cold): ${totalCold.toFixed(2)} ms, target ${S5_TARGET_MS} ms (printed, not asserted)`);
+    console.log(`S5 total (warm): ${totalWarm.toFixed(2)} ms, target ${S5_TARGET_MS} ms (printed, not asserted)`);
 
     expect(bakedSubject.frameCount).toBe(BAKED_LAP_FRAMES);
     expect(bakedSubject.entityIds).toEqual([SUBJECT_ENTITY_ID]);
