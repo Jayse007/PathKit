@@ -67,3 +67,8 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Done: `test/spike/s5.test.ts` bakes the subject (1920 frames at 240 fps) and six orbiting cameras (240 frames, orbitAround then aimAt), prints the bake time and `S5_TARGET_MS`, asserts six ids `cam-1` to `cam-6` in order. Time is never asserted. Not yet run.
 - Broke: Kiro sent an edit call to a frozen PathKit file by mistake (meant to read it). The hook blocked it and nothing changed.
 - PathKit features used: `bake`, `followPath`, `orbitAround`, `aimAt`, keyframed target.
+
+## Extra test: CAMERA_IDS literal check (user request, outside task 10.1)
+- Done: added one test to `test/logic/constants.test.ts` checking `CAMERA_IDS` equals `cam-1` to `cam-6` in order, written as literal text. No source file changed. Not yet run by the User.
+- Broke: nothing known.
+- PathKit feature used: none.

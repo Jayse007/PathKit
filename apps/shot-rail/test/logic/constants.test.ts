@@ -71,6 +71,9 @@ describe('constants: thresholds and ranges', () => {
   it('CAMERA_IDS has MAX_CAMERAS entries', () => {
     expect(CAMERA_IDS.length).toBe(MAX_CAMERAS);
   });
+  it('CAMERA_IDS are exactly cam-1 to cam-6, in order', () => {
+    expect([...CAMERA_IDS]).toEqual(['cam-1', 'cam-2', 'cam-3', 'cam-4', 'cam-5', 'cam-6']);
+  });
 });
 
 describe('constants: entity axes', () => {
