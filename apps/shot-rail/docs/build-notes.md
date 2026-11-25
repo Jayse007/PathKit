@@ -98,3 +98,17 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Broke: nothing. No code changed in this step; no task status changed.
 - Kiro got wrong: nothing known.
 - PathKit features used: `bake` (combined scene vs separate scenes), `followPath`, `orbitAround`, `aimAt`.
+
+## Task 12.1: Lap seam test
+- Done: `apps/shot-rail/test/spike/lap-seam.test.ts` (2 tests).
+  - Part (a): default Road seam angle 0.41563695642562715 degrees (limit 2 degrees).
+  - Part (b): hand-written twisted 3D figure-eight (12 points, x = 20 sin t, y = 8 cos t, z = 10 sin 2t, every 30 degrees), checked with `bake` directly, no Road validation. Seam angle 166.95837288576024 degrees (must exceed 40).
+- Run: `npm.cmd test` from apps/shot-rail, 49 passed, 0 failed, 0 skipped (pasted by the User).
+- S5 timing in that same run:
+  - Subject bake: cold 70.17 ms, warm median 17.37 ms.
+  - Cameras bake: cold 84.11 ms, warm median 9.64 ms.
+  - Total cold: 154.28 ms (over the 100 ms target); total warm: 27.01 ms.
+  - The cold total varies between runs (82.88 ms in task 11.2, 154.28 ms here) and can exceed 100 ms. The warm total stays well under 100 ms.
+- Broke: nothing. Only this file changed; no code, nothing under packages/, no task status changed.
+- Kiro got wrong: nothing known.
+- PathKit features used: `bake` (seam check on the baked data).

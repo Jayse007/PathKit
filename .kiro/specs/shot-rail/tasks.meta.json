@@ -312,6 +312,11 @@
         "executionId": "955de24d-03f7-46e0-a702-a1182cb6d961",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795587247249
+      },
+      {
+        "executionId": "6cc1e4c6-8ee9-4cce-b909-081f28cbb617",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795595906926
       }
     ],
     "13. Checkpoint: Phase 0 spike": [
@@ -1054,6 +1059,13 @@
         "executionId": "955de24d-03f7-46e0-a702-a1182cb6d961",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795587238626
+      }
+    ],
+    "12. Lap seam check (KI-11 regression)": [
+      {
+        "executionId": "6cc1e4c6-8ee9-4cce-b909-081f28cbb617",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795595908204
       }
     ]
   }

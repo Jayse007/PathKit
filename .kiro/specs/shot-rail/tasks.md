@@ -156,8 +156,8 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User runs `npm.cmd test` and pastes the output. Kiro writes Outcome A or Outcome B, with the measured result, in the build notes. The recorded outcome is hard-coded in Task 22. If the test fails, Outcome B applies without asking.
     - _Requirements: 22.10, 22.11, 8.13_
 
-- [ ] 12. Lap seam check (KI-11 regression)
-  - [-] 12.1 Write the seam test
+- [x] 12. Lap seam check (KI-11 regression)
+  - [x] 12.1 Write the seam test
     - File `test/spike/lap-seam.test.ts`, scene inline.
     - (a) Default Road, one-lap bake as in S1: the angle between the rotation at baked frame 1919 and baked frame 0 (`quatAngle` of `quatInverse(a)` times `b`) is at most 2 degrees.
     - (b) A twisted closed 3D loop (a 3D figure-eight with points of different y, hand-written, at least 8 points), baked directly with `bake` and bypassing Road validation (test only): the same angle is above 40 degrees.

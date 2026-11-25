@@ -74,3 +74,9 @@
 - Broke: nothing known. Not run (no terminal); tests are task 8.2.
 - Kiro assumption to check: ring speed is taken from the arc-length table of the closed curve, in metres per second, so one turn spans the frame count. Ring bearing 0 is +Z, as in the laps.
 - PathKit features: `followPath`, `aimAt`, keyframed target, `createCurve`, `createArcLengthTable`.
+
+## Task 8.2: Tour tests (added four)
+- Done: added four tests to test/tour.test.ts: closed ring (frame 0 to last frame under 0.2 m, 8 and 6 Parts), no `path-end-reached` finding from `motionLinter`, ring points at hand-written values (12 points, point 0 = (0, 1.5, 3.6), point 3 = (3.6, 1.5, 0), 1e-9, y equals `TOUR_RING_HEIGHT`), and `buildTourScene([])` throws `RangeError`. No source changes.
+- Broke: nothing known. Not run (no terminal). Expected: tour.test.ts 12 tests, total 49.
+- Mutations they must catch: `closed: true` to `false` in tour.ts (closed ring and path-end tests), `y: TOUR_RING_HEIGHT` to `y: 0` (ring points test), removing the empty-list check (empty tour test).
+- Kiro assumption to check: `TOUR_RING_RADIUS` is 3.6 and `TOUR_RING_HEIGHT` is 1.5 in constants.ts; the ring test uses typed-in values.

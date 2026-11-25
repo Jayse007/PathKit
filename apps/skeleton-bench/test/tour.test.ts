@@ -201,4 +201,50 @@ describe('tour scenes (Spike S3)', () => {
       expect(boxClearance(actual[i])).toBeGreaterThanOrEqual(CAMERA_MIN_CLEARANCE_M);
     }
   });
+
+  it('ends the tour next to where it started (closed ring)', () => {
+    const first = newBuffer();
+    const last = newBuffer();
+    for (const count of COUNTS) {
+      const baked = bake(buildTourScene(fixture(count)));
+      evaluateEntity(baked, TOUR_ENTITY_ID, 0, first);
+      evaluateEntity(baked, TOUR_ENTITY_ID, baked.frameCount - 1, last);
+      const dx = last.position.x - first.position.x;
+      const dy = last.position.y - first.position.y;
+      const dz = last.position.z - first.position.z;
+      const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (!(distance < 0.2)) {
+        throw new Error(`closed ring check: ${count} Parts, start-to-end distance ${distance} m (limit 0.2 m)`);
+      }
+    }
+  });
+
+  it('reports no path-end-reached finding', () => {
+    for (const count of COUNTS) {
+      const scene = buildTourScene(fixture(count));
+      const findings = motionLinter(scene, bake(scene));
+      for (let i = 0; i < findings.length; i++) {
+        if (findings[i].code === 'path-end-reached') {
+          throw new Error(`path-end-reached check: ${count} Parts reported a path-end-reached finding`);
+        }
+      }
+    }
+  });
+
+  it('builds the ring at the hand-written points', () => {
+    const points = tourRingPoints();
+    expect(points.length).toBe(12);
+    // Hand-written: radius 3.6 m, height 1.5 m. Point 0 is bearing 0 (+Z), point 3 is bearing 90 degrees (+X).
+    expect(Math.abs(points[0].x - 0)).toBeLessThan(1e-9);
+    expect(Math.abs(points[0].y - 1.5)).toBeLessThan(1e-9);
+    expect(Math.abs(points[0].z - 3.6)).toBeLessThan(1e-9);
+    expect(Math.abs(points[3].x - 3.6)).toBeLessThan(1e-9);
+    expect(Math.abs(points[3].y - 1.5)).toBeLessThan(1e-9);
+    expect(Math.abs(points[3].z - 0)).toBeLessThan(1e-9);
+    expect(points[0].y).toBe(TOUR_RING_HEIGHT);
+  });
+
+  it('rejects an empty tour', () => {
+    expect(() => buildTourScene([])).toThrow(RangeError);
+  });
 });
