@@ -164,16 +164,16 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: give one default Road point a different y (part a fails); or make the figure-eight flat (part b fails).
     - _Requirements: 3.11, 3.4 (design Property 13)_
 
-- [~] 13. Checkpoint: Phase 0 spike
+- [x] 13. Checkpoint: Phase 0 spike
   - Ensure all tests pass, ask the user if questions arise. The User runs `npm.cmd test` and pastes the output. Kiro reports the counts and the recorded results (S1 deviation, S5 time, S6 outcome).
 
 ### Phase 1: Pure logic (pure, tested)
 
 - [ ] 14. Lens_Module
-  - [~] 14.1 Implement `src/logic/lens.ts`
+  - [x] 14.1 Implement `src/logic/lens.ts`
     - `fieldOfViewForFocalLengthMm`: horizontal 2 atan(18 / f), vertical 2 atan(10.125 / f), work in radians, convert to degrees at the output. A value that is 0 or less, or not finite, throws an Error that names the value.
     - _Requirements: 4.1, 4.2, 4.4, 4.6, 4.7, 4.8, 4.9_
-  - [~] 14.2 Write the lens tests
+  - [-] 14.2 Write the lens tests
     - Table to 1 decimal place (hand-written): 24 mm 73.7 / 45.7, 35 mm 54.4 / 32.3, 50 mm 39.6 / 22.9, 85 mm 23.9 / 13.6. The unrounded 24 mm vertical value is 45.747 (within 0.001) and is not 45.75.
     - Throws naming the value for 0, -1, -0.001, NaN, Infinity. Same input gives the same output.
     - Source line it should catch: use 20 instead of 20.25 for the sensor height in the vertical formula (24 mm vertical becomes 45.2 and fails).

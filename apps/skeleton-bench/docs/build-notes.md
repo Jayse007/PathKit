@@ -80,3 +80,11 @@
 - Broke: nothing known. Not run (no terminal). Expected: tour.test.ts 12 tests, total 49.
 - Mutations they must catch: `closed: true` to `false` in tour.ts (closed ring and path-end tests), `y: TOUR_RING_HEIGHT` to `y: 0` (ring points test), removing the empty-list check (empty tour test).
 - Kiro assumption to check: `TOUR_RING_RADIUS` is 3.6 and `TOUR_RING_HEIGHT` is 1.5 in constants.ts; the ring test uses typed-in values.
+
+## Task 9.1: Write the S4 check page
+
+- Done: added src/spike/s4-check.html and src/spike/s4-check.ts. Three shapes (sphere at the origin, box at x=1, cylinder at x=-1), camera driven by `bakeLaps`, `blendCamera` and `angleToFrame` with an angle slider and a zoom slider, offset buttons (step 0.1 of the viewport) calling `setViewOffset(W, H, -fx * W, -fy * H, W, H)` or `clearViewOffset` at (0, 0), a raycast click (NDC from the canvas rectangle) that prints the hit shape, fixed red cross-hairs at the screen centre, and a readout of where the sphere lands in pixels against the expected shift.
+- Broke: nothing known. Nothing has been run or opened (no terminal, no browser). Editor diagnostics were not visible to Kiro.
+- Kiro assumption: the design text says `clearView`; the Three.js method is `clearViewOffset`, which the page uses.
+- PathKit features used: `bake` (via `bakeLaps`), `evaluateEntity`, `lerp`, `slerp` (via `blendCamera`), `orbitAround`, `aimAt`.
+- Not tested: everything. The offset sign, orbit and zoom while offset, clicking and WebGL are all unchecked until the User's task 9.2.

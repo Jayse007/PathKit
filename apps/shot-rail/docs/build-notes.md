@@ -112,3 +112,17 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Broke: nothing. Only this file changed; no code, nothing under packages/, no task status changed.
 - Kiro got wrong: nothing known.
 - PathKit features used: `bake` (seam check on the baked data).
+
+## Task 14.1: Implement lens.ts
+- Done: wrote `src/logic/lens.ts` with `FieldOfView` and `fieldOfViewForFocalLengthMm`. It uses `SENSOR_WIDTH_MM / 2` (18) and `SENSOR_HEIGHT_MM / 2` (10.125) from constants, works in radians and converts to degrees at the output. It throws an Error naming the value for 0 or less, NaN and Infinity.
+- Broke: nothing known. No command has been run; the lens tests (14.2) do not exist yet.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: none (pure maths, no PathKit import).
+
+## Task 14.2: Lens tests
+
+- Done: added `test/logic/lens.test.ts` (5 tests): hand-written table at 24/35/50/85 mm within 0.05 (1-decimal rounding), unrounded 24 mm vertical 45.747 within 0.001 and not 45.75, an independent `atan2` check against the sensor constants for 8 focal lengths, throws naming the value for 0, -1, -0.001, NaN, Infinity, and same input gives same output.
+- Broke: nothing known. Not run by Kiro; awaiting the User's `npm.cmd test` output.
+- Kiro note: I checked the 45.747 figure by hand series (about 45.748), inside the 0.001 band.
+- PathKit feature used: none (pure lens function).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.

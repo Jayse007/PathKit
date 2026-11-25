@@ -117,19 +117,19 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: replace the lerp weight `w` with `1 - w`, or set a lap distance below R.
     - _Requirements: 4.3, 4.4, 6.10, 11.2, 11.3, 11.4, 11.11, 35.15 (design Property 5, 6, 9)_
 
-- [ ] 8. Tour scene builder (Spike S3)
+- [x] 8. Tour scene builder (Spike S3)
   - [x] 8.1 Implement the tour builder and the finding text mapping
     - Generic: takes a list of Part rest positions. Closed ring of 12 points at radius 3.6 m and height 1.5 m; `followPath` at constant speed, one turn over frameCount = parts * 90; `aimAt` a keyframed target with one keyframe per Part at the middle of its 90-frame slot (strictly increasing integer frames).
     - Plain-words mapping for the linter codes `path-end-reached`, `rotation-conflict`, `aim-vertical`, `speed-spike`, `roll-change`; an unknown code falls back to the finding's own message; an empty list gives "No findings reported."
     - _Requirements: 4.5, 16.3, 16.5, 16.7, 16.8_
-  - [-] 8.2 Write the Spike S3 tests
+  - [x] 8.2 Write the Spike S3 tests
     - Fixtures of 8 and of 6 rest positions: `validateScene` passes; bake succeeds; `motionLinter(scene, baked)` does not throw and returns an array; every baked frame has clearance at least `CAMERA_MIN_CLEARANCE_M` and lies outside the envelope; `followPath` order is below `aimAt` order.
     - Finding text table: the five codes, one unknown code, and the empty list.
     - Source line it should catch: set the ring radius below 1.5.
     - _Requirements: 4.5, 4.6, 16.3, 16.5, 16.7, 16.8, 35.7, 35.8 (design Property 7, 10, 21)_
 
 - [ ] 9. Spike S4: view offset
-  - [~] 9.1 Write the S4 check page
+  - [x] 9.1 Write the S4 check page
     - A tiny, clearly named page in a spike folder inside `apps/skeleton-bench`: a few Three.js shapes, orbit through the baked camera, a `setViewOffset` move, and a raycast click on a shape.
     - _Requirements: 4.7, 12.6_
   - [~] 9.2 User checkpoint: run the S4 check
