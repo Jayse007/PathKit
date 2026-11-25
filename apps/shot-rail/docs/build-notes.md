@@ -56,3 +56,9 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - PathKit feature used: `orbitAround` with a keyframed target.
 - Fix attempt 1: the test's expected z was the rounded literal 6.9282032 (true 6.92820323027551), so the 1e-9 check failed by 3.03e-8; the baked value was correct. The expected offset is now computed as radius*sin and radius*cos of the start angle in radians (30 degrees converted once). Tolerance unchanged. Not yet re-run by the User.
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 9.1: S4 test (two targets, height and aim)
+- Done: wrote `test/spike/s4.test.ts` (5 cases of (h, r), plus a wrong-target check with aimAt on `centre`). Not yet run by the User.
+- What broke: nothing known yet.
+- What Kiro got wrong: nothing known yet.
+- PathKit feature used: `orbitAround` (speed 0) then `aimAt`, `rotateVec`, keyframed targets.

@@ -46,7 +46,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Kiro does not edit that file. Kiro asks for no command in the app folder until the User confirms.
     - _Requirements: 2.1, 2.2 (decision 1)_
 
-- [ ] 2. Scaffold the app
+- [x] 2. Scaffold the app
   - [x] 2.1 Create the app files
     - `package.json`: type module; exact versions with no `^` or `~`: runtime `three` 0.187.0; dev `@types/three` 0.187.0, `vite` 7.3.8, `vitest` 3.2.7, `typescript` 5.9.3; scripts `test` = `vitest run`, `build` = `vite build`, `dev` = `vite`, `preview` = `vite preview`.
     - Kiro never runs `dev` or `preview` and never asks the User for them. The User may start them in their own terminal to view the app.
@@ -58,12 +58,12 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - `THIRD_PARTY.md` (three MIT, @types/three MIT, Vite MIT, Vitest MIT, TypeScript Apache-2.0, pinned versions), and stubs for `docs/build-notes.md` and `docs/sources.md`.
     - Risk to confirm at the first build: Vite resolves the import from outside the app root, and the tsconfig type-checks PathKit source without new errors.
     - _Requirements: 1.1, 1.2, 1.7, 1.8, 2.3, 2.4, 2.6, 2.7, 2.10, 2.11, 3.1, 36.2, 36.3_
-  - [~] 2.2 User checkpoint: install
+  - [x] 2.2 User checkpoint: install
     - Kiro gives the one line `npm.cmd install` (run from `apps/skeleton-bench`) and waits. The User runs it and pastes the output. Kiro keeps `package-lock.json`.
     - _Requirements: 2.3, 2.6_
 
 - [ ] 3. Constants consistency test
-  - [~] 3.1 Write `test/constants.test.ts`
+  - [-] 3.1 Write `test/constants.test.ts`
     - R = sqrt(1.2^2 + 0.6^2 + 0.4^2) = 1.4. `ORBIT_SPEED_DEG_PER_S` = 360 * 30 / 360 = 30.
     - For each lap, r = d * 12/13 and h = d * 5/13 (6.0 / 2.5, 4.8 / 2.0, 3.6 / 1.5, 2.4 / 1.0) and r^2 + h^2 = d^2.
     - `LAP_DISTANCES` strictly decreasing, and every d - R >= `CAMERA_MIN_CLEARANCE_M`. Sin^2 + cos^2 of the elevation = 1.

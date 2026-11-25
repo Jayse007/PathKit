@@ -121,15 +121,15 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: use the baked position at displayed frame f instead of the remapped baked frame when building the keyframes.
     - _Requirements: 22.5, 8.11 (design Property 9)_
 
-- [ ] 8. Spike S3: orbitAround with speed 0 and a keyframed target
-  - [-] 8.1 Write the S3 test
+- [x] 8. Spike S3: orbitAround with speed 0 and a keyframed target
+  - [x] 8.1 Write the S3 test
     - File `test/spike/s3.test.ts`, scene inline: a keyframed target moving along a straight line, and a camera with `orbitAround` (axis +Y, radius 8, speed 0, `startAngle` 30) on that target.
     - For every frame, camera minus target equals (8 sin 30 deg, 0, 8 cos 30 deg) = (4, 0, 6.9282032) within 1e-9 (hand-written numbers), and the camera position changes as the target moves.
     - Source line it should catch: set `speed` to 10 in the scene (the offset then changes with the frame).
     - _Requirements: 22.6, 7.6 (design Property 11)_
 
 - [ ] 9. Spike S4: two targets, height and aim
-  - [~] 9.1 Write the S4 test
+  - [-] 9.1 Write the S4 test
     - File `test/spike/s4.test.ts`, scene inline: a `subject` keyframed target on a straight line, and a `centre` target equal to it shifted by (0, h, 0). One camera: `orbitAround` order 0 on `centre` (radius r, axis +Y, speed 0), then `aimAt` order 1 on `subject`. Cases (h, r): (1.5, 8), (-0.3, 12), (0, 5), (40, 60), (-0.5, 3).
     - For every case and frame: camera y = subject y + h within 1e-9; horizontal distance to the subject = r within 1e-9; elevation atan2(h, r) in degrees matches hand-written values (10.6197, -1.4321, 0, 33.6901, -9.4623 degrees, each within 1e-3); the camera's forward vector points at the true subject position within 1e-9.
     - Include one wrong-target scene (aimAt on `centre`): for h = 1.5 its forward vector is level (y component 0) and the test checks that it differs from the correct one, so the check has teeth.
