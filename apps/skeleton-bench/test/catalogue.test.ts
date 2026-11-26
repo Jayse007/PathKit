@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   checkEnvelope,
+  checkExplodedClearance,
   checkExplodeLength,
   checkFieldsPresent,
   checkKeyboardOrder,
@@ -77,6 +78,10 @@ describe('catalogue checks on the real catalogue', () => {
 
   it('rest position, end position and extents are inside the envelope', () => {
     expectNoFailures(checkEnvelope(CATALOGUE));
+  });
+
+  it('every two Parts of a Machine are at least 0.08 m apart at Explode_Amount 100', () => {
+    expectNoFailures(checkExplodedClearance(CATALOGUE));
   });
 });
 
@@ -239,5 +244,74 @@ describe('the checks catch bad data', () => {
     );
     expect(repeated.length).toBe(1);
     expect(repeated[0]).toContain('"casing"');
+  });
+});
+
+describe('checkExplodedClearance on synthetic Parts', () => {
+  // Two boxes with extents 0.2 m. Centres are 0 and `bx` on x, so the gap is bx - 0.2.
+  const BOX: [number, number, number] = [0.2, 0.2, 0.2];
+
+  function pairAt(bRest: [number, number, number], bExplode: [number, number, number] = [0, 0, 0]): Catalogue {
+    return catalogueOf([
+      part({ id: 'a', restPosition: [0, 0, 0], explodeVector: [0, 0, 0], extents: BOX }),
+      part({ id: 'b', restPosition: bRest, explodeVector: bExplode, extents: BOX }),
+    ]);
+  }
+
+  it('passes at a gap of 0.1 m', () => {
+    // x: |0.3 - 0| - 0.2 = 0.1
+    expect(checkExplodedClearance(pairAt([0.3, 0, 0]))).toEqual([]);
+  });
+
+  it('fails at a gap of 0.05 m and names both Parts and the gap', () => {
+    // x: 0.25 - 0.2 = 0.05
+    const failures = checkExplodedClearance(pairAt([0.25, 0, 0]));
+    expect(failures.length).toBe(1);
+    expect(failures[0]).toContain('"a"');
+    expect(failures[0]).toContain('"b"');
+    expect(failures[0]).toMatch(/0\.0(5|4999)/);
+  });
+
+  it('passes at exactly 0.08 m and fails at 0.07 m', () => {
+    expect(checkExplodedClearance(pairAt([0.28, 0, 0]))).toEqual([]); // 0.28 - 0.2 = 0.08
+    expect(checkExplodedClearance(pairAt([0.27, 0, 0])).length).toBe(1); // 0.27 - 0.2 = 0.07
+  });
+
+  it('fails when the boxes overlap', () => {
+    // x: 0.1 - 0.2 = -0.1, y: -0.2, z: -0.2. The largest is -0.1.
+    expect(checkExplodedClearance(pairAt([0.1, 0, 0])).length).toBe(1);
+  });
+
+  it('uses the largest per-axis gap: apart on y only passes', () => {
+    // x: 0.05 - 0.2 = -0.15, y: 0.3 - 0.2 = 0.1, z: 0.05 - 0.2 = -0.15. The largest is 0.1.
+    expect(checkExplodedClearance(pairAt([0.05, 0.3, 0.05]))).toEqual([]);
+  });
+
+  it('uses the end position, not the rest position', () => {
+    // Rest centre x = 1, end centre x = 1 - 0.9 = 0.1: gap 0.1 - 0.2 = -0.1, so it fails.
+    expect(checkExplodedClearance(pairAt([1, 0, 0], [-0.9, 0, 0])).length).toBe(1);
+    // Rest centre x = 0.1 would overlap, end centre x = 0.1 + 0.2 = 0.3: gap 0.1, so it passes.
+    expect(checkExplodedClearance(pairAt([0.1, 0, 0], [0.2, 0, 0]))).toEqual([]);
+  });
+
+  it('never compares Parts of different Machines', () => {
+    const cat: Catalogue = {
+      machines: [
+        { id: 'pump', name: 'One', partIds: ['a'] },
+        { id: 'desk-lamp', name: 'Two', partIds: ['b'] },
+      ],
+      parts: [
+        part({ id: 'a', restPosition: [0, 0, 0], explodeVector: [0, 0, 0], extents: BOX }),
+        part({ id: 'b', restPosition: [0, 0, 0], explodeVector: [0, 0, 0], extents: BOX }),
+      ],
+    };
+    expect(checkExplodedClearance(cat)).toEqual([]);
+  });
+
+  it('does not change the catalogue it checks', () => {
+    const cat = pairAt([0.25, 0, 0]);
+    const before = JSON.stringify(cat);
+    checkExplodedClearance(cat);
+    expect(JSON.stringify(cat)).toBe(before);
   });
 });

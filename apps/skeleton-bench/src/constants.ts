@@ -59,6 +59,7 @@ export const MOVE_KEY_STEP_FRACTION = 0.02;
 export const EXPLODE_FRAMES = 60;
 export const PART_PATH_BOW_FRACTION = 0.15;
 export const PART_MIN_EXPLODE_M = 0.1; // m
+export const PART_MIN_CLEARANCE_M = 0.08; // m. Smallest gap between two Parts of one Machine at Explode_Amount 100.
 export const PART_PATH_VERTICAL_SIN = 0.1;
 export const EXPLODE_TOGGLE_MS = 600;
 export const IMPELLER_SPIN_RAD_PER_S = Math.PI;

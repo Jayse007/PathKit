@@ -183,12 +183,14 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Every field present; ids unique across all Machines; keyboard order lists each Part once; every source id exists in `docs/sources.md` (read with `node:fs`); |explode vector| >= 0.1; rest position, end position and extents inside the envelope.
     - A "lists exactly the named Parts" check against the brief (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Run it against the fixture now; it covers the real catalogue as Tasks 14 and 18 fill it. A failing check names the Part.
     - Source line it should catch: delete one source id from `docs/sources.md`, or duplicate a Part id.
-    - _Requirements: 9.1 to 9.6, 13.3, 18.1, 18.2, 18.3, 35.6 (design Property 11, 18)_
+    - Added by a spec change: `checkExplodedClearance(catalogue, minGap = PART_MIN_CLEARANCE_M)` with `PART_MIN_CLEARANCE_M` = 0.08 m. At Explode_Amount 100, every two Parts of the same Machine must be at least 0.08 m apart. Gap = largest over x, y, z of |centre A - centre B| - (extents A + extents B) / 2, with centre = rest position + explode vector. A pair fails when gap < minGap - 1e-9, and the message names both Parts and the gap. Parts of different Machines are never compared. Tests: the real catalogue returns no failures, plus synthetic cases at gaps 0.1, 0.05, 0.08, 0.07, overlap, apart on y only, end position used, different Machines.
+    - _Requirements: 9.1 to 9.7, 13.3, 13.8, 18.1, 18.2, 18.3, 35.6 (design Property 11, 18)_
 
 - [x] 14. Pump facts and catalogue entries
   - [x] 14.1 Research and write the Pump entries
     - Search for reputable sources on the eight Pump parts (casing, impeller, shaft, bearing housing, mechanical seal, flange, bolts as one group, motor): job, material, typical position.
     - Write `docs/sources.md` entries (part, claim, source URL, date checked) and the catalogue entries. Invented sample specifications are labelled "sample data". Rest and explode vectors fit the envelope.
+    - Changed by a spec change (clearance, Requirement 13.8): the Pump explode vectors are now motor [-0.17, 0, 0]; bearing housing [-0.06, -0.2, 0]; shaft [0, 0, 0.36]; mechanical seal [-0.03, -0.44, 0]; bolts [-0.08, -0.05, 0.04]; casing [0.07, -0.13, -0.14]; impeller [0.2, 0.39, -0.18]; flange [0, 0.27, 0.19]. Every two Pump Parts are at least 0.08 m apart at Explode_Amount 100 (smallest gap 0.09 m). Rest positions and text are unchanged.
     - _Requirements: 18.1, 19.1, 19.2, 19.3, 19.5, 9.1_
   - [x] 14.2 User checkpoint: approve the Pump text
     - The User reads and approves every Pump text and source before it is kept.

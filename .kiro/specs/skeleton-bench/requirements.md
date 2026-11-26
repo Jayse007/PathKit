@@ -254,6 +254,7 @@ Each item states the issue, the assumption used in this document, and who must d
 4. THE Part_Catalogue SHALL list every Part of a Machine exactly once in the keyboard order of that Machine.
 5. IF a Part lacks a field, repeats an id, or has a source id that is missing from the Sources_File, THEN THE Test_Suite SHALL fail and name the Part.
 6. THE Part_Catalogue SHALL be the single source for the explode paths, the Inspector and the keyboard order.
+7. IF two Parts of the same Machine are closer than PART_MIN_CLEARANCE_M (0.08 m) at Explode_Amount 100, THEN THE Test_Suite SHALL fail and name both Parts and the gap (Requirement 13.8).
 
 ### Requirement 10: Orbit (Tier A)
 
@@ -315,8 +316,7 @@ Each item states the issue, the assumption used in this document, and who must d
 5. THE Skeleton_Bench_App SHALL spin the impeller of the Pump with ordinary Three.js code and SHALL NOT use PathKit for the spin.
 6. WHEN the Explode_Amount changes, THE Skeleton_Bench_App SHALL apply the Drag_Range clamp of Requirement 7.9.
 7. WHERE the User has asked for reduced motion, THE Skeleton_Bench_App SHALL jump to the new explode state without animation (decision 19).
-
-### Requirement 14: Inspect (Tier A)
+8. WHEN the Explode_Amount is 100, every two Parts of the same Machine SHALL be at least 0.08 m apart (PART_MIN_CLEARANCE_M). The gap between two Parts is the largest, over the x, y and z axes, of the distance between their centres minus half the sum of their extents on that axis, where each centre is the rest position plus the explode vector.: Inspect (Tier A)
 
 **User Story:** As a learner, I want to pick a Part and read about it, so that I understand what it does.
 

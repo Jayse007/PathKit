@@ -368,7 +368,7 @@ Every control has a visible label and a key hint. Every single-letter shortcut h
 | `sourceId` | string | Must exist in `docs/sources.md`. |
 | `restPosition` | vector (m) | Inside the envelope. |
 | `explodeVector` | vector (m) | Length at least 0.1 m; end position inside the envelope. |
-| `extents` | vector (m) | Used by the envelope check. |
+| `extents` | vector (m) | Full box sizes, not half sizes. Used by the envelope check and the clearance check. |
 
 Machine definition: id, display name, the ordered Part ids (keyboard order), the model builder, and the tour keyframe order (same as keyboard order). The catalogue is the single source for explode paths, the Inspector and the keyboard order (Requirement 9.6).
 
@@ -450,6 +450,7 @@ All live in `src/constants.ts`. "Derived" values are checked by a consistency te
 | `EXPLODE_FRAMES` | 60 |
 | `PART_PATH_BOW_FRACTION` | 0.15 |
 | `PART_MIN_EXPLODE_M` | 0.1 m |
+| `PART_MIN_CLEARANCE_M` | 0.08 m |
 | `PART_PATH_VERTICAL_SIN` | 0.1 |
 | `EXPLODE_TOGGLE_MS` | 600 |
 | `IMPELLER_SPIN_RAD_PER_S` | pi |
@@ -575,7 +576,7 @@ For any text and background pair of either Look, the contrast ratio is at least 
 
 ### Property 18: Catalogue checks
 
-For any Part, all fields are present, ids are unique, the source id exists and the keyboard order lists every Part once. **Validates: Requirements 9.1, 9.2, 9.3, 9.4, 9.5, 35.6**
+For any Part, all fields are present, ids are unique, the source id exists and the keyboard order lists every Part once. For any two Parts of the same Machine, the gap at Explode_Amount 100 is at least `PART_MIN_CLEARANCE_M`. The gap is the largest, over x, y and z, of |centre A - centre B| - (extents A + extents B) / 2, where centre = restPosition + explodeVector. The check `checkExplodedClearance(catalogue, minGap)` fails a pair when the gap is below minGap - 1e-9 and names both Parts and the gap. Parts of different Machines are never compared. **Validates: Requirements 9.1, 9.2, 9.3, 9.4, 9.5, 9.7, 13.8, 35.6**
 
 ### Property 19: Tour reset and restore
 

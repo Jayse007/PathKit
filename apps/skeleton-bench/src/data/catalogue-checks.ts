@@ -6,6 +6,7 @@ import {
   EXPLODED_BOX_HALF_X,
   EXPLODED_BOX_HALF_Y,
   EXPLODED_BOX_HALF_Z,
+  PART_MIN_CLEARANCE_M,
   PART_MIN_EXPLODE_M,
 } from '../constants.js';
 import type { Catalogue, MachineId, PartEntry, Vec3 } from './catalogue-types.js';
@@ -174,6 +175,44 @@ export function checkEnvelope(catalogue: Catalogue): string[] {
       part.restPosition[2] + part.explodeVector[2],
     ];
     failures.push(...boxFailures(part, 'end position', end));
+  }
+  return failures;
+}
+
+// At Explode_Amount 100 every two Parts of the same Machine keep at least minGap apart.
+// Centre = restPosition + explodeVector. Extents are full box sizes.
+// Gap = the largest over x, y, z of |centre A - centre B| - (extents A + extents B) / 2.
+// A negative gap means the boxes overlap on every axis.
+export function checkExplodedClearance(catalogue: Catalogue, minGap: number = PART_MIN_CLEARANCE_M): string[] {
+  const failures: string[] = [];
+  const byId = new Map(catalogue.parts.map((p) => [p.id, p] as const));
+  for (const machine of catalogue.machines) {
+    const parts: PartEntry[] = [];
+    for (const id of machine.partIds) {
+      const part = byId.get(id);
+      // Unknown ids and malformed vectors are reported by other checks.
+      if (part === undefined) continue;
+      if (!isVec3(part.restPosition) || !isVec3(part.explodeVector) || !isVec3(part.extents)) continue;
+      parts.push(part);
+    }
+    for (let i = 0; i < parts.length; i++) {
+      for (let j = i + 1; j < parts.length; j++) {
+        const a = parts[i]!;
+        const b = parts[j]!;
+        let gap = -Infinity;
+        for (let k = 0; k < 3; k++) {
+          const centreA = a.restPosition[k]! + a.explodeVector[k]!;
+          const centreB = b.restPosition[k]! + b.explodeVector[k]!;
+          const axisGap = Math.abs(centreA - centreB) - (a.extents[k]! + b.extents[k]!) / 2;
+          if (axisGap > gap) gap = axisGap;
+        }
+        if (gap < minGap - 1e-9) {
+          failures.push(
+            `Machine "${machine.id}": ${label(a)} and ${label(b)} are ${gap} m apart at Explode_Amount 100, below ${minGap} m`,
+          );
+        }
+      }
+    }
   }
   return failures;
 }

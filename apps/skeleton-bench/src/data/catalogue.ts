@@ -39,7 +39,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     positionText: 'At the drive end of the pump, opposite the wet end (casing and impeller).',
     sourceId: 'pump-motor',
     restPosition: [-0.75, -0.05, 0],
-    explodeVector: [-0.15, 0, 0],
+    explodeVector: [-0.17, 0, 0],
     extents: [0.5, 0.4, 0.4],
   },
   {
@@ -50,7 +50,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     positionText: 'Between the motor side and the wet end, around the shaft.',
     sourceId: 'pump-bearing-housing',
     restPosition: [-0.35, -0.02, 0],
-    explodeVector: [-0.08, -0.2, 0],
+    explodeVector: [-0.06, -0.2, 0],
     extents: [0.3, 0.3, 0.3],
   },
   {
@@ -61,7 +61,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     positionText: 'Runs from the drive end, through the bearing housing and the seal, to the impeller in the casing.',
     sourceId: 'pump-shaft',
     restPosition: [-0.15, 0, 0],
-    explodeVector: [0, 0, 0.3],
+    explodeVector: [0, 0, 0.36],
     extents: [0.7, 0.06, 0.06],
   },
   {
@@ -72,7 +72,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     positionText: 'Where the shaft passes through the casing, in the seal chamber.',
     sourceId: 'pump-mechanical-seal',
     restPosition: [0.02, 0, 0],
-    explodeVector: [0, -0.35, 0],
+    explodeVector: [-0.03, -0.44, 0],
     extents: [0.12, 0.16, 0.16],
   },
   {
@@ -83,7 +83,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     positionText: 'Around the casing joint and at the base. The model shows them as one group at the casing joint.',
     sourceId: 'pump-bolts',
     restPosition: [0.12, 0, 0],
-    explodeVector: [0, -0.1, 0.18],
+    explodeVector: [-0.08, -0.05, 0.04],
     extents: [0.08, 0.44, 0.4],
   },
   {
@@ -94,7 +94,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     positionText: 'Surrounds the impeller at the wet end of the pump.',
     sourceId: 'pump-casing',
     restPosition: [0.4, 0, 0],
-    explodeVector: [0, 0, -0.15],
+    explodeVector: [0.07, -0.13, -0.14],
     extents: [0.6, 0.5, 0.46],
   },
   {
@@ -105,7 +105,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     positionText: 'Inside the casing, on the end of the shaft.',
     sourceId: 'pump-impeller',
     restPosition: [0.38, 0, 0],
-    explodeVector: [0.2, 0.25, 0],
+    explodeVector: [0.2, 0.39, -0.18],
     extents: [0.34, 0.34, 0.34],
   },
   {
@@ -116,7 +116,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     positionText: 'In an end-suction pump the liquid enters at the end of the casing and leaves at the top. The model shows the discharge flange on top.',
     sourceId: 'pump-flange',
     restPosition: [0.5, 0.28, 0],
-    explodeVector: [0, 0.25, 0],
+    explodeVector: [0, 0.27, 0.19],
     extents: [0.2, 0.06, 0.2],
   },
 ];
