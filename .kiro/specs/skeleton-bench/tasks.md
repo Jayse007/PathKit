@@ -149,12 +149,12 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: use 0.25 instead of 0.15 in the shrink slope.
     - _Requirements: 7.1 to 7.12, 35.4 (design Property 14, 15)_
 
-- [ ] 11. Explode_Easing and Part path points
+- [x] 11. Explode_Easing and Part path points
   - [x] 11.1 Implement `explodeFrame` and the path-point function
     - Smoothstep; frame = floor(eased * 59 + 0.5); clamp to 0 to 100; non-finite throws.
     - Points: P0, P1 = P0 + v/3 + b, P2 = P0 + 2v/3 + b, P3 = P0 + v, with b = 0.15 * |v| * u; u is the perpendicular closest to +Y; use +Z when |unit(v) x Y| < 0.1. |v| below 0.1 throws.
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 13.3_
-  - [-] 11.2 Write the tests
+  - [x] 11.2 Write the tests
     - Frames at 0, 25, 50, 75, 100 percent are 0, 9, 30, 50, 59. Monotone non-decreasing over 0 to 100 step 1. Inputs -5 and 105 clamp. Frames are whole and inside 0 to 59. Non-finite throws.
     - P0 = (0, 0, 0), v = (0.6, 0, 0): b = (0, 0.09, 0); points (0,0,0), (0.2,0.09,0), (0.4,0.09,0), (0.6,0,0).
     - v = (0, 0.6, 0) uses +Z: b = (0, 0, 0.09); points (0,0,0), (0,0.2,0.09), (0,0.4,0.09), (0,0.6,0). |v| below 0.1 throws.
@@ -162,10 +162,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - _Requirements: 8.1 to 8.7, 13.3, 35.5 (design Property 12)_
 
 - [ ] 12. Pointer, shortcut guard, contrast function and storage helpers
-  - [~] 12.1 Implement them
+  - [x] 12.1 Implement them
     - `classifyPointer` (5 px click, more is drag, stays a drag once exceeded); `shouldHandleShortcut` (false for text input, textarea, select, range input); `contrastRatio`; storage helpers with the `skeletonBench.` key prefix and try/catch around every read and write.
     - _Requirements: 12.9, 14.6, 17.5, 17.6, 21.4, 22.2, 23.1, 23.3_
-  - [~] 12.2 Write the tests
+  - [-] 12.2 Write the tests
     - Click at 5 px, drag at 5.1 and 6 px; out to 6 and back to 2 stays a drag.
     - Guard ignores a text input, textarea, select and range input; accepts a button and no focus.
     - Contrast: black on white 21; same colour 1; #767676 on white about 4.54 (within 0.01); argument order does not matter.

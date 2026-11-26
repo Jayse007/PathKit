@@ -124,3 +124,18 @@
 - Broke: nothing known yet.
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: none (app logic only).
+
+## Task 12.1: Pointer, shortcut guard, contrast and storage helpers
+- Done: added src/logic/pointer.ts (`classifyPointer`, click when distance <= 5), src/logic/shortcut-guard.ts (`shouldHandleShortcut`, plus `activeElementKind` mapping a focused element to a kind), src/logic/contrast.ts (`contrastRatio`, WCAG formula, "#rgb" or "#rrggbb"), src/ui/storage.ts (`readStored`, `writeStored`, `loadLook`, `saveLook`, `hasSeenHint`, `markHintSeen`; every access in try/catch; optional storage argument so tests can pass a fake).
+- Broke: nothing known. Not run (no terminal); tests are task 12.2.
+- Kiro assumptions to check: negative or non-finite distance throws in `classifyPointer`; invalid colour strings throw in `contrastRatio`; Look values are the strings 'X_Ray_Skeleton' and 'Clean_Engineering'; hint flag is stored as "1".
+- PathKit feature used: none.
+- Not tested: everything in this task (tests are 12.2); also the look, WebGL, view offset, clicking, load time.
+
+### Task 12.2: tests for pointer, shortcut guard, contrast, storage
+- Done: four test files (pointer 4, shortcut-guard 3, contrast 5, storage 6 = 18 tests). Storage failure modes use a fake storage and a temporary override of `globalThis.localStorage`.
+- Broke: nothing known yet; tests not run (Kiro cannot run commands).
+- Kiro got wrong: nothing found. "Out to 6 and back to 2" is tested through a hand-written max-tracking helper, because `classifyPointer` takes the largest distance.
+- PathKit feature used: none (app code only).
+- Not tested: real browser localStorage, real DOM focus, real pointer events.
+- Source line it should catch: change `<=` to `<` in `classifyPointer`; "is a click at 0 and at exactly 5 px" fails.

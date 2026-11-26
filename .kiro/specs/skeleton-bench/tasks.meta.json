@@ -312,6 +312,11 @@
         "executionId": "27d1c683-2a3f-4b3a-ae3d-9e7dee1dca8c",
         "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
         "timestamp": 1795663575010
+      },
+      {
+        "executionId": "681df74b-e00d-43b3-a71a-c3bca9f32836",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795665256051
       }
     ],
     "12.1 Implement them": [
@@ -319,6 +324,16 @@
         "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
         "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
         "timestamp": 1795583565591
+      },
+      {
+        "executionId": "681df74b-e00d-43b3-a71a-c3bca9f32836",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795665264982
+      },
+      {
+        "executionId": "681df74b-e00d-43b3-a71a-c3bca9f32836",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795665340622
       }
     ],
     "12.2 Write the tests": [
@@ -326,6 +341,11 @@
         "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
         "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
         "timestamp": 1795583566039
+      },
+      {
+        "executionId": "681df74b-e00d-43b3-a71a-c3bca9f32836",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795665342598
       }
     ],
     "13.1 Define the types and data layout (no facts yet)": [
@@ -641,6 +661,13 @@
         "executionId": "27d1c683-2a3f-4b3a-ae3d-9e7dee1dca8c",
         "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
         "timestamp": 1795663504234
+      }
+    ],
+    "11. Explode_Easing and Part path points": [
+      {
+        "executionId": "681df74b-e00d-43b3-a71a-c3bca9f32836",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795665257197
       }
     ]
   }

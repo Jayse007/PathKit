@@ -158,3 +158,17 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Source line it should catch: `Math.max(w, h)` changed to `Math.min(w, h)` in `fillFractionPercent` fails the height-decides case; removing `if (!inFront) return 100;` in `framingPercent` fails the behind-camera test.
 - PathKit feature used: `quatInverse`, `rotateVec` (through `fill.ts`).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 17.1: Implement frame-mapper.ts
+
+- Done: added src/logic/frame-mapper.ts with scrubToFrame (clamp, then round, then `+ 0` so no -0; non-finite throws naming the value), frameToSeconds and secondsToFrame (rounds to the nearest whole frame).
+- Broke: nothing known. No command has been run, so nothing is tested yet.
+- Kiro got wrong: nothing known yet. One thing to watch: `Math.round(-0.4)` gives -0, which the `+ 0` fixes.
+- PathKit feature used: none (pure app logic).
+
+## Task 17.2: Frame_Mapper tests
+
+- Done: added `test/logic/frame-mapper.test.ts` (3 tests): the 9-row scrub table for lastFrame 239 (hand-written results, each checked whole and not -0), throws naming the value for NaN, Infinity and -Infinity, and the round trip `secondsToFrame(frameToSeconds(f, 30), 30)` for every whole frame 0 to 600. Not yet run by the User.
+- Broke: nothing known. One slip: Kiro tried a terminal command to read the notes file, and the hook blocked it. Nothing changed.
+- PathKit feature used: none (pure app logic).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
