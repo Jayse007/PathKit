@@ -248,21 +248,21 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: swap the `order` values of `orbitAround` and `aimAt`, or use `railLength * FRAME_RATE / (N - 1)` for the speed (the no-finding check fails).
     - _Requirements: 8.2 to 8.7, 8.14, 23.8 (design Property 10, 11)_
 
-- [ ] 22. Scene_Set (after S6; the recorded outcome is hard-coded)
+- [x] 22. Scene_Set (after S6; the recorded outcome is hard-coded)
   - [x] 22.1 Implement `src/logic/scene-set.ts`
     - `buildSceneSet` with the S6 outcome recorded in Task 11.2 written in as a constant (not tested at runtime). Outcome A: one scene with every camera. Outcome B: scene 1 with the Main_Camera alone, scene 2 with the others. Write the outcome and the reason in a comment.
     - _Requirements: 8.10, 8.13, 22.10_
-  - [-] 22.2 Write the Scene_Set tests (the S6 regression)
+  - [x] 22.2 Write the Scene_Set tests (the S6 regression)
     - Three cameras plus one rail camera: the set has 1 scene (Outcome A) or 2 scenes (Outcome B) as recorded; every camera id appears exactly once; the Main_Camera is in scene 1 for Outcome B; every scene passes `validateScene`.
     - For every camera and frame, all 7 baked values from the set equal a separate solo bake within 1e-9.
     - Source line it should catch: add a camera to both scenes, or drop `cam-3` from the set.
     - _Requirements: 8.10, 8.13, 22.9, 22.10 (design Property 12)_
 
 - [ ] 23. Finding words
-  - [~] 23.1 Implement `src/logic/findings.ts`
+  - [x] 23.1 Implement `src/logic/findings.ts`
     - Plain-words table from the design for the five codes (`path-end-reached`, `rotation-conflict`, `aim-vertical`, `speed-spike`, `roll-change`): severity text, wording, one-line explanation. An unknown code falls back to the finding's own message. An empty list gives a message that says no problems were found and that the check is rough.
     - _Requirements: 9.2, 9.5, 9.6, 9.7_
-  - [~] 23.2 Write the findings tests
+  - [-] 23.2 Write the findings tests
     - The five codes give exactly the design wording and a severity text label ("Note" or "Warning"); an unknown code gives its own message; an empty list gives the no-problems text containing "rough".
     - Source line it should catch: swap the wording of `speed-spike` and `roll-change`.
     - _Requirements: 9.2, 9.5, 9.7 (design Plain-words findings table)_

@@ -193,3 +193,21 @@
 - Other rows checked (casing, motor, shaft, bearing housing, seal, impeller): none cited any of the four deleted links, so no further claims were removed. They still rest on slurrypumpsupply (and electricmotors.com for the motor); Kiro could not re-read those pages.
 - "Date checked" stays TO CONFIRM. No other URL was added. catalogue-checks.ts and the tests are unchanged.
 - Broke: nothing known. Not run (no terminal). The User runs npm.cmd test from apps/skeleton-bench; exact pass counts need the pasted output.
+
+## Task 14.2: Pump text approved
+- Pump text approved by the user, date checked 2026-11-26. All 8 "Date checked" cells in docs/sources.md now read 2026-11-26 (were TO CONFIRM). Docs-only change; no code or tests touched, nothing run.
+
+## Task 15.1: Build and bake one scene per Part
+
+- Done: added `src/pathkit/part-scenes.ts` with `buildPartScene(part)` (one open `followPath` scene per Part: fps 30, 60 frames, entity id = Part id, forward +Z and up +Y from constants, `followPath` order 0, influence 1, startOffset 0, `alignToPath` false, no `aimAt`, empty targets, path from `partPathPoints`), `partPathLength(part)` (read from `createCurve` and `createArcLengthTable`) and `bakeParts(parts = CATALOGUE.parts)` which returns `Map<partId, BakedData>`. Speed = length * FPS / (EXPLODE_FRAMES - 1) = length * 30 / 59, so frame 59 reaches the path end.
+- Broke: nothing known. Not run (no terminal); tests are task 15.2.
+- PathKit features used: `createCurve`, `createArcLengthTable`, `followPath`, `bake`.
+- Not tested: everything in this task (tests are 15.2); also the look, WebGL, view offset, clicking, load time.
+
+## Task 15.2: Part scene tests
+
+- Done: wrote test/part-scenes.test.ts (14 tests). Three hand-made fixture Parts (along +X, diagonal, vertical) plus every catalogue Part. Checks: `validateScene` passes; scene shape (fps 30, 60 frames, one open `followPath`, no `aimAt`, no targets, +Z and +Y, speed * 59 / 30 equals the path length); length between |v| and 1.1 * |v|; frame 0 equals rest within 1e-9; frame 59 equals typed end positions (fixtures) and rest + v (catalogue) within 1e-6; travelled distance starts at 0, never decreases and ends at the path length; all 60 frames inside the envelope; frame 30 travelled = length * 30/59 (0.5084745762711864 typed in); frames 29 and 30 mirror each other about the middle of the path (hand-derived symmetry, tolerance 1e-4); unique ids; `bakeParts` keys and sizes; `buildPartScene` returns a new equal scene.
+- Kiro assumptions to check: the mirror check relies on the centripetal Catmull-Rom curve with reflected end points being symmetric for these control points. The envelope check applies to Part positions only (not extents).
+- Broke: nothing known. Not run (no terminal). Expected: 15 files, 133 passed, 3 skipped.
+- Source line it should catch: in `buildPartScene`, change `(EXPLODE_FRAMES - 1)` to `EXPLODE_FRAMES` in the speed. The end-position, travelled-end, frame-30 and mirror tests must fail.
+- Not tested: the look, WebGL, view offset, clicking, load time.

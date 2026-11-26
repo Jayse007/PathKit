@@ -185,23 +185,23 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: delete one source id from `docs/sources.md`, or duplicate a Part id.
     - _Requirements: 9.1 to 9.6, 13.3, 18.1, 18.2, 18.3, 35.6 (design Property 11, 18)_
 
-- [ ] 14. Pump facts and catalogue entries
+- [x] 14. Pump facts and catalogue entries
   - [x] 14.1 Research and write the Pump entries
     - Search for reputable sources on the eight Pump parts (casing, impeller, shaft, bearing housing, mechanical seal, flange, bolts as one group, motor): job, material, typical position.
     - Write `docs/sources.md` entries (part, claim, source URL, date checked) and the catalogue entries. Invented sample specifications are labelled "sample data". Rest and explode vectors fit the envelope.
     - _Requirements: 18.1, 19.1, 19.2, 19.3, 19.5, 9.1_
-  - [ ] 14.2 User checkpoint: approve the Pump text
+  - [x] 14.2 User checkpoint: approve the Pump text
     - The User reads and approves every Pump text and source before it is kept.
     - _Requirements: 19.4_
-  - [~] 14.3 Run the catalogue tests
+  - [x] 14.3 Run the catalogue tests
     - The User runs `npm.cmd test`. Report the counts.
     - _Requirements: 9.5, 35.6, 35.14_
 
 - [ ] 15. Part scenes
-  - [~] 15.1 Build and bake one scene per Part
+  - [x] 15.1 Build and bake one scene per Part
     - Fps 30, 60 frames, one `followPath`, speed = path length * 30 / 59, no `aimAt`, empty targets, forward +Z and up +Y from constants. Path length from PathKit's curve and arc-length functions. Bake all Parts at load.
     - _Requirements: 13.2, 13.3, 13.4, 2.10_
-  - [~] 15.2 Write the tests
+  - [-] 15.2 Write the tests
     - `validateScene` passes; frame 0 equals the rest position within 1e-9; the last frame equals rest + v within 1e-6; travelled distance non-decreasing; all 60 frames inside the envelope; frame 30 is at the hand-checked fraction 30/59 of the path; entity ids unique.
     - Source line it should catch: use 60 instead of 59 in the speed (the end is not reached).
     - _Requirements: 8.1, 8.2, 13.2, 13.3, 13.4, 35.5, 35.7 (design Property 7, 11, 13)_
