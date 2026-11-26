@@ -267,20 +267,20 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: swap the wording of `speed-spike` and `roll-change`.
     - _Requirements: 9.2, 9.5, 9.7 (design Plain-words findings table)_
 
-- [ ] 24. Contrast function
+- [x] 24. Contrast function
   - [x] 24.1 Implement `src/logic/contrast.ts`
     - `contrastRatio(fg, bg)` with the WCAG relative-luminance formula. Palette pairs come in Task 47.
     - _Requirements: 19.2_
-  - [-] 24.2 Write the contrast function tests
+  - [x] 24.2 Write the contrast function tests
     - Hand-written: black on white gives 21 (within 1e-9); white on white gives 1; #777777 on white gives about 4.48 (within 0.01, so below 4.5); #767676 on white gives about 4.54 (above 4.5). The order of the two colours does not change the result.
     - Source line it should catch: use 0.04045 as 0.4045 in the linearisation threshold, or drop the +0.05 terms.
     - _Requirements: 19.2 (design Property 14, function part)_
 
 - [ ] 25. Storage wrapper
-  - [~] 25.1 Implement `src/logic/storage.ts`
+  - [x] 25.1 Implement `src/logic/storage.ts`
     - `readSetting` and `writeSetting`, every access inside try/catch, keys prefixed with `STORAGE_KEY_PREFIX` (`shot-rail:`). Takes the storage object as a parameter with the browser one as default, so tests pass a mock.
     - _Requirements: 20.1, 20.2, 20.3_
-  - [~] 25.2 Write the storage tests
+  - [-] 25.2 Write the storage tests
     - Four failure modes with a mock: `getItem` throws; `setItem` throws; the storage object is missing; the stored text is not valid JSON. `readSetting` returns the fallback in each; `writeSetting` does not throw. A working mock round trip stores under `shot-rail:` plus the key.
     - Source line it should catch: remove the try/catch around `setItem`.
     - _Requirements: 20.1, 20.2, 20.3 (design Property 15)_

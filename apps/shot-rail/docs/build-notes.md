@@ -1,5 +1,20 @@
 # Build notes
 
+## Task 25.2: storage tests (newest entry, kept at top)
+- Done: wrote `test/logic/storage.test.ts` (12 `it` blocks, 14 Vitest tests): getItem throws, setItem throws, storage null (read and write), invalid JSON, missing key, prefix `shot-rail:speed` with stored text `42`, round trip (`it.each`, 3 tests), default storage read and write in node, undefined value, circular value. Mock `StorageLike` objects only. Expected values written by hand. Not run by Kiro.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet. The "missing storage" case is the `null` argument; in node the default path returns null or whatever node's own localStorage gives, so those two tests only check "no throw / fallback".
+- PathKit features used: none.
+- Not tested: look, WebGL output, real browser localStorage, PNG download, feel of controls, dev server.
+
+## Task 25.1: storage.ts (newest entry, kept at top)
+- Done: wrote `src/logic/storage.ts`: `readSetting(key, fallback, storage?)` and `writeSetting(key, value, storage?)`, values stored as JSON under `STORAGE_KEY_PREFIX + key`, every access in try/catch. Not run by Kiro.
+- Open API shape, my choice: `storage` is an optional last parameter of type `StorageLike` (`getItem`/`setItem`), default is the browser localStorage looked up inside try/catch; `null` means "no storage" and gives the fallback / a no-op. The design only showed `(key, fallback)` and `(key, value)`.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet.
+- PathKit features used: none.
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
 ## Task 24.2: contrast tests (newest entry, kept at top)
 - Done: wrote `test/logic/contrast.test.ts` (7 `it` blocks, 9 Vitest tests): black/white 21 (1e-9), white/white 1, #777777 about 4.48 (below 4.5), #767676 about 4.54 (above 4.5), #666666 about 5.74 and #595959 about 7.0 (published WCAG values), order-independence (`it.each`, 3 Vitest tests). Not run by Kiro.
 - Update (user request, tests only): added 4 `it` blocks (12 Vitest tests) to `contrast.test.ts`: pure red/green/blue on black (`it.each`, 3 tests, both orders), #0a0a0a on black about 1.0607 (linear branch), and 8 bad colour strings that must throw "expected a colour like" in either position (`it.each`). File now has 11 `it` blocks, 21 Vitest tests. Expected values written by hand. Not run by Kiro; the User runs `npm.cmd test` from apps/shot-rail.

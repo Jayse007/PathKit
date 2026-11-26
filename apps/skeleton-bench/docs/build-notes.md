@@ -227,3 +227,12 @@
 - Broke: nothing known. Not run (no terminal). Expected: 16 files, 143 passed, 3 skipped.
 - Mutation to try once: in `stopTour` delete the `zoom: state.tour.savedZoom,` line; the Tour table test must fail on "zoom after stop".
 - Not tested: the look, WebGL, view offset, clicking, load time, the Tour UI wiring.
+
+## Task 17.1: Renderer, stage, camera and view offset
+- Done: added `src/render/stage.ts` (`createStage(container, laps)`): WebGLRenderer in try/catch with a WebGL-failure message (`WEBGL_FAILURE_MESSAGE`, role="alert"); scene, `GridHelper` at y = -0.6 (faint, opacity 0.5), empty `machineGroup` for Task 17.3; camera from `blendCamera` via `position.set` and `quaternion.set`; view offset `setViewOffset(W, H, -fx*W, -fy*H, W, H)` using `fractionToPixels`, `clearViewOffset` at (0, 0); render-on-change (one `requestAnimationFrame` per change, no continuous loop); ResizeObserver; `dispose`. Added stage constants (`STAGE_GRID_*`, `STAGE_MAX_PIXEL_RATIO`) to constants.ts. Added a temporary page `src/render/stage-preview.html` and `.ts` (sliders for angle, zoom, offset x and y, driven by the state functions) for the 17.2 checkpoint.
+- Decision: `index.html` was not changed (only README.md may change among existing files), so the final entry point (`src/main.ts`) is left for a later task. The preview page is the only way to see the stage for now.
+- Per-frame path: `draw` allocates nothing in app code (preallocated blender, `set()` calls). Three.js allocates its `view` object once on the first `setViewOffset`.
+- Broke: nothing known. Nothing run, no browser opened, editor diagnostics not visible to Kiro.
+- Kiro assumption to check: `new WebGLRenderer` throws when WebGL is missing (so the catch shows the message). Grid colour 0x889099 on background 0xf4f4f4 is a guess at "faint"; Looks come in 17.5.
+- PathKit feature used: `evaluateEntity`, `lerp`, `slerp` through `blendCamera` and the baked laps from `bakeLaps` (`bake`, `orbitAround`, `aimAt`). The view offset is Three.js, not PathKit.
+- Not tested: the look, WebGL, view offset, clicking, load time, resize, WebGL-failure message, per-frame allocation. No unit tests were written for this task (rendering needs a browser).

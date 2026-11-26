@@ -206,18 +206,18 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: use 60 instead of 59 in the speed (the end is not reached).
     - _Requirements: 8.1, 8.2, 13.2, 13.3, 13.4, 35.5, 35.7 (design Property 7, 11, 13)_
 
-- [ ] 16. App state module
+- [x] 16. App state module
   - [x] 16.1 Implement the state functions
     - Set machine (resets explode 0, offset 0, no selection), orbit angle, zoom (clamped), explode (re-clamps the offset), offset (clamped by Drag_Range), mode toggle, select Part, look.
     - Tour start resets explode and offset to 0 and saves angle and zoom; stop or end restores them. While the Tour plays, the orbit, zoom, explode and move setters are rejected with no change. Initial values from constants (angle 30, zoom 0.25, explode 0, Pump).
     - _Requirements: 7.9, 12.4, 13.6, 15.3, 15.4, 16.2, 16.6, 16.11_
-  - [-] 16.2 Write the tests
+  - [x] 16.2 Write the tests
     - Each setter; the reset on machine switch; re-clamp on explode change; Tour start and stop table over several start states; setters rejected while playing; initial values.
     - Source line it should catch: forget to restore the saved zoom on stop.
     - _Requirements: 15.3, 15.4, 16.2, 16.6, 16.11, 35.17 (design Property 19)_
 
 - [ ] 17. Render core
-  - [~] 17.1 Renderer, stage, camera and view offset
+  - [x] 17.1 Renderer, stage, camera and view offset
     - Renderer with a WebGL-failure message; stage and bench grid at y = -0.6; camera from the blend (`position.set`, `quaternion.set`); view offset from the offset fraction; render-on-change loop.
     - _Requirements: 10.1, 10.2, 11.1, 12.2, 12.6, 21.5, 20.4_
   - [~] 17.2 User checkpoint: view the empty stage

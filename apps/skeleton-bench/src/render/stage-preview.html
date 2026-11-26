@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skeleton Bench stage preview (temporary, Task 17.1)</title>
+    <style>
+      body { font-family: system-ui, Segoe UI, Arial, sans-serif; margin: 12px; }
+      #stage { width: 720px; height: 450px; border: 1px solid #444; }
+      #controls { margin: 8px 0; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+      #readout { white-space: pre; font-family: Consolas, monospace; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <h1>Stage preview (temporary)</h1>
+    <p>Empty stage: a faint bench grid. No machine yet.</p>
+    <div id="stage"></div>
+    <div id="controls">
+      <label>Orbit angle <input id="angle" type="range" min="0" max="359" step="1" value="30" /></label>
+      <label>Zoom <input id="zoom" type="range" min="0" max="1" step="0.01" value="0.25" /></label>
+      <label>Offset x <input id="offx" type="range" min="-0.25" max="0.25" step="0.01" value="0" /></label>
+      <label>Offset y <input id="offy" type="range" min="-0.25" max="0.25" step="0.01" value="0" /></label>
+      <button id="reset">Reset offset</button>
+    </div>
+    <div id="readout"></div>
+    <script type="module" src="./stage-preview.ts"></script>
+  </body>
+</html>
