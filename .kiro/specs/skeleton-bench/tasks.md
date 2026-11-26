@@ -225,7 +225,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 17.2 User checkpoint: view the empty stage
     - The User views the empty stage in a browser in their own way: the grid, the camera orbit and zoom, and that the view offset moves the stage. Kiro states what was not tested.
     - _Requirements: 37.1, 37.2_
-  - [-] 17.3 Pump model and Part placement
+  - [x] 17.3 Pump model and Part placement
     - Pump model from shapes: eight named parts, each a named object with `userData.partId`. Parts placed from the baked Part scenes through Explode_Easing. Impeller spin (ordinary Three.js, stopped under reduced motion).
     - Shapes are drawn from scratch with Three.js (casing as a spiral volute with snout, flange ring, discharge neck and foot; impeller as back plate, hub and six curved vanes). Fit test (`test/pump-fit.test.ts`): with the impeller spinner at rotation.x 0, 0.3 and 1, the exact box of every Pump Part stays inside its catalogue extents (overshoot <= 1e-6, message names the Part and axis); a catalogue with the casing x extent 0.05 smaller must give an overshoot above 0.02.
     - _Requirements: 13.2, 13.5, 18.4, 18.5_

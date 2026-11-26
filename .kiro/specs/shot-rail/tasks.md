@@ -313,7 +313,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 29.1 Implement `src/view/main-view.ts` and wire `index.html`
     - One main `THREE.WebGLRenderer` (pixel ratio capped at `DEVICE_PIXEL_RATIO_CAP`), a `PerspectiveCamera` with aspect 16/9 set before `setFocalLength`, `filmGauge` 36, position and rotation from `evaluateEntity` through `position.set` and `quaternion.set` (no per-frame allocation). Renders on change, not on a free-running loop. A WebGL failure shows a message that says what failed and what the User can do next. The view is empty (a grid at the ground only).
     - _Requirements: 4.5, 11.11, 17.1, 18.6, 20.4_
-  - [~] 29.2 User checkpoint: view the empty stage
+  - [x] 29.2 User checkpoint: view the empty stage
     - The User opens the app in a browser in their own way (their own terminal, their own choice) and checks: the 16:9 frame, the ground grid, that a changed lens changes the field of view. Kiro states what was not tested.
     - _Requirements: 25.1, 25.2_
   - [~] 29.3 User checkpoint: approve the safe-area size and its source
