@@ -225,7 +225,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 17.2 User checkpoint: view the empty stage
     - The User views the empty stage in a browser in their own way: the grid, the camera orbit and zoom, and that the view offset moves the stage. Kiro states what was not tested.
     - _Requirements: 37.1, 37.2_
-  - [-] 17.3 Pump model and Part placement
+  - [x] 17.3 Pump model and Part placement
     - Pump model from shapes: eight named parts, each a named object with `userData.partId`. Parts placed from the baked Part scenes through Explode_Easing. Impeller spin (ordinary Three.js, stopped under reduced motion).
     - _Requirements: 13.2, 13.5, 18.4, 18.5_
   - [~] 17.4 User checkpoint: view the Pump assembled and exploded

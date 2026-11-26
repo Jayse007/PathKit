@@ -87,6 +87,7 @@ These are the useful parts of the log. Each one changed how the project is run.
 | Kiro could not check which files a task changed. | Each pushed commit is checked against the files the spec allows. | `.kiro/specs/constraint-checklist/`, `.kiro/specs/setup-scripts/` |
 | Design problems found in review before any code was written for the setup script: a deprecated way to start npm on Windows, output that can be lost when the program exits, a default output limit of 1 MiB, and a child program that could wait for keyboard input. | The design was edited first. | `.kiro/specs/setup-scripts/design.md` |
 | The first tests for both scripts missed real breaks (examples: a script that reads standard input would hang the hook; the exit code with two failures; the exit code of the setup function). | Tests added until each break failed a test. | `scripts/check-constraints.test.mjs`, `scripts/setup.test.mjs` |
+| An edit tool overwrote the next requirement heading in skeleton-bench `requirements.md` (Requirement 14) during the clearance change. It was the second time, after the `design.md` "x" incident. | Rule: after any edit to a spec file, re-read the lines around the edit and check the neighbouring headings. | `.kiro/specs/skeleton-bench/requirements.md` |
 
 Known limits in the finished code are documented, not hidden. KI-11 describes a closed-path orientation
 snap that remains.

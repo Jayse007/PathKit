@@ -298,19 +298,19 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 
 ### Phase 2: Stage and views (each item is its own task with its own User checkpoint)
 
-- [ ] 28. CameraRig
+- [x] 28. CameraRig
   - [x] 28.1 Implement `src/view/camera-rig.ts`
     - Bake scheduling: a dirty flag; at most one re-bake per animation frame (changes in the same frame coalesce); the subject bake is cached and redone only when the subject kind or the Road changes. A re-bake never starts playback. Builds the Scene_Set, bakes each scene, runs `motionLinter` and keeps only the findings for the main camera. Errors from `bake`, `validateScene` or `motionLinter` are caught and returned as the plain messages in the design's Error Handling table.
     - `evaluate(cameraId, displayedFrame, out)` calls `evaluateEntity` only and writes into the caller's buffer. No object, array or closure is created per call.
     - The scheduler logic is a small pure function or class with no DOM, so it can be tested in Node.
     - _Requirements: 8.10, 8.12, 8.15, 9.1, 9.8, 11.10, 11.11, 11.14_
-  - [-] 28.2 Write the CameraRig tests
+  - [x] 28.2 Write the CameraRig tests
     - Five `markDirty` calls in one animation frame give one bake. A camera-only change does not rebake the subject; a Road change does. After a bake the reported play state is paused and the frame is unchanged. `evaluate` returns the same buffer object it was given, for 1000 calls. A thrown error inside the bake comes back as a message that names what failed and what to do next. `motionLinter` findings for other cameras are dropped.
     - Source line it should catch: bake inside `markDirty` instead of at the frame tick, or create a new output object inside `evaluate`.
     - _Requirements: 8.12, 8.15, 9.1, 9.8, 11.10, 11.11, 11.14 (design Re-bake scheduling)_
 
 - [ ] 29. Main renderer and camera
-  - [~] 29.1 Implement `src/view/main-view.ts` and wire `index.html`
+  - [-] 29.1 Implement `src/view/main-view.ts` and wire `index.html`
     - One main `THREE.WebGLRenderer` (pixel ratio capped at `DEVICE_PIXEL_RATIO_CAP`), a `PerspectiveCamera` with aspect 16/9 set before `setFocalLength`, `filmGauge` 36, position and rotation from `evaluateEntity` through `position.set` and `quaternion.set` (no per-frame allocation). Renders on change, not on a free-running loop. A WebGL failure shows a message that says what failed and what the User can do next. The view is empty (a grid at the ground only).
     - _Requirements: 4.5, 11.11, 17.1, 18.6, 20.4_
   - [~] 29.2 User checkpoint: view the empty stage

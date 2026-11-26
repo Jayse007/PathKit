@@ -805,6 +805,11 @@
         "executionId": "f47bfcbc-6b33-466f-a294-34238bd53df7",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795680054671
+      },
+      {
+        "executionId": "58ded702-32b3-4586-bf4c-67ed123c4799",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795682990160
       }
     ],
     "29.1 Implement `src/view/main-view.ts` and wire `index.html`": [
@@ -812,6 +817,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529400596
+      },
+      {
+        "executionId": "58ded702-32b3-4586-bf4c-67ed123c4799",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795682997510
       }
     ],
     "29.2 User checkpoint: view the empty stage": [
@@ -1442,6 +1452,13 @@
         "executionId": "252f0170-95c9-461d-b747-fe8846ae0902",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795679329090
+      }
+    ],
+    "28. CameraRig": [
+      {
+        "executionId": "58ded702-32b3-4586-bf4c-67ed123c4799",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795682990434
       }
     ]
   }

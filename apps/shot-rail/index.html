@@ -9,9 +9,25 @@
         margin: 0;
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       }
+      #stage {
+        width: min(100vw, calc((100vh - 48px) * 16 / 9));
+        aspect-ratio: 16 / 9;
+        background: #20242a;
+      }
+      #bar {
+        padding: 8px 12px;
+      }
     </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div id="stage"></div>
+      <div id="bar">
+        <label for="lens">Lens</label>
+        <select id="lens" title="Focal length of the main camera"></select>
+        <span id="status" role="status"></span>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
