@@ -197,21 +197,21 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - The User runs `npm.cmd test`. Report the counts.
     - _Requirements: 9.5, 35.6, 35.14_
 
-- [ ] 15. Part scenes
+- [x] 15. Part scenes
   - [x] 15.1 Build and bake one scene per Part
     - Fps 30, 60 frames, one `followPath`, speed = path length * 30 / 59, no `aimAt`, empty targets, forward +Z and up +Y from constants. Path length from PathKit's curve and arc-length functions. Bake all Parts at load.
     - _Requirements: 13.2, 13.3, 13.4, 2.10_
-  - [-] 15.2 Write the tests
+  - [x] 15.2 Write the tests
     - `validateScene` passes; frame 0 equals the rest position within 1e-9; the last frame equals rest + v within 1e-6; travelled distance non-decreasing; all 60 frames inside the envelope; frame 30 is at the hand-checked fraction 30/59 of the path; entity ids unique.
     - Source line it should catch: use 60 instead of 59 in the speed (the end is not reached).
     - _Requirements: 8.1, 8.2, 13.2, 13.3, 13.4, 35.5, 35.7 (design Property 7, 11, 13)_
 
 - [ ] 16. App state module
-  - [~] 16.1 Implement the state functions
+  - [x] 16.1 Implement the state functions
     - Set machine (resets explode 0, offset 0, no selection), orbit angle, zoom (clamped), explode (re-clamps the offset), offset (clamped by Drag_Range), mode toggle, select Part, look.
     - Tour start resets explode and offset to 0 and saves angle and zoom; stop or end restores them. While the Tour plays, the orbit, zoom, explode and move setters are rejected with no change. Initial values from constants (angle 30, zoom 0.25, explode 0, Pump).
     - _Requirements: 7.9, 12.4, 13.6, 15.3, 15.4, 16.2, 16.6, 16.11_
-  - [~] 16.2 Write the tests
+  - [-] 16.2 Write the tests
     - Each setter; the reset on machine switch; re-clamp on explode change; Tour start and stop table over several start states; setters rejected while playing; initial values.
     - Source line it should catch: forget to restore the saved zoom on stop.
     - _Requirements: 15.3, 15.4, 16.2, 16.6, 16.11, 35.17 (design Property 19)_

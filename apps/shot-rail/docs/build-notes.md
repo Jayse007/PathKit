@@ -1,6 +1,20 @@
 # Build notes
 
-## Task 23.2: findings tests (newest entry, kept at top)
+## Task 24.2: contrast tests (newest entry, kept at top)
+- Done: wrote `test/logic/contrast.test.ts` (7 `it` blocks, 9 Vitest tests): black/white 21 (1e-9), white/white 1, #777777 about 4.48 (below 4.5), #767676 about 4.54 (above 4.5), #666666 about 5.74 and #595959 about 7.0 (published WCAG values), order-independence (`it.each`, 3 Vitest tests). Not run by Kiro.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: the task's #777777 case alone would not catch the 0.4045 threshold change (its channel is 0.467, above both thresholds), so I added #666666 (channel 0.4).
+- PathKit features used: none.
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 24.1: contrast.ts (newest entry, kept at top)
+- Done: wrote `src/logic/contrast.ts`: `contrastRatio(fg, bg)` using the WCAG relative-luminance formula (0.04045 threshold, 0.2126/0.7152/0.0722 weights, +0.05 terms, order-independent). `RgbColor` was not defined anywhere in the design, so I defined it as a `"#rrggbb"` string; an invalid string throws an Error. Not run by Kiro.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet. The `RgbColor` format is my choice; tell me if you want `[r,g,b]` instead.
+- PathKit features used: none (pure function, no imports).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 23.2: findings tests
 - Done: wrote `test/logic/findings.test.ts` (5 `it` blocks, 10 Vitest tests): five codes vs hand-written design table text (`it.each`), unknown code with info/warning (`it.each`), "constructor" treated as unknown, empty list text contains "rough", order kept for a mixed list. Not run by Kiro.
 - Broke: nothing known. Not run by Kiro.
 - Kiro got wrong: nothing known yet.

@@ -211,3 +211,18 @@
 - Broke: nothing known. Not run (no terminal). Expected: 15 files, 133 passed, 3 skipped.
 - Source line it should catch: in `buildPartScene`, change `(EXPLODE_FRAMES - 1)` to `EXPLODE_FRAMES` in the speed. The end-position, travelled-end, frame-30 and mirror tests must fail.
 - Not tested: the look, WebGL, view offset, clicking, load time.
+
+## Task 16.1: Implement the state functions
+
+- Done: added `src/state.ts`. `AppState` is a plain object (machine, orbitAngleDeg, zoom, explode, offsetX/offsetY, mode, selectedPart, look, tour with saved angle and zoom). Pure update functions return a new state: `createInitialState(look)` (angle 30, zoom 0.25, explode 0, Pump from constants), `setMachine` (explode 0, offset 0, no selection), `setOrbitAngle`, `setZoom` (clamp 0 to 1), `setExplode` (clamp 0 to 100, re-clamps the offset via `clampOffset`), `setOffset` (clamped by Drag_Range at the current explode), `toggleMode`, `selectPart`, `setLook`, `startTour` (idle only: explode and offset 0, saves angle and zoom), `pauseTour`, `resumeTour`, `stopTour` (restores angle and zoom; also used when the Tour ends). While the Tour status is `playing`, the orbit, zoom, explode and offset setters return the same state object. Non-finite input throws with the value in the message.
+- Kiro choices to check: (1) the setters are rejected only while `playing`, not while `paused`; stopping still restores the saved values. (2) `setMachine` and the other setters not named in the task are not blocked during the Tour. (3) The orbit angle is stored unwrapped; `angleToFrame` wraps it. (4) Tour start from `paused` or `playing` does nothing.
+- Broke: nothing known. Not run (no terminal); tests are task 16.2.
+- PathKit feature used: none (app logic only).
+- Not tested: everything in this task; also the look, WebGL, view offset, clicking, load time.
+
+## Task 16.2: State tests
+- Done: wrote test/state.test.ts (10 tests): initial values; orbit angle; zoom clamp table; explode clamp with offset re-clamp (50, 100, 150, -10, and 100 then 0 does not restore the offset); offset clamp at explode 0 and 50; mode, select Part, Look; Machine switch reset; Tour start/stop table over four start states (the Tour-moved angle and zoom are set by hand between start and stop, so a missing restore shows); pause/resume/stop transitions; the four setters rejected while playing (same object returned). Expected values typed in.
+- Spec check: state.ts matches Requirement 16.11 and design (only orbit, zoom, explode and move setters are blocked, only while status is `playing`). Spec is silent on `paused` and on Machine switch, mode, select and Look during the Tour, so no test asserts those.
+- Broke: nothing known. Not run (no terminal). Expected: 16 files, 143 passed, 3 skipped.
+- Mutation to try once: in `stopTour` delete the `zoom: state.tour.savedZoom,` line; the Tour table test must fail on "zoom after stop".
+- Not tested: the look, WebGL, view offset, clicking, load time, the Tour UI wiring.

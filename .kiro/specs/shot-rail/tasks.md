@@ -258,20 +258,20 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: add a camera to both scenes, or drop `cam-3` from the set.
     - _Requirements: 8.10, 8.13, 22.9, 22.10 (design Property 12)_
 
-- [ ] 23. Finding words
+- [x] 23. Finding words
   - [x] 23.1 Implement `src/logic/findings.ts`
     - Plain-words table from the design for the five codes (`path-end-reached`, `rotation-conflict`, `aim-vertical`, `speed-spike`, `roll-change`): severity text, wording, one-line explanation. An unknown code falls back to the finding's own message. An empty list gives a message that says no problems were found and that the check is rough.
     - _Requirements: 9.2, 9.5, 9.6, 9.7_
-  - [-] 23.2 Write the findings tests
+  - [x] 23.2 Write the findings tests
     - The five codes give exactly the design wording and a severity text label ("Note" or "Warning"); an unknown code gives its own message; an empty list gives the no-problems text containing "rough".
     - Source line it should catch: swap the wording of `speed-spike` and `roll-change`.
     - _Requirements: 9.2, 9.5, 9.7 (design Plain-words findings table)_
 
 - [ ] 24. Contrast function
-  - [~] 24.1 Implement `src/logic/contrast.ts`
+  - [x] 24.1 Implement `src/logic/contrast.ts`
     - `contrastRatio(fg, bg)` with the WCAG relative-luminance formula. Palette pairs come in Task 47.
     - _Requirements: 19.2_
-  - [~] 24.2 Write the contrast function tests
+  - [-] 24.2 Write the contrast function tests
     - Hand-written: black on white gives 21 (within 1e-9); white on white gives 1; #777777 on white gives about 4.48 (within 0.01, so below 4.5); #767676 on white gives about 4.54 (above 4.5). The order of the two colours does not change the result.
     - Source line it should catch: use 0.04045 as 0.4045 in the linearisation threshold, or drop the +0.05 terms.
     - _Requirements: 19.2 (design Property 14, function part)_
