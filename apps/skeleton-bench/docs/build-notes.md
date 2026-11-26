@@ -150,7 +150,8 @@
 - Not tested: everything (checks come in 13.2).
 
 ## Task 13.2: catalogue checks
-- Done: added `src/data/catalogue-checks.ts` (pure checks returning failure lists that name the Part: fields, unique ids, keyboard order, source ids, explode length, envelope, named Parts, `parseSourceIds`) and `test/catalogue.test.ts` (21 tests: 17 run, 4 skipped). The test reads `docs/sources.md` with `node:fs`.
+- Done: added `src/data/catalogue-checks.ts` (pure checks returning failure lists that name the Part: fields, unique ids, keyboard order, source ids, explode length, envelope, named Parts, `parseSourceIds`) and `test/catalogue.test.ts` (now 27 tests: 23 run, 4 skipped). The test reads `docs/sources.md` with `import SOURCES_TEXT from '../docs/sources.md?raw'` (Vite asset import, typed by `src/vite-env.d.ts`). This replaces `node:fs` (the task text said `node:fs`) so `tsc` passes without adding `@types/node`.
+- Follow-up checks added (6 tests): envelope low side (rest x -1.2), end position on y and z (explode vector y and z), extents 0 reported, Machine with no Parts, duplicate Machine id, unknown id in a keyboard order. Mutations they must catch: removing the low-side envelope check; ignoring explode vector z in the end position; changing `extents <= 0` to `< 0`; removing the no-Parts, duplicate-Machine or unknown-id checks.
 - Fixture handling: the source-id check exempts only the exact Part `fixture-part` with source `fixture`. The named-Parts checks per Machine (8, 6, 6) and the 20-Part total are `skipIf` while a Machine holds the fixture or is absent. They run on their own once Task 14 and Task 18 fill the catalogue. Not weakened.
 - Naming rule for Tasks 14 and 18: Part `name` must equal the brief's name (case ignored, a trailing "(...)" note allowed), for example "Bolts (one group)", "Tube bundle", "Bulb holder".
 - Broke: nothing known. Not run (no terminal).

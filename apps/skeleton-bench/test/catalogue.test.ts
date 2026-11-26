@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   checkEnvelope,
@@ -14,6 +13,7 @@ import {
 } from '../src/data/catalogue-checks.js';
 import type { Catalogue, MachineId, PartEntry } from '../src/data/catalogue-types.js';
 import { CATALOGUE, FIXTURE_CATALOGUE, FIXTURE_PART } from '../src/data/catalogue.js';
+import SOURCES_TEXT from '../docs/sources.md?raw';
 
 // Property 18 (catalogue checks). Hand-written expected values only.
 //
@@ -22,8 +22,6 @@ import { CATALOGUE, FIXTURE_CATALOGUE, FIXTURE_PART } from '../src/data/catalogu
 // that Machine has no fixture Part) and the 20-Part total (runs once all three Machines exist).
 // The structural checks and the source-id check always run on CATALOGUE. The source-id check
 // exempts only the exact fixture Part. Task 14 fills the Pump, Task 18 the other two.
-
-const SOURCES_TEXT = readFileSync(new URL('../docs/sources.md', import.meta.url), 'utf8');
 
 function part(overrides: Partial<PartEntry>): PartEntry {
   return { ...FIXTURE_PART, ...overrides };
@@ -161,6 +159,55 @@ describe('the checks catch bad data', () => {
       catalogueOf([part({ id: 'ok', restPosition: [-1, 0.4, 0.2], explodeVector: [1.5, 0, 0], extents: [0.2, 0.2, 0.2] })]),
     );
     expect(inside).toEqual([]);
+  });
+
+  it('a Part past the low side of the envelope at rest is reported', () => {
+    // Extents 0.2 m: the box spans -1.3 to -1.1 on x, past the -1.2 m limit.
+    const failures = checkEnvelope(
+      catalogueOf([part({ id: 'lo', restPosition: [-1.2, 0, 0], extents: [0.2, 0.2, 0.2], explodeVector: [0.1, 0, 0] })]),
+    );
+    expect(failures.some((f) => f.includes('"lo"') && f.includes('rest position'))).toBe(true);
+  });
+
+  it('the end position uses the y and z parts of the explode vector', () => {
+    const onZ = checkEnvelope(
+      catalogueOf([part({ id: 'z', restPosition: [0, 0, 0.2], explodeVector: [0, 0, 0.5], extents: [0.2, 0.2, 0.2] })]),
+    );
+    expect(onZ.some((f) => f.includes('"z"') && f.includes('end position') && f.includes('on z'))).toBe(true);
+    const onY = checkEnvelope(
+      catalogueOf([part({ id: 'y', restPosition: [0, 0, 0], explodeVector: [0, 0.8, 0], extents: [0.2, 0.2, 0.2] })]),
+    );
+    expect(onY.some((f) => f.includes('"y"') && f.includes('end position') && f.includes('on y'))).toBe(true);
+  });
+
+  it('an extent of exactly 0 is reported', () => {
+    const failures = checkFieldsPresent(catalogueOf([part({ id: 'flat', extents: [0, 0.2, 0.2] })]));
+    expect(failures.some((f) => f.includes('"flat"') && f.includes('extents'))).toBe(true);
+  });
+
+  it('a Machine with no Parts is reported by name', () => {
+    const cat: Catalogue = { machines: [{ id: 'pump', name: 'Pump', partIds: [] }], parts: [] };
+    const failures = checkFieldsPresent(cat);
+    expect(failures.some((f) => f.includes('Machine "pump"') && f.includes('has no Parts'))).toBe(true);
+  });
+
+  it('two Machines with the same id are reported by name', () => {
+    const cat: Catalogue = {
+      machines: [
+        { id: 'pump', name: 'Pump one', partIds: ['a'] },
+        { id: 'pump', name: 'Pump two', partIds: [] },
+      ],
+      parts: [part({ id: 'a' })],
+    };
+    const failures = checkUniqueIds(cat);
+    expect(failures.length).toBe(1);
+    expect(failures[0]).toContain('Machine "pump"');
+  });
+
+  it('a keyboard order that lists an unknown Part id is reported by that id', () => {
+    const failures = checkKeyboardOrder(catalogueOf([part({ id: 'a' })], ['a', 'ghost']));
+    expect(failures.length).toBe(1);
+    expect(failures[0]).toContain('ghost');
   });
 
   it('an empty field or a bad vector is reported by name', () => {

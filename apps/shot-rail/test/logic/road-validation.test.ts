@@ -69,4 +69,56 @@ describe('validateRoad', () => {
     points[4] = { x: points[4].x, y: 1.9, z: points[4].z };
     expect(validateRoad(points).ok).toBe(false);
   });
+
+  it('refuses a road with one point lower than point 0', () => {
+    const points = candidate(6);
+    points[3] = { x: points[3].x, y: -0.1, z: points[3].z };
+    expect(validateRoad(points).ok).toBe(false);
+  });
+
+  it('refuses a road whose point 1 is at a different y', () => {
+    const points = candidate(6);
+    points[1] = { x: points[1].x, y: 1.9, z: points[1].z };
+    expect(validateRoad(points).ok).toBe(false);
+  });
+
+  it('accepts consecutive points that share an x but differ in z', () => {
+    const result = validateRoad([
+      { x: 0, y: 0.9, z: 0 },
+      { x: 0, y: 0.9, z: 5 },
+      { x: 10, y: 0.9, z: 5 },
+      { x: 10, y: 0.9, z: 0 },
+    ]);
+    expect(result.ok).toBe(true);
+  });
+
+  const badValues: [string, number][] = [
+    ['NaN', NaN],
+    ['Infinity', Infinity],
+  ];
+  for (const axis of ['x', 'y', 'z'] as const) {
+    for (const [name, value] of badValues) {
+      it(`refuses ${name} in ${axis} of point 2 and names point 2`, () => {
+        const points = candidate(6);
+        points[2] = { ...points[2], [axis]: value };
+        const result = validateRoad(points);
+        expect(result.ok).toBe(false);
+        if (result.ok) return;
+        expect(result.message).toContain('point 2');
+      });
+    }
+  }
+
+  it('returns a copy: later changes to the input do not change the road', () => {
+    const points = candidate(6);
+    const result = validateRoad(points);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.road.points).not.toBe(points);
+    expect(result.road.points[0]).toEqual({ x: 0, y: 0.9, z: 0 });
+    points[0].x = 99;
+    expect(result.road.points[0]).toEqual({ x: 0, y: 0.9, z: 0 });
+    points[0] = { x: 77, y: 0.9, z: 77 };
+    expect(result.road.points[0]).toEqual({ x: 0, y: 0.9, z: 0 });
+  });
 });

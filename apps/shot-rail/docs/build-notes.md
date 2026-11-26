@@ -186,6 +186,7 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 ## Task 18.2: Road validation tests
 
 - Done: added `test/logic/road-validation.test.ts` (7 tests): 2 and 101 points refused with the count, "3" and "100" in the message; 3 and 100 points accepted (3-point case also checks closed and the exact copied points); one duplicated consecutive point refused; last point equal to first refused; one point at a different y refused. Candidates are a flat zigzag (x = 10 * i, z = 0 or 5, y = 0.9), expected values written by hand. Not yet run by the User.
+- Extension (user-requested, tests only): added 10 `it` blocks, 17 in total. A point lower than point 0; point 1 at a different y; shared x with different z is accepted; NaN and Infinity in each of x, y, z of point 2 (6 blocks, message must contain "point 2"); returned road is a copy (array differs, and changing the input point object or replacing its entry leaves `road.points[0]` unchanged, because the source copies each point). Expected values written by hand. Not yet run; the User runs `npm.cmd test` from apps/shot-rail.
 - Broke: nothing known. Kiro tried a terminal command by mistake while looking for the end of the notes; the hook blocked it and nothing changed.
 - PathKit feature used: only the `Vec3` type (through `pathkit.ts`).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server, non-finite coordinates (not in the task).
