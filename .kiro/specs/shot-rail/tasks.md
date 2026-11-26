@@ -169,21 +169,21 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 
 ### Phase 1: Pure logic (pure, tested)
 
-- [ ] 14. Lens_Module
+- [x] 14. Lens_Module
   - [x] 14.1 Implement `src/logic/lens.ts`
     - `fieldOfViewForFocalLengthMm`: horizontal 2 atan(18 / f), vertical 2 atan(10.125 / f), work in radians, convert to degrees at the output. A value that is 0 or less, or not finite, throws an Error that names the value.
     - _Requirements: 4.1, 4.2, 4.4, 4.6, 4.7, 4.8, 4.9_
-  - [-] 14.2 Write the lens tests
+  - [x] 14.2 Write the lens tests
     - Table to 1 decimal place (hand-written): 24 mm 73.7 / 45.7, 35 mm 54.4 / 32.3, 50 mm 39.6 / 22.9, 85 mm 23.9 / 13.6. The unrounded 24 mm vertical value is 45.747 (within 0.001) and is not 45.75.
     - Throws naming the value for 0, -1, -0.001, NaN, Infinity. Same input gives the same output.
     - Source line it should catch: use 20 instead of 20.25 for the sensor height in the vertical formula (24 mm vertical becomes 45.2 and fails).
     - _Requirements: 4.1, 4.2, 4.3, 4.6, 4.7, 23.4, 23.5 (design Property 1, 2)_
 
 - [ ] 15. Label_Module
-  - [~] 15.1 Implement `src/logic/labels.ts`
+  - [x] 15.1 Implement `src/logic/labels.ts`
     - `angleLabel` and `framingLabel` using the named thresholds from `constants.ts`. Overhead takes precedence over high angle. `framingLabel` throws naming the value when the input is not finite or outside 0 to 100.
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4, 6.8_
-  - [~] 15.2 Write the label tests
+  - [-] 15.2 Write the label tests
     - Elevation table: -10.1, -10, -9.9, 9.9, 10, 10.1, 59.9, 60, 60.1 give low angle, eye level, eye level, eye level, eye level, high angle, high angle, high angle, overhead.
     - Fill table: 34.9, 35, 35.1, 69.9, 70, 70.1 give wide, medium, medium, medium, medium, close-up. Fill of -0.1, 100.1, NaN, Infinity throws naming the value; 0 and 100 are accepted.
     - Source line it should catch: change `<= 10` to `< 10` for the eye-level upper bound.

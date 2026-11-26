@@ -126,3 +126,18 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Kiro note: I checked the 45.747 figure by hand series (about 45.748), inside the 0.001 band.
 - PathKit feature used: none (pure lens function).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 15.1: Implement labels.ts
+
+- Done: wrote `src/logic/labels.ts` with `angleLabel` (overhead checked first; above 60 overhead, above 10 high angle, -10 to 10 eye level, below -10 low angle) and `framingLabel` (above 70 close-up, 35 to 70 medium, below 35 wide). Thresholds come from `constants.ts`. `framingLabel` throws an Error naming the value for NaN, Infinity, below 0 or above 100.
+- Broke: nothing known. No command has been run; the label tests (15.2) do not exist yet.
+- Kiro got wrong: nothing known.
+- PathKit feature used: none (pure logic, no PathKit import).
+
+## Task 15.2: Label tests
+
+- Done: added `test/logic/labels.test.ts` (6 tests): the 9-row elevation table, an explicit `angleLabel(10)` eye-level check, 90 and -90, the 6-row fill table, 0 and 100 accepted, and throws naming the value for -0.1, 100.1, NaN, Infinity. Not yet run by the User.
+- Broke: nothing known.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: none (pure labels).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.

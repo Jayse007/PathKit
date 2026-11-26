@@ -131,6 +131,18 @@ describe('clampOffset', () => {
     near('at 100 y', 2, atHundred.y, -0.1);
   });
 
+  it('clamps an out-of-range Explode_Amount to 0..100', () => {
+    near('benchLimit(-20)', 0, benchLimit(-20), 0.25);
+    near('benchLimit(150)', 1, benchLimit(150), 0.1);
+    near('benchLimit(1000)', 2, benchLimit(1000), 0.1);
+    const high = clampOffset(1, -1, 150);
+    near('clampOffset high x', 3, high.x, 0.1);
+    near('clampOffset high y', 3, high.y, -0.1);
+    const low = clampOffset(1, -1, -20);
+    near('clampOffset low x', 4, low.x, 0.25);
+    near('clampOffset low y', 4, low.y, -0.25);
+  });
+
   it('throws with the value in the message for non-finite input', () => {
     const bad: ReadonlyArray<readonly [number, string]> = [
       [NaN, 'NaN'],

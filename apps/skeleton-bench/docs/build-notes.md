@@ -109,5 +109,6 @@
 
 - Done: wrote test/drag-range.test.ts (10 tests). Limits 0.25, 0.175, 0.10 at 0, 50, 100; 1000 x 800 px table (250/200, 175/140, 100/80); inside unchanged; on the edge unchanged; outside gives the nearest edge; axes independent; reset gives (0, 0); loop e = 0 to 100 checking L(e) = 0.25 - 0.0015 * e (typed in), strictly shrinking, and the clamped far offset; re-clamp when e changes 0 -> 50 -> 100; non-finite throws with the value for all four functions. Comparisons use a 1e-9 tolerance.
 - Broke: nothing known. Not run (no terminal). Mutation to try once: in benchLimit use 0.25 instead of 0.15 as the slope, i.e. `BENCH_MAX_FRACTION_AT_0 - 0.25 * e / 100`; the 100 percent limit row must fail.
+- Added later: test 'clamps an out-of-range Explode_Amount to 0..100' (now 11 tests). Hand-written: benchLimit(-20) = 0.25, benchLimit(150) = benchLimit(1000) = 0.10, clampOffset(1, -1, 150) = (0.1, -0.1), clampOffset(1, -1, -20) = (0.25, -0.25). It should fail if `Math.min(100, ...)` or `Math.max(0, ...)` is removed from benchLimit. Not run (no terminal).
 - Not tested: the look, WebGL, view offset, clicking, load time.
 - PathKit feature used: none.
