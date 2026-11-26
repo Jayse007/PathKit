@@ -49,4 +49,15 @@ describe('frameToSeconds and secondsToFrame', () => {
       }
     }
   });
+
+  it('secondsToFrame never returns -0', () => {
+    // Math.round(-0.3) is -0, so the "+ 0" in secondsToFrame is what makes this 0.
+    const small = secondsToFrame(-0.01, 30);
+    expect(small).toBe(0);
+    expect(Object.is(small, -0)).toBe(false);
+
+    const negZero = secondsToFrame(-0, 30);
+    expect(negZero).toBe(0);
+    expect(Object.is(negZero, -0)).toBe(false);
+  });
 });

@@ -108,4 +108,12 @@ describe('storage keys and values', () => {
     fake.data.set(STORAGE_KEY_LOOK, 'garbage');
     expect(loadLook(fake)).toBe('X_Ray_Skeleton');
   });
+
+  it('counts a hint as seen only when the stored value is "1"', () => {
+    const fake = memoryStorage();
+    fake.data.set(STORAGE_KEY_HINT_PREFIX + 'explode', '0');
+    expect(hasSeenHint('explode', fake)).toBe(false);
+    fake.data.set(STORAGE_KEY_HINT_PREFIX + 'explode', 'yes');
+    expect(hasSeenHint('explode', fake)).toBe(false);
+  });
 });

@@ -169,6 +169,8 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 ## Task 17.2: Frame_Mapper tests
 
 - Done: added `test/logic/frame-mapper.test.ts` (3 tests): the 9-row scrub table for lastFrame 239 (hand-written results, each checked whole and not -0), throws naming the value for NaN, Infinity and -Infinity, and the round trip `secondsToFrame(frameToSeconds(f, 30), 30)` for every whole frame 0 to 600. Not yet run by the User.
+- Extension (user-requested, test only): added a 4th test, `secondsToFrame never returns -0`. It checks `secondsToFrame(-0.01, 30)` and `secondsToFrame(-0, 30)` are 0 and not -0 (explicit `Object.is` check). It should fail if the `+ 0` in `secondsToFrame` is removed. `frame-mapper.test.ts` should now have 4 tests. The User runs `npm.cmd test` from `apps/shot-rail`.
+- Correction: removing the `+ 0` in `scrubToFrame` is an equivalent change, because the clamp `Math.max(scrubValue, 0)` already turns -0 into +0. The task hint saying the -0 check fails for `scrubToFrame` was wrong. Only `secondsToFrame` can return -0.
 - Broke: nothing known. One slip: Kiro tried a terminal command to read the notes file, and the hook blocked it. Nothing changed.
 - PathKit feature used: none (pure app logic).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.

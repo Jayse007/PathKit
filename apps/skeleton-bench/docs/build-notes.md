@@ -139,3 +139,5 @@
 - PathKit feature used: none (app code only).
 - Not tested: real browser localStorage, real DOM focus, real pointer events.
 - Source line it should catch: change `<=` to `<` in `classifyPointer`; "is a click at 0 and at exactly 5 px" fails.
+- Added later (test-only, 6 tests): contrast gets pure colours on white (3.998, 1.372, 8.592), #0a0a0a on white (19.80) and `#abc` vs `#aabbcc`; shortcut-guard gets all text input types and checkbox/button; storage gets hint values '0' and 'yes'. Expected values were worked out by hand. Counts are now pointer 4, shortcut-guard 5, contrast 8, storage 7 = 24; total 89 + 6 = 95. Not run.
+- Mutations they should catch: swapped green/blue luminance weights; `12.92` changed to `12`; changed `#rgb` expansion; 'number' or 'password' removed from the text input types; `=== '1'` changed to `!== null`.

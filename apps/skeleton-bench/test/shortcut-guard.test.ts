@@ -25,4 +25,15 @@ describe('activeElementKind', () => {
     expect(activeElementKind({ tagName: 'INPUT', type: 'range' })).toBe('range-input');
     expect(activeElementKind({ tagName: 'BUTTON' })).toBe('button');
   });
+
+  it('treats number, password, search, email, url, tel and empty input types as text input', () => {
+    for (const type of ['number', 'password', 'search', 'email', 'url', 'tel', '']) {
+      expect(activeElementKind({ tagName: 'INPUT', type })).toBe('text-input');
+    }
+  });
+
+  it('treats checkbox and button input types as button', () => {
+    expect(activeElementKind({ tagName: 'INPUT', type: 'checkbox' })).toBe('button');
+    expect(activeElementKind({ tagName: 'INPUT', type: 'button' })).toBe('button');
+  });
 });

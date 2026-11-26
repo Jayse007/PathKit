@@ -20,6 +20,20 @@ describe('contrastRatio', () => {
     expect(Math.abs(contrastRatio('#000', '#fff') - 21)).toBeLessThan(1e-9);
   });
 
+  it('gives hand-computed ratios for pure colours on white', () => {
+    expect(Math.abs(contrastRatio('#ff0000', '#ffffff') - 3.998)).toBeLessThan(0.01);
+    expect(Math.abs(contrastRatio('#00ff00', '#ffffff') - 1.372)).toBeLessThan(0.01);
+    expect(Math.abs(contrastRatio('#0000ff', '#ffffff') - 8.592)).toBeLessThan(0.01);
+  });
+
+  it('gives about 19.80 for a very dark colour on white (linear segment)', () => {
+    expect(Math.abs(contrastRatio('#0a0a0a', '#ffffff') - 19.8)).toBeLessThan(0.01);
+  });
+
+  it('expands #rgb by doubling each digit', () => {
+    expect(Math.abs(contrastRatio('#abc', '#aabbcc') - 1)).toBeLessThan(1e-9);
+  });
+
   it('rejects a colour that is not #rgb or #rrggbb', () => {
     expect(() => contrastRatio('white', '#000000')).toThrow();
   });
