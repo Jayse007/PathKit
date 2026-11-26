@@ -1,5 +1,13 @@
 # Build notes
 
+## Task 26.1: samples integration test (newest entry, kept at top)
+- Done: wrote `src/logic/samples.ts` (`SAMPLE_SHOTS`: orbit 0°/1.5 m/8 m/35 mm, push-in 30°/-0.3 m/12 m/50 mm, crane 180°/0.5 m/10 m/35 mm, shot length 240) and `test/logic/samples-integration.test.ts` (8 `it` blocks, 14 Vitest tests). Each sample goes through subject bake, `buildKeyframedTarget`, `buildSceneSet` (one main camera, `cam-1`), `validateScene`, `bake`, `motionLinter`; the finding count is printed. Hand-computed camera positions: orbit frame 0 (22, 2.2, 8) and 0.75°/frame offsets; push-in frame 0 (28, 0.4, 12 cos 30°) and y at frames 120/239; crane x/z fixed, y = 1.2 + 6f/240. Not run by Kiro.
+- Open API shape, my choice: no `RigSettings` type exists in src, so `samples.ts` defines `SampleShot` (name, shotType, placement, shotLengthFrames). The orbit centre target is the subject target raised by `heightM`; the real app may build it differently.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet. The hand values assume the road's first point (22, 0.7, 0) is the subject position at baked frame 0.
+- PathKit features used: bake, validateScene, evaluateEntity, motionLinter, followPath, orbitAround, aimAt.
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
 ## Task 25.2: storage tests (newest entry, kept at top)
 - Done: wrote `test/logic/storage.test.ts` (12 `it` blocks, 14 Vitest tests): getItem throws, setItem throws, storage null (read and write), invalid JSON, missing key, prefix `shot-rail:speed` with stored text `42`, round trip (`it.each`, 3 tests), default storage read and write in node, undefined value, circular value. Mock `StorageLike` objects only. Expected values written by hand. Not run by Kiro.
 - Extension (user-requested, tests only): added helper `withGlobalLocalStorage` and 2 `it` blocks (now 14 blocks, 16 Vitest tests): a fake `globalThis.localStorage` receives the default-argument read and write under `shot-rail:`, and a `localStorage` getter that throws gives the fallback and no error. The helper restores the original descriptor, or deletes the property if there was none. No src change. Not run by Kiro.

@@ -276,17 +276,17 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: use 0.04045 as 0.4045 in the linearisation threshold, or drop the +0.05 terms.
     - _Requirements: 19.2 (design Property 14, function part)_
 
-- [ ] 25. Storage wrapper
+- [x] 25. Storage wrapper
   - [x] 25.1 Implement `src/logic/storage.ts`
     - `readSetting` and `writeSetting`, every access inside try/catch, keys prefixed with `STORAGE_KEY_PREFIX` (`shot-rail:`). Takes the storage object as a parameter with the browser one as default, so tests pass a mock.
     - _Requirements: 20.1, 20.2, 20.3_
-  - [-] 25.2 Write the storage tests
+  - [x] 25.2 Write the storage tests
     - Four failure modes with a mock: `getItem` throws; `setItem` throws; the storage object is missing; the stored text is not valid JSON. `readSetting` returns the fallback in each; `writeSetting` does not throw. A working mock round trip stores under `shot-rail:` plus the key.
     - Source line it should catch: remove the try/catch around `setItem`.
     - _Requirements: 20.1, 20.2, 20.3 (design Property 15)_
 
 - [ ] 26. Integration: the three sample shots
-  - [~] 26.1 Write `test/logic/samples-integration.test.ts`
+  - [-] 26.1 Write `test/logic/samples-integration.test.ts`
     - Define the three samples in `src/logic/samples.ts` first (values from the design's Samples table: orbit around the car; push-in from a low camera; crane up), each a `RigSettings`-shaped value with shot length 240. Each goes through the subject bake, `buildKeyframedTarget`, `buildSceneSet`, `bake`, `motionLinter`, and every scene passes `validateScene`.
     - Each sample's main camera evaluates at frames 0, 120 and 239 without throwing; the linter returns an array; a count of findings is printed.
     - Each sample's values lie inside the allowed ranges from `constants.ts`: horizontal distance 3 to 60 m, height -0.5 to 40 m, lens in `LENS_PRESETS_MM`, shot length 60 to 600 (checked with plain comparisons naming the sample and the field).

@@ -742,6 +742,11 @@
         "executionId": "052f0ea5-5840-4e6d-bf17-9d8aefb47c67",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795676642334
+      },
+      {
+        "executionId": "e82fb21f-441a-4765-b6d9-5aa6cab67792",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795678237530
       }
     ],
     "26.1 Write `test/logic/samples-integration.test.ts`": [
@@ -749,6 +754,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529397868
+      },
+      {
+        "executionId": "e82fb21f-441a-4765-b6d9-5aa6cab67792",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795678245840
       }
     ],
     "27. Checkpoint: Phase 1": [
@@ -1393,6 +1403,13 @@
         "executionId": "052f0ea5-5840-4e6d-bf17-9d8aefb47c67",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795676564799
+      }
+    ],
+    "25. Storage wrapper": [
+      {
+        "executionId": "e82fb21f-441a-4765-b6d9-5aa6cab67792",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795678238896
       }
     ]
   }
