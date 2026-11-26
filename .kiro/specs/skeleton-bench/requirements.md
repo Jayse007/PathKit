@@ -388,6 +388,7 @@ Each item states the issue, the assumption used in this document, and who must d
 3. THE Part_Catalogue SHALL list for the Desk_Lamp these Parts: base, lower arm, upper arm, joint, shade and bulb holder.
 4. THE Skeleton_Bench_App SHALL build every Machine in code from Three.js shapes and SHALL import no model file.
 5. THE Skeleton_Bench_App SHALL make each Part a named object.
+6. THE Skeleton_Bench_App SHALL draw each Part so that a person can recognise the real part, using only Three.js shapes (no model file), and no shape of a Part SHALL reach outside that Part's extents box at any impeller spin angle.
 
 ### Requirement 19: Accuracy and sources (Tier A)
 

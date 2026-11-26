@@ -2,8 +2,11 @@
 // Not the final app entry (index.html is not changed in this task).
 import { bakeLaps } from '../pathkit/laps.js';
 import { bakeParts } from '../pathkit/part-scenes.js';
-import { createInitialState, setExplode, setOffset, setOrbitAngle, setZoom } from '../state.js';
+import { createInitialState, setExplode, setLook, setOffset, setOrbitAngle, setZoom } from '../state.js';
 import type { AppState } from '../state.js';
+import { loadLook, saveLook } from '../ui/storage.js';
+import type { Look } from '../ui/storage.js';
+import { applySceneBackground, createLookLights } from './looks.js';
 import { createPartPlacer } from './part-placement.js';
 import { buildPumpModel, spinImpeller } from './pump-model.js';
 import { createStage, showStageMessage } from './stage.js';
@@ -24,23 +27,35 @@ const offxInput = el<HTMLInputElement>('offx');
 const offyInput = el<HTMLInputElement>('offy');
 const explodeInput = el<HTMLInputElement>('explode');
 const reducedInput = el<HTMLInputElement>('reduced');
+const lookInput = el<HTMLSelectElement>('look');
 
 try {
   const result = createStage(container, bakeLaps());
   if (result.ok) {
     const stage = result.stage;
-    let state: AppState = createInitialState();
+    let state: AppState = createInitialState(loadLook());
 
     // Pump: built and baked once here. The slider only reads baked frames.
-    const model = buildPumpModel();
+    const model = buildPumpModel(undefined, state.look);
     stage.machineGroup.add(model.root);
+    stage.scene.add(createLookLights());
+    applySceneBackground(stage.scene, state.look);
+    lookInput.value = state.look;
+    lookInput.addEventListener('change', () => {
+      const look = lookInput.value as Look;
+      state = setLook(state, look);
+      saveLook(look);
+      model.setLook(look);
+      applySceneBackground(stage.scene, look);
+      stage.requestRender();
+    });
     const placer = createPartPlacer(model.partsById, bakeParts());
 
     const show = (): void => {
       placer.placeAtAmount(state.explode);
       stage.setView(state);
       readout.textContent =
-        `angle=${state.orbitAngleDeg}  zoom=${state.zoom.toFixed(2)}  explode=${state.explode.toFixed(0)}%  ` +
+        `look=${state.look}  angle=${state.orbitAngleDeg}  zoom=${state.zoom.toFixed(2)}  explode=${state.explode.toFixed(0)}%  ` +
         `offset=(${state.offsetX.toFixed(2)}, ${state.offsetY.toFixed(2)})`;
     };
 

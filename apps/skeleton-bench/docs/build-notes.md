@@ -260,3 +260,24 @@
 - Known effect on a test written for 17.3: `test/part-placement.test.ts` hard-codes the old end positions in its `END` table, so "placeAtFrame(59) puts every Part at rest + explode vector" will fail until `END` is updated. That file was not edited in this change. `test/pump-model.test.ts` holds rest positions only and is not affected.
 - Broke: nothing known. Not run (no terminal). The User runs npm.cmd test from apps/skeleton-bench.
 - Not tested: how the new vectors look in a browser (the paths bow sideways and could cross other Parts between frame 0 and frame 59; the check covers only the end position).
+
+## Task 17.4: User checkpoint: view the Pump assembled and exploded
+
+- Result: PASS. The User opened src/render/stage-preview.html in a browser, with the new Pump explode vectors from the clearance change, and answered Yes to all five checks: (1) at 0% explode, eight Parts form a compact pump, motor on the left, casing on the right; (2) dragging the explode slider moves each Part along its own short curved path and they separate smoothly; (3) at 100% all eight Parts are visible, none touching each other or leaving the view; (4) the impeller turns once visible, and Reduced motion stops and restarts it; (5) orbit, zoom and offset still work with the Pump on screen.
+- Manual: these were the User's visual answers, not automated tests. The latest test run was 18 files, 176 passed, 3 skipped.
+- Not separately confirmed: whether Parts pass through each other partway through the explode. The User did not report on this; check 3 covers only the 100% state.
+
+## Task 17.5: The two Looks
+- Done: added src/render/looks.ts (two palette objects, two material sets, lights, scene background helper). Replaced the temporary MeshNormalMaterial in src/render/pump-model.ts: every mesh now has a cyan EdgesGeometry LineSegments child (shown only in X_Ray_Skeleton), and `model.setLook(look)` swaps the fill material. X_Ray_Skeleton uses translucent unlit ivory (opacity 0.22, depthWrite off). Clean_Engineering uses matte MeshStandardMaterial (roughness 1) and needs the lights. Added a Look dropdown to src/render/stage-preview.ts/.html that uses loadLook/saveLook. No new tests; existing tests untouched.
+- Broke: nothing known. Not run (no terminal, no browser). Not checked: whether the edges and translucent fills look right, whether the translucent sort order shows inner Parts well, the Clean_Engineering lighting, or the colour contrast of the palettes (the contrast check of Task 20 covers text pairs only).
+- Kiro got wrong: nothing known yet. One blocked terminal call was attempted by mistake and was stopped by the hook.
+- PathKit feature used: none (Looks are app code). The grid colour is the same in both Looks and was left alone.
+
+## Task 17.3 revision (step 1): casing and impeller look like real parts, fit test for all eight Parts
+- Done: in src/render/pump-model.ts only the `pump-casing` and `pump-impeller` builders changed, plus three small helpers. Casing (5 meshes): a spiral volute body (48-step y-z outline, radius 0.17 rising to 0.23, extruded along x from -0.30 to +0.18), suction snout, suction flange ring, discharge neck on top, foot. Impeller (8 meshes, all in the spinner): back plate, hub, and six curved vanes (each a thin strip, 0.012 thick, swept back 0.9 rad, one pivot group per vane). Other six builders, names, `userData.partId`, nesting, `setLook`, edges and spin are unchanged.
+- Helper `extrudeAlongX`: after `rotateY(+PI/2)` a shape point (x, y) extruded over z in [0, L] maps to world (z, y, -x). The extrusion therefore runs along +x as wanted, and the outline's z is the negated shape x. I kept the specified geometry and negated the shape x inside the helper (outline points are given as {y, z}).
+- Shapes are drawn from scratch in code with Three.js. No third-party asset, no model file, no THIRD_PARTY change.
+- Tests: test/pump-model.test.ts impeller mesh counts 7 to 8 (and the two titles). New test/pump-fit.test.ts (2 tests): every Pump Part's exact box (`Box3.setFromObject(group, true)`) against its extents at spinner rotation.x 0, 0.3, 1 (overshoot <= 1e-6, message names Part and axis); casing x extent 0.05 smaller gives an overshoot above 0.02 on x.
+- Spec: Requirement 18.6 added; design "Pump model" paragraph added (design had no such section, so it was created before "Looks and theme"); note added under task 17.3 in tasks.md.
+- Broke: nothing known. Not run (no terminal). The User runs npm.cmd test from apps/skeleton-bench.
+- Not tested: how the new shapes look in a browser (volute outline, vane sweep direction, translucent X_Ray fill).

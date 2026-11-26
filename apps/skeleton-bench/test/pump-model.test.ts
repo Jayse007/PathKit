@@ -64,18 +64,18 @@ describe('buildPumpModel', () => {
     model.dispose();
   });
 
-  it('gives the bolts 4 meshes and the impeller 7', () => {
+  it('gives the bolts 4 meshes and the impeller 8', () => {
     const model = buildPumpModel();
     expect(meshesOf(model.partsById.get('pump-bolts')!)).toHaveLength(4);
-    expect(meshesOf(model.partsById.get('pump-impeller')!)).toHaveLength(7);
+    expect(meshesOf(model.partsById.get('pump-impeller')!)).toHaveLength(8);
     model.dispose();
   });
 
-  it('puts all 7 impeller meshes inside the spinner, a child of the impeller group', () => {
+  it('puts all 8 impeller meshes inside the spinner, a child of the impeller group', () => {
     const model = buildPumpModel();
     const impeller = model.partsById.get('pump-impeller')!;
     expect(model.impellerSpinner.parent).toBe(impeller);
-    expect(meshesOf(model.impellerSpinner)).toHaveLength(7);
+    expect(meshesOf(model.impellerSpinner)).toHaveLength(8);
     model.dispose();
   });
 

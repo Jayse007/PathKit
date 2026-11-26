@@ -340,6 +340,10 @@ There are 20 scenes (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Each is 5,280 B (tr
 - **Input steps.** `ORBIT_DEG_PER_PIXEL` = 0.5 (720 px is one lap). Arrow keys in Rotate mode step `ORBIT_KEY_STEP_FRAMES` = 5. A wheel event steps `ZOOM_WHEEL_STEP` = 0.05 (sign of `deltaY`). Keys + and - step `ZOOM_KEY_STEP` = 0.1.
 - **Explode input.** The slider is direct. Key E toggles 0 and 100 with a short app-time animation (`EXPLODE_TOGGLE_MS` = 600), or a jump under reduced motion. The impeller spin is ordinary Three.js (`IMPELLER_SPIN_RAD_PER_S` = pi) and stops under reduced motion.
 
+### Pump model
+
+THE Skeleton_Bench_App SHALL draw each Part so that a person can recognise the real part, using only Three.js shapes (no model file), and no shape of a Part SHALL reach outside that Part's extents box at any impeller spin angle. (Requirement 18.6. A test measures every Pump Part's exact box against its catalogue extents at spin angles 0, 0.3 and 1 rad.)
+
 ### Looks and theme
 
 Two palette objects and two material sets share one layout. X_Ray_Skeleton uses a near-black background, bone-ivory translucent fills, thin cyan `EdgesGeometry` lines and one orange accent. Clean_Engineering uses a light neutral background, solid matte Parts and one blue accent. The exact hex values are chosen when the Looks are built. They must pass the Contrast_Function tests (at least 4.5 to 1 for every text and background pair). No hex values are fixed in this design. The Look is stored with `STORAGE_KEY_LOOK` inside try/catch (Requirements 17.5 to 17.7). Hint flags use `STORAGE_KEY_HINT_PREFIX`.

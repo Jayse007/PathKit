@@ -310,7 +310,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 8.12, 8.15, 9.1, 9.8, 11.10, 11.11, 11.14 (design Re-bake scheduling)_
 
 - [ ] 29. Main renderer and camera
-  - [-] 29.1 Implement `src/view/main-view.ts` and wire `index.html`
+  - [x] 29.1 Implement `src/view/main-view.ts` and wire `index.html`
     - One main `THREE.WebGLRenderer` (pixel ratio capped at `DEVICE_PIXEL_RATIO_CAP`), a `PerspectiveCamera` with aspect 16/9 set before `setFocalLength`, `filmGauge` 36, position and rotation from `evaluateEntity` through `position.set` and `quaternion.set` (no per-frame allocation). Renders on change, not on a free-running loop. A WebGL failure shows a message that says what failed and what the User can do next. The view is empty (a grid at the ground only).
     - _Requirements: 4.5, 11.11, 17.1, 18.6, 20.4_
   - [~] 29.2 User checkpoint: view the empty stage
