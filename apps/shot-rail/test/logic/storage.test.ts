@@ -115,4 +115,40 @@ describe('storage wrapper (mock StorageLike, node environment)', () => {
     expect(() => writeSetting('k', loop, storage)).not.toThrow();
     expect(setCalls).toEqual([]);
   });
+
+  function withGlobalLocalStorage(descriptor: PropertyDescriptor, run: () => void): void {
+    const target = globalThis as { localStorage?: unknown };
+    const original = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+    Object.defineProperty(globalThis, 'localStorage', { ...descriptor, configurable: true });
+    try {
+      run();
+    } finally {
+      if (original !== undefined) {
+        Object.defineProperty(globalThis, 'localStorage', original);
+      } else {
+        delete target.localStorage;
+      }
+    }
+  }
+
+  // Catches: browserStorage() looking at the wrong object, or caching the lookup at module load (the fake would not be seen).
+  it('with no storage argument, reads and writes go to globalThis.localStorage under the prefix', () => {
+    const { storage, data } = makeMock();
+    withGlobalLocalStorage({ value: storage }, () => {
+      writeSetting('speed', 8);
+      expect(data.get('shot-rail:speed')).toBe('8');
+      expect(readSetting('speed', 0)).toBe(8);
+    });
+  });
+
+  // Catches: removing the try/catch inside browserStorage() (a blocked lookup would throw out of the default parameter).
+  it('with no storage argument, a localStorage that throws when looked up gives the fallback and no error', () => {
+    withGlobalLocalStorage(
+      { get(): never { throw new Error('SecurityError: storage is blocked'); } },
+      () => {
+        expect(readSetting('speed', 'fb')).toBe('fb');
+        expect(() => writeSetting('speed', 1)).not.toThrow();
+      },
+    );
+  });
 });

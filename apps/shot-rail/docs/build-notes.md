@@ -2,6 +2,7 @@
 
 ## Task 25.2: storage tests (newest entry, kept at top)
 - Done: wrote `test/logic/storage.test.ts` (12 `it` blocks, 14 Vitest tests): getItem throws, setItem throws, storage null (read and write), invalid JSON, missing key, prefix `shot-rail:speed` with stored text `42`, round trip (`it.each`, 3 tests), default storage read and write in node, undefined value, circular value. Mock `StorageLike` objects only. Expected values written by hand. Not run by Kiro.
+- Extension (user-requested, tests only): added helper `withGlobalLocalStorage` and 2 `it` blocks (now 14 blocks, 16 Vitest tests): a fake `globalThis.localStorage` receives the default-argument read and write under `shot-rail:`, and a `localStorage` getter that throws gives the fallback and no error. The helper restores the original descriptor, or deletes the property if there was none. No src change. Not run by Kiro.
 - Broke: nothing known. Not run by Kiro.
 - Kiro got wrong: nothing known yet. The "missing storage" case is the `null` argument; in node the default path returns null or whatever node's own localStorage gives, so those two tests only check "no throw / fallback".
 - PathKit features used: none.
