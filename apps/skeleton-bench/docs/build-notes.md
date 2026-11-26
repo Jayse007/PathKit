@@ -159,3 +159,11 @@
 - PathKit feature used: none.
 - Source line it should catch: delete a source id row from `docs/sources.md` (source check fails once rows exist) or duplicate a Part id (unique-id test names the Part).
 - Not tested: the look, WebGL, view offset, clicking, load time, the 60 path frames (Task 15).
+
+## Task 14.1: Research and write the Pump entries
+- Done: searched and fetched pump parts guides, then wrote 8 rows in docs/sources.md (ids pump-casing, pump-impeller, pump-shaft, pump-bearing-housing, pump-mechanical-seal, pump-flange, pump-bolts, pump-motor) and 8 Pump entries in src/data/catalogue.ts (keyboard order motor to flange). The fixture exports stay for the tests; CATALOGUE now holds only the Pump machine. Rest and explode vectors were checked by hand against the envelope (x 1.2, y 0.6, z 0.4) and the 0.1 m minimum.
+- Weak spots: the "date checked" column reads TO CONFIRM because Kiro cannot read the clock. Bearing housing material, flange material and bolt material are thinly sourced and the text says so. Several sources are supplier pages, not standards. springpump.com returned HTTP 403 and PDFs could not be fetched, so some claims rest on search snippets (ASHRAE casing and impeller materials, Pentair flange, aruba studs, stalkerpumps bolts, dultmeier fasteners, electricmotors.com cast iron frames).
+- Broke: nothing known. Not run (no terminal); the User approves the text in Task 14.2, tests are Task 14.3.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: none.
+- Not tested: the look, WebGL, view offset, clicking, load time. Catalogue checks not yet run on the new data.

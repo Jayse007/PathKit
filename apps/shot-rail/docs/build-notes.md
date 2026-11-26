@@ -190,3 +190,19 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Broke: nothing known. Kiro tried a terminal command by mistake while looking for the end of the notes; the hook blocked it and nothing changed.
 - PathKit feature used: only the `Vec3` type (through `pathkit.ts`).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server, non-finite coordinates (not in the task).
+
+## Task 19.1: Implement shot-length.ts
+
+- Done: added `src/logic/shot-length.ts` with `validateShotLength(value)`. It returns `{ ok: true, value }` or `{ ok: false, message }` (same style as `validateRoad`). Refuses NaN, Infinity, non-whole numbers, below 60 and above 600; every message states the range "60 to 600". Limits come from `SHOT_LENGTH_MIN` and `SHOT_LENGTH_MAX`.
+- Broke: nothing known. No command has been run; the tests (19.2) do not exist yet.
+- Kiro got wrong: nothing known. Choice not in the task text: the result-union return shape (the design had no signature to follow).
+- PathKit feature used: none (pure logic).
+- Not tested: everything (no tests yet), look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 19.2: Shot_Length tests
+
+- Done: added `test/logic/shot-length.test.ts` (6 tests): 60/240/600 accepted, 59 and 601 refused, non-whole values (240.5, 59.5, 600.5, 60.25) refused, NaN/Infinity/-Infinity refused, 0 and negatives refused, and a sweep of 0 to 700. Each refusal checks the message contains the literal "60 to 600" and the value text. Not yet run by the User.
+- Broke: nothing known.
+- Kiro got wrong: nothing known.
+- PathKit feature used: none (pure app logic).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.

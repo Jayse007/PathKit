@@ -210,20 +210,20 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: round before clamping, or return `Math.round(x)` without adding 0 (the -0 check fails).
     - _Requirements: 11.3, 11.4, 11.5, 11.6, 23.7 (design Property 5)_
 
-- [ ] 18. Road validation
+- [x] 18. Road validation
   - [x] 18.1 Implement `src/logic/road-validation.ts`
     - `validateRoad(points)` returns the road or a message. Refuses fewer than 3 or more than 100 points with a message that names the count and the range 3 to 100; refuses points whose y differ; refuses coincident consecutive points (including last to first). Wraps nothing from `createCurve` that it can check first.
     - _Requirements: 3.11, 3.13_
-  - [-] 18.2 Write the Road validation tests
+  - [x] 18.2 Write the Road validation tests
     - Flat, non-coincident closed candidates with 2, 3, 100, 101 points: 2 and 101 refused with the count and "3" and "100" in the message; 3 and 100 accepted. A flat road with one duplicated consecutive point is refused. A road with one point at a different y is refused.
     - Source line it should catch: change `> 100` to `>= 100` in the maximum check (the 100-point case fails).
     - _Requirements: 3.11, 3.13, 23.17 (design Property 7)_
 
 - [ ] 19. Shot_Length validation
-  - [~] 19.1 Implement `src/logic/shot-length.ts`
+  - [x] 19.1 Implement `src/logic/shot-length.ts`
     - `validateShotLength(value)`: whole number from 60 to 600, otherwise a message that states the range 60 to 600.
     - _Requirements: 8.8, 8.9_
-  - [~] 19.2 Write the Shot_Length tests
+  - [-] 19.2 Write the Shot_Length tests
     - 59 and 601 refused with the range in the message; 60, 240, 600 accepted. 240.5, NaN and Infinity refused.
     - Source line it should catch: change `SHOT_LENGTH_MAX` use to `<` instead of `<=` (600 fails).
     - _Requirements: 8.8, 8.9, 23.18 (design Property 8)_

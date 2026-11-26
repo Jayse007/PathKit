@@ -175,18 +175,18 @@ The plan follows the approved design (option A: four baked laps blended with `le
 
 ### Phase 2: Data and one machine end to end
 
-- [ ] 13. Part_Catalogue structure and checks
+- [x] 13. Part_Catalogue structure and checks
   - [x] 13.1 Define the types and data layout (no facts yet)
     - Machines and Parts with id, name, job, material, position text, source id, rest position, explode vector, extents, and keyboard order. This task adds only the layout and a one-Part fixture. The Pump entries are written in Task 14.
     - _Requirements: 9.1, 9.4, 9.6, 18.5_
-  - [-] 13.2 Write the catalogue checks
+  - [x] 13.2 Write the catalogue checks
     - Every field present; ids unique across all Machines; keyboard order lists each Part once; every source id exists in `docs/sources.md` (read with `node:fs`); |explode vector| >= 0.1; rest position, end position and extents inside the envelope.
     - A "lists exactly the named Parts" check against the brief (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Run it against the fixture now; it covers the real catalogue as Tasks 14 and 18 fill it. A failing check names the Part.
     - Source line it should catch: delete one source id from `docs/sources.md`, or duplicate a Part id.
     - _Requirements: 9.1 to 9.6, 13.3, 18.1, 18.2, 18.3, 35.6 (design Property 11, 18)_
 
 - [ ] 14. Pump facts and catalogue entries
-  - [~] 14.1 Research and write the Pump entries
+  - [x] 14.1 Research and write the Pump entries
     - Search for reputable sources on the eight Pump parts (casing, impeller, shaft, bearing housing, mechanical seal, flange, bolts as one group, motor): job, material, typical position.
     - Write `docs/sources.md` entries (part, claim, source URL, date checked) and the catalogue entries. Invented sample specifications are labelled "sample data". Rest and explode vectors fit the envelope.
     - _Requirements: 18.1, 19.1, 19.2, 19.3, 19.5, 9.1_
