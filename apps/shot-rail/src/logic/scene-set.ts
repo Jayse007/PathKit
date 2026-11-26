@@ -29,7 +29,8 @@ type RailPath = { points: { x: number; y: number; z: number }[]; closed: boolean
  * The shared subject target is the same under every camera, so the union does not change any camera's values.
  *
  * Throws an Error naming the id when `mainCameraId` is not in `cameras`, when `cameras` is empty,
- * or when a non-rail camera has no entry in `centreTargets`.
+ * when a camera other than the main camera is a rail shot (push-in or crane), or when a non-rail camera
+ * has no entry in `centreTargets`.
  */
 export function buildSceneSet(
   mainCameraId: string,
@@ -41,6 +42,13 @@ export function buildSceneSet(
 ): SceneSet {
   if (!cameras.has(mainCameraId)) {
     throw new Error(`buildSceneSet: the main camera "${mainCameraId}" is not in the cameras`);
+  }
+
+  // One scene has one path, so a non-main rail camera would follow the main camera's path.
+  for (const [id, cam] of cameras) {
+    if (id !== mainCameraId && (cam.shotType === 'push-in' || cam.shotType === 'crane')) {
+      throw new Error(`buildSceneSet: camera "${id}" is a ${cam.shotType} shot, but only the main camera can be a rail shot.`);
+    }
   }
 
   // Main camera first, then the rest in map order.

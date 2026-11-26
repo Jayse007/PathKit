@@ -31,6 +31,7 @@ const SUBJECT: Target = movingTarget(-7, 0.5, SUBJECT_CENTRE_HEIGHT, 0);
 const CENTRE_1: Target = { x: 0, y: 1, z: 0 };
 const CENTRE_2: Target = movingTarget(-3, 0.25, 1.5, 2);
 const CENTRE_3: Target = movingTarget(2, -0.5, 1, -1);
+const CENTRE_4: Target = { x: 1, y: 1, z: 3 };
 const ROAD = {
   points: [
     { x: -10, y: 2, z: 5 },
@@ -39,11 +40,13 @@ const ROAD = {
   closed: false,
 };
 
+// Only the main camera may be a rail shot, so in the shared setup cam-4 is a tracking shot with its own
+// centre target. Tests that need a rail camera override the shot type.
 const SHOT_TYPES: Record<string, ShotType> = {
   'cam-1': 'orbit',
   'cam-2': 'tracking',
   'cam-3': 'orbit',
-  'cam-4': 'push-in',
+  'cam-4': 'tracking',
 };
 const PLACEMENTS: Record<string, CameraPlacement> = {
   'cam-1': { bearingDeg: 30, heightM: 1.5, horizontalDistanceM: 6, lensMm: 35 },
@@ -55,11 +58,15 @@ const CENTRES = new Map<string, Target>([
   ['cam-1', CENTRE_1],
   ['cam-2', CENTRE_2],
   ['cam-3', CENTRE_3],
+  ['cam-4', CENTRE_4],
 ]);
 
-function makeCameras(order: string[]): Map<string, { shotType: ShotType; placement: CameraPlacement }> {
+function makeCameras(
+  order: string[],
+  overrides: Record<string, ShotType> = {},
+): Map<string, { shotType: ShotType; placement: CameraPlacement }> {
   const m = new Map<string, { shotType: ShotType; placement: CameraPlacement }>();
-  for (const id of order) m.set(id, { shotType: SHOT_TYPES[id], placement: PLACEMENTS[id] });
+  for (const id of order) m.set(id, { shotType: overrides[id] ?? SHOT_TYPES[id], placement: PLACEMENTS[id] });
   return m;
 }
 
@@ -136,5 +143,46 @@ describe('Scene_Set (S6 regression)', () => {
 
   it('throws naming the id when the main camera is not in the cameras', () => {
     expect(() => buildSceneSet('cam-9', makeCameras(['cam-1', 'cam-2']), SHOT_FRAMES, SUBJECT, CENTRES, ROAD)).toThrow(/cam-9/);
+  });
+
+  it('a push-in main camera listed first, with no Road, matches solo bakes of every camera', () => {
+    const order = ['cam-4', 'cam-1', 'cam-2', 'cam-3'];
+    const overrides: Record<string, ShotType> = { 'cam-4': 'push-in' };
+    const set = buildSceneSet('cam-4', makeCameras(order, overrides), SHOT_FRAMES, SUBJECT, CENTRES, null);
+    expect(set.scenes[0].cameraIds).toEqual(order);
+    const combined = bake(set.scenes[0].scene);
+    const outA = makeOut();
+    const outB = makeOut();
+    const a = new Float64Array(7);
+    const b = new Float64Array(7);
+    for (const id of order) {
+      const solo = bake(
+        buildCameraScene(overrides[id] ?? SHOT_TYPES[id], PLACEMENTS[id], SHOT_FRAMES, SUBJECT, CENTRES.get(id) ?? SUBJECT, id, null),
+      );
+      for (let f = 0; f < SHOT_FRAMES; f++) {
+        evaluateEntity(combined, id, f, outA);
+        evaluateEntity(solo, id, f, outB);
+        readValues(outA, a);
+        readValues(outB, b);
+        for (let c = 0; c < 7; c++) {
+          const diff = Math.abs(a[c] - b[c]);
+          if (!(diff <= TOLERANCE)) {
+            throw new Error(`solo bake check (push-in main): ${id}, frame ${f}, ${COMPONENTS[c]}: set ${a[c]}, solo ${b[c]}, difference ${diff}`);
+          }
+        }
+      }
+    }
+  });
+
+  it.each(['push-in', 'crane'] as ShotType[])('throws naming the camera when non-main cam-2 is a %s shot', (type) => {
+    const cameras = makeCameras(['cam-1', 'cam-2', 'cam-3'], { 'cam-2': type });
+    expect(() => buildSceneSet('cam-1', cameras, SHOT_FRAMES, SUBJECT, CENTRES, ROAD)).toThrow(/cam-2/);
+  });
+
+  it('throws naming the camera when an orbit camera has no centre target', () => {
+    const centres = new Map(CENTRES);
+    centres.delete('cam-3');
+    const cameras = makeCameras(['cam-1', 'cam-2', 'cam-3']);
+    expect(() => buildSceneSet('cam-1', cameras, SHOT_FRAMES, SUBJECT, centres, ROAD)).toThrow(/cam-3/);
   });
 });

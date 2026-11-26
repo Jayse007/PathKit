@@ -2,6 +2,7 @@
 
 ## Task 22.2: Scene_Set tests (newest entry, kept at top)
 - Done: wrote `test/logic/scene-set.test.ts` (5 tests): Outcome A (1 scene, each id once), Main_Camera first, `validateScene`, 7 values vs a solo bake of each camera over 30 frames (tolerance 1e-9), missing main camera throws. Not run by Kiro.
+- Update (user request): `buildSceneSet` now throws when a camera other than the main camera is a push-in or crane shot (one scene has one path). In the test setup cam-4 is now a tracking shot with its own centre target. Added tests: push-in main camera first with no Road vs solo bakes, non-main push-in/crane throws (`it.each`, 2 Vitest tests), missing centre target for an orbit camera throws. 8 `it` blocks, 9 Vitest tests. Not run by Kiro.
 - Broke: nothing known. Not run by Kiro.
 - Kiro got wrong: nothing known yet.
 - PathKit features used: `validateScene`, `bake`, `evaluateEntity`.
