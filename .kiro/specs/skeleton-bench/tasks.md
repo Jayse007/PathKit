@@ -161,11 +161,11 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: swap the +Z fallback for +Y.
     - _Requirements: 8.1 to 8.7, 13.3, 35.5 (design Property 12)_
 
-- [ ] 12. Pointer, shortcut guard, contrast function and storage helpers
+- [x] 12. Pointer, shortcut guard, contrast function and storage helpers
   - [x] 12.1 Implement them
     - `classifyPointer` (5 px click, more is drag, stays a drag once exceeded); `shouldHandleShortcut` (false for text input, textarea, select, range input); `contrastRatio`; storage helpers with the `skeletonBench.` key prefix and try/catch around every read and write.
     - _Requirements: 12.9, 14.6, 17.5, 17.6, 21.4, 22.2, 23.1, 23.3_
-  - [-] 12.2 Write the tests
+  - [x] 12.2 Write the tests
     - Click at 5 px, drag at 5.1 and 6 px; out to 6 and back to 2 stays a drag.
     - Guard ignores a text input, textarea, select and range input; accepts a button and no focus.
     - Contrast: black on white 21; same colour 1; #767676 on white about 4.54 (within 0.01); argument order does not matter.
@@ -176,10 +176,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
 ### Phase 2: Data and one machine end to end
 
 - [ ] 13. Part_Catalogue structure and checks
-  - [~] 13.1 Define the types and data layout (no facts yet)
+  - [x] 13.1 Define the types and data layout (no facts yet)
     - Machines and Parts with id, name, job, material, position text, source id, rest position, explode vector, extents, and keyboard order. This task adds only the layout and a one-Part fixture. The Pump entries are written in Task 14.
     - _Requirements: 9.1, 9.4, 9.6, 18.5_
-  - [~] 13.2 Write the catalogue checks
+  - [-] 13.2 Write the catalogue checks
     - Every field present; ids unique across all Machines; keyboard order lists each Part once; every source id exists in `docs/sources.md` (read with `node:fs`); |explode vector| >= 0.1; rest position, end position and extents inside the envelope.
     - A "lists exactly the named Parts" check against the brief (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Run it against the fixture now; it covers the real catalogue as Tasks 14 and 18 fill it. A failing check names the Part.
     - Source line it should catch: delete one source id from `docs/sources.md`, or duplicate a Part id.

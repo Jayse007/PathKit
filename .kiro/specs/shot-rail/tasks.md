@@ -200,21 +200,21 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: use `min(w, h)` instead of `max(w, h)` (the height-decides case fails), or drop the behind-camera short-circuit.
     - _Requirements: 6.6, 6.7, 6.8, 23.19 (design Property 4)_
 
-- [ ] 17. Frame_Mapper
+- [x] 17. Frame_Mapper
   - [x] 17.1 Implement `src/logic/frame-mapper.ts`
     - `scrubToFrame` (clamp first, then round, return no -0), `frameToSeconds`, `secondsToFrame`. A scrub value that is not finite throws an Error that names the value.
     - _Requirements: 11.2, 11.3, 11.4, 11.5, 11.6_
-  - [-] 17.2 Write the Frame_Mapper tests
+  - [x] 17.2 Write the Frame_Mapper tests
     - Scrub table with lastFrame 239: -5, -0.4, -0, 0, 0.4, 238.5, 239, 239.5, 244 give 0, 0, 0, 0, 0, 239, 239, 239, 239 (hand-checked: 238.5 rounds to 239). Every result is whole and `Object.is(result, -0)` is false. NaN, Infinity, -Infinity throw naming the value.
     - Every whole frame 0 to 600: `secondsToFrame(frameToSeconds(f, 30), 30)` equals f.
     - Source line it should catch: round before clamping, or return `Math.round(x)` without adding 0 (the -0 check fails).
     - _Requirements: 11.3, 11.4, 11.5, 11.6, 23.7 (design Property 5)_
 
 - [ ] 18. Road validation
-  - [~] 18.1 Implement `src/logic/road-validation.ts`
+  - [x] 18.1 Implement `src/logic/road-validation.ts`
     - `validateRoad(points)` returns the road or a message. Refuses fewer than 3 or more than 100 points with a message that names the count and the range 3 to 100; refuses points whose y differ; refuses coincident consecutive points (including last to first). Wraps nothing from `createCurve` that it can check first.
     - _Requirements: 3.11, 3.13_
-  - [~] 18.2 Write the Road validation tests
+  - [-] 18.2 Write the Road validation tests
     - Flat, non-coincident closed candidates with 2, 3, 100, 101 points: 2 and 101 refused with the count and "3" and "100" in the message; 3 and 100 accepted. A flat road with one duplicated consecutive point is refused. A road with one point at a different y is refused.
     - Source line it should catch: change `> 100` to `>= 100` in the maximum check (the 100-point case fails).
     - _Requirements: 3.11, 3.13, 23.17 (design Property 7)_

@@ -141,3 +141,20 @@
 - Source line it should catch: change `<=` to `<` in `classifyPointer`; "is a click at 0 and at exactly 5 px" fails.
 - Added later (test-only, 6 tests): contrast gets pure colours on white (3.998, 1.372, 8.592), #0a0a0a on white (19.80) and `#abc` vs `#aabbcc`; shortcut-guard gets all text input types and checkbox/button; storage gets hint values '0' and 'yes'. Expected values were worked out by hand. Counts are now pointer 4, shortcut-guard 5, contrast 8, storage 7 = 24; total 89 + 6 = 95. Not run.
 - Mutations they should catch: swapped green/blue luminance weights; `12.92` changed to `12`; changed `#rgb` expansion; 'number' or 'password' removed from the text input types; `=== '1'` changed to `!== null`.
+
+## Task 13.1: catalogue types and layout
+- Done: added `src/data/catalogue-types.ts` (PartEntry, MachineEntry, Catalogue) and `src/data/catalogue.ts` (one-Part fixture with placeholder text, sourceId `fixture`). No machine facts.
+- Broke: nothing known. Tests not run (task 13.2).
+- Kiro got wrong: nothing known yet. The model builder field of the Machine definition is left out until the render code exists.
+- PathKit feature used: none.
+- Not tested: everything (checks come in 13.2).
+
+## Task 13.2: catalogue checks
+- Done: added `src/data/catalogue-checks.ts` (pure checks returning failure lists that name the Part: fields, unique ids, keyboard order, source ids, explode length, envelope, named Parts, `parseSourceIds`) and `test/catalogue.test.ts` (21 tests: 17 run, 4 skipped). The test reads `docs/sources.md` with `node:fs`.
+- Fixture handling: the source-id check exempts only the exact Part `fixture-part` with source `fixture`. The named-Parts checks per Machine (8, 6, 6) and the 20-Part total are `skipIf` while a Machine holds the fixture or is absent. They run on their own once Task 14 and Task 18 fill the catalogue. Not weakened.
+- Naming rule for Tasks 14 and 18: Part `name` must equal the brief's name (case ignored, a trailing "(...)" note allowed), for example "Bolts (one group)", "Tube bundle", "Bulb holder".
+- Broke: nothing known. Not run (no terminal).
+- Kiro assumption: the envelope check puts a box of the Part's extents around the rest position and around rest + explode vector, and requires both boxes inside the Exploded_Box half-extents.
+- PathKit feature used: none.
+- Source line it should catch: delete a source id row from `docs/sources.md` (source check fails once rows exist) or duplicate a Part id (unique-id test names the Part).
+- Not tested: the look, WebGL, view offset, clicking, load time, the 60 path frames (Task 15).

@@ -460,6 +460,11 @@
         "executionId": "76a7b658-ce91-438f-915e-892b5a22a7cd",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795665477472
+      },
+      {
+        "executionId": "e95903ca-4114-4cee-9e19-716f6faf2cc8",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795666704834
       }
     ],
     "18.1 Implement `src/logic/road-validation.ts`": [
@@ -467,6 +472,16 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529388150
+      },
+      {
+        "executionId": "e95903ca-4114-4cee-9e19-716f6faf2cc8",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795666715460
+      },
+      {
+        "executionId": "e95903ca-4114-4cee-9e19-716f6faf2cc8",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795666781626
       }
     ],
     "18.2 Write the Road validation tests": [
@@ -474,6 +489,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529388580
+      },
+      {
+        "executionId": "e95903ca-4114-4cee-9e19-716f6faf2cc8",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795666796455
       }
     ],
     "19.1 Implement `src/logic/shot-length.ts`": [
@@ -1167,6 +1187,13 @@
         "executionId": "76a7b658-ce91-438f-915e-892b5a22a7cd",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795665430058
+      }
+    ],
+    "17. Frame_Mapper": [
+      {
+        "executionId": "e95903ca-4114-4cee-9e19-716f6faf2cc8",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795666705964
       }
     ]
   }

@@ -174,3 +174,18 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Broke: nothing known. One slip: Kiro tried a terminal command to read the notes file, and the hook blocked it. Nothing changed.
 - PathKit feature used: none (pure app logic).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 18.1: Implement road-validation.ts
+
+- Done: added `src/logic/road-validation.ts` with `validateRoad(points)`. It returns `{ ok: true, road }` (closed road, copied points) or `{ ok: false, message }`. Checks in order: count outside 3 to 100 (message names the count and "3 to 100"), non-finite coordinate, y differs from point 0, coincident consecutive points including last to first (exact equality, same as PathKit's `sameSpot`). Limits come from `ROAD_POINTS_MIN` and `ROAD_POINTS_MAX`.
+- Broke: nothing known. No command has been run; the tests (18.2) do not exist yet.
+- Kiro got wrong: nothing known. Choices not in the task text: the return shape (a result union) and the extra non-finite check, so NaN gives a clear message.
+- PathKit feature used: only the `Vec3` type (through `pathkit.ts`); `createCurve` is not called.
+- Not tested: everything (no tests yet), look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 18.2: Road validation tests
+
+- Done: added `test/logic/road-validation.test.ts` (7 tests): 2 and 101 points refused with the count, "3" and "100" in the message; 3 and 100 points accepted (3-point case also checks closed and the exact copied points); one duplicated consecutive point refused; last point equal to first refused; one point at a different y refused. Candidates are a flat zigzag (x = 10 * i, z = 0 or 5, y = 0.9), expected values written by hand. Not yet run by the User.
+- Broke: nothing known. Kiro tried a terminal command by mistake while looking for the end of the notes; the hook blocked it and nothing changed.
+- PathKit feature used: only the `Vec3` type (through `pathkit.ts`).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server, non-finite coordinates (not in the task).
