@@ -29,6 +29,14 @@ export interface LookPalette {
   readonly accent: string;
 }
 
+/** The three Clean_Engineering greys A, B, C, all against the #eceff1 background at contrast 3 or more. */
+export const CLEAN_FILLS: readonly [string, string, string] = ['#7d8793', '#5f6974', '#444e59'];
+
+/** Which of the three greys (0 = A, 1 = B, 2 = C) the Part at this catalogue index gets: index mod 3. */
+export function cleanFillIndex(partIndex: number): number {
+  return partIndex % CLEAN_FILLS.length;
+}
+
 export const LOOK_PALETTES: Readonly<Record<Look, LookPalette>> = {
   X_Ray_Skeleton: {
     background: '#05080c',
@@ -39,7 +47,7 @@ export const LOOK_PALETTES: Readonly<Record<Look, LookPalette>> = {
   },
   Clean_Engineering: {
     background: '#eceff1',
-    fill: '#a9b1ba',
+    fill: CLEAN_FILLS[0],
     fillOpacity: 1,
     edge: null,
     accent: '#1f6feb',
@@ -51,6 +59,8 @@ export const ALL_LOOKS: readonly Look[] = ['X_Ray_Skeleton', 'Clean_Engineering'
 /** The materials one model uses for one Look. */
 export interface LookMaterials {
   readonly fill: Material;
+  /** Three fills, indexed by cleanFillIndex. X_Ray_Skeleton uses the same material three times. */
+  readonly fills: readonly [Material, Material, Material];
   /** Null when the Look draws no edges. */
   readonly edge: LineBasicMaterial | null;
 }
@@ -58,26 +68,29 @@ export interface LookMaterials {
 /** Builds both material sets for one model. The caller disposes them with disposeLookMaterials. */
 export function createLookMaterials(): Record<Look, LookMaterials> {
   const xray = LOOK_PALETTES.X_Ray_Skeleton;
-  const clean = LOOK_PALETTES.Clean_Engineering;
+  // Unlit and translucent. depthWrite is off so inner Parts and their edges show through.
+  const xrayFill = new MeshBasicMaterial({
+    color: new Color(xray.fill),
+    transparent: true,
+    opacity: xray.fillOpacity,
+    depthWrite: false,
+    side: DoubleSide,
+  });
+  // Matte: no metal, full roughness. Needs the lights from createLookLights.
+  const cleanMat = (hex: string): MeshStandardMaterial =>
+    new MeshStandardMaterial({ color: new Color(hex), roughness: 1, metalness: 0 });
+  const cleanA = cleanMat(CLEAN_FILLS[0]);
+  const cleanB = cleanMat(CLEAN_FILLS[1]);
+  const cleanC = cleanMat(CLEAN_FILLS[2]);
   return {
     X_Ray_Skeleton: {
-      // Unlit and translucent. depthWrite is off so inner Parts and their edges show through.
-      fill: new MeshBasicMaterial({
-        color: new Color(xray.fill),
-        transparent: true,
-        opacity: xray.fillOpacity,
-        depthWrite: false,
-        side: DoubleSide,
-      }),
+      fill: xrayFill,
+      fills: [xrayFill, xrayFill, xrayFill],
       edge: new LineBasicMaterial({ color: new Color(xray.edge as string) }),
     },
     Clean_Engineering: {
-      // Matte: no metal, full roughness. Needs the lights from createLookLights.
-      fill: new MeshStandardMaterial({
-        color: new Color(clean.fill),
-        roughness: 1,
-        metalness: 0,
-      }),
+      fill: cleanA,
+      fills: [cleanA, cleanB, cleanC],
       edge: null,
     },
   };
@@ -85,7 +98,7 @@ export function createLookMaterials(): Record<Look, LookMaterials> {
 
 export function disposeLookMaterials(sets: Record<Look, LookMaterials>): void {
   for (const look of ALL_LOOKS) {
-    sets[look].fill.dispose();
+    for (const m of new Set(sets[look].fills)) m.dispose();
     sets[look].edge?.dispose();
   }
 }

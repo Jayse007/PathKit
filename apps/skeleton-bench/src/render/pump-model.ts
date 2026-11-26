@@ -24,7 +24,7 @@ import type { PartEntry } from '../data/catalogue-types.js';
 import { IMPELLER_SPIN_RAD_PER_S } from '../constants.js';
 import { DEFAULT_LOOK } from '../ui/storage.js';
 import type { Look } from '../ui/storage.js';
-import { createLookMaterials, disposeLookMaterials } from './looks.js';
+import { cleanFillIndex, createLookMaterials, disposeLookMaterials } from './looks.js';
 import type { LookMaterials } from './looks.js';
 
 /** Facet angle (degrees) above which EdgesGeometry draws a line. Smooth cylinder sides stay unlined. */
@@ -52,6 +52,8 @@ export interface PumpModel {
 
 interface BuildContext {
   readonly part: PartEntry;
+  /** Position of the Part in the catalogue list. Picks the Clean_Engineering grey. */
+  readonly partIndex: number;
   readonly group: Group;
   readonly geometries: BufferGeometry[];
   readonly meshes: Mesh[];
@@ -70,9 +72,11 @@ function addMesh(
   parent: Object3D = ctx.group,
 ): Mesh {
   ctx.geometries.push(geometry);
-  const mesh = new Mesh(geometry, ctx.materials[ctx.look].fill);
+  const fillIndex = cleanFillIndex(ctx.partIndex);
+  const mesh = new Mesh(geometry, ctx.materials[ctx.look].fills[fillIndex]);
   mesh.name = `part:${ctx.part.id}:mesh`;
   mesh.userData.partId = ctx.part.id;
+  mesh.userData.fillIndex = fillIndex;
   mesh.position.set(x, y, z);
   parent.add(mesh);
   ctx.meshes.push(mesh);
@@ -130,7 +134,7 @@ function voluteOutline(steps: number): YZ[] {
   const points: YZ[] = [];
   for (let i = 0; i <= steps; i++) {
     const a = (i / steps) * 2 * Math.PI;
-    const r = 0.17 + 0.06 * (a / (2 * Math.PI));
+    const r = 0.165 + 0.085 * (a / (2 * Math.PI));
     points.push({ y: r * Math.cos(a), z: r * Math.sin(a) });
   }
   return points;
@@ -246,7 +250,7 @@ export function buildPumpModel(parts: readonly PartEntry[] = PUMP_PARTS, initial
   const partsById = new Map<string, Group>();
   let impellerSpinner: Group | null = null;
 
-  for (const part of parts) {
+  for (const [partIndex, part] of parts.entries()) {
     const build = BUILDERS[part.id];
     if (build === undefined) {
       throw new Error(`buildPumpModel: no shape for Part "${part.id}"`);
@@ -257,6 +261,7 @@ export function buildPumpModel(parts: readonly PartEntry[] = PUMP_PARTS, initial
     group.position.set(part.restPosition[0], part.restPosition[1], part.restPosition[2]);
     const ctx: BuildContext = {
       part,
+      partIndex,
       group,
       geometries,
       meshes,
@@ -288,8 +293,8 @@ export function buildPumpModel(parts: readonly PartEntry[] = PUMP_PARTS, initial
     },
     setLook(look: Look): void {
       currentLook = look;
-      const fill = materials[look].fill;
-      for (const m of meshes) m.material = fill;
+      const fills = materials[look].fills;
+      for (const m of meshes) m.material = fills[m.userData.fillIndex as number]!;
       const showEdges = materials[look].edge !== null;
       for (const e of edges) e.visible = showEdges;
     },

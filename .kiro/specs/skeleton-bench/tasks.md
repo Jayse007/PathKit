@@ -235,8 +235,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 17.5 The two Looks
     - Palette objects and two material sets. X_Ray_Skeleton with cyan `EdgesGeometry` edges; Clean_Engineering with matte solids.
     - _Requirements: 17.1, 17.3, 17.4_
-  - [~] 17.6 User checkpoint: view both Looks
+  - [-] 17.6 User checkpoint: view both Looks
     - The User views both Looks in a browser in their own way. Kiro states what was not tested.
+    - User answers: (1) starts in X_Ray_Skeleton: yes; (2) X-ray background, translucent ivory Parts, cyan outlines, inner Parts visible: yes; (3) outlines stay on explode, orbit and zoom and turn with the impeller: yes; (4) Clean_Engineering background, matte grey, no outlines: yes, but assembled Parts were all one grey; (5) Look persists after reload: yes; (6) casing recognisable but the spiral is subtle; impeller recognisable.
+    - Decisions: Clean_Engineering uses three greys A #7d8793, B #5f6974, C #444e59 (contrast against #eceff1: 3.16, 4.84, 7.33), assigned by catalogue index mod 3 (`cleanFillIndex`); volute radius is now 0.165 + 0.085 * (a / 2PI). Test: `test/looks.test.ts`.
     - _Requirements: 37.1, 37.2_
   - [~] 17.7 Picking and shells
     - Raycast on meshes only; the click rule (5 px); selection shell and focus shell.

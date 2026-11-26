@@ -87,6 +87,9 @@ export const TILE_SIZE_PX = { width: 160, height: 90 } as const;
 export const THUMBNAIL_SIZE_PX = { width: 96, height: 54 } as const;
 export const DEVICE_PIXEL_RATIO_CAP = 2;
 export const CONTRAST_MIN_RATIO = 4.5;
+// EBU R 95 v1.1, June 2017, Note 5: action safe is 3.5% on each edge,
+// so 1 - 2 x 0.035 = 0.93 of each side. See docs/sources.md.
+export const SAFE_AREA_FRACTION = 0.93;
 
 // Storage
 export const STORAGE_KEY_PREFIX = 'shot-rail:';

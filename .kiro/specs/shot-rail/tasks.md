@@ -316,7 +316,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 29.2 User checkpoint: view the empty stage
     - The User opens the app in a browser in their own way (their own terminal, their own choice) and checks: the 16:9 frame, the ground grid, that a changed lens changes the field of view. Kiro states what was not tested.
     - _Requirements: 25.1, 25.2_
-  - [~] 29.3 User checkpoint: approve the safe-area size and its source
+  - [x] 29.3 User checkpoint: approve the safe-area size and its source
     - The design names no safe-area size. Kiro searches for a reputable published value (for example a broadcast standard's action-safe or title-safe area), records claim, source and date checked in `docs/sources.md`, and proposes one fraction of the frame. The User approves it before it is written into `constants.ts` as `SAFE_AREA_FRACTION`. Write nothing from memory.
     - _Requirements: 17.8, 24.4_
   - [~] 29.4 Implement the guides
