@@ -180,3 +180,16 @@
 - Not removed, but unchecked: after the deletions the remaining sources for the shaft, bearing housing, seal, impeller and casing rows are one page (slurrypumpsupply). Kiro could not re-read it, so whether it supports each remaining claim is not confirmed here.
 - Date checked column still TO CONFIRM.
 - Broke: nothing known. Not run (no terminal). The User runs npm.cmd test from apps/skeleton-bench.
+
+## Task 14.1 follow-up 2: four more links removed
+- Done: text-only edits to src/data/catalogue.ts and docs/sources.md. The reviewer found four links that do not open: the Pentair PDF, the aruba PDF, the stalker PDF and the dultmeier page. All four are deleted from sources.md. This supersedes the earlier note that kept the aruba URL in the bolts row.
+- Claims changed and why:
+  - Flange material: the "cast iron body with ANSI 125 or PN16 flanges" claim rested only on the Pentair PDF. Now "Not stated by the sources." The suction/discharge flange job (slurrypumpsupply) and "enters at the end, leaves at the top" (kendisco) stay.
+  - Bolts job: the old text rested on the aruba and stalker PDFs. Now: anchor bolts tie baseplate, grout and foundation together; capscrews fasten the casing (volute) together. New sources: pumpsandsystems.com (anchor bolts) and the Xylem Goulds parts list (volute capscrews on one pump model).
+  - Bolts material: the "stainless steel fasteners" claim rested only on the dultmeier page. Now "Not stated by the sources."
+  - Bolts row: "NOT YET VERIFIED" wording removed. Position text unchanged.
+  - Impeller material: now "Cast iron and stainless steel such as CF8M are used." The "for clean water" and "for corrosive liquids" pairings are removed from catalogue.ts and sources.md.
+  - Mechanical seal job: faces are pressed together by springs and the pressure of the liquid. Added source: aesseal.com "what is a mechanical seal".
+- Other rows checked (casing, motor, shaft, bearing housing, seal, impeller): none cited any of the four deleted links, so no further claims were removed. They still rest on slurrypumpsupply (and electricmotors.com for the motor); Kiro could not re-read those pages.
+- "Date checked" stays TO CONFIRM. No other URL was added. catalogue-checks.ts and the tests are unchanged.
+- Broke: nothing known. Not run (no terminal). The User runs npm.cmd test from apps/skeleton-bench; exact pass counts need the pasted output.

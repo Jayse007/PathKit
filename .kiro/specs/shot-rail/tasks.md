@@ -228,20 +228,20 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: change `SHOT_LENGTH_MAX` use to `<` instead of `<=` (600 fails).
     - _Requirements: 8.8, 8.9, 23.18 (design Property 8)_
 
-- [ ] 20. Target_Converter (after S2)
+- [x] 20. Target_Converter (after S2)
   - [x] 20.1 Implement `src/logic/target-converter.ts`
     - `buildKeyframedTarget` as in the design: exactly one keyframe per displayed frame, each equal to the baked position at the baked frame the remap picks, shifted by (0, heightOffsetM, 0). Pure; allocation is allowed here (setup code).
     - _Requirements: 8.11, 8.14, 3.4_
-  - [-] 20.2 Write the Target_Converter tests
+  - [x] 20.2 Write the Target_Converter tests
     - Small baked fixture (a straight-line subject, hand-written positions) and a hand-written remap table. For every displayed frame: exactly one keyframe at that frame index; its position equals the baked position at the table's baked frame; with a height offset of 1.5 the y is exactly 1.5 higher and x and z are equal. Offsets 0, 1.5, -0.3, 40.
     - Source line it should catch: read the baked frame f instead of remap(f), or forget the height shift.
     - _Requirements: 8.11, 8.14, 23.9 (design Property 9)_
 
 - [ ] 21. Shot_Builders (after S3 and S4)
-  - [~] 21.1 Implement `src/logic/shot-builders.ts`
+  - [x] 21.1 Implement `src/logic/shot-builders.ts`
     - `buildCameraScene` for tracking, orbit, push-in and crane as in the design's table. Constraint order: `orbitAround` (or `followPath`) at order 0, `aimAt` at order 1. Orbit speed = `ORBIT_SWEEP_DEG` / (shot length / `FRAME_RATE`). Rails: push-in end at `PUSH_IN_END_RATIO` of the start offset; crane rises `CRANE_RISE_M`. Rail speed = rail length times `FRAME_RATE` / shot length, so `path-end-reached` never fires on a visible frame. Camera axes come from `constants.ts`.
     - _Requirements: 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.14, 7.6, 7.7_
-  - [~] 21.2 Write the Shot_Builder tests
+  - [-] 21.2 Write the Shot_Builder tests
     - For each of the 4 types: `validateScene` does not throw; exact entity id and exact constraint list in order (`orbitAround`, `aimAt` or `followPath`, `aimAt`), orders strictly increasing; camera forward -Z and up +Y.
     - Rail speed: for push-in and crane at lengths 60, 240, 600, the baked rail travelled distance at the last frame is below the rail length (hand-written: length times (N-1)/N), and `motionLinter` returns no `path-end-reached` finding.
     - Orbit: the angle at the last frame minus the start is 180 degrees times (N-1)/N within 1e-9.

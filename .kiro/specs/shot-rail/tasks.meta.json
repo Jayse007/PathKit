@@ -562,6 +562,11 @@
         "executionId": "8ca07edc-a980-4fbc-8777-8de5aac215ab",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795669777974
+      },
+      {
+        "executionId": "74c54888-7b87-4ada-b2bd-7309eaa2b4d5",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795670751862
       }
     ],
     "21.1 Implement `src/logic/shot-builders.ts`": [
@@ -569,6 +574,16 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529392286
+      },
+      {
+        "executionId": "74c54888-7b87-4ada-b2bd-7309eaa2b4d5",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795670758696
+      },
+      {
+        "executionId": "74c54888-7b87-4ada-b2bd-7309eaa2b4d5",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795670862688
       }
     ],
     "21.2 Write the Shot_Builder tests": [
@@ -576,6 +591,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529393113
+      },
+      {
+        "executionId": "74c54888-7b87-4ada-b2bd-7309eaa2b4d5",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795670869430
       }
     ],
     "22.1 Implement `src/logic/scene-set.ts`": [
@@ -1248,6 +1268,13 @@
         "executionId": "8ca07edc-a980-4fbc-8777-8de5aac215ab",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795669710922
+      }
+    ],
+    "20. Target_Converter (after S2)": [
+      {
+        "executionId": "74c54888-7b87-4ada-b2bd-7309eaa2b4d5",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795670752748
       }
     ]
   }

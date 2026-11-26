@@ -1,5 +1,12 @@
 # Build notes
 
+## Task 21.2: Shot_Builder tests (newest entry, kept at top)
+- Done: wrote `test/logic/shot-builders.test.ts` (9 tests). Not yet run by the User.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet.
+- PathKit features used: `validateScene`, `bake` (travelled, transforms), `motionLinter`.
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
 One short entry per task: what was done, what broke, what Kiro got wrong, which PathKit feature was used.
 
 ## Task 2.1: Create the app files
@@ -220,3 +227,10 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Broke: nothing known. Assumption to confirm on first run: a 2-point open curve is straight and arc length is accurate within 1e-6.
 - PathKit feature used: `bake`, `followPath` (via `buildKeyframedTarget`, which calls `evaluateEntity`).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 21.1: Shot_Builders
+- Done: wrote `src/logic/shot-builders.ts` with `buildCameraScene` (tracking, orbit, push-in, crane) and an exported `buildRail`. Constraint order is orbitAround/followPath at 0, aimAt at 1. Orbit speed is ORBIT_SWEEP_DEG / (N / FRAME_RATE). Rail speed is length * FRAME_RATE / N.
+- Broke: nothing known. No command has been run; tests are task 21.2.
+- Kiro got wrong: nothing known yet. Judgement call: for push-in and crane a non-null `path` argument is used as the rail, and null builds the rail from the subject target. The design signature does not say which one wins.
+- PathKit feature used: followPath, orbitAround, aimAt constraints and the Scene types.
+- Not tested: everything (no test yet, no command run).
