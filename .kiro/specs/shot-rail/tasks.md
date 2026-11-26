@@ -319,7 +319,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 29.3 User checkpoint: approve the safe-area size and its source
     - The design names no safe-area size. Kiro searches for a reputable published value (for example a broadcast standard's action-safe or title-safe area), records claim, source and date checked in `docs/sources.md`, and proposes one fraction of the frame. The User approves it before it is written into `constants.ts` as `SAFE_AREA_FRACTION`. Write nothing from memory.
     - _Requirements: 17.8, 24.4_
-  - [~] 29.4 Implement the guides
+  - [-] 29.4 Implement the guides
     - Pure `src/logic/guides.ts`: `thirdsLines(width, height)` gives the two vertical lines at 1/3 and 2/3 of the width and the two horizontal lines at 1/3 and 2/3 of the height; `safeAreaRect(width, height, fraction)` gives a centred rectangle of that fraction of each side. A 2D overlay canvas on the main view draws them. Toggles with visible labels, tooltips and the keys T and G; their on or off state is stored as `thirdsGuideOn` and `safeAreaGuideOn` through `storage.ts`.
     - _Requirements: 17.7, 17.8, 18.1, 18.2, 20.1_
   - [~] 29.5 Write the guides tests

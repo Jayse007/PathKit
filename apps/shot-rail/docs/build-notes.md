@@ -1,5 +1,13 @@
 # Build notes
 
+## Task 29.4: guides (newest entry, kept at top)
+- Done: wrote pure `src/logic/guides.ts` (`thirdsLines`, `safeAreaRect`, `loadGuideState`, `toggleGuide`; no Three.js or DOM imports) and `src/view/guides-view.ts` (`createGuidesOverlay`: a 2D canvas over the stage, redrawn only on toggle or resize, two-pass dark and light strokes; `createGuideToggle`: labelled checkbox with tooltip; keys T and G, ignored while typing in a select or text field). Safe area uses `SAFE_AREA_FRACTION`. State is stored as `thirdsGuideOn` and `safeAreaGuideOn` through `readSetting`/`writeSetting`. Edited `src/main.ts` and `index.html` (a `#guides` span in the bar). Not run by Kiro.
+- Open API shape, my choice: `toggleGuide(current, key, storage?)` returns the new state and stores it, so 29.5 can test toggling with a mock storage. `thirdsLines` returns `{ vertical: [x1, x2], horizontal: [y1, y2] }`; `safeAreaRect` returns `{ x, y, width, height }`. Overlay is sized from the container width and 16:9, like the main view. Colours and line widths are local constants in `guides-view.ts`.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet. Assumes the stage box has width set by CSS so `clientWidth` is positive, and that `position: relative` on the stage does not disturb the main view.
+- PathKit features used: none (guides do not use PathKit).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
 ## Task 29.1: main-view.ts and index.html (newest entry, kept at top)
 - Done: wrote `src/view/main-view.ts` (`createMainView(container)`: one `WebGLRenderer` with pixel ratio capped at `DEVICE_PIXEL_RATIO_CAP`; `PerspectiveCamera` with aspect set to 16/9 and `filmGauge` 36 before `setFocalLength`; ground `GridHelper` only; `showFrame` calls `rig.evaluate` into one preallocated `OutBuffer`, then `position.set` and `quaternion.set`; renders on change through one `requestAnimationFrame` at a time, with a callback made once; a `ResizeObserver` sets the size; a WebGL failure or lost context shows a plain message with a next step). Wrote `src/main.ts` (entry: builds the first sample shot's rig, shows displayed frame 0, and a lens menu from `LENS_PRESETS_MM`) and wired `index.html` (stage box, lens menu, module script). No test imports `main-view.ts` or `main.ts`. Not run by Kiro.
 - Open API shape, my choice: the task named only `main-view.ts`, but `index.html` needs an entry module, so I added `src/main.ts`. Grid size, near/far planes and colours are local constants in `main-view.ts`, not in `constants.ts` (I may not change it). The lens menu changes only the view's focal length, not the rig settings.

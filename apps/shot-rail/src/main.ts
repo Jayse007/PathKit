@@ -6,6 +6,7 @@ import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
 import { SAMPLE_SHOTS } from './logic/samples.js';
 import { CameraRig } from './view/camera-rig.js';
 import type { RigSettings } from './view/camera-rig.js';
+import { createGuideToggle, createGuidesOverlay } from './view/guides-view.js';
 import { createMainView } from './view/main-view.js';
 
 const CAMERA_ID = 'cam-1';
@@ -39,6 +40,23 @@ function start(): void {
   if (view === null) {
     lensSelect.disabled = true;
     return;
+  }
+
+  const guidesBox = document.getElementById('guides');
+  if (guidesBox !== null) {
+    const thirdsInput = createGuideToggle(
+      guidesBox,
+      'guide-thirds',
+      'Thirds (T)',
+      'Show or hide the rule-of-thirds lines. Key: T',
+    );
+    const safeAreaInput = createGuideToggle(
+      guidesBox,
+      'guide-safe',
+      'Safe area (G)',
+      'Show or hide the safe-area rectangle. Key: G',
+    );
+    createGuidesOverlay(stage, { thirdsInput, safeAreaInput });
   }
 
   const rig = new CameraRig();
