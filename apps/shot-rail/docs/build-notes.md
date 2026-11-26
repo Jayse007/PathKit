@@ -153,6 +153,7 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 ## Task 16.2: Fill_Fraction tests
 
 - Done: added `test/logic/fill.test.ts` (8 tests): three NDC cases (50, 90, 75), the realistic pose (all 8 corners against the design table by hand formulas, two corners to 5 decimals, fill 44.3, medium), behind-camera (`projectToNdc` false, `framingPercent` 100), and throws for NaN and count 0. Not yet run by the User.
+- Extension (User-requested, test only): added 8 tests to `fill.test.ts`: moved car and camera (same fill, plus all 8 corners checked, because a dropped `position.y` leaves the fill unchanged), rotated camera (90 degrees about +Y, fill 67.155 by hand, width decides), vertical clipping (75), a point on the camera counts as behind, and four `projectToNdc` throws (fov = pi, aspect 0, count 1.5, `outNdc` one number short). Expected values written by hand. Note: the file had 9 tests before this, not 8 as written above. Not yet run by the User.
 - Broke: nothing known. Kiro mapped the design table's corner numbers to code indices (table 1 to 4 are code 4 to 7, table 5 to 8 are code 0 to 3) because the code uses sign bits, not the table order.
 - Source line it should catch: `Math.max(w, h)` changed to `Math.min(w, h)` in `fillFractionPercent` fails the height-decides case; removing `if (!inFront) return 100;` in `framingPercent` fails the behind-camera test.
 - PathKit feature used: `quatInverse`, `rotateVec` (through `fill.ts`).

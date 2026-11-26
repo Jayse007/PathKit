@@ -57,6 +57,14 @@ describe('explodeFrame', () => {
     expect(explodeFrame(105)).toBe(59);
   });
 
+  it('clamps far-out amounts: -50 and -20 give 0, 150 and 1000 give 59', () => {
+    // Unclamped smoothstep curves back outside 0 to 100 (t = -0.5 gives 1), so the amount clamp matters.
+    expect(explodeFrame(-50)).toBe(0);
+    expect(explodeFrame(-20)).toBe(0);
+    expect(explodeFrame(150)).toBe(59);
+    expect(explodeFrame(1000)).toBe(59);
+  });
+
   it('gives whole frames inside 0 to 59 for amounts from -10 to 110 in steps of 0.5', () => {
     for (let i = 0; i <= 240; i++) {
       const a = -10 + i * 0.5;
@@ -93,6 +101,21 @@ describe('partPathPoints', () => {
       [0, 0.4, 0.09],
       [0, 0.6, 0],
     ]);
+  });
+
+  it('keeps the first and last points on the rest position and its end for a non-zero rest position', () => {
+    const pts = partPathPoints([1, 2, 3], [0.6, 0, 0]);
+    checkPoints('offset rest', pts, [
+      [1, 2, 3],
+      [1.2, 2.09, 3],
+      [1.4, 2.09, 3],
+      [1.6, 2, 3],
+    ]);
+  });
+
+  it('throws and names the value when the rest position has NaN or Infinity', () => {
+    expect(() => partPathPoints([Number.NaN, 0, 0], [0.6, 0, 0])).toThrow(/rest position.*NaN/);
+    expect(() => partPathPoints([0, Number.POSITIVE_INFINITY, 0], [0.6, 0, 0])).toThrow(/rest position.*Infinity/);
   });
 
   it('throws when the explode vector is shorter than 0.1 m', () => {

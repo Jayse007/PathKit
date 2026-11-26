@@ -120,6 +120,7 @@
 
 ## Task 11.2 Explode_Easing and Part path tests
 - Done: wrote test/explode-easing.test.ts (8 tests) for explodeFrame and partPathPoints, hand-computed expected values. Not yet run by the User.
+- Added 3 tests (now 11): far-out clamp (-50, -20, 150, 1000), offset rest position (1, 2, 3) with v = (0.6, 0, 0), and NaN/Infinity rest position throws naming the value. They target removing Math.min(100, ...) or Math.max(0, ...) in explodeFrame, replacing the first or last path point with the origin, and removing the rest-position finite check. Not yet run by the User.
 - Broke: nothing known yet.
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: none (app logic only).
