@@ -46,26 +46,26 @@ describe('contrastRatio', () => {
     expect(Math.abs(backward - expected)).toBeLessThan(0.01);
   });
 
-  // Pure colours on black. Ratio = (luminance + 0.05) / 0.05 with luminance
-  // 0.2126 (red), 0.7152 (green), 0.0722 (blue). Catches a wrong channel weight.
+  // Pure colours on black: ratio = (luminance + 0.05) / 0.05, with luminance
+  // 0.2126 (red), 0.7152 (green), 0.0722 (blue). Written by hand.
   it.each([
     ['#FF0000', 5.252],
     ['#00FF00', 15.304],
     ['#0000FF', 2.444],
-  ])('%s on #000000 is about %s in both argument orders', (c, expected) => {
-    expect(Math.abs(contrastRatio(c, '#000000') - expected)).toBeLessThan(0.001);
-    expect(Math.abs(contrastRatio('#000000', c) - expected)).toBeLessThan(0.001);
+  ])('%s on #000000 is about %f, in both argument orders', (colour, expected) => {
+    expect(Math.abs(contrastRatio(colour, '#000000') - expected)).toBeLessThan(0.001);
+    expect(Math.abs(contrastRatio('#000000', colour) - expected)).toBeLessThan(0.001);
   });
 
   // Channel 10/255 = 0.0392 is below 0.04045, so it uses c / 12.92.
-  // Luminance 0.003035, ratio (0.003035 + 0.05) / 0.05.
-  it('#0a0a0a on #000000 is about 1.0607 (linear branch)', () => {
+  // Luminance 0.003035, ratio (0.003035 + 0.05) / 0.05 = 1.0607.
+  it('#0a0a0a on #000000 is about 1.0607 (linear branch), in both argument orders', () => {
     expect(Math.abs(contrastRatio('#0a0a0a', '#000000') - 1.0607)).toBeLessThan(0.0005);
     expect(Math.abs(contrastRatio('#000000', '#0a0a0a') - 1.0607)).toBeLessThan(0.0005);
   });
 
   it.each(['red', '#fff', '#12345', '#1234567', '#gggggg', '', ' #ffffff', '#ffffff '])(
-    'bad colour "%s" throws in either argument position',
+    'bad colour %j throws in either argument position',
     (bad) => {
       expect(() => contrastRatio(bad, '#ffffff')).toThrow(/expected a colour like/);
       expect(() => contrastRatio('#ffffff', bad)).toThrow(/expected a colour like/);

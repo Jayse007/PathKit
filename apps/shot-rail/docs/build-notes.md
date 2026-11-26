@@ -2,7 +2,7 @@
 
 ## Task 24.2: contrast tests (newest entry, kept at top)
 - Done: wrote `test/logic/contrast.test.ts` (7 `it` blocks, 9 Vitest tests): black/white 21 (1e-9), white/white 1, #777777 about 4.48 (below 4.5), #767676 about 4.54 (above 4.5), #666666 about 5.74 and #595959 about 7.0 (published WCAG values), order-independence (`it.each`, 3 Vitest tests). Not run by Kiro.
-- Update (user request, test only): added 12 Vitest tests (3 `it` blocks): pure red/green/blue on black (5.252, 15.304, 2.444, tolerance 0.001, both orders, `it.each`, 3 tests), #0a0a0a on black about 1.0607 (tolerance 0.0005, both orders, 1 test), and 8 bad colours ('red', '#fff', '#12345', '#1234567', '#gggggg', '', ' #ffffff', '#ffffff ') that throw "expected a colour like" in either position (`it.each`, 8 tests). File now has 10 `it` blocks, 21 Vitest tests. Checked against the source: the regex is anchored, there is no trim, so all 8 throw. No src file changed. Not run by Kiro.
+- Update (user request, tests only): added 4 `it` blocks (12 Vitest tests) to `contrast.test.ts`: pure red/green/blue on black (`it.each`, 3 tests, both orders), #0a0a0a on black about 1.0607 (linear branch), and 8 bad colour strings that must throw "expected a colour like" in either position (`it.each`). File now has 11 `it` blocks, 21 Vitest tests. Expected values written by hand. Not run by Kiro; the User runs `npm.cmd test` from apps/shot-rail.
 - Broke: nothing known. Not run by Kiro.
 - Kiro got wrong: the task's #777777 case alone would not catch the 0.4045 threshold change (its channel is 0.467, above both thresholds), so I added #666666 (channel 0.4).
 - PathKit features used: none.

@@ -222,6 +222,7 @@
 
 ## Task 16.2: State tests
 - Done: wrote test/state.test.ts (10 tests): initial values; orbit angle; zoom clamp table; explode clamp with offset re-clamp (50, 100, 150, -10, and 100 then 0 does not restore the offset); offset clamp at explode 0 and 50; mode, select Part, Look; Machine switch reset; Tour start/stop table over four start states (the Tour-moved angle and zoom are set by hand between start and stop, so a missing restore shows); pause/resume/stop transitions; the four setters rejected while playing (same object returned). Expected values typed in.
+- Added test 11 (paused Tour): the orbit, zoom, explode and move setters are accepted while the Tour is paused, the Tour stays paused with its saved angle (30) and zoom (0.25) unchanged, and stop restores them. This pins the decision that setters are allowed while the Tour is paused (state.ts blocks them only while `playing`). Not run yet.
 - Spec check: state.ts matches Requirement 16.11 and design (only orbit, zoom, explode and move setters are blocked, only while status is `playing`). Spec is silent on `paused` and on Machine switch, mode, select and Look during the Tour, so no test asserts those.
 - Broke: nothing known. Not run (no terminal). Expected: 16 files, 143 passed, 3 skipped.
 - Mutation to try once: in `stopTour` delete the `zoom: state.tour.savedZoom,` line; the Tour table test must fail on "zoom after stop".

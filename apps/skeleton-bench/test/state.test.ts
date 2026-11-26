@@ -239,4 +239,29 @@ describe('Tour', () => {
     expect(setExplode(stopped, 80).explode).toBe(80);
     near('offset x after stop', 0, setOffset(stopped, 0.2, 0.2).offsetX, 0.2);
   });
+
+  it('accepts the orbit, zoom, explode and move setters while the Tour is paused, and keeps the saved view', () => {
+    const paused = pauseTour(startTour(createInitialState())); // saved angle 30, saved zoom 0.25
+    expect(paused.tour.status).toBe('paused');
+    const rotated = setOrbitAngle(paused, 200);
+    const zoomed = setZoom(paused, 0.9);
+    const exploded = setExplode(paused, 80);
+    const moved = setOffset(paused, 0.2, -0.2); // inside the limit 0.25 at explode 0
+    expect(rotated.orbitAngleDeg).toBe(200);
+    expect(zoomed.zoom).toBe(0.9);
+    expect(exploded.explode).toBe(80);
+    near('moved offset x', 0, moved.offsetX, 0.2);
+    near('moved offset y', 0, moved.offsetY, -0.2);
+    // The Tour stays paused and its saved angle and zoom do not change.
+    for (const next of [rotated, zoomed, exploded, moved]) {
+      expect(next.tour.status).toBe('paused');
+      expect(next.tour.savedAngleDeg).toBe(30);
+      expect(next.tour.savedZoom).toBe(0.25);
+    }
+    // Stop gives back the saved angle and zoom, whatever was changed while paused.
+    const stopped = stopTour(setZoom(setOrbitAngle(paused, 200), 0.9));
+    expect(stopped.orbitAngleDeg).toBe(30);
+    expect(stopped.zoom).toBe(0.25);
+    expect(stopped.tour.status).toBe('idle');
+  });
 });
