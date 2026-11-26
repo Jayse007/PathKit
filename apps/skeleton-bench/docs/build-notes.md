@@ -167,3 +167,16 @@
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: none.
 - Not tested: the look, WebGL, view offset, clicking, load time. Catalogue checks not yet run on the new data.
+
+## Task 14.1 follow-up: claims removed after reviewer check
+- Done: text-only edits to src/data/catalogue.ts and docs/sources.md. Removed claims the reviewer could not find on the cited pages:
+  - Mechanical seal: "ceramic" face material and "Metal parts usually stainless steel 304 or 316" (not found on the cited pages).
+  - Impeller: "Bronze is also used" (not found).
+  - Bolts: "studs hold the casing to its cover" (not found).
+  - Casing: "Cast iron is typical for general water duty. Stainless steel for corrosive liquids." replaced with "Cast iron is one common casing material. Ductile iron and stainless steel (SS316) are also used."
+  - Motor: material replaced with "Close-coupled pump motors are sold with cast iron frames."; job now says the impeller can be mounted directly on the motor shaft in a close-coupled pump (the old "own extended shaft" wording is gone).
+- URLs deleted from every sources.md row that listed them (they do not open): the Dynapro centrifugal-pump-parts-guide page, the Weltech how-to-select-mechanical-seal-based-on-liquid page, the ASHRAE s24_ch44 page. Rows affected: casing, impeller, shaft, bearing housing, mechanical seal, motor. Each now keeps the slurrypumpsupply page (motor also keeps electricmotors.com). No replacement URLs added.
+- Bolts: the holding-down bolts text is kept and marked "NOT YET VERIFIED by the reviewer" in sources.md. The aruba URL stays in the row, relabelled "fasteners on the casing", because "fasten the casing parts together" still rests on it; the reviewer should check that claim too.
+- Not removed, but unchecked: after the deletions the remaining sources for the shaft, bearing housing, seal, impeller and casing rows are one page (slurrypumpsupply). Kiro could not re-read it, so whether it supports each remaining claim is not confirmed here.
+- Date checked column still TO CONFIRM.
+- Broke: nothing known. Not run (no terminal). The User runs npm.cmd test from apps/skeleton-bench.

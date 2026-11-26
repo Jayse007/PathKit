@@ -219,20 +219,20 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: change `> 100` to `>= 100` in the maximum check (the 100-point case fails).
     - _Requirements: 3.11, 3.13, 23.17 (design Property 7)_
 
-- [ ] 19. Shot_Length validation
+- [x] 19. Shot_Length validation
   - [x] 19.1 Implement `src/logic/shot-length.ts`
     - `validateShotLength(value)`: whole number from 60 to 600, otherwise a message that states the range 60 to 600.
     - _Requirements: 8.8, 8.9_
-  - [-] 19.2 Write the Shot_Length tests
+  - [x] 19.2 Write the Shot_Length tests
     - 59 and 601 refused with the range in the message; 60, 240, 600 accepted. 240.5, NaN and Infinity refused.
     - Source line it should catch: change `SHOT_LENGTH_MAX` use to `<` instead of `<=` (600 fails).
     - _Requirements: 8.8, 8.9, 23.18 (design Property 8)_
 
 - [ ] 20. Target_Converter (after S2)
-  - [~] 20.1 Implement `src/logic/target-converter.ts`
+  - [x] 20.1 Implement `src/logic/target-converter.ts`
     - `buildKeyframedTarget` as in the design: exactly one keyframe per displayed frame, each equal to the baked position at the baked frame the remap picks, shifted by (0, heightOffsetM, 0). Pure; allocation is allowed here (setup code).
     - _Requirements: 8.11, 8.14, 3.4_
-  - [~] 20.2 Write the Target_Converter tests
+  - [-] 20.2 Write the Target_Converter tests
     - Small baked fixture (a straight-line subject, hand-written positions) and a hand-written remap table. For every displayed frame: exactly one keyframe at that frame index; its position equals the baked position at the table's baked frame; with a height offset of 1.5 the y is exactly 1.5 higher and x and z are equal. Offsets 0, 1.5, -0.3, 40.
     - Source line it should catch: read the baked frame f instead of remap(f), or forget the height shift.
     - _Requirements: 8.11, 8.14, 23.9 (design Property 9)_

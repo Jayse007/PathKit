@@ -190,7 +190,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Search for reputable sources on the eight Pump parts (casing, impeller, shaft, bearing housing, mechanical seal, flange, bolts as one group, motor): job, material, typical position.
     - Write `docs/sources.md` entries (part, claim, source URL, date checked) and the catalogue entries. Invented sample specifications are labelled "sample data". Rest and explode vectors fit the envelope.
     - _Requirements: 18.1, 19.1, 19.2, 19.3, 19.5, 9.1_
-  - [~] 14.2 User checkpoint: approve the Pump text
+  - [-] 14.2 User checkpoint: approve the Pump text
     - The User reads and approves every Pump text and source before it is kept.
     - _Requirements: 19.4_
   - [~] 14.3 Run the catalogue tests

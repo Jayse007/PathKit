@@ -206,3 +206,17 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Kiro got wrong: nothing known.
 - PathKit feature used: none (pure app logic).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 20.1: Target_Converter
+- Done: wrote `src/logic/target-converter.ts` with `buildKeyframedTarget`. One keyframe per displayed frame, position read with `evaluateEntity` at `remap(f)`, y shifted by `heightOffsetM`, x and z copied. Throws on a bad `displayedFrameCount`. Awaiting the User's `npm.cmd test` output (the tests are task 20.2).
+- Broke: nothing known. No command has been run.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: `evaluateEntity` with one reused output buffer, and the `Keyframe` and `BakedData` types.
+- Not tested: everything here; the tests come in 20.2.
+
+## Task 20.2: Target_Converter tests
+
+- Done: added `test/logic/target-converter.test.ts` (4 tests). Fixture: straight-line subject (open 2-point path, fps 24, speed 24 m/s, so baked position at frame b is (b, 2, -3) written by hand), remap table [0,0,3,5,5,24,12,1], offsets 0, 1.5, -0.3, 40. Checks: one keyframe per displayed frame with frame equal to index; position equals the table's baked frame with y raised by the offset; rise compared with offset 0; 0 frames gives empty, bad counts throw. Not yet run by the User.
+- Broke: nothing known. Assumption to confirm on first run: a 2-point open curve is straight and arc length is accurate within 1e-6.
+- PathKit feature used: `bake`, `followPath` (via `buildKeyframedTarget`, which calls `evaluateEntity`).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
