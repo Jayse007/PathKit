@@ -7,7 +7,7 @@
 // from evaluate() instead of `out` (the "same buffer for 1000 calls" test fails).
 
 import { describe, expect, it } from 'vitest';
-import { bake, createArcLengthTable, createCurve, motionLinter } from '../../src/logic/pathkit.js';
+import { bake, createArcLengthTable, createCurve, evaluateEntity, motionLinter, rotateVec } from '../../src/logic/pathkit.js';
 import type { BakedData, Finding, OutBuffer, Scene, Vec3 } from '../../src/logic/pathkit.js';
 import {
   BAKE_FPS,
@@ -122,6 +122,29 @@ function soloFindings(cam: CameraSetting): Finding[] {
   );
   const scene = set.scenes[0].scene;
   return motionLinter(scene, bake(scene)).filter((f) => f.entityId === cam.id);
+}
+
+// Subject position at a displayed frame, read from an independent solo bake with the same remap as camera-rig.ts.
+function subjectAtDisplayed(subject: BakedData, f: number): Vec3 {
+  const out = evaluateEntity(subject, SUBJECT_ENTITY_ID, remap(f), makeOut());
+  return { x: out.position.x, y: out.position.y, z: out.position.z };
+}
+
+// Runs setSettings and tick; throws unless the bake worked. Returns the rig.
+function bakedRig(cameras: CameraSetting[], mainId: string): CameraRig {
+  const rig = new CameraRig();
+  rig.setSettings(makeSettings({ mainCameraId: mainId, cameras }));
+  const outcome = rig.tick();
+  if (outcome === null || !outcome.ok) {
+    throw new Error(`bakedRig: the bake did not work: ${outcome === null ? 'tick returned null' : String(outcome.message)}`);
+  }
+  return rig;
+}
+
+function expectNear(actual: number, expected: number, label: string): void {
+  if (!(Math.abs(actual - expected) < TOLERANCE)) {
+    throw new Error(`${label}: expected ${expected}, got ${actual}`);
+  }
 }
 
 describe('RebakeScheduler', () => {
@@ -332,5 +355,66 @@ describe('CameraRig findings', () => {
       }
     }
     expect(found).toEqual(expected);
+  });
+});
+
+describe('CameraRig extra checks (task 28.2 extension)', () => {
+  it('markDirty on a new rig with no settings: tick() returns null and nothing is baked', () => {
+    const rig = new CameraRig();
+    rig.markDirty();
+    expect(rig.tick()).toBeNull();
+    expect(rig.bakeCount).toBe(0);
+  });
+
+  it('orbit with bearing 90: the camera sits 8 m from the subject at (90 + 0.75 f) degrees, 1.5 m up (frames 0, 120, 239)', () => {
+    const subject = soloSubject();
+    const rig = bakedRig([{ ...ORBIT_CAM, bearingDeg: 90 }], 'cam-1');
+    for (const f of [0, 120, 239]) {
+      const a = ((90 + 0.75 * f) * Math.PI) / 180;
+      const s = subjectAtDisplayed(subject, f);
+      const c = rig.evaluate('cam-1', f, makeOut()).position;
+      expectNear(c.x - s.x, 8 * Math.sin(a), `frame ${f} x offset`);
+      expectNear(c.y - s.y, 1.5, `frame ${f} y offset`);
+      expectNear(c.z - s.z, 8 * Math.cos(a), `frame ${f} z offset`);
+    }
+  });
+
+  it('orbit aim at frame 0: the camera forward (0, 0, -1) rotates to point at the subject', () => {
+    const rig = bakedRig([{ ...ORBIT_CAM }], 'cam-1');
+    const out = rig.evaluate('cam-1', 0, makeOut());
+    expectNear(out.position.x, 22, 'camera x');
+    expectNear(out.position.y, 2.2, 'camera y');
+    expectNear(out.position.z, 8, 'camera z');
+    const forward = rotateVec(out.rotation, { x: 0, y: 0, z: -1 });
+    const norm = Math.sqrt(1.5 * 1.5 + 8 * 8);
+    expectNear(forward.x, 0, 'forward x');
+    expectNear(forward.y, -1.5 / norm, 'forward y');
+    expectNear(forward.z, -8 / norm, 'forward z');
+  });
+
+  it('crane (bearing 90, distance 10, height 2): x = 32, z = 0, y = 2.7 + 6 f / 240 (frames 0, 120, 239)', () => {
+    const rig = bakedRig([{ ...ORBIT_CAM, shotType: 'crane', bearingDeg: 90, horizontalDistanceM: 10, heightM: 2 }], 'cam-1');
+    for (const f of [0, 120, 239]) {
+      const p = rig.evaluate('cam-1', f, makeOut()).position;
+      expectNear(p.x, 32, `frame ${f} x`);
+      expectNear(p.y, 2.7 + (6 * f) / 240, `frame ${f} y`);
+      expectNear(p.z, 0, `frame ${f} z`);
+    }
+  });
+
+  it('push-in with the same placement starts at (32, 2.7, 0) at frame 0', () => {
+    const rig = bakedRig([{ ...ORBIT_CAM, shotType: 'push-in', bearingDeg: 90, horizontalDistanceM: 10, heightM: 2 }], 'cam-1');
+    const p = rig.evaluate('cam-1', 0, makeOut()).position;
+    expectNear(p.x, 32, 'x');
+    expectNear(p.y, 2.7, 'y');
+    expectNear(p.z, 0, 'z');
+  });
+
+  it('placementOf: a baked camera is in scene 0 of a 240-frame bake, and an unknown camera throws naming it', () => {
+    const rig = bakedRig([{ ...ORBIT_CAM }], 'cam-1');
+    const placement = rig.placementOf('cam-1');
+    expect(placement.sceneIndexInSet).toBe(0);
+    expect(placement.bakedScene.frameCount).toBe(240);
+    expect(() => rig.placementOf('cam-9')).toThrow(/cam-9/);
   });
 });
