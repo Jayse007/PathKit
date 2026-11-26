@@ -5,6 +5,11 @@
 
 import { LAP_COUNT, LAP_DISTANCES } from '../constants.js';
 
+/** Round half up: floor(x + 0.5). Shared with Explode_Easing. */
+export function roundHalfUp(x: number): number {
+  return Math.floor(x + 0.5);
+}
+
 /** Map an orbit angle in degrees to a whole frame 0 to 359. */
 export function angleToFrame(angleDeg: number): number {
   if (!Number.isFinite(angleDeg)) {

@@ -139,22 +139,22 @@ The plan follows the approved design (option A: four baked laps blended with `le
 
 ### Phase 1: Tier A logic (pure, tested)
 
-- [ ] 10. Drag_Range and Fraction_To_Pixels
+- [x] 10. Drag_Range and Fraction_To_Pixels
   - [x] 10.1 Implement them in `src/logic`
     - L(e) = 0.25 - 0.15 * e / 100, using the named constants; clamp each axis independently; reset gives (0, 0); `fractionToPixels` multiplies with no rounding. Non-finite input throws naming the value.
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 7.10, 7.11, 7.12_
-  - [-] 10.2 Write the tests
+  - [x] 10.2 Write the tests
     - Limits 0.25, 0.175, 0.10 at 0, 50, 100 percent. 1000 x 800 px table: 250 / 200, 175 / 140, 100 / 80.
     - Inside unchanged; on the edge unchanged; outside gives the nearest edge; axes independent; reset gives zero; the area shrinks as e grows (loop 0 to 100); an offset outside the new area is re-clamped when e changes; non-finite throws with the value.
     - Source line it should catch: use 0.25 instead of 0.15 in the shrink slope.
     - _Requirements: 7.1 to 7.12, 35.4 (design Property 14, 15)_
 
 - [ ] 11. Explode_Easing and Part path points
-  - [~] 11.1 Implement `explodeFrame` and the path-point function
+  - [x] 11.1 Implement `explodeFrame` and the path-point function
     - Smoothstep; frame = floor(eased * 59 + 0.5); clamp to 0 to 100; non-finite throws.
     - Points: P0, P1 = P0 + v/3 + b, P2 = P0 + 2v/3 + b, P3 = P0 + v, with b = 0.15 * |v| * u; u is the perpendicular closest to +Y; use +Z when |unit(v) x Y| < 0.1. |v| below 0.1 throws.
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 13.3_
-  - [~] 11.2 Write the tests
+  - [-] 11.2 Write the tests
     - Frames at 0, 25, 50, 75, 100 percent are 0, 9, 30, 50, 59. Monotone non-decreasing over 0 to 100 step 1. Inputs -5 and 105 clamp. Frames are whole and inside 0 to 59. Non-finite throws.
     - P0 = (0, 0, 0), v = (0.6, 0, 0): b = (0, 0.09, 0); points (0,0,0), (0.2,0.09,0), (0.4,0.09,0), (0.6,0,0).
     - v = (0, 0.6, 0) uses +Z: b = (0, 0, 0.09); points (0,0,0), (0,0.2,0.09), (0,0.4,0.09), (0,0.6,0). |v| below 0.1 throws.

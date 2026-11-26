@@ -112,3 +112,14 @@
 - Added later: test 'clamps an out-of-range Explode_Amount to 0..100' (now 11 tests). Hand-written: benchLimit(-20) = 0.25, benchLimit(150) = benchLimit(1000) = 0.10, clampOffset(1, -1, 150) = (0.1, -0.1), clampOffset(1, -1, -20) = (0.25, -0.25). It should fail if `Math.min(100, ...)` or `Math.max(0, ...)` is removed from benchLimit. Not run (no terminal).
 - Not tested: the look, WebGL, view offset, clicking, load time.
 - PathKit feature used: none.
+
+### Task 11.1: explodeFrame and Part path points
+- Done: added `src/logic/explode-easing.ts` (`explodeFrame`), `src/logic/part-path.ts` (`partPathPoints`), and exported `roundHalfUp` from `frame-mapper.ts`.
+- Broke / Kiro got wrong: nothing known yet. Not run (no terminal); tests are task 11.2.
+- PathKit feature used: none (app code). Catmull-Rom use comes later in the Part scenes.
+
+## Task 11.2 Explode_Easing and Part path tests
+- Done: wrote test/explode-easing.test.ts (8 tests) for explodeFrame and partPathPoints, hand-computed expected values. Not yet run by the User.
+- Broke: nothing known yet.
+- Kiro got wrong: nothing known yet.
+- PathKit feature used: none (app logic only).

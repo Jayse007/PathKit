@@ -179,21 +179,21 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: use 20 instead of 20.25 for the sensor height in the vertical formula (24 mm vertical becomes 45.2 and fails).
     - _Requirements: 4.1, 4.2, 4.3, 4.6, 4.7, 23.4, 23.5 (design Property 1, 2)_
 
-- [ ] 15. Label_Module
+- [x] 15. Label_Module
   - [x] 15.1 Implement `src/logic/labels.ts`
     - `angleLabel` and `framingLabel` using the named thresholds from `constants.ts`. Overhead takes precedence over high angle. `framingLabel` throws naming the value when the input is not finite or outside 0 to 100.
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4, 6.8_
-  - [-] 15.2 Write the label tests
+  - [x] 15.2 Write the label tests
     - Elevation table: -10.1, -10, -9.9, 9.9, 10, 10.1, 59.9, 60, 60.1 give low angle, eye level, eye level, eye level, eye level, high angle, high angle, high angle, overhead.
     - Fill table: 34.9, 35, 35.1, 69.9, 70, 70.1 give wide, medium, medium, medium, medium, close-up. Fill of -0.1, 100.1, NaN, Infinity throws naming the value; 0 and 100 are accepted.
     - Source line it should catch: change `<= 10` to `< 10` for the eye-level upper bound.
     - _Requirements: 5.1 to 5.4, 6.1 to 6.3, 6.8, 23.6 (design Property 3)_
 
 - [ ] 16. Fill_Fraction
-  - [~] 16.1 Implement `src/logic/fill.ts`
+  - [x] 16.1 Implement `src/logic/fill.ts`
     - `subjectBoxCorners`, `projectToNdc`, `fillFractionPercent` and `framingPercent` as in the design. All write into caller-supplied buffers and allocate nothing per call. A non-finite coordinate or a count below 1 throws an Error that names the index and value. A point behind the camera makes `projectToNdc` return false and `framingPercent` return 100.
     - _Requirements: 6.6, 6.7, 6.8, 11.11_
-  - [~] 16.2 Write the Fill_Fraction tests
+  - [-] 16.2 Write the Fill_Fraction tests
     - Three NDC cases: height decides (x -0.2 to 0.2, y -0.5 to 0.5) gives 50 (medium); width decides (x -0.9 to 0.9, y -0.1 to 0.1) gives 90 (close-up); partly outside (x -1.5 to 0.5, y -0.2 to 0.2) gives 75.
     - Realistic pose: camera at (0, 0, 10), identity rotation, 50 mm lens, aspect 16/9, box at the origin with half-extents (0.9, 0.7, 2.2): all 8 corners match the design table to 5 decimals (for example (-0.320513, -0.443178) for corner 1 and (-0.204918, -0.283344) for corner 5), and the result is 44.3 to 1 decimal place, medium.
     - Behind the camera: a corner at z = 12 gives false and `framingPercent` returns 100. Throws for NaN and for count 0.

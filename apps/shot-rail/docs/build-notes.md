@@ -141,3 +141,19 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Kiro got wrong: nothing known yet.
 - PathKit feature used: none (pure labels).
 - Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 16.1: Implement fill.ts
+
+- Done: wrote `src/logic/fill.ts` with `subjectBoxCorners`, `projectToNdc`, `fillFractionPercent` and `framingPercent`. Buffers are caller-supplied; the three helper vectors/quaternion are module-level scratch objects made once at load, so calls allocate nothing. A point with depth above `-NEAR_EPSILON` gets NDC (0, 0) and makes `projectToNdc` return false; `framingPercent` then returns 100. Non-finite values and counts below 1 throw an Error naming the label, index and value.
+- Added beyond the design text (small guards): a non-whole count, buffers that are too short, `verticalFovRad` outside (0, pi) and `aspect` at or below 0 also throw, since they would give NaN or Infinity.
+- Broke: nothing known. No command has been run; the tests (16.2) do not exist yet.
+- PathKit features used: `rotateVec`, `quatInverse` (through `src/logic/pathkit.ts`).
+- Not tested: everything so far (no tests yet), look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 16.2: Fill_Fraction tests
+
+- Done: added `test/logic/fill.test.ts` (8 tests): three NDC cases (50, 90, 75), the realistic pose (all 8 corners against the design table by hand formulas, two corners to 5 decimals, fill 44.3, medium), behind-camera (`projectToNdc` false, `framingPercent` 100), and throws for NaN and count 0. Not yet run by the User.
+- Broke: nothing known. Kiro mapped the design table's corner numbers to code indices (table 1 to 4 are code 4 to 7, table 5 to 8 are code 0 to 3) because the code uses sign bits, not the table order.
+- Source line it should catch: `Math.max(w, h)` changed to `Math.min(w, h)` in `fillFractionPercent` fails the height-decides case; removing `if (!inFront) return 100;` in `framingPercent` fails the behind-camera test.
+- PathKit feature used: `quatInverse`, `rotateVec` (through `fill.ts`).
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
