@@ -237,11 +237,11 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: read the baked frame f instead of remap(f), or forget the height shift.
     - _Requirements: 8.11, 8.14, 23.9 (design Property 9)_
 
-- [ ] 21. Shot_Builders (after S3 and S4)
+- [x] 21. Shot_Builders (after S3 and S4)
   - [x] 21.1 Implement `src/logic/shot-builders.ts`
     - `buildCameraScene` for tracking, orbit, push-in and crane as in the design's table. Constraint order: `orbitAround` (or `followPath`) at order 0, `aimAt` at order 1. Orbit speed = `ORBIT_SWEEP_DEG` / (shot length / `FRAME_RATE`). Rails: push-in end at `PUSH_IN_END_RATIO` of the start offset; crane rises `CRANE_RISE_M`. Rail speed = rail length times `FRAME_RATE` / shot length, so `path-end-reached` never fires on a visible frame. Camera axes come from `constants.ts`.
     - _Requirements: 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.14, 7.6, 7.7_
-  - [-] 21.2 Write the Shot_Builder tests
+  - [x] 21.2 Write the Shot_Builder tests
     - For each of the 4 types: `validateScene` does not throw; exact entity id and exact constraint list in order (`orbitAround`, `aimAt` or `followPath`, `aimAt`), orders strictly increasing; camera forward -Z and up +Y.
     - Rail speed: for push-in and crane at lengths 60, 240, 600, the baked rail travelled distance at the last frame is below the rail length (hand-written: length times (N-1)/N), and `motionLinter` returns no `path-end-reached` finding.
     - Orbit: the angle at the last frame minus the start is 180 degrees times (N-1)/N within 1e-9.
@@ -249,10 +249,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 8.2 to 8.7, 8.14, 23.8 (design Property 10, 11)_
 
 - [ ] 22. Scene_Set (after S6; the recorded outcome is hard-coded)
-  - [~] 22.1 Implement `src/logic/scene-set.ts`
+  - [x] 22.1 Implement `src/logic/scene-set.ts`
     - `buildSceneSet` with the S6 outcome recorded in Task 11.2 written in as a constant (not tested at runtime). Outcome A: one scene with every camera. Outcome B: scene 1 with the Main_Camera alone, scene 2 with the others. Write the outcome and the reason in a comment.
     - _Requirements: 8.10, 8.13, 22.10_
-  - [~] 22.2 Write the Scene_Set tests (the S6 regression)
+  - [-] 22.2 Write the Scene_Set tests (the S6 regression)
     - Three cameras plus one rail camera: the set has 1 scene (Outcome A) or 2 scenes (Outcome B) as recorded; every camera id appears exactly once; the Main_Camera is in scene 1 for Outcome B; every scene passes `validateScene`.
     - For every camera and frame, all 7 baked values from the set equal a separate solo bake within 1e-9.
     - Source line it should catch: add a camera to both scenes, or drop `cam-3` from the set.

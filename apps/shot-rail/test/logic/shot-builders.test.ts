@@ -9,6 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import { bake, motionLinter, validateScene } from '../../src/logic/pathkit.js';
 import type { Scene, Vec3 } from '../../src/logic/pathkit.js';
+import { PLACEHOLDER_PATH } from '../../src/logic/constants.js';
 import { buildCameraScene } from '../../src/logic/shot-builders.js';
 import type { CameraPlacement, ShotType } from '../../src/logic/shot-builders.js';
 
@@ -103,7 +104,13 @@ describe('buildCameraScene', () => {
   });
 
   it('crane: followPath (order 0, speed 6 * 30 / 240 = 0.75) then aimAt (order 1)', () => {
-    const constraints = build('crane', 240).entities[0].constraints;
+    // 8.7 - 2.7 is 5.999999999999999 in floating point, so the speed is compared with a tolerance.
+    const scene = build('crane', 240);
+    const speed = speedOf(scene, 0);
+    expect(Math.abs(speed - 0.75)).toBeLessThan(1e-12);
+    const constraints = scene.entities[0].constraints.map((c) =>
+      c.type === 'followPath' ? { ...c, speed: 0.75 } : c,
+    );
     expect(constraints).toEqual([
       { type: 'followPath', order: 0, influence: 1, speed: 0.75, startOffset: 0, alignToPath: false },
       { type: 'aimAt', order: 1, influence: 1, target: 'subject' },
@@ -168,6 +175,115 @@ describe('buildCameraScene', () => {
       if (!(Math.abs(diffDeg - expected) <= 1e-9)) {
         throw new Error(`orbit: N=${n} swept ${diffDeg} degrees, expected ${expected}`);
       }
+    }
+  });
+});
+
+// Hand-written expectations: camera cam-1, distance 10, height 2, push-in end ratio 0.4, crane rise 6.
+const TOL = 1e-9;
+const RAIL_PLACEMENT = (bearingDeg: number): CameraPlacement => ({
+  bearingDeg,
+  heightM: 2,
+  horizontalDistanceM: 10,
+  lensMm: 35,
+});
+const STILL: Vec3 = { x: 1, y: 0.7, z: 2 };
+const PLACEHOLDER = PLACEHOLDER_PATH;
+
+function expectPoint(actual: Vec3, x: number, y: number, z: number): void {
+  expect(Math.abs(actual.x - x)).toBeLessThan(TOL);
+  expect(Math.abs(actual.y - y)).toBeLessThan(TOL);
+  expect(Math.abs(actual.z - z)).toBeLessThan(TOL);
+}
+
+describe('buildCameraScene rail geometry, paths, targets and errors', () => {
+  const stillCases: Array<['crane' | 'push-in', number, Vec3, Vec3]> = [
+    ['crane', 0, { x: 1, y: 2.7, z: 12 }, { x: 1, y: 8.7, z: 12 }],
+    ['crane', 90, { x: 11, y: 2.7, z: 2 }, { x: 11, y: 8.7, z: 2 }],
+    ['push-in', 0, { x: 1, y: 2.7, z: 12 }, { x: 1, y: 1.5, z: 6 }],
+    ['push-in', 90, { x: 11, y: 2.7, z: 2 }, { x: 5, y: 1.5, z: 2 }],
+  ];
+
+  it.each(stillCases)('still subject: %s at bearing %i has the expected 2-point open rail', (type, bearing, start, end) => {
+    const scene = buildCameraScene(type, RAIL_PLACEMENT(bearing), 240, STILL, STILL, CAMERA_ID, null);
+    expect(scene.path.points.length).toBe(2);
+    expect(scene.path.closed).toBe(false);
+    expectPoint(scene.path.points[0], start.x, start.y, start.z);
+    expectPoint(scene.path.points[1], end.x, end.y, end.z);
+  });
+
+  it('moving subject: push-in ends at the last keyframe offset, crane rises from the first', () => {
+    const subject = {
+      keyframes: [
+        { frame: 0, position: { x: 0, y: 0.7, z: 0 } },
+        { frame: 1, position: { x: 3, y: 0.7, z: 1 } },
+        { frame: 2, position: { x: 10, y: 1.7, z: -6 } },
+      ],
+    };
+    const push = buildCameraScene('push-in', RAIL_PLACEMENT(0), 240, subject, subject, CAMERA_ID, null);
+    expectPoint(push.path.points[0], 0, 2.7, 10);
+    expectPoint(push.path.points[1], 10, 2.5, -2);
+    const crane = buildCameraScene('crane', RAIL_PLACEMENT(0), 240, subject, subject, CAMERA_ID, null);
+    expectPoint(crane.path.points[0], 0, 2.7, 10);
+    expectPoint(crane.path.points[1], 0, 8.7, 10);
+  });
+
+  it('supplied path: push-in and crane use it and speed is 5 * 30 / 240 = 0.625', () => {
+    const supplied = {
+      points: [
+        { x: 0, y: 0, z: 0 },
+        { x: 0, y: 3, z: 4 },
+      ],
+      closed: false,
+    };
+    for (const type of ['push-in', 'crane'] as const) {
+      const scene = buildCameraScene(type, RAIL_PLACEMENT(0), 240, STILL, STILL, CAMERA_ID, supplied);
+      expect(scene.path).toEqual(supplied);
+      expect(Math.abs(speedOf(scene, 0) - 0.625)).toBeLessThan(1e-12);
+    }
+  });
+
+  it('orbit and tracking: scene.path is the supplied path, or PLACEHOLDER_PATH when null', () => {
+    const supplied = {
+      points: [
+        { x: 0, y: 0, z: 0 },
+        { x: 0, y: 3, z: 4 },
+      ],
+      closed: false,
+    };
+    for (const type of ['orbit', 'tracking'] as const) {
+      const withPath = buildCameraScene(type, ORBIT_PLACEMENT, 240, STILL, STILL, CAMERA_ID, supplied);
+      expect(withPath.path).toEqual(supplied);
+      const without = buildCameraScene(type, ORBIT_PLACEMENT, 240, STILL, STILL, CAMERA_ID, null);
+      expect(without.path).toEqual(PLACEHOLDER);
+    }
+  });
+
+  it('orbit and tracking: targets hold the centre under centre-cam-1 and the subject under subject', () => {
+    const centre: Vec3 = { x: 5, y: 0, z: 7 };
+    for (const type of ['orbit', 'tracking'] as const) {
+      const scene = buildCameraScene(type, ORBIT_PLACEMENT, 240, STILL, centre, CAMERA_ID, null);
+      expect(scene.targets['centre-cam-1']).toEqual(centre);
+      expect(scene.targets.subject).toEqual(STILL);
+    }
+  });
+
+  it('rejects a shot length that is not a whole number above 0, for all 4 types', () => {
+    for (const type of ALL_TYPES) {
+      for (const bad of [0, -1, 1.5, NaN]) {
+        expect(() =>
+          buildCameraScene(type, placementFor(type), bad, STILL, STILL, CAMERA_ID, null),
+        ).toThrow(/whole number above 0/);
+      }
+    }
+  });
+
+  it('push-in and crane reject a subject target with no keyframes', () => {
+    const empty = { keyframes: [] };
+    for (const type of ['push-in', 'crane'] as const) {
+      expect(() =>
+        buildCameraScene(type, RAIL_PLACEMENT(0), 240, empty, empty, CAMERA_ID, null),
+      ).toThrow(/no keyframes/);
     }
   });
 });

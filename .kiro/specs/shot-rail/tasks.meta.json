@@ -596,6 +596,11 @@
         "executionId": "74c54888-7b87-4ada-b2bd-7309eaa2b4d5",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795670869430
+      },
+      {
+        "executionId": "35c81fb8-d556-45f7-bcb1-6838fcd4af3f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795671701424
       }
     ],
     "22.1 Implement `src/logic/scene-set.ts`": [
@@ -603,6 +608,16 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529393477
+      },
+      {
+        "executionId": "35c81fb8-d556-45f7-bcb1-6838fcd4af3f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795671708065
+      },
+      {
+        "executionId": "35c81fb8-d556-45f7-bcb1-6838fcd4af3f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795671790448
       }
     ],
     "22.2 Write the Scene_Set tests (the S6 regression)": [
@@ -610,6 +625,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529394117
+      },
+      {
+        "executionId": "35c81fb8-d556-45f7-bcb1-6838fcd4af3f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795671797142
       }
     ],
     "23.1 Implement `src/logic/findings.ts`": [
@@ -1275,6 +1295,13 @@
         "executionId": "74c54888-7b87-4ada-b2bd-7309eaa2b4d5",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795670752748
+      }
+    ],
+    "21. Shot_Builders (after S3 and S4)": [
+      {
+        "executionId": "35c81fb8-d556-45f7-bcb1-6838fcd4af3f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795671702225
       }
     ]
   }

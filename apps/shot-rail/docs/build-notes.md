@@ -1,7 +1,15 @@
 # Build notes
 
-## Task 21.2: Shot_Builder tests (newest entry, kept at top)
+## Task 22.2: Scene_Set tests (newest entry, kept at top)
+- Done: wrote `test/logic/scene-set.test.ts` (5 tests): Outcome A (1 scene, each id once), Main_Camera first, `validateScene`, 7 values vs a solo bake of each camera over 30 frames (tolerance 1e-9), missing main camera throws. Not run by Kiro.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet.
+- PathKit features used: `validateScene`, `bake`, `evaluateEntity`.
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server.
+
+## Task 21.2: Shot_Builder tests
 - Done: wrote `test/logic/shot-builders.test.ts` (9 tests). Not yet run by the User.
+- Update (user request): crane speed now compared with tolerance 1e-12 (8.7 - 2.7 is 5.999999999999999). Added rail geometry (still and moving subject), supplied path, orbit/tracking path, centre target, bad shot length and empty keyframes tests. File now has 19 runtime tests. Not run by Kiro.
 - Broke: nothing known. Not run by Kiro.
 - Kiro got wrong: nothing known yet.
 - PathKit features used: `validateScene`, `bake` (travelled, transforms), `motionLinter`.
@@ -234,3 +242,11 @@ One short entry per task: what was done, what broke, what Kiro got wrong, which 
 - Kiro got wrong: nothing known yet. Judgement call: for push-in and crane a non-null `path` argument is used as the rail, and null builds the rail from the subject target. The design signature does not say which one wins.
 - PathKit feature used: followPath, orbitAround, aimAt constraints and the Scene types.
 - Not tested: everything (no test yet, no command run).
+
+## Task 22.1: Implement scene-set.ts
+
+- Done: wrote `src/logic/scene-set.ts` with `buildSceneSet` and the constant `S6_OUTCOME = 'A'` (reason in a comment, from Task 11.2). It returns one scene with every camera: Main_Camera first, then the others in map order. Each camera comes from `buildCameraScene`; the scene takes the Main_Camera's path and the union of all targets (`centre-<id>` names are unique per camera). Throws naming the id for an unknown main camera or a non-rail camera with no centre target.
+- Changed from the design: the design signature has an `outcome: 'A' | 'B'` parameter. The task says to write the outcome in as a constant, so there is no such parameter and no Outcome B code.
+- Broke: nothing known. Not run; the tests are task 22.2.
+- Kiro got wrong: nothing known.
+- PathKit feature used: only the `Scene` and `Target` types (through `pathkit.ts`); scene building goes through `buildCameraScene`.
