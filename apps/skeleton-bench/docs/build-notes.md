@@ -236,3 +236,18 @@
 - Kiro assumption to check: `new WebGLRenderer` throws when WebGL is missing (so the catch shows the message). Grid colour 0x889099 on background 0xf4f4f4 is a guess at "faint"; Looks come in 17.5.
 - PathKit feature used: `evaluateEntity`, `lerp`, `slerp` through `blendCamera` and the baked laps from `bakeLaps` (`bake`, `orbitAround`, `aimAt`). The view offset is Three.js, not PathKit.
 - Not tested: the look, WebGL, view offset, clicking, load time, resize, WebGL-failure message, per-frame allocation. No unit tests were written for this task (rendering needs a browser).
+
+## Task 17.2: Empty stage result (User checkpoint)
+
+- Result: PASS. The User opened src/render/stage-preview.html in a browser and answered: (1) a faint grid with no machine: Yes; (2) the orbit slider turns the view around the grid: Yes; (3) the zoom slider moves the camera closer and further: Yes; (4) positive offset x moves the whole stage right, positive offset y moves it down, and reset brings it back to centre: Yes.
+- The checks were manual answers from the User, not automated tests.
+- The offset sign matches Spike S4 (task 9.2).
+- Docs-only change. No code edited.
+
+## Task 17.3: Pump model and Part placement
+- Done: added `src/render/pump-model.ts` (`buildPumpModel`: eight Part groups named `part:<id>`, each with `userData.partId`, and the Meshes inside carry the same `partId`; shapes are cylinders and boxes sized inside the catalogue extents; `spinImpeller(model, dt, reducedMotion)` turns the inner impeller spinner about x at `IMPELLER_SPIN_RAD_PER_S`, and does nothing under reduced motion) and `src/render/part-placement.ts` (`createPartPlacer`: `placeAtAmount(percent)` goes through `explodeFrame`, then `evaluateEntity` on each baked Part scene into one preallocated `OutBuffer`, then `position.set`; a plain indexed loop, no allocation per call). Extended the temporary preview page (`stage-preview.html` and `.ts`) with an explode slider, a reduced-motion checkbox (starts from the browser setting) and a spin loop that runs only while the impeller turns. `index.html` and the catalogue text were not changed.
+- Decisions: the placeholder material is `MeshNormalMaterial` (needs no lights); the two Looks replace it in 17.5. The impeller is inside the casing, so with this opaque placeholder it is hidden until the Pump is exploded (the casing moves -z and the impeller up and right). The casing is a plain barrel, not a volute. The bolt group is four short bolts. The spin is on an inner group so the Part group's position still comes only from the baked scene.
+- Broke: nothing known. Nothing run, no browser opened, editor diagnostics not visible to Kiro. No unit tests written (rendering needs a browser).
+- Kiro assumptions to check: `Group.userData` accepts `.partId` assignment under this tsconfig (it is `Record<string, any>`); `noUncheckedIndexedAccess` may be on, so `placeAtFrame` guards `entries[i]`.
+- PathKit feature used: `evaluateEntity` and `OutBuffer` (reading baked Part scenes), through the scenes from `bakeParts` (`followPath`, `createCurve`, `createArcLengthTable`). The spin is Three.js only.
+- Not tested: the look, WebGL, the shapes against the extents, view offset, clicking, load time, per-frame allocation, reduced-motion behaviour, the spin.

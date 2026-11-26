@@ -759,6 +759,11 @@
         "executionId": "e82fb21f-441a-4765-b6d9-5aa6cab67792",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795678245840
+      },
+      {
+        "executionId": "252f0170-95c9-461d-b747-fe8846ae0902",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795679328236
       }
     ],
     "27. Checkpoint: Phase 1": [
@@ -766,6 +771,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529398362
+      },
+      {
+        "executionId": "252f0170-95c9-461d-b747-fe8846ae0902",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795679349268
       }
     ],
     "28.1 Implement `src/view/camera-rig.ts`": [
@@ -773,6 +783,16 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529398791
+      },
+      {
+        "executionId": "f47bfcbc-6b33-466f-a294-34238bd53df7",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795679893198
+      },
+      {
+        "executionId": "f47bfcbc-6b33-466f-a294-34238bd53df7",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795680047256
       }
     ],
     "28.2 Write the CameraRig tests": [
@@ -780,6 +800,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529399260
+      },
+      {
+        "executionId": "f47bfcbc-6b33-466f-a294-34238bd53df7",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795680054671
       }
     ],
     "29.1 Implement `src/view/main-view.ts` and wire `index.html`": [
@@ -1410,6 +1435,13 @@
         "executionId": "e82fb21f-441a-4765-b6d9-5aa6cab67792",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795678238896
+      }
+    ],
+    "26. Integration: the three sample shots": [
+      {
+        "executionId": "252f0170-95c9-461d-b747-fe8846ae0902",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795679329090
       }
     ]
   }

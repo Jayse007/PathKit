@@ -285,26 +285,26 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: remove the try/catch around `setItem`.
     - _Requirements: 20.1, 20.2, 20.3 (design Property 15)_
 
-- [ ] 26. Integration: the three sample shots
-  - [-] 26.1 Write `test/logic/samples-integration.test.ts`
+- [x] 26. Integration: the three sample shots
+  - [x] 26.1 Write `test/logic/samples-integration.test.ts`
     - Define the three samples in `src/logic/samples.ts` first (values from the design's Samples table: orbit around the car; push-in from a low camera; crane up), each a `RigSettings`-shaped value with shot length 240. Each goes through the subject bake, `buildKeyframedTarget`, `buildSceneSet`, `bake`, `motionLinter`, and every scene passes `validateScene`.
     - Each sample's main camera evaluates at frames 0, 120 and 239 without throwing; the linter returns an array; a count of findings is printed.
     - Each sample's values lie inside the allowed ranges from `constants.ts`: horizontal distance 3 to 60 m, height -0.5 to 40 m, lens in `LENS_PRESETS_MM`, shot length 60 to 600 (checked with plain comparisons naming the sample and the field).
     - Source line it should catch: set one sample's `horizontalDistanceM` to 0 (the build throws or the radius check fails), or set a shot length of 59.
     - _Requirements: 10.2, 10.5, 8.6, 9.1 (design Testing Strategy, integration)_
 
-- [~] 27. Checkpoint: Phase 1
+- [x] 27. Checkpoint: Phase 1
   - Ensure all tests pass, ask the user if questions arise. The User runs `npm.cmd test` and pastes the output. Kiro reports the counts.
 
 ### Phase 2: Stage and views (each item is its own task with its own User checkpoint)
 
 - [ ] 28. CameraRig
-  - [~] 28.1 Implement `src/view/camera-rig.ts`
+  - [x] 28.1 Implement `src/view/camera-rig.ts`
     - Bake scheduling: a dirty flag; at most one re-bake per animation frame (changes in the same frame coalesce); the subject bake is cached and redone only when the subject kind or the Road changes. A re-bake never starts playback. Builds the Scene_Set, bakes each scene, runs `motionLinter` and keeps only the findings for the main camera. Errors from `bake`, `validateScene` or `motionLinter` are caught and returned as the plain messages in the design's Error Handling table.
     - `evaluate(cameraId, displayedFrame, out)` calls `evaluateEntity` only and writes into the caller's buffer. No object, array or closure is created per call.
     - The scheduler logic is a small pure function or class with no DOM, so it can be tested in Node.
     - _Requirements: 8.10, 8.12, 8.15, 9.1, 9.8, 11.10, 11.11, 11.14_
-  - [~] 28.2 Write the CameraRig tests
+  - [-] 28.2 Write the CameraRig tests
     - Five `markDirty` calls in one animation frame give one bake. A camera-only change does not rebake the subject; a Road change does. After a bake the reported play state is paused and the frame is unchanged. `evaluate` returns the same buffer object it was given, for 1000 calls. A thrown error inside the bake comes back as a message that names what failed and what to do next. `motionLinter` findings for other cameras are dropped.
     - Source line it should catch: bake inside `markDirty` instead of at the frame tick, or create a new output object inside `evaluate`.
     - _Requirements: 8.12, 8.15, 9.1, 9.8, 11.10, 11.11, 11.14 (design Re-bake scheduling)_

@@ -220,10 +220,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 17.1 Renderer, stage, camera and view offset
     - Renderer with a WebGL-failure message; stage and bench grid at y = -0.6; camera from the blend (`position.set`, `quaternion.set`); view offset from the offset fraction; render-on-change loop.
     - _Requirements: 10.1, 10.2, 11.1, 12.2, 12.6, 21.5, 20.4_
-  - [~] 17.2 User checkpoint: view the empty stage
+  - [x] 17.2 User checkpoint: view the empty stage
     - The User views the empty stage in a browser in their own way: the grid, the camera orbit and zoom, and that the view offset moves the stage. Kiro states what was not tested.
     - _Requirements: 37.1, 37.2_
-  - [~] 17.3 Pump model and Part placement
+  - [x] 17.3 Pump model and Part placement
     - Pump model from shapes: eight named parts, each a named object with `userData.partId`. Parts placed from the baked Part scenes through Explode_Easing. Impeller spin (ordinary Three.js, stopped under reduced motion).
     - _Requirements: 13.2, 13.5, 18.4, 18.5_
   - [~] 17.4 User checkpoint: view the Pump assembled and exploded
