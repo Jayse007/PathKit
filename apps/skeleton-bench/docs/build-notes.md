@@ -81,6 +81,14 @@
 - Mutations they must catch: `closed: true` to `false` in tour.ts (closed ring and path-end tests), `y: TOUR_RING_HEIGHT` to `y: 0` (ring points test), removing the empty-list check (empty tour test).
 - Kiro assumption to check: `TOUR_RING_RADIUS` is 3.6 and `TOUR_RING_HEIGHT` is 1.5 in constants.ts; the ring test uses typed-in values.
 
+## Task 10.1: Implement Drag_Range and Fraction_To_Pixels
+
+- Done: added src/logic/drag-range.ts with `benchLimit` (0.25 - 0.15 * e / 100 from the two named constants, e clamped to 0 to 100), `clampOffset(fx, fy, e)` (each axis clamped independently, returns a new object), `resetOffset()` and `fractionToPixels(fraction, size)` (plain multiply). Non-finite input throws with the value in the message.
+- Broke: nothing known. Not run (no terminal); tests are task 10.2.
+- Kiro assumption: an Explode_Amount outside 0 to 100 is clamped, as `explodeFrame` does in the design; only non-finite throws.
+- PathKit feature used: none.
+- Not tested: everything in this task (tests are 10.2); also the look, WebGL, view offset, clicking, load time.
+
 ## Task 9.1: Write the S4 check page
 
 - Done: added src/spike/s4-check.html and src/spike/s4-check.ts. Three shapes (sphere at the origin, box at x=1, cylinder at x=-1), camera driven by `bakeLaps`, `blendCamera` and `angleToFrame` with an angle slider and a zoom slider, offset buttons (step 0.1 of the viewport) calling `setViewOffset(W, H, -fx * W, -fy * H, W, H)` or `clearViewOffset` at (0, 0), a raycast click (NDC from the canvas rectangle) that prints the hit shape, fixed red cross-hairs at the screen centre, and a readout of where the sphere lands in pixels against the expected shift.
@@ -88,3 +96,18 @@
 - Kiro assumption: the design text says `clearView`; the Three.js method is `clearViewOffset`, which the page uses.
 - PathKit features used: `bake` (via `bakeLaps`), `evaluateEntity`, `lerp`, `slerp` (via `blendCamera`), `orbitAround`, `aimAt`.
 - Not tested: everything. The offset sign, orbit and zoom while offset, clicking and WebGL are all unchecked until the User's task 9.2.
+
+## Task 9.2: Spike S4 result (User checkpoint)
+
+- Result: PASS. The User opened src/spike/s4-check.html in a browser and answered: (1) the Machine moves on screen with the offset sign as designed: Yes; (2) orbit, zoom and clicking a shape still work while offset: Yes; (3) the shift direction matches: Yes.
+- Decision: the `setViewOffset` approach is confirmed. No fallback is needed.
+- Broke: nothing reported.
+- Kiro got wrong: nothing reported. The `clearViewOffset` naming fix from task 9.1 held.
+- Not tested: nothing new beyond the three checks above. These were manual answers from the User, not automated tests.
+
+## Task 10.2: Drag_Range tests
+
+- Done: wrote test/drag-range.test.ts (10 tests). Limits 0.25, 0.175, 0.10 at 0, 50, 100; 1000 x 800 px table (250/200, 175/140, 100/80); inside unchanged; on the edge unchanged; outside gives the nearest edge; axes independent; reset gives (0, 0); loop e = 0 to 100 checking L(e) = 0.25 - 0.0015 * e (typed in), strictly shrinking, and the clamped far offset; re-clamp when e changes 0 -> 50 -> 100; non-finite throws with the value for all four functions. Comparisons use a 1e-9 tolerance.
+- Broke: nothing known. Not run (no terminal). Mutation to try once: in benchLimit use 0.25 instead of 0.15 as the slope, i.e. `BENCH_MAX_FRACTION_AT_0 - 0.25 * e / 100`; the 100 percent limit row must fail.
+- Not tested: the look, WebGL, view offset, clicking, load time.
+- PathKit feature used: none.

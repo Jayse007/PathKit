@@ -239,6 +239,16 @@
         "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
         "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
         "timestamp": 1795583563035
+      },
+      {
+        "executionId": "c27d2294-17a9-4dc8-adff-e3d37244e604",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795597723250
+      },
+      {
+        "executionId": "c27d2294-17a9-4dc8-adff-e3d37244e604",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795597746540
       }
     ],
     "10.1 Implement them in `src/logic`": [
@@ -246,6 +256,16 @@
         "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
         "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
         "timestamp": 1795583563446
+      },
+      {
+        "executionId": "c27d2294-17a9-4dc8-adff-e3d37244e604",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795597763392
+      },
+      {
+        "executionId": "c27d2294-17a9-4dc8-adff-e3d37244e604",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795597818270
       }
     ],
     "10.2 Write the tests": [
@@ -253,6 +273,11 @@
         "executionId": "8a4f5633-986b-4229-8c8c-653279cc95c1",
         "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
         "timestamp": 1795583564149
+      },
+      {
+        "executionId": "c27d2294-17a9-4dc8-adff-e3d37244e604",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795597820561
       }
     ],
     "11.1 Implement `explodeFrame` and the path-point function": [
@@ -582,6 +607,13 @@
         "executionId": "83f00704-9922-4248-b76c-ae251a028ce7",
         "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
         "timestamp": 1795596232067
+      }
+    ],
+    "9. Spike S4: view offset": [
+      {
+        "executionId": "c27d2294-17a9-4dc8-adff-e3d37244e604",
+        "chatSessionId": "sess_faee2efd-83e6-4d25-b1f2-c173857f7db1",
+        "timestamp": 1795597746990
       }
     ]
   }

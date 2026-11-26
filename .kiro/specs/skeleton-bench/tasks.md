@@ -128,11 +128,11 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: set the ring radius below 1.5.
     - _Requirements: 4.5, 4.6, 16.3, 16.5, 16.7, 16.8, 35.7, 35.8 (design Property 7, 10, 21)_
 
-- [ ] 9. Spike S4: view offset
+- [x] 9. Spike S4: view offset
   - [x] 9.1 Write the S4 check page
     - A tiny, clearly named page in a spike folder inside `apps/skeleton-bench`: a few Three.js shapes, orbit through the baked camera, a `setViewOffset` move, and a raycast click on a shape.
     - _Requirements: 4.7, 12.6_
-  - [~] 9.2 User checkpoint: run the S4 check
+  - [x] 9.2 User checkpoint: run the S4 check
     - The User opens the page in a browser in their own way and answers: does the Machine move on screen with the offset sign as designed; do orbit, zoom and clicking a shape still work while offset; does the shift direction match.
     - Kiro records the result in the build notes. If it fails, stop and ask (fallback: move the Machine and re-bake when the drag ends).
     - _Requirements: 4.7, 4.8, 4.10, 4.11, 12.7_
@@ -140,10 +140,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
 ### Phase 1: Tier A logic (pure, tested)
 
 - [ ] 10. Drag_Range and Fraction_To_Pixels
-  - [~] 10.1 Implement them in `src/logic`
+  - [x] 10.1 Implement them in `src/logic`
     - L(e) = 0.25 - 0.15 * e / 100, using the named constants; clamp each axis independently; reset gives (0, 0); `fractionToPixels` multiplies with no rounding. Non-finite input throws naming the value.
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 7.10, 7.11, 7.12_
-  - [~] 10.2 Write the tests
+  - [-] 10.2 Write the tests
     - Limits 0.25, 0.175, 0.10 at 0, 50, 100 percent. 1000 x 800 px table: 250 / 200, 175 / 140, 100 / 80.
     - Inside unchanged; on the edge unchanged; outside gives the nearest edge; axes independent; reset gives zero; the area shrinks as e grows (loop 0 to 100); an offset outside the new area is re-clamped when e changes; non-finite throws with the value.
     - Source line it should catch: use 0.25 instead of 0.15 in the shrink slope.
