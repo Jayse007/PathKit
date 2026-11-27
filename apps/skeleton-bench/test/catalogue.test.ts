@@ -20,7 +20,7 @@ import SOURCES_TEXT from '../docs/sources.md?raw';
 //
 // While the catalogue holds only the one-Part fixture (Task 13.1), the tests that need real
 // machine facts are SKIPPED, not weakened: the named-Parts checks for each Machine (run when
-// that Machine has no fixture Part) and the 20-Part total (runs once all three Machines exist).
+// that Machine has no fixture Part) and the 21-Part total (runs once all three Machines exist).
 // The structural checks and the source-id check always run on CATALOGUE. The source-id check
 // exempts only the exact fixture Part. Task 14 fills the Pump, Task 18 the other two.
 
@@ -93,7 +93,7 @@ describe('lists exactly the named Parts', () => {
   const expectedCounts: ReadonlyArray<readonly [MachineId, number]> = [
     ['pump', 8],
     ['heat-exchanger', 6],
-    ['desk-lamp', 6],
+    ['desk-lamp', 7],
   ];
 
   // Skipped while the Machine still holds the fixture or is absent. Not weakened: the full
@@ -105,8 +105,8 @@ describe('lists exactly the named Parts', () => {
     });
   }
 
-  it.skipIf(CATALOGUE.machines.length < 3)('the full catalogue has 20 Parts (8 + 6 + 6)', () => {
-    expect(CATALOGUE.parts.length).toBe(20);
+  it.skipIf(CATALOGUE.machines.length < 3)('the full catalogue has 21 Parts (8 + 6 + 7)', () => {
+    expect(CATALOGUE.parts.length).toBe(21);
   });
 });
 

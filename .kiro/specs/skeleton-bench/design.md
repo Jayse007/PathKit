@@ -9,7 +9,7 @@ This design covers Tier A in full and Tier B at the level of pure logic. It foll
 Main design choices:
 
 - **Plain TypeScript and DOM, with Three.js for drawing.** No UI framework.
-- **PathKit supplies baked camera and part motion.** Four orbit laps, 20 part paths and 3 tours are baked once at load. Nothing is baked while the User drags, zooms or moves the explode slider.
+- **PathKit supplies baked camera and part motion.** Four orbit laps, 21 part paths and 3 tours are baked once at load. Nothing is baked while the User drags, zooms or moves the explode slider.
 - **Everything that can be pure is pure.** Frame mapping, zoom selection, drag range, explode easing, click classification, contrast and shortcut guards are pure functions with hand-written test tables.
 - **One shared stage envelope.** All three machines are modelled to fit one fixed box, so one set of camera laps serves all of them.
 - **Recommended camera mechanism: option A** (four laps blended with PathKit `lerp` and `slerp`). Option A was approved by the User (decision 21).
@@ -303,15 +303,15 @@ Given a Part's rest position P0 and explode vector v (length at least `PART_MIN_
 
 Each Part gets one scene: fps 30, frameCount `EXPLODE_FRAMES` = 60, one entity (id = Part id) with a single `followPath` (order 0, influence 1, `alignToPath` false, startOffset 0, speed = pathLength * 30 / 59 so the last frame reaches the end). The path length is read with `createCurve` and `createArcLengthTable` from PathKit's public API. There is no `aimAt` and no targets. The app applies position only. Parts never rotate. Part entities declare `PART_FORWARD_AXIS` +Z and `PART_UP_AXIS` +Y.
 
-There are 20 scenes (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Each is 5,280 B (transforms 3,360 + travelled 480 + aim 1,440), 105,600 B in total. At Explode_Amount 50 the travelled fraction of every path is 30 / 59.
+There are 21 scenes (Pump 8, Heat_Exchanger 6, Desk_Lamp 7). Each is 5,280 B (transforms 3,360 + travelled 480 + aim 1,440), 110,880 B in total. At Explode_Amount 50 the travelled fraction of every path is 30 / 59.
 
 **No Part stays fixed.** `createCurve` rejects zero-length paths, and Requirement 13.3 wants a path for every Part. Every Part therefore moves at least 0.1 m.
 
 ### Tour scenes
 
 - **Camera path.** A closed ring of `TOUR_RING_POINTS` = 12 points at bearings 0, 30, ..., 330 degrees, radius `TOUR_RING_RADIUS` = 3.6 m, height `TOUR_RING_HEIGHT` = 1.5 m (the same circle as lap 2, d = 3.9 m). `followPath` runs on that closed path at constant speed, one full turn over the whole tour. `aimAt` targets a keyframed Target that holds each Part's rest position during the middle of that Part's slot.
-- **Length.** `TOUR_FRAMES_PER_PART` = 90 (3 s). Pump 720 frames, Heat_Exchanger and Desk_Lamp 540 frames each. Speed = ring length * 30 / frameCount.
-- **Memory** (88 bytes per frame): 63,360 + 47,520 + 47,520 = 158,400 B. Estimated bake 6 to 24 ms each (estimate, not measured).
+- **Length.** `TOUR_FRAMES_PER_PART` = 90 (3 s). Pump 720 frames, Heat_Exchanger 540 frames, Desk_Lamp 630 frames. Speed = ring length * 30 / frameCount.
+- **Memory** (88 bytes per frame): 63,360 + 47,520 + 55,440 = 166,320 B. Estimated bake 6 to 24 ms each (estimate, not measured).
 - **Start.** Set Explode_Amount 0 and offset 0 (decision 16). Save the User's orbit angle and Zoom_Value. Cut (jump) to the tour pose. A lerp between two arbitrary bearings could pass through the box, so no blend is used.
 - **Stop or end.** Jump back to the saved angle and Zoom_Value (decision 23).
 - **Playback** uses whole frames from elapsed time at 30 fps.
@@ -332,7 +332,7 @@ There are 20 scenes (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Each is 5,280 B (tr
 
 ### Picking and the Parts list
 
-- Every Part is a named Three.js Group or Mesh (`part:<id>`) with `userData.partId`. The Heat_Exchanger tube bundle is one `InstancedMesh` with that tag. Edge lines (`EdgesGeometry`) and the selection shell are excluded from picking (only meshes are tested).
+- Every Part is a named Three.js Group or Mesh (`part:<id>`) with `userData.partId`. The Heat_Exchanger tube bundle is one merged `Mesh` with that tag. Edge lines (`EdgesGeometry`) and the selection shell are excluded from picking (only meshes are tested).
 - On a click, the pointer position is converted to normalised device coordinates from the canvas rectangle. A Three.js `Raycaster` picks the first mesh hit that has a `partId`. Because `setViewOffset` changes the projection matrix, the same conversion should still give the right ray. This is part of the manual S4 check ("clicking a Part").
 - **Keyboard path.** A visible Parts list (buttons in catalogue order, in the Inspector area) is the Tab and Enter path (Requirements 14.2 and 14.8). Focus on a button highlights that Part in 3D with a small shell. Enter or Space selects it. The list takes the place of tabbing to objects inside the canvas (change list).
 - **Selection cue besides colour (decision 18).** An inverted-hull "shell" (a back-face clone of each mesh of the Part, scaled per axis so that its rim is a fixed width of `SELECT_SHELL_RIM_M` = 0.012 m, in the accent colour of the Look), because Three.js line width is not reliable. The per-axis scale is `min(SHELL_MAX_SCALE, 1 + rim / (size / 2))` with `SHELL_MAX_SCALE` = 3, and 3 for an axis of size 0; a fixed width replaces a scale factor because a factor of 1.05 gave a rim of about 1 mm on small Parts (bolts, seal). Focus uses `FOCUS_SHELL_RIM_M` = 0.007 m. The Inspector also shows the name.
@@ -500,7 +500,7 @@ In this app each property is checked by an exhaustive loop over a finite domain 
 | 10 | (Spike S3) For each tour, `motionLinter` does not throw and returns a list. | One call per Machine. | The tour scene builder (an invalid scene). | 4.5, 16.7 |
 | 11 | The envelope radius equals the square root of the sum of the squared half-extents, and for all Parts the rest position, the end position and every one of the 60 frames lie inside the envelope. | Loop over the catalogue and 60 frames. | A Part's `explodeVector` or the model size. | 1 (stage envelope), 11.3, 13.3 |
 | 12 | For all Explode_Amounts the frame is whole, within 0 to 59, and never decreases as the amount increases. The table gives frames 0, 9, 30, 50, 59 at 0, 25, 50, 75, 100. | Table plus a loop from -10 to 110 in steps of 0.5. | The smoothstep coefficients, the `59`. | 8.1 to 8.5, 35.5 |
-| 13 | For all Parts, frame 0 equals the rest position within 1e-9 m, the last frame equals rest + explode vector within `END_POSITION_TOLERANCE_M`, and no frame is outside the baked range. | Loop over 20 Parts. | The path speed formula (`pathLength * 30 / 59`). | 8.1, 8.2, 13.2 to 13.4 |
+| 13 | For all Parts, frame 0 equals the rest position within 1e-9 m, the last frame equals rest + explode vector within `END_POSITION_TOLERANCE_M`, and no frame is outside the baked range. | Loop over 21 Parts. | The path speed formula (`pathLength * 30 / 59`). | 8.1, 8.2, 13.2 to 13.4 |
 | 14 | For all offsets, `clampOffset` returns the offset unchanged inside and on the edge, and the nearest edge value outside. The limits are 0.25, 0.175, 0.10 at 0, 50, 100 percent. The Bench_Area at 100 percent is no larger than at 0 percent. | Table plus a loop over amounts 0 to 100 and offsets -0.5 to 0.5. | The `0.25 - 0.15 * e / 100` expression. | 7.1 to 7.9 |
 | 15 | `fractionToPixels` gives 250 and 200, 175 and 140, 100 and 80 at 0, 50, 100 percent for 1000 x 800 px. | Hand-written table. | The use of width for x and height for y. | 7.11 |
 | 16 | `classifyPointer` returns click at 5 px and drag at 6 px and 5.1 px. Moving out to 6 px and back to 2 px stays a drag. | Table. | The `>` against `CLICK_THRESHOLD_PX`. | 14.6, 35.16 |
@@ -682,7 +682,7 @@ Tier B waits for the User's "go" and the Gesture_Lab result. The same setters se
 ## Risks and items for the User
 
 1. **Option choice.** Done: option A was approved by the User (decision 21).
-2. **Estimates are not measured.** The total bake is about 30 to 180 ms across 27 scenes (4 laps, 20 part paths, 3 tours). If the measured total exceeds about 250 ms, bake the non-current Machines lazily.
+2. **Estimates are not measured.** The total bake is about 30 to 180 ms across 28 scenes (4 laps, 21 part paths, 3 tours). If the measured total exceeds about 250 ms, bake the non-current Machines lazily.
 3. **Common stage envelope.** The three Machines are not to scale with each other. The About_Panel should say so.
 4. **Requirement 7 story wording.** Done: the requirement edits were made. Exploded Parts cannot always stay on screen at high zoom.
 5. **No fixed Part.** Every Part moves at least 0.1 m.

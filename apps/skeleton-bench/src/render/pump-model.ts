@@ -6,29 +6,14 @@
 // picking (Task 17.7) that tests meshes only never hits them.
 // Shapes are written at stage scale around each Part's own centre, within the catalogue extents.
 // Units: metres. Y-up. The shaft runs along x.
-import {
-  BoxGeometry,
-  CylinderGeometry,
-  Group,
-  EdgesGeometry,
-  ExtrudeGeometry,
-  LineSegments,
-  Mesh,
-  Shape,
-  Vector2,
-  type BufferGeometry,
-  type Object3D,
-} from 'three';
+import { BoxGeometry, Group, type BufferGeometry } from 'three';
 import { PUMP_PARTS } from '../data/catalogue.js';
 import type { PartEntry } from '../data/catalogue-types.js';
 import { IMPELLER_SPIN_RAD_PER_S } from '../constants.js';
 import { DEFAULT_LOOK } from '../ui/storage.js';
 import type { Look } from '../ui/storage.js';
-import { cleanFillIndex, createLookMaterials, disposeLookMaterials } from './looks.js';
-import type { LookMaterials } from './looks.js';
-
-/** Facet angle (degrees) above which EdgesGeometry draws a line. Smooth cylinder sides stay unlined. */
-const EDGE_THRESHOLD_DEG = 30;
+import { addMesh, buildMachineModel, cylinderX, cylinderY, extrudeAlongX } from './model-kit.js';
+import type { PartBuilder, YZ } from './model-kit.js';
 
 /** Id of the Part that spins. */
 export const IMPELLER_PART_ID = 'pump-impeller';
@@ -48,85 +33,6 @@ export interface PumpModel {
   setLook(look: Look): void;
   /** Release geometries and materials. */
   dispose(): void;
-}
-
-interface BuildContext {
-  readonly part: PartEntry;
-  /** Position of the Part in the catalogue list. Picks the Clean_Engineering grey. */
-  readonly partIndex: number;
-  readonly group: Group;
-  readonly geometries: BufferGeometry[];
-  readonly meshes: Mesh[];
-  readonly edges: LineSegments[];
-  readonly materials: Record<Look, LookMaterials>;
-  readonly look: Look;
-  spinner: Group | null;
-}
-
-function addMesh(
-  ctx: BuildContext,
-  geometry: BufferGeometry,
-  x: number,
-  y: number,
-  z: number,
-  parent: Object3D = ctx.group,
-): Mesh {
-  ctx.geometries.push(geometry);
-  const fillIndex = cleanFillIndex(ctx.partIndex);
-  const mesh = new Mesh(geometry, ctx.materials[ctx.look].fills[fillIndex]);
-  mesh.name = `part:${ctx.part.id}:mesh`;
-  mesh.userData.partId = ctx.part.id;
-  mesh.userData.fillIndex = fillIndex;
-  mesh.position.set(x, y, z);
-  parent.add(mesh);
-  ctx.meshes.push(mesh);
-
-  // Edge lines as a child of the mesh, so they move and spin with it.
-  const edgeGeometry = new EdgesGeometry(geometry, EDGE_THRESHOLD_DEG);
-  ctx.geometries.push(edgeGeometry);
-  const edgeMaterial = ctx.materials.X_Ray_Skeleton.edge;
-  if (edgeMaterial === null) {
-    throw new Error('buildPumpModel: the X_Ray_Skeleton Look needs an edge material');
-  }
-  const edge = new LineSegments(edgeGeometry, edgeMaterial);
-  edge.name = `part:${ctx.part.id}:edges`;
-  edge.userData.partId = ctx.part.id;
-  edge.visible = ctx.look === 'X_Ray_Skeleton';
-  mesh.add(edge);
-  ctx.edges.push(edge);
-  return mesh;
-}
-
-/** Cylinder whose axis is x. */
-function cylinderX(radius: number, length: number, segments = 24): BufferGeometry {
-  const g = new CylinderGeometry(radius, radius, length, segments);
-  g.rotateZ(Math.PI / 2);
-  return g;
-}
-
-/** Cylinder whose axis is y. */
-function cylinderY(radius: number, length: number, segments = 24): BufferGeometry {
-  return new CylinderGeometry(radius, radius, length, segments);
-}
-
-/** A point of an outline in the y-z plane, metres, local to the Part centre. */
-interface YZ {
-  readonly y: number;
-  readonly z: number;
-}
-
-/**
- * Extrudes a closed y-z outline along +x, from x = startX to x = startX + length.
- * The shape is drawn in x-y and extruded along z, then rotateY(+PI/2) maps (x, y, z) to (z, y, -x).
- * So the extrusion z in [0, length] becomes world x in [0, length] (then shifted by startX), and a shape
- * point (sx, sy) lands at world y = sy, z = -sx. The outline is therefore drawn with sx = -z, sy = y.
- */
-function extrudeAlongX(outline: readonly YZ[], length: number, startX: number): BufferGeometry {
-  const shape = new Shape(outline.map((p) => new Vector2(-p.z, p.y)));
-  const g = new ExtrudeGeometry(shape, { depth: length, bevelEnabled: false, steps: 1 });
-  g.rotateY(Math.PI / 2);
-  g.translate(startX, 0, 0);
-  return g;
 }
 
 /** Spiral (volute) outline in the y-z plane: a = 0 at the top (+y), turning towards +z. */
@@ -171,8 +77,6 @@ function vaneGeometry(): BufferGeometry {
   }
   return extrudeAlongX([...left, ...right.reverse()], 0.074, -0.054);
 }
-
-type PartBuilder = (ctx: BuildContext) => void;
 
 const BUILDERS: Readonly<Record<string, PartBuilder>> = {
   // extents 0.5 x 0.4 x 0.4
@@ -239,69 +143,38 @@ export function buildPumpModel(parts: readonly PartEntry[] = PUMP_PARTS, initial
   if (parts.length !== 8) {
     throw new Error(`buildPumpModel: the Pump has eight Parts, got ${parts.length}`);
   }
-  const root = new Group();
-  root.name = 'machine:pump';
-  const geometries: BufferGeometry[] = [];
-  const meshes: Mesh[] = [];
-  const edges: LineSegments[] = [];
-  const materials = createLookMaterials();
-  let currentLook: Look = initialLook;
-  const partObjects: Group[] = [];
-  const partsById = new Map<string, Group>();
-  let impellerSpinner: Group | null = null;
-
-  for (const [partIndex, part] of parts.entries()) {
-    const build = BUILDERS[part.id];
-    if (build === undefined) {
-      throw new Error(`buildPumpModel: no shape for Part "${part.id}"`);
-    }
-    const group = new Group();
-    group.name = `part:${part.id}`;
-    group.userData.partId = part.id;
-    group.position.set(part.restPosition[0], part.restPosition[1], part.restPosition[2]);
-    const ctx: BuildContext = {
-      part,
-      partIndex,
-      group,
-      geometries,
-      meshes,
-      edges,
-      materials,
-      look: initialLook,
-      spinner: null,
+  // Wrap the builders so the impeller's spinner group is captured when its builder runs.
+  const captured: { spinner: Group | null } = { spinner: null };
+  const builders: Record<string, PartBuilder> = { ...BUILDERS };
+  const buildImpeller = BUILDERS[IMPELLER_PART_ID];
+  if (buildImpeller !== undefined) {
+    builders[IMPELLER_PART_ID] = (ctx) => {
+      buildImpeller(ctx);
+      captured.spinner = ctx.spinner;
     };
-    build(ctx);
-    if (part.id === IMPELLER_PART_ID) {
-      impellerSpinner = ctx.spinner;
-    }
-    root.add(group);
-    partObjects.push(group);
-    partsById.set(part.id, group);
   }
 
+  const kit = buildMachineModel(parts, builders, initialLook);
+  kit.root.name = 'machine:pump';
+
+  const impellerSpinner = captured.spinner;
   if (impellerSpinner === null) {
     throw new Error(`buildPumpModel: the Part "${IMPELLER_PART_ID}" is missing, so there is nothing to spin`);
   }
 
   return {
-    root,
-    partObjects,
-    partsById,
+    root: kit.root,
+    partObjects: kit.partObjects,
+    partsById: kit.partsById,
     impellerSpinner,
     get look(): Look {
-      return currentLook;
+      return kit.look;
     },
     setLook(look: Look): void {
-      currentLook = look;
-      const fills = materials[look].fills;
-      for (const m of meshes) m.material = fills[m.userData.fillIndex as number]!;
-      const showEdges = materials[look].edge !== null;
-      for (const e of edges) e.visible = showEdges;
+      kit.setLook(look);
     },
     dispose(): void {
-      for (const g of geometries) g.dispose();
-      disposeLookMaterials(materials);
-      root.removeFromParent();
+      kit.dispose();
     },
   };
 }

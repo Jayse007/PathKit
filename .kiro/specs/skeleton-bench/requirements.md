@@ -384,8 +384,8 @@ Each item states the issue, the assumption used in this document, and who must d
 #### Acceptance Criteria
 
 1. THE Part_Catalogue SHALL list for the Pump these Parts: casing, impeller, shaft, bearing housing, mechanical seal, flange, bolts (one group) and motor.
-2. THE Part_Catalogue SHALL list for the Heat_Exchanger these Parts: shell, tube bundle (instanced cylinders, one Part), tube sheet, baffles, channel head and nozzles.
-3. THE Part_Catalogue SHALL list for the Desk_Lamp these Parts: base, lower arm, upper arm, joint, shade and bulb holder.
+2. THE Part_Catalogue SHALL list for the Heat_Exchanger these Parts: bonnet (front head), tube sheet, shell, U-tube bundle (many U-shaped tubes merged into one mesh, one Part), baffles and tie rods, and shell nozzles.
+3. THE Part_Catalogue SHALL list for the Desk_Lamp these Parts: base, upper arm, spring, elbow joint, forearm, shade (lamp head) and bulb holder.
 4. THE Skeleton_Bench_App SHALL build every Machine in code from Three.js shapes and SHALL import no model file.
 5. THE Skeleton_Bench_App SHALL make each Part a named object.
 6. THE Skeleton_Bench_App SHALL draw each Part so that a person can recognise the real part, using only Three.js shapes (no model file), and no shape of a Part SHALL reach outside that Part's extents box at any impeller spin angle.

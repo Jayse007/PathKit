@@ -1,5 +1,5 @@
 // Entry point (task 29.1): the empty stage. A 16:9 frame with a ground grid, seen through the first
-// sample shot's camera at displayed frame 0, and a lens menu so the field of view can be checked.
+// push-in sample shot's camera at displayed frame 0, and a lens menu so the field of view can be checked.
 
 import { CAMERA_IDS, LENS_PRESETS_MM } from './logic/constants.js';
 import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
@@ -23,13 +23,14 @@ function start(): void {
     throw new Error('index.html is missing #stage, #lens or #status');
   }
 
-  const sample = SAMPLE_SHOTS[0];
+  const sample = SAMPLE_SHOTS[1]; // the push-in
   const settings: RigSettings = {
     shotLengthFrames: sample.shotLengthFrames,
     mainCameraId: CAMERA_ID,
-    // cam-1 is the main camera. The other sample shots (push-in, crane) are extra cameras so that the
-    // Stage_Overview shows their rails. Remove them when the camera list (task 35) takes over.
-    cameras: SAMPLE_SHOTS.slice(0, 3).map((s, i) => ({
+    // Only the main camera may be a rail shot (scene-set.ts), so the push-in is the main camera (cam-1)
+    // and the orbit is the second camera (cam-2). The crane is left out for the same reason.
+    // Remove this when the camera list (task 35) takes over.
+    cameras: [SAMPLE_SHOTS[1], SAMPLE_SHOTS[0]].map((s, i) => ({
       id: CAMERA_IDS[i],
       shotType: s.shotType,
       ...s.placement,

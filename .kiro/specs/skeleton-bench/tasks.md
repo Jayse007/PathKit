@@ -181,7 +181,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - _Requirements: 9.1, 9.4, 9.6, 18.5_
   - [x] 13.2 Write the catalogue checks
     - Every field present; ids unique across all Machines; keyboard order lists each Part once; every source id exists in `docs/sources.md` (read with `node:fs`); |explode vector| >= 0.1; rest position, end position and extents inside the envelope.
-    - A "lists exactly the named Parts" check against the brief (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Run it against the fixture now; it covers the real catalogue as Tasks 14 and 18 fill it. A failing check names the Part.
+    - A "lists exactly the named Parts" check against the brief (Pump 8, Heat_Exchanger 6, Desk_Lamp 7). Run it against the fixture now; it covers the real catalogue as Tasks 14 and 18 fill it. A failing check names the Part.
     - Source line it should catch: delete one source id from `docs/sources.md`, or duplicate a Part id.
     - Added by a spec change: `checkExplodedClearance(catalogue, minGap = PART_MIN_CLEARANCE_M)` with `PART_MIN_CLEARANCE_M` = 0.08 m. At Explode_Amount 100, every two Parts of the same Machine must be at least 0.08 m apart. Gap = largest over x, y, z of |centre A - centre B| - (extents A + extents B) / 2, with centre = rest position + explode vector. A pair fails when gap < minGap - 1e-9, and the message names both Parts and the gap. Parts of different Machines are never compared. Tests: the real catalogue returns no failures, plus synthetic cases at gaps 0.1, 0.05, 0.08, 0.07, overlap, apart on y only, end position used, different Machines.
     - _Requirements: 9.1 to 9.7, 13.3, 13.8, 18.1, 18.2, 18.3, 35.6 (design Property 11, 18)_
@@ -257,10 +257,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - The User reads and approves every text and source before it is kept.
     - _Requirements: 19.4_
   - [-] 18.3 Build the models and scenes
-    - Shape models for both Machines (the tube bundle is one `InstancedMesh` Part), named objects, Part scenes baked at load, Inventory switching.
+    - Shape models for both Machines (the Heat_Exchanger tube bundle is one merged mesh Part; the Catalogue has 21 Parts in total), named objects, Part scenes baked at load, Inventory switching.
     - _Requirements: 15.1, 15.3, 18.2, 18.3, 18.4, 18.5_
   - [ ] 18.4 Rerun the tests and User checkpoint: visual check
-    - The User runs `npm.cmd test` and pastes the output (Tasks 13 and 15 checks now cover all 20 Parts). The User checks both Machines in a browser.
+    - The User runs `npm.cmd test` and pastes the output (Tasks 13 and 15 checks now cover all 21 Parts). The User checks both Machines in a browser.
     - _Requirements: 9.5, 35.6, 37.1_
 
 - [ ] 19. Tour for the real catalogue

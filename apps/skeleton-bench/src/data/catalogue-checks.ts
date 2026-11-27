@@ -28,8 +28,8 @@ export const EXPECTED_PART_NAMES: Readonly<Record<MachineId, readonly string[]>>
     'bolts',
     'motor',
   ],
-  'heat-exchanger': ['shell', 'tube bundle', 'tube sheet', 'baffles', 'channel head', 'nozzles'],
-  'desk-lamp': ['base', 'lower arm', 'upper arm', 'joint', 'shade', 'bulb holder'],
+  'heat-exchanger': ['bonnet', 'tube sheet', 'shell', 'u-tube bundle', 'baffles and tie rods', 'shell nozzles'],
+  'desk-lamp': ['base', 'upper arm', 'spring', 'elbow joint', 'forearm', 'shade', 'bulb holder'],
 };
 
 export function isFixturePart(part: PartEntry): boolean {

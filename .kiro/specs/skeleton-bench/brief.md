@@ -78,8 +78,8 @@ PathKit cannot follow a live hand: it bakes ahead of time. The hand only chooses
 ## Machines (parts are named objects, shared by the explode path, the inspector and the keyboard order)
 
 - Pump: casing, impeller, shaft, bearing housing, mechanical seal, flange, bolts (one group), motor.
-- Heat exchanger: shell, tube bundle (instanced cylinders, one part), tube sheet, baffles, channel head, nozzles.
-- Desk lamp: base, lower arm, upper arm, joint, shade, bulb holder.
+- Heat exchanger: bonnet (front head), tube sheet, shell, U-tube bundle (many U-shaped tubes merged into one mesh, one part), baffles and tie rods, shell nozzles.
+- Desk lamp: base, upper arm, spring, elbow joint, forearm, shade (lamp head), bulb holder.
 - **Accuracy rule:** every fact shown for a part is checked against at least one reputable source and recorded in `docs/sources.md`
   (part, claim, source, date checked). Nothing is shown from memory. The user checks the text before it ships.
 
