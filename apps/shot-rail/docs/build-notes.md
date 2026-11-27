@@ -1,5 +1,12 @@
 # Build notes
 
+## Task 29.5: guides tests (newest entry, kept at top)
+- Done: wrote `test/logic/guides.test.ts` (17 `it` blocks, 23 Vitest tests; `it.each` over 2 keys and 6 stored texts). Imports only `guides.ts` and the `StorageLike` type, not `guides-view.ts`. Hand values: thirds of 1600x900 (533.333, 1066.667, 300, 600) and 1920x1080 (640, 1280, 360, 720); safe area 1600x900 at 0.9 and 1920x1080 at 0.93 (67.2, 37.8, 1785.6, 1004.4), with explicit tolerances; fraction 1 is the whole frame. Toggle with a mock storage: flips, writes `shot-rail:<key>` as `true` or `false`, one key only, throwing `setItem` and null storage still toggle, round trip. Load: missing, `false`, bad JSON, `1`, `"true"`, `null`, empty text, throwing `getItem` and null storage all give false. No src change. Not run by Kiro.
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet.
+- PathKit features used: none.
+- Not tested: look, WebGL output, real browser, PNG download, feel of controls, dev server, the T and G keys, the overlay drawing.
+
 ## Task 29.4: guides (newest entry, kept at top)
 - Done: wrote pure `src/logic/guides.ts` (`thirdsLines`, `safeAreaRect`, `loadGuideState`, `toggleGuide`; no Three.js or DOM imports) and `src/view/guides-view.ts` (`createGuidesOverlay`: a 2D canvas over the stage, redrawn only on toggle or resize, two-pass dark and light strokes; `createGuideToggle`: labelled checkbox with tooltip; keys T and G, ignored while typing in a select or text field). Safe area uses `SAFE_AREA_FRACTION`. State is stored as `thirdsGuideOn` and `safeAreaGuideOn` through `readSetting`/`writeSetting`. Edited `src/main.ts` and `index.html` (a `#guides` span in the bar). Not run by Kiro.
 - Open API shape, my choice: `toggleGuide(current, key, storage?)` returns the new state and stores it, so 29.5 can test toggling with a mock storage. `thirdsLines` returns `{ vertical: [x1, x2], horizontal: [y1, y2] }`; `safeAreaRect` returns `{ x, y, width, height }`. Overlay is sized from the container width and 16:9, like the main view. Colours and line widths are local constants in `guides-view.ts`.

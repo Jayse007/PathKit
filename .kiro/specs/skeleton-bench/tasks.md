@@ -235,92 +235,92 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 17.5 The two Looks
     - Palette objects and two material sets. X_Ray_Skeleton with cyan `EdgesGeometry` edges; Clean_Engineering with matte solids.
     - _Requirements: 17.1, 17.3, 17.4_
-  - [-] 17.6 User checkpoint: view both Looks
+  - [x] 17.6 User checkpoint: view both Looks
     - The User views both Looks in a browser in their own way. Kiro states what was not tested.
     - User answers: (1) starts in X_Ray_Skeleton: yes; (2) X-ray background, translucent ivory Parts, cyan outlines, inner Parts visible: yes; (3) outlines stay on explode, orbit and zoom and turn with the impeller: yes; (4) Clean_Engineering background, matte grey, no outlines: yes, but assembled Parts were all one grey; (5) Look persists after reload: yes; (6) casing recognisable but the spiral is subtle; impeller recognisable.
     - Decisions: Clean_Engineering uses three greys A #7d8793, B #5f6974, C #444e59 (contrast against #eceff1: 3.16, 4.84, 7.33), assigned by catalogue index mod 3 (`cleanFillIndex`); volute radius is now 0.165 + 0.085 * (a / 2PI). Test: `test/looks.test.ts`.
     - _Requirements: 37.1, 37.2_
-  - [~] 17.7 Picking and shells
+  - [-] 17.7 Picking and shells
     - Raycast on meshes only; the click rule (5 px); selection shell and focus shell.
     - _Requirements: 14.1, 14.6, 14.7, 14.9_
-  - [~] 17.8 User checkpoint: click and focus a Part
+  - [ ] 17.8 User checkpoint: click and focus a Part
     - The User clicks and focuses a Part in a browser and checks the selection cue. Kiro states what was not tested.
     - _Requirements: 37.1, 37.2_
 
 ### Phase 3: Rest of Tier A
 
 - [ ] 18. Heat_Exchanger and Desk_Lamp
-  - [~] 18.1 Research and write the facts
+  - [ ] 18.1 Research and write the facts
     - Search for reputable sources for the six Heat_Exchanger parts and the six Desk_Lamp parts. Write `docs/sources.md` entries and the catalogue entries.
     - _Requirements: 18.2, 18.3, 19.1, 19.2, 19.3, 19.5_
-  - [~] 18.2 User checkpoint: approve the texts
+  - [ ] 18.2 User checkpoint: approve the texts
     - The User reads and approves every text and source before it is kept.
     - _Requirements: 19.4_
-  - [~] 18.3 Build the models and scenes
+  - [ ] 18.3 Build the models and scenes
     - Shape models for both Machines (the tube bundle is one `InstancedMesh` Part), named objects, Part scenes baked at load, Inventory switching.
     - _Requirements: 15.1, 15.3, 18.2, 18.3, 18.4, 18.5_
-  - [~] 18.4 Rerun the tests and User checkpoint: visual check
+  - [ ] 18.4 Rerun the tests and User checkpoint: visual check
     - The User runs `npm.cmd test` and pastes the output (Tasks 13 and 15 checks now cover all 20 Parts). The User checks both Machines in a browser.
     - _Requirements: 9.5, 35.6, 37.1_
 
 - [ ] 19. Tour for the real catalogue
-  - [~] 19.1 Bake and wire the Tours
+  - [ ] 19.1 Bake and wire the Tours
     - Bake all three Tours at load; run `motionLinter`; show findings in plain words in the Motion_Check; Tour start and stop wired to the state; Pause and Stop; controls disabled with the visible label "Stop the tour to use this" while playing; reduced-motion jumps with a 3000 ms hold per Part; an error message when baking or linting fails.
     - _Requirements: 16.1 to 16.11, 22.5_
-  - [~] 19.2 Write the tests with the real catalogue
+  - [ ] 19.2 Write the tests with the real catalogue
     - Clearance on every frame of every Tour; `motionLinter` does not throw; the Tour visits Parts in keyboard order (slot keyframes match the catalogue order); frame counts 720, 540 and 540.
     - Source line it should catch: reorder two Parts in a Machine's keyboard order only in the tour builder input.
     - _Requirements: 16.2, 16.5, 16.7, 35.7 (design Property 10, 19)_
 
 - [ ] 20. UI shell
-  - [~] 20.1 Implement and test the pure UI helpers
+  - [ ] 20.1 Implement and test the pure UI helpers
     - Key map (M, E, R, +, -, arrows, Escape) and the step functions (orbit key step, zoom step, wheel step, move step, `orbitAngleFromDrag`).
     - Tests with hand-written tables, including that shortcuts are ignored with text-field focus.
     - Source line it should catch: change the sign in `orbitAngleFromDrag`.
     - _Requirements: 10.3, 11.1, 12.1, 12.3, 12.5, 12.9, 13.1_
-  - [~] 20.2 Layout and Inspector with Parts_List
+  - [ ] 20.2 Layout and Inspector with Parts_List
     - Inventory (three cards, SVG thumbnails drawn by us), Stage, Inspector (empty state "Pick a part to read about it", "sample data" label), Parts_List buttons in catalogue order with focus highlight, Motion_Check region, Control_Bar region.
     - _Requirements: 14.2, 14.3, 14.4, 14.5, 14.8, 15.1, 15.2, 20.1, 21.1_
-  - [~] 20.3 User checkpoint: view the layout, the Inspector and the Parts_List
+  - [ ] 20.3 User checkpoint: view the layout, the Inspector and the Parts_List
     - The User views the layout, the Inspector and the Parts_List in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
-  - [~] 20.4 Controls
+  - [ ] 20.4 Controls
     - Rotate / Move toggle (M), orbit scrub, zoom slider, keys and wheel, explode slider and key E (600 ms animation, jump under reduced motion), Reset position and key R, arrow keys per mode, key hints beside every control, "hint seen" flags. Gestures toggle absent or disabled with a label.
     - _Requirements: 10.1, 10.3, 10.6, 11.1, 12.1, 12.3, 12.5, 12.8, 13.1, 20.2, 20.3, 20.5, 21.2, 21.4_
-  - [~] 20.5 User checkpoint: try the controls
+  - [ ] 20.5 User checkpoint: try the controls
     - The User tries the controls in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
-  - [~] 20.6 Tour, Look toggle and About wiring
+  - [ ] 20.6 Tour, Look toggle and About wiring
     - Tour with Pause and Stop wired to the state; Look toggle stored in try/catch; About_Panel access from the main screen; error messages that say what to do.
     - _Requirements: 17.5, 17.7, 21.5, 16.1 to 16.11, 22.5_
-  - [~] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
+  - [ ] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
     - The User tries the Tour, the Look toggle and the About panel in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
 
 - [ ] 21. Accessibility pass
-  - [~] 21.1 Choose the palettes and write the contrast test
+  - [ ] 21.1 Choose the palettes and write the contrast test
     - Choose palette values for both Looks. Test every text and background pair, and non-text interface parts, at or above `CONTRAST_MIN`.
     - Source line it should catch: lighten one palette text colour until a pair drops below 4.5.
     - _Requirements: 17.3, 17.4, 22.1, 22.2 (design Property 17)_
-  - [~] 21.2 Apply the accessibility rules
+  - [ ] 21.2 Apply the accessibility rules
     - Focus rings; no meaning by colour alone (selection shell plus the Inspector name; Tour state in words); reduced motion; a keyboard path and a non-drag alternative for every mouse action (sliders, arrow keys, Reset); a visible button for every single-letter shortcut.
     - Write a WCAG 2.2 checklist (Dragging Movements, Character Key Shortcuts) in the build notes.
     - _Requirements: 12.8, 14.7, 22.3, 22.4, 22.5, 22.6, 22.7, 22.8_
-  - [~] 21.3 User checkpoint: keyboard-only walkthrough
+  - [ ] 21.3 User checkpoint: keyboard-only walkthrough
     - The User does a keyboard-only walkthrough and sends screenshots of both Looks.
     - _Requirements: 22.6, 37.1, 37.2_
 
 - [ ] 22. About_Panel and README
-  - [~] 22.1 Write the honest limits and the README
+  - [ ] 22.1 Write the honest limits and the README
     - About_Panel and README state: models are simplified and not to scale with each other; specifications are sample data; impeller spin, dragging and the cursor are not PathKit; PathKit cannot follow a live hand; gestures need a webcam, light and HTTPS; two-hand zoom is the least stable; moving the Machine has no gesture; the classifier is our own code over 21 points; MediaPipe sends usage metrics to Google.
     - README also lists every stored key, notes that "Skeleton Bench" is a working name not trademark-checked, and uses none of the names J.A.R.V.I.S., Marvel or Stark anywhere. The README is the only existing file edited.
     - _Requirements: 1.6, 3.8, 3.9, 23.2, 24.1 to 24.10_
 
 - [ ] 23. Final Tier A checkpoint
-  - [~] 23.1 Check imports and files
+  - [ ] 23.1 Check imports and files
     - Open every `.ts` file in `apps/skeleton-bench` and check that each relative import ends in `.js`; list the files checked. Confirm nothing outside the allowed files changed.
     - _Requirements: 1.4, 1.6, 2.7, 2.9_
-  - [~] 23.2 User checkpoint: final run and report
+  - [ ] 23.2 User checkpoint: final run and report
     - The User runs `npm.cmd test`, then `npm.cmd run build`, one at a time from `apps/skeleton-bench`, and pastes both outputs. Kiro reports counts only from that output.
     - The final report states plainly what was not tested (look, WebGL output, the view offset, clicking a Part, the webcam, real gestures, load time), which items the User checked, and the recorded bake times.
     - Deploy is out of scope (decision 6). Tier B starts only when the User says "go".

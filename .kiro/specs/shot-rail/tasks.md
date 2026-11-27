@@ -319,10 +319,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 29.3 User checkpoint: approve the safe-area size and its source
     - The design names no safe-area size. Kiro searches for a reputable published value (for example a broadcast standard's action-safe or title-safe area), records claim, source and date checked in `docs/sources.md`, and proposes one fraction of the frame. The User approves it before it is written into `constants.ts` as `SAFE_AREA_FRACTION`. Write nothing from memory.
     - _Requirements: 17.8, 24.4_
-  - [-] 29.4 Implement the guides
+  - [x] 29.4 Implement the guides
     - Pure `src/logic/guides.ts`: `thirdsLines(width, height)` gives the two vertical lines at 1/3 and 2/3 of the width and the two horizontal lines at 1/3 and 2/3 of the height; `safeAreaRect(width, height, fraction)` gives a centred rectangle of that fraction of each side. A 2D overlay canvas on the main view draws them. Toggles with visible labels, tooltips and the keys T and G; their on or off state is stored as `thirdsGuideOn` and `safeAreaGuideOn` through `storage.ts`.
     - _Requirements: 17.7, 17.8, 18.1, 18.2, 20.1_
-  - [~] 29.5 Write the guides tests
+  - [-] 29.5 Write the guides tests
     - Hand-written: for 1600 x 900, `thirdsLines` gives x = 533.333 and 1066.667 and y = 300 and 600 (within 1e-3); `safeAreaRect(1600, 900, 0.9)` gives x 80, y 45, width 1440, height 810. Toggling stores the matching key with a mock storage; a storage that throws still toggles the guide.
     - Source line it should catch: use 1/4 instead of 1/3 for the thirds, or forget to centre the safe-area rectangle.
     - _Requirements: 17.7, 17.8, 20.2, 20.3_

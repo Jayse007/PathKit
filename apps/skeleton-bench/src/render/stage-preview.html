@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Skeleton Bench stage preview (temporary, Tasks 17.1 to 17.6)</title>
+    <title>Skeleton Bench stage preview (temporary, Tasks 17.1 to 17.8)</title>
     <style>
       body { font-family: system-ui, Segoe UI, Arial, sans-serif; margin: 12px; }
       #stage { width: 720px; height: 450px; border: 1px solid #444; }
@@ -30,6 +30,9 @@
       <label><input id="reduced" type="checkbox" /> Reduced motion (impeller still)</label>
       <button id="reset">Reset offset</button>
     </div>
+    <p>Click a Part in the picture to select it (a press and release within 5 px). A longer drag selects nothing. Tab to a button below to focus a Part, then press Enter or Space to select it.</p>
+    <div id="parts" role="group" aria-label="Parts (temporary list)" style="display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0;"></div>
+    <button id="clear-selection">Clear selection</button>
     <div id="readout"></div>
     <script type="module" src="./stage-preview.ts"></script>
   </body>

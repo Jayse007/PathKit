@@ -1,14 +1,26 @@
-// Temporary page for the Task 17.2 and 17.4 checkpoints. Drives the stage from the app state functions.
+// Temporary page for the Task 17.2, 17.4, 17.6 and 17.8 checkpoints. Drives the stage from the app state functions.
 // Not the final app entry (index.html is not changed in this task).
 import { bakeLaps } from '../pathkit/laps.js';
 import { bakeParts } from '../pathkit/part-scenes.js';
-import { createInitialState, setExplode, setLook, setOffset, setOrbitAngle, setZoom } from '../state.js';
+import { PUMP_PARTS } from '../data/catalogue.js';
+import { createClickTracker } from '../logic/click-tracker.js';
+import {
+  createInitialState,
+  selectPart,
+  setExplode,
+  setLook,
+  setOffset,
+  setOrbitAngle,
+  setZoom,
+} from '../state.js';
 import type { AppState } from '../state.js';
 import { loadLook, saveLook } from '../ui/storage.js';
 import type { Look } from '../ui/storage.js';
 import { applySceneBackground, createLookLights } from './looks.js';
 import { createPartPlacer } from './part-placement.js';
+import { collectPartMeshes, createPicker } from './picking.js';
 import { buildPumpModel, spinImpeller } from './pump-model.js';
+import { createShells } from './shells.js';
 import { createStage, showStageMessage } from './stage.js';
 
 function el<T extends HTMLElement>(id: string): T {
@@ -51,12 +63,73 @@ try {
     });
     const placer = createPartPlacer(model.partsById, bakeParts());
 
+    // Picking and shells (Task 17.7). The mesh list is taken before the shells are added.
+    const picker = createPicker(stage.camera, stage.scene, collectPartMeshes(model.root));
+    const shells = createShells(model.root, state.look);
+    lookInput.addEventListener('change', () => {
+      shells.setLook(state.look);
+      stage.requestRender();
+    });
+    const tracker = createClickTracker();
+    const partsBox = el<HTMLDivElement>('parts');
+    const partButtons = new Map<string, HTMLButtonElement>();
+    const partName = (id: string | null): string => PUMP_PARTS.find((p) => p.id === id)?.name ?? 'none';
+
+    const applySelection = (): void => {
+      shells.setSelected(state.selectedPart);
+      for (const [id, button] of partButtons) {
+        button.setAttribute('aria-pressed', id === state.selectedPart ? 'true' : 'false');
+      }
+      show();
+    };
+    for (const part of PUMP_PARTS) {
+      const button = document.createElement('button');
+      button.textContent = part.name;
+      button.setAttribute('aria-pressed', 'false');
+      button.addEventListener('focus', () => {
+        shells.setFocused(part.id);
+        stage.requestRender();
+      });
+      button.addEventListener('blur', () => {
+        shells.setFocused(null);
+        stage.requestRender();
+      });
+      button.addEventListener('click', () => {
+        state = selectPart(state, part.id);
+        applySelection();
+      });
+      partButtons.set(part.id, button);
+      partsBox.appendChild(button);
+    }
+    el<HTMLButtonElement>('clear-selection').addEventListener('click', () => {
+      state = selectPart(state, null);
+      applySelection();
+    });
+
+    const canvas = stage.canvas;
+    canvas.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) return;
+      tracker.press(event.clientX, event.clientY);
+    });
+    canvas.addEventListener('pointermove', (event) => {
+      tracker.move(event.clientX, event.clientY);
+    });
+    canvas.addEventListener('pointercancel', () => tracker.cancel());
+    canvas.addEventListener('pointerup', (event) => {
+      if (tracker.release(event.clientX, event.clientY) !== 'click') return;
+      const id = picker.pickClient(event.clientX, event.clientY, canvas);
+      // A click on empty space leaves the selection as it is (the spec does not say otherwise).
+      if (id === null) return;
+      state = selectPart(state, id);
+      applySelection();
+    });
+
     const show = (): void => {
       placer.placeAtAmount(state.explode);
       stage.setView(state);
       readout.textContent =
         `look=${state.look}  angle=${state.orbitAngleDeg}  zoom=${state.zoom.toFixed(2)}  explode=${state.explode.toFixed(0)}%  ` +
-        `offset=(${state.offsetX.toFixed(2)}, ${state.offsetY.toFixed(2)})`;
+        `offset=(${state.offsetX.toFixed(2)}, ${state.offsetY.toFixed(2)})  selected=${partName(state.selectedPart)}`;
     };
 
     // Impeller spin: the loop runs only while the impeller turns. Under reduced motion it stops.
