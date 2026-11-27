@@ -52,6 +52,12 @@ describe('Inspector text', () => {
     expect(modelSizeText([0.08, 0.44, 0.4])).toBe('80 x 440 x 400 mm');
     expect(modelSizeText([0.7, 0.06, 0.06])).toBe('700 x 60 x 60 mm');
   });
+
+  it('rounds to the nearest millimetre, not down', () => {
+    // 0.6, 1.4 and 0.4 mm round to 1, 1 and 0. 1.005 m is 1005 mm (1.005 * 1000 is 1004.9999999999999 in floating point, which must still give 1005).
+    expect(modelSizeText([0.0006, 0.0014, 0.0004])).toBe('1 x 1 x 0 mm');
+    expect(modelSizeText([1.005, 0.5, 0.25])).toBe('1005 x 500 x 250 mm');
+  });
 });
 
 describe('Parts_List order', () => {
@@ -79,6 +85,10 @@ describe('Parts_List order', () => {
     expect(findMachinePart(CATALOGUE, 'pump', null)).toBeNull();
     expect(findMachinePart(CATALOGUE, 'pump', 'lamp-base')).toBeNull();
     expect(findMachinePart(CATALOGUE, 'pump', 'nope')).toBeNull();
+  });
+
+  it('gives an empty list for an unknown Machine', () => {
+    expect(machineParts(CATALOGUE, 'nope' as MachineId)).toEqual([]);
   });
 });
 

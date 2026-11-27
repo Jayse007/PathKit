@@ -368,10 +368,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 ### Phase 3: Modes, timeline and motion check
 
 - [ ] 33. Playback stepping (pure)
-  - [~] 33.1 Implement `src/logic/playback.ts`
+  - [x] 33.1 Implement `src/logic/playback.ts`
     - A pure state: `{ playing, frame, accumulatorMs }` and `stepPlayback(state, elapsedMs, lastFrame)` that advances whole frames with an accumulator, caps at `PLAYBACK_MAX_CATCHUP_FRAMES` (drops the backlog), stops at the last frame. The state starts paused at frame 0. Only an explicit `play` action sets `playing`.
     - _Requirements: 11.8, 11.9, 11.13, 11.14_
-  - [~] 33.2 Write the playback tests
+  - [-] 33.2 Write the playback tests
     - Elapsed 33.34 ms advances 1 frame; 100 ms advances 3; 10 000 ms advances at most 5 and the backlog is dropped; the last frame stops playing; a paused state never moves. Frames are always whole.
     - Table of events that must not start playback: start, load a sample, change mode, change Shot_Type, change Subject, change Shot_Length, re-bake, scrub, keyboard step. Each leaves `playing` false. Only `play` sets it true.
     - Source line it should catch: remove the catch-up cap, or set `playing: true` in the load-sample action.

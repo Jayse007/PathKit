@@ -1,5 +1,18 @@
 # Build notes
 
+## Task 33.2: playback tests (newest entry, kept at top)
+
+- Done: wrote `test/logic/playback.test.ts` (28 `it` blocks, 55 Vitest tests expected: 21 plain blocks plus `it.each` expansions of 2 + 7 + 4 + 9 + 3 + 4 + 5). Expected values are hand-written literals with the working in comments (30 fps, 1 frame = 33.333 ms; cap written as the literal 5). Only imports from `playback.ts` and `vitest`. No src change. No fast-check (the shot-rail rules forbid it). PathKit not used.
+- Open choice, mine: the task's "events that must not start playback" table covers only the events this pure module owns (start, pause, scrub, keyboard step, step while paused). Load sample, change mode, Shot_Type, Subject, Shot_Length and re-bake are not in `playback.ts`; they belong to the view and main code and cannot be tested here.
+- Broke: nothing known. Not run by Kiro.
+- Not tested: the view events listed above, the timeline UI (task 34), real timing from a clock.
+
+## Task 33.1: playback stepping (newest entry, kept at top)
+
+- Done: wrote pure `src/logic/playback.ts` (imports `FRAME_RATE` and `PLAYBACK_MAX_CATCHUP_FRAMES` from `constants.ts`). Exports `PlaybackState`, `PLAYBACK_FRAME_EPSILON`, `initialPlaybackState()`, `playPlayback(state, lastFrame)`, `pausePlayback(state)`, `seekPlayback(state, frame, lastFrame)`, `stepPlayback(state, elapsedMs, lastFrame)`. No existing src/logic file changed. PathKit not used.
+- Open choices, mine: `PLAYBACK_FRAME_EPSILON = 1e-9` (so 100 ms gives exactly 3 frames, not 2); frames are counted as `floor(ms * FRAME_RATE / 1000 + epsilon)`; `playPlayback` at the last frame restarts from frame 0; `seekPlayback` keeps `playing` as it was and clears the accumulator; `pausePlayback` clears the accumulator; over the catch-up cap the accumulator is set to 0 (backlog dropped); reaching the last frame sets `playing` false and the accumulator to 0; a negative or non-finite `elapsedMs`, or a `lastFrame` that is not a whole number >= 0, throws an Error naming the value.
+- Not tested: no tests yet (task 33.2).
+
 ## Task 32.3a: Main_Camera swap rule (newest entry, kept at top)
 
 - Done, user-requested, in three steps. Step 1 (specs): Requirement 7.5 now says that clicking a Camera view makes it the Main_Camera and that any other push-in or crane Camera becomes an orbit shot (bearing, height, Horizontal_Distance and lens kept) with a status-line message; `tasks.md` has a new sub-task 32.3a between 32.3 and 32.4, and 32.4 has a new check (click tile 2). No checkbox changed. Step 2: added pure `planMainChange(cameras, newMainId)` and the `MainChange` type to `src/view/coverage-grid-rules.ts` (new import: `type ShotType` from `../logic/shot-builders.js`) and 9 `it` blocks to `test/view/coverage-grid-rules.test.ts` (file now 18 `it` blocks, 59 Vitest tests expected). Step 3: in `src/main.ts`, `onSelect` no longer refuses with "cannot be the main camera yet"; it calls `planMainChange`, builds `next` with `cameras: plan.cameras`, and sets the status line to `plan.message` on success. The rig revert-on-failure code is unchanged.
