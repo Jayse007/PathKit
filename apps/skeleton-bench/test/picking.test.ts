@@ -78,6 +78,15 @@ describe('click tracker (5 px rule)', () => {
     expect(t.release(0, 0)).toBeNull();
   });
 
+  it('a new press starts a fresh gesture: an earlier drag does not leak into the next click', () => {
+    const t = createClickTracker();
+    t.press(0, 0);
+    t.move(10, 0);
+    expect(t.release(0, 0)).toBe('drag');
+    t.press(0, 0);
+    expect(t.release(1, 1)).toBe('click'); // distance 1.414, under 5
+  });
+
   it('active is true only between press and release', () => {
     const t = createClickTracker();
     expect(t.active).toBe(false);
@@ -130,6 +139,15 @@ describe('picking', () => {
     const { root } = buildScene();
     const picker = createPicker(makeCamera(), root, collectPartMeshes(root));
     expect(picker.pickNdc(0, 0)).toBe('a');
+  });
+
+  it('pickClient on a canvas with a 0 x 0 rectangle returns null and does not throw', () => {
+    const { root } = buildScene();
+    const picker = createPicker(makeCamera(), root, collectPartMeshes(root));
+    const canvas = {
+      getBoundingClientRect: () => ({ left: 0, top: 0, width: 0, height: 0 }),
+    } as unknown as HTMLElement;
+    expect(picker.pickClient(5, 5, canvas)).toBeNull();
   });
 
   it('with only b in the list, the same ray gives b', () => {
@@ -226,7 +244,21 @@ describe('selection shell and focus shell', () => {
     shells.setSelected('off');
     const shell = visibleShells(root)[0]!;
     expect(Math.abs(shell.position.x - -0.1)).toBeLessThan(1e-9);
-    expect(shell.position.y).toBe(0);
+    expect(Math.abs(shell.position.y)).toBeLessThan(1e-12);
+  });
+
+  it('both visible shells (selection and focus) take the accent of the Look, and follow a Look change', () => {
+    const { root } = buildScene();
+    const shells = createShells(root, 'X_Ray_Skeleton');
+    shells.setFocused('b');
+    shells.setSelected('a');
+    const visible = visibleShells(root);
+    expect(visible.length).toBe(2);
+    const hexes = (): string[] => visible.map((s) => (s.material as MeshBasicMaterial).color.getHexString());
+    shells.setLook('Clean_Engineering');
+    expect(hexes()).toEqual(['1f6feb', '1f6feb']);
+    shells.setLook('X_Ray_Skeleton');
+    expect(hexes()).toEqual(['ff8a1f', 'ff8a1f']);
   });
 
   it('shells are never picked: the same ray still gives a with a selected, and only 3 meshes are collected', () => {

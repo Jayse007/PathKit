@@ -309,7 +309,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: bake inside `markDirty` instead of at the frame tick, or create a new output object inside `evaluate`.
     - _Requirements: 8.12, 8.15, 9.1, 9.8, 11.10, 11.11, 11.14 (design Re-bake scheduling)_
 
-- [ ] 29. Main renderer and camera
+- [x] 29. Main renderer and camera
   - [x] 29.1 Implement `src/view/main-view.ts` and wire `index.html`
     - One main `THREE.WebGLRenderer` (pixel ratio capped at `DEVICE_PIXEL_RATIO_CAP`), a `PerspectiveCamera` with aspect 16/9 set before `setFocalLength`, `filmGauge` 36, position and rotation from `evaluateEntity` through `position.set` and `quaternion.set` (no per-frame allocation). Renders on change, not on a free-running loop. A WebGL failure shows a message that says what failed and what the User can do next. The view is empty (a grid at the ground only).
     - _Requirements: 4.5, 11.11, 17.1, 18.6, 20.4_
@@ -322,16 +322,16 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 29.4 Implement the guides
     - Pure `src/logic/guides.ts`: `thirdsLines(width, height)` gives the two vertical lines at 1/3 and 2/3 of the width and the two horizontal lines at 1/3 and 2/3 of the height; `safeAreaRect(width, height, fraction)` gives a centred rectangle of that fraction of each side. A 2D overlay canvas on the main view draws them. Toggles with visible labels, tooltips and the keys T and G; their on or off state is stored as `thirdsGuideOn` and `safeAreaGuideOn` through `storage.ts`.
     - _Requirements: 17.7, 17.8, 18.1, 18.2, 20.1_
-  - [-] 29.5 Write the guides tests
+  - [x] 29.5 Write the guides tests
     - Hand-written: for 1600 x 900, `thirdsLines` gives x = 533.333 and 1066.667 and y = 300 and 600 (within 1e-3); `safeAreaRect(1600, 900, 0.9)` gives x 80, y 45, width 1440, height 810. Toggling stores the matching key with a mock storage; a storage that throws still toggles the guide.
     - Source line it should catch: use 1/4 instead of 1/3 for the thirds, or forget to centre the safe-area rectangle.
     - _Requirements: 17.7, 17.8, 20.2, 20.3_
-  - [~] 29.6 User checkpoint: view the guides
+  - [x] 29.6 User checkpoint: view the guides
     - The User toggles both guides in a browser in their own way, with the mouse and with T and G. Kiro states what was not tested.
     - _Requirements: 17.7, 17.8, 25.1, 25.2_
 
 - [ ] 30. Subject and road drawing
-  - [~] 30.1 Implement the car and the road in `src/view/subject-view.ts`
+  - [-] 30.1 Implement the car and the road in `src/view/subject-view.ts`
     - Car from boxes and cylinders only, no brand, logo or plate text, drawn offset down by `SUBJECT_CENTRE_HEIGHT` so the entity origin is the box centre. Road mesh at ground level from `ROAD_DRAW_SAMPLES` samples along the curve. The car pose comes from the baked subject at the remapped baked frame.
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.12_
   - [~] 30.2 User checkpoint: view the car on the road
