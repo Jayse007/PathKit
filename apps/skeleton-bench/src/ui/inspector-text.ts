@@ -67,3 +67,13 @@ export function findMachinePart(catalogue: Catalogue, machine: MachineId, partId
   if (partId === null) return null;
   return machineParts(catalogue, machine).find((p) => p.id === partId) ?? null;
 }
+
+/** The selection after the User activates the button of `clicked`: the same Part again closes it (null), any other Part opens. */
+export function togglePartSelection(current: string | null, clicked: string): string | null {
+  return current === clicked ? null : clicked;
+}
+
+/** The selection after a click on the Stage that picked `pickedId` (null = empty space). Empty space clears. Clicking the selected Part keeps it. */
+export function selectionAfterStageClick(current: string | null, pickedId: string | null): string | null {
+  return pickedId;
+}

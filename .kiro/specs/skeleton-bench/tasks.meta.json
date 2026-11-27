@@ -953,6 +953,16 @@
         "executionId": "94cc7db7-e0a5-48e4-ac98-8219732a524d",
         "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
         "timestamp": 1795784031433
+      },
+      {
+        "executionId": "299e6da0-d204-4a0e-b80c-a6326ff30070",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795794631198
+      },
+      {
+        "executionId": "cc04d219-dec1-4ebc-8f4c-79b295804aa9",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795796387227
       }
     ],
     "20.4 Controls": [
@@ -965,6 +975,11 @@
         "executionId": "94cc7db7-e0a5-48e4-ac98-8219732a524d",
         "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
         "timestamp": 1795784031782
+      },
+      {
+        "executionId": "c38b90e6-6d70-44d0-838c-925881a502c6",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795796416803
       }
     ],
     "20.5 User checkpoint: try the controls": [
@@ -1199,6 +1214,20 @@
         "executionId": "34bafe07-68fc-4bd1-b2de-303edc81839e",
         "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
         "timestamp": 1795792061993
+      }
+    ],
+    "20.2a Accordion Parts_List": [
+      {
+        "executionId": "cc04d219-dec1-4ebc-8f4c-79b295804aa9",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795796384074
+      }
+    ],
+    "20.2b Stage click selects or clears": [
+      {
+        "executionId": "cc04d219-dec1-4ebc-8f4c-79b295804aa9",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795796385376
       }
     ]
   }

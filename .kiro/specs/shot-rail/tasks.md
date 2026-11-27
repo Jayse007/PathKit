@@ -367,18 +367,18 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 
 ### Phase 3: Modes, timeline and motion check
 
-- [ ] 33. Playback stepping (pure)
+- [x] 33. Playback stepping (pure)
   - [x] 33.1 Implement `src/logic/playback.ts`
     - A pure state: `{ playing, frame, accumulatorMs }` and `stepPlayback(state, elapsedMs, lastFrame)` that advances whole frames with an accumulator, caps at `PLAYBACK_MAX_CATCHUP_FRAMES` (drops the backlog), stops at the last frame. The state starts paused at frame 0. Only an explicit `play` action sets `playing`.
     - _Requirements: 11.8, 11.9, 11.13, 11.14_
-  - [-] 33.2 Write the playback tests
+  - [x] 33.2 Write the playback tests
     - Elapsed 33.34 ms advances 1 frame; 100 ms advances 3; 10 000 ms advances at most 5 and the backlog is dropped; the last frame stops playing; a paused state never moves. Frames are always whole.
     - Table of events that must not start playback: start, load a sample, change mode, change Shot_Type, change Subject, change Shot_Length, re-bake, scrub, keyboard step. Each leaves `playing` false. Only `play` sets it true.
     - Source line it should catch: remove the catch-up cap, or set `playing: true` in the load-sample action.
     - _Requirements: 11.8, 11.9, 11.13, 11.14, 8.15, 10.6 (design Rendering layer)_
 
 - [ ] 34. Timeline UI
-  - [~] 34.1 Implement `src/view/timeline.ts`
+  - [-] 34.1 Implement `src/view/timeline.ts`
     - Play, pause, scrub, frame counter, finding marks at the frames of the findings. Play and pause use the pure state from Task 33. The scrub uses `scrubToFrame`. Labels and tooltips on every control. Starts paused at frame 0. Stops at the last frame. While playing it evaluates only and never bakes.
     - _Requirements: 11.7, 11.8, 11.9, 11.10, 11.12, 11.13, 18.1_
   - [~] 34.2 User checkpoint: try the Timeline

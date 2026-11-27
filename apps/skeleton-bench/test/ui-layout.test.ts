@@ -8,6 +8,8 @@ import {
   machineParts,
   modelSizeText,
   SAMPLE_DATA_LABEL,
+  selectionAfterStageClick,
+  togglePartSelection,
 } from '../src/ui/inspector-text.js';
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH, thumbnailShapes } from '../src/ui/thumbnails.js';
 
@@ -89,6 +91,46 @@ describe('Parts_List order', () => {
 
   it('gives an empty list for an unknown Machine', () => {
     expect(machineParts(CATALOGUE, 'nope' as MachineId)).toEqual([]);
+  });
+});
+
+describe('Accordion selection rule (Requirement 14.10)', () => {
+  it('opens a Part when nothing is open', () => {
+    expect(togglePartSelection(null, 'pump-shaft')).toBe('pump-shaft');
+  });
+
+  it('closes the open Part when its button is activated again', () => {
+    expect(togglePartSelection('pump-shaft', 'pump-shaft')).toBeNull();
+  });
+
+  it('switches to another Part when a different button is activated', () => {
+    expect(togglePartSelection('pump-shaft', 'pump-motor')).toBe('pump-motor');
+  });
+
+  it('gives null after two activations of the same button from null', () => {
+    expect(togglePartSelection(togglePartSelection(null, 'pump-bolts'), 'pump-bolts')).toBeNull();
+  });
+});
+
+describe('Stage click selection rule (Requirement 14.13)', () => {
+  it('keeps nothing selected when empty space is clicked with nothing selected', () => {
+    expect(selectionAfterStageClick(null, null)).toBeNull();
+  });
+
+  it('clears the selection when empty space is clicked', () => {
+    expect(selectionAfterStageClick('pump-shaft', null)).toBeNull();
+  });
+
+  it('selects the picked Part when nothing was selected', () => {
+    expect(selectionAfterStageClick(null, 'pump-motor')).toBe('pump-motor');
+  });
+
+  it('switches to the picked Part when another Part was selected', () => {
+    expect(selectionAfterStageClick('pump-shaft', 'pump-motor')).toBe('pump-motor');
+  });
+
+  it('keeps the Part selected when the selected Part is clicked again', () => {
+    expect(selectionAfterStageClick('pump-shaft', 'pump-shaft')).toBe('pump-shaft');
   });
 });
 

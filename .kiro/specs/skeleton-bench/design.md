@@ -625,7 +625,7 @@ The 5 second limit per test file and the other `testing-conventions` rules apply
 | `localStorage` unavailable or invalid | Continue with defaults, no message (Requirement 17.6). |
 | WebGL unavailable | Show a message that WebGL is needed and what to try next (another browser or enabling hardware acceleration). |
 | Unknown linter code | Show the finding's own message. |
-| Part click hits no Part | Keep the current selection. Click on empty bench keeps the selection (clear with Escape or a "Clear selection" control). |
+| Part click hits no Part | Clear the selection (a click only, never a drag). Escape also clears it. |
 | Tier B: camera denied, no webcam, model load fails | Show what failed and that mouse and keyboard still work (Requirements 32.7, 33.4). |
 
 If the S4 manual check fails, the move fallback re-bakes the camera data when the drag ends (Requirement 4.8).

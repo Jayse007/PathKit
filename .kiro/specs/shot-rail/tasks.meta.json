@@ -1127,6 +1127,11 @@
         "executionId": "a87a0430-27b9-4a94-a3c8-8b0cd5b04531",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795794398637
+      },
+      {
+        "executionId": "daaad98a-bb67-464f-b1ac-5a995b6f0f30",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795795687679
       }
     ],
     "34.1 Implement `src/view/timeline.ts`": [
@@ -1134,6 +1139,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529410344
+      },
+      {
+        "executionId": "18dba039-a0e8-47b7-815c-28b683822f81",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795796024463
       }
     ],
     "34.2 User checkpoint: try the Timeline": [
@@ -1687,6 +1697,13 @@
         "executionId": "f4c5973c-79de-4cca-a089-64bdb4787f3f",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795792754057
+      }
+    ],
+    "33. Playback stepping (pure)": [
+      {
+        "executionId": "daaad98a-bb67-464f-b1ac-5a995b6f0f30",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795795688212
       }
     ]
   }

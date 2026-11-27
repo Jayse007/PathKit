@@ -1,5 +1,7 @@
-// Entry point (task 29.1): the empty stage. A 16:9 frame with a ground grid, seen through the first
-// push-in sample shot's camera at displayed frame 0, and a lens menu so the field of view can be checked.
+// Entry point (task 29.1, extended by task 34.1): a 16:9 frame with a ground grid, seen through the main
+// camera of the first sample shots, a lens menu so the field of view can be checked, and the Timeline.
+// The Timeline decides which displayed frame is shown; the main view, the car, the overview and the grid
+// all follow it.
 
 import { CAMERA_IDS, LENS_PRESETS_MM } from './logic/constants.js';
 import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
@@ -16,17 +18,19 @@ import { createMainView } from './view/main-view.js';
 import { createStageOverview } from './view/stage-overview.js';
 import type { StageOverview } from './view/stage-overview.js';
 import { createSubjectView } from './view/subject-view.js';
+import { createTimeline } from './view/timeline.js';
+import type { TimelineTick } from './view/timeline.js';
 
 const CAMERA_ID = 'cam-1';
-const DISPLAYED_FRAME = 0;
 const MODE: GridMode = 'angle'; // Move mode does not exist yet; the grid draws in Angle mode only
 
 function start(): void {
   const stage = document.getElementById('stage');
+  const timelineBox = document.getElementById('timeline');
   const lensSelect = document.getElementById('lens') as HTMLSelectElement | null;
   const status = document.getElementById('status');
-  if (stage === null || lensSelect === null || status === null) {
-    throw new Error('index.html is missing #stage, #lens or #status');
+  if (stage === null || timelineBox === null || lensSelect === null || status === null) {
+    throw new Error('index.html is missing #stage, #timeline, #lens or #status');
   }
 
   const sample = SAMPLE_SHOTS[1]; // the push-in
@@ -86,7 +90,6 @@ function start(): void {
 
   const subjectView = createSubjectView(settings.road.points);
   view.addObject(subjectView.object);
-  subjectView.showFrame(rig, DISPLAYED_FRAME);
 
   // The overview and the grid share one auxiliary renderer; each copies its image out right after it draws.
   const overviewBox = document.getElementById('overview');
@@ -94,12 +97,38 @@ function start(): void {
   let overview: StageOverview | null = null;
   let grid: CoverageGrid | null = null;
   let current: RigSettings = settings;
+  let lastGridDrawMs = 0;
+
+  // Draws everything at the Timeline's displayed frame. Evaluates baked data only; it never bakes.
+  // Created once. While playing the grid is redrawn at 10 Hz (shouldRenderGrid); every other change redraws it.
+  const showAt = (tick: Readonly<TimelineTick>): void => {
+    view.showFrame(rig, current.mainCameraId, tick.frame);
+    subjectView.showFrame(rig, tick.frame);
+    if (overview !== null) overview.showFrame(rig, tick.frame);
+    if (
+      grid !== null &&
+      grid.render(rig, tick.frame, MODE, tick.gridChanged, tick.playing, tick.nowMs - lastGridDrawMs)
+    ) {
+      lastGridDrawMs = tick.nowMs;
+    }
+  };
+
+  // Starts paused at frame 0 and never starts by itself (requirements 11.13, 11.14).
+  const timeline = createTimeline(timelineBox, {
+    rig,
+    shotLengthFrames: settings.shotLengthFrames,
+    findings: rig.findingsForMain(),
+    onChange: showAt,
+  });
+  subjectView.showFrame(rig, timeline.frame());
 
   // A tile click or Enter asks for a new Main_Camera. Only the main camera can be a rail shot
   // (scene-set.ts), so planMainChange converts any other push-in or crane camera to orbit and the
   // status line says so. If the rig cannot build the new set, the old settings are restored.
+  // This is a re-bake, so playback is paused first (the rig also sets its own playing flag to false).
   const onSelect = (id: string): void => {
     if (id === current.mainCameraId) return;
+    timeline.pause();
     const plan = planMainChange(current.cameras, id);
     const next: RigSettings = { ...current, mainCameraId: id, cameras: plan.cameras };
     rig.setSettings(next);
@@ -117,14 +146,16 @@ function start(): void {
       view.setLensMm(camera.lensMm);
       lensSelect.value = String(camera.lensMm);
     }
-    view.showFrame(rig, id, DISPLAYED_FRAME);
+    timeline.setShot(next.shotLengthFrames, rig.findingsForMain()); // pauses, new marks; the frame is kept
+    const frame = timeline.frame();
+    view.showFrame(rig, id, frame);
     if (overview !== null) {
       overview.setLayout(rig, next);
-      overview.showFrame(rig, DISPLAYED_FRAME);
+      overview.showFrame(rig, frame);
     }
     if (grid !== null) {
       grid.setMain(id);
-      grid.render(rig, DISPLAYED_FRAME, MODE, true, false, 0);
+      grid.render(rig, frame, MODE, true, false, 0);
     }
   };
 
@@ -139,19 +170,19 @@ function start(): void {
         overview = createStageOverview(overviewBox, aux.renderer, settings.road.points);
         if (overview !== null) {
           overview.setLayout(rig, settings);
-          overview.showFrame(rig, DISPLAYED_FRAME);
+          overview.showFrame(rig, timeline.frame());
         }
       }
       if (gridBox !== null) {
         grid = createCoverageGrid(gridBox, aux.renderer, settings.road.points, onSelect);
         grid.setLayout(settings);
-        grid.render(rig, DISPLAYED_FRAME, MODE, true, false, 0);
+        grid.render(rig, timeline.frame(), MODE, true, false, 0);
       }
     }
   }
 
   view.setLensMm(sample.placement.lensMm);
-  view.showFrame(rig, CAMERA_ID, DISPLAYED_FRAME);
+  view.showFrame(rig, current.mainCameraId, timeline.frame());
 
   lensSelect.addEventListener('change', () => {
     view.setLensMm(Number(lensSelect.value));

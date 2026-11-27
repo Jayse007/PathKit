@@ -14,6 +14,11 @@
         aspect-ratio: 16 / 9;
         background: #20242a;
       }
+      #timeline {
+        box-sizing: border-box;
+        width: min(100vw, calc((100vh - 48px) * 16 / 9));
+        padding: 8px 12px;
+      }
       #bar {
         padding: 8px 12px;
       }
@@ -27,6 +32,7 @@
   <body>
     <div id="app">
       <div id="stage"></div>
+      <div id="timeline" role="group" aria-label="Timeline: play, pause, scrub and frame counter"></div>
       <div id="bar">
         <label for="lens">Lens</label>
         <select id="lens" title="Focal length of the main camera"></select>

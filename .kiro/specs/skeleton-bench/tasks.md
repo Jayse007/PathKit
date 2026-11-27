@@ -281,10 +281,18 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 20.2 Layout and Inspector with Parts_List
     - Inventory (three cards, SVG thumbnails drawn by us), Stage, Inspector (empty state "Pick a part to read about it", "sample data" label), Parts_List buttons in catalogue order with focus highlight, Motion_Check region, Control_Bar region.
     - _Requirements: 14.2, 14.3, 14.4, 14.5, 14.8, 15.1, 15.2, 20.1, 21.1_
-  - [ ] 20.3 User checkpoint: view the layout, the Inspector and the Parts_List
-    - The User views the layout, the Inspector and the Parts_List in a browser in their own way and reports problems. Kiro states what was not tested.
+  - [x] 20.2a Accordion Parts_List
+    - Pure rule `togglePartSelection(current, clicked)` in `src/ui/inspector-text.ts` with hand-written tests in `test/ui-layout.test.ts`; then change `src/ui/layout.ts`, `src/main.ts` and the styles in `index.html` so each Part's details open under its button, the selected button scrolls to the top of the Inspector, and a second click closes it.
+    - Source line it should catch: return `clicked` even when it equals `current`.
+    - _Requirements: 14.1, 14.2, 14.3, 14.5, 14.9, 14.10, 14.11, 14.12_
+  - [x] 20.2b Stage click selects or clears
+    - Pure rule `selectionAfterStageClick(current, pickedId)` in `src/ui/inspector-text.ts` with hand-written tests in `test/ui-layout.test.ts`; then wire the click rule and the picker into `src/main.ts` (as the stage preview does), so a click on a Part selects it and a click on empty space clears the selection.
+    - Source line it should catch: keep `current` when `pickedId` is null.
+    - _Requirements: 14.1, 14.6, 14.7 and the new Requirement 14 criterion_
+  - [x] 20.3 User checkpoint: view the layout, the Inspector and the Parts_List
+    - The User views the layout, the Inspector and the Parts_List in a browser in their own way and reports problems. Kiro states what was not tested. Checks: open a Part: its details open under the button and the button is at the top of the Inspector; scroll up to see the earlier Parts; click the open Part: it closes; open the last Part: its button still reaches the top; click a Part: it is selected and its details open; click empty space: the selection clears and the details close; drag on empty space: the Machine rotates and the selection stays.
     - _Requirements: 21.3, 37.1_
-  - [ ] 20.4 Controls
+  - [-] 20.4 Controls
     - Rotate / Move toggle (M), orbit scrub, zoom slider, keys and wheel, explode slider and key E (600 ms animation, jump under reduced motion), Reset position and key R, arrow keys per mode, key hints beside every control, "hint seen" flags. Gestures toggle absent or disabled with a label.
     - _Requirements: 10.1, 10.3, 10.6, 11.1, 12.1, 12.3, 12.5, 12.8, 13.1, 20.2, 20.3, 20.5, 21.2, 21.4_
   - [ ] 20.5 User checkpoint: try the controls

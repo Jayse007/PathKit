@@ -326,13 +326,17 @@ Each item states the issue, the assumption used in this document, and who must d
 
 1. WHEN the User clicks a Part, THE Skeleton_Bench_App SHALL select it.
 2. WHEN the User presses Tab to move focus to a button of the Parts_List and then presses Enter or Space, THE Skeleton_Bench_App SHALL select that Part.
-3. WHEN a Part is selected, THE Inspector SHALL show its name, job, material and typical position (as text).
+3. WHEN a Part is selected, THE Inspector SHALL show its name, job, material and typical position (as text) in a panel directly below that Part's Parts_List button.
 4. THE Inspector SHALL label the sample specifications "sample data".
 5. WHILE no Part is selected, THE Inspector SHALL show the text "Pick a part to read about it".
 6. WHEN the pointer moves 5 px or less (CLICK_THRESHOLD_PX = 5) between press and release, THE Skeleton_Bench_App SHALL treat the gesture as a click, and WHEN the pointer moves more than 5 px, THE Skeleton_Bench_App SHALL treat it as a drag (decision 15).
 7. WHEN a Part is selected, THE Skeleton_Bench_App SHALL show a second cue besides colour on that Part, such as a thicker outline (decision 18).
 8. THE Parts_List SHALL follow the order of the Part_Catalogue.
 9. WHEN a Parts_List button has focus, THE Skeleton_Bench_App SHALL highlight that Part on the Stage.
+10. THE Parts_List SHALL work as an accordion: the details of a Part open directly below its button, at most one Part's details are open at a time, and WHEN the User activates the button of the open Part, THE Skeleton_Bench_App SHALL close the details and clear the selection.
+11. WHEN a Part becomes selected (from the Parts_List or from the Stage), THE Inspector SHALL scroll, and only the Inspector, so that the button of that Part is at the top of the Inspector. WHERE the User has asked for reduced motion, the scroll SHALL be a jump with no animation. The Parts above stay reachable by scrolling up.
+12. Each Parts_List button SHALL expose whether its details are open (aria-expanded) and SHALL name the details it controls (aria-controls), and the details SHALL be labelled by the button. The open state SHALL be shown by more than colour (an arrow and bold text).
+13. WHEN the User clicks (a click is 5 px of movement or less, Requirement 14.6) on the Stage and no Part is under the pointer, THE Skeleton_Bench_App SHALL clear the selection. A drag on the empty bench SHALL NOT clear the selection. WHEN the User clicks a Part that is already selected, THE Skeleton_Bench_App SHALL keep it selected. Only the main (left) pointer button counts. The key Escape SHALL also clear the selection.
 
 ### Requirement 15: Inventory (Tier A)
 

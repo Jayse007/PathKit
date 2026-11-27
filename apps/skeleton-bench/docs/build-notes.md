@@ -421,3 +421,26 @@
 - Broke: nothing known. Nothing has been run (no terminal).
 - Not tested: the look, WebGL, view offset, clicking, load time, the DOM builders in `layout.ts` and `main.ts`, the CSS grid, small-screen layout.
 - PathKit feature used: none new (the Stage reads the baked laps and Part scenes made earlier; the Motion_Check text comes from `motionLinter` findings through `bakeAll`).
+
+### Task 20.2a: Accordion Parts_List
+
+- Done: spec edits (Requirement 14.3 reworded, 14.10 to 14.12 added; task 20.2a added; checks added to 20.3). Added `togglePartSelection(current, clicked)` to `src/ui/inspector-text.ts` and 4 tests to `test/ui-layout.test.ts`. `src/ui/layout.ts`: the separate inspector-body is gone; each Part is an `<h4>` holding the button (`aria-expanded`, `aria-controls`) followed by a `role="region"` panel (`aria-labelledby`, `hidden` when closed) with Job, Material, Typical position and the sample spec. `aria-live` removed. `setSelected` opens only the selected panel, shows the empty line only when nothing is selected, and calls `inspector.scrollTo({ top: button.offsetTop, behavior })` (`'auto'` under reduced motion, else `'smooth'`; not `scrollIntoView`). `src/main.ts`: `onPartActivate` toggles through `togglePartSelection`. `index.html`: `#inspector` is `position: relative`; CSS arrow (rotated border corner), bold text and orange border on the open button; open panel has a 3px accent left border and a lighter background (#1f2a37).
+- Approximate: the open panel has `min-height: calc(100vh - 160px)` so the last Part can reach the top. The 160px is an estimate of the heading, Parts heading and Control_Bar space, not measured. The User checks it in 20.3 (open the last Part).
+- Contrast (by hand, not measured in a browser): #e6edf3 and #b4c0cc on #1f2a37 are both well above 4.5 to 1.
+- Not run: `npm.cmd test` (expected 26 files, 271 tests) and `npx tsc --noEmit -p .` (forbidden by project rules). Not tested: the DOM in `layout.ts`, scrolling, the arrow, the look, WebGL, clicking.
+- Note: click-to-select on the Stage is not wired yet (Task 20.4). Only the Parts_List button toggles; `setSelected` scrolls whichever way a Part becomes selected.
+
+### Task 20.2b: Stage click selects or clears
+
+- Done: spec edits (Requirement 14.13 added; design error-table row "Part click hits no Part" now clears the selection; task 20.2b added; checks added to 20.3). Added `selectionAfterStageClick(current, pickedId)` to `src/ui/inspector-text.ts` (returns `pickedId`: empty space clears, the selected Part stays selected) and 5 tests to `test/ui-layout.test.ts`. `src/main.ts`: a picker from `collectPartMeshes(model.root)` is made in `showMachine`, before `createShells`, so it is replaced whenever the Machine changes. One click tracker and the four pointer listeners (`pointerdown`, `pointermove`, `pointercancel`, `pointerup`) are added once on `stage.canvas`, left button only. On a click, `selectPart(state, selectionAfterStageClick(...))` then `applySelection()`. A drag does nothing here (orbit is Task 20.4). `stage-preview.ts` is not changed.
+- Not run: `npm.cmd test` (expected 276 tests) and `npx tsc --noEmit -p .` (forbidden by project rules). Not tested: the DOM and pointer wiring in `main.ts`, picking in a browser, WebGL, the look.
+- Note: the Escape key clearing the selection (Requirement 14.13) is not wired; it belongs with the key handling in Task 20.4.
+
+### Task 20.4: Controls
+
+- Done: `src/logic/explode-animation.ts` (pure: `explodeAnimationAmount` straight line over 600 ms, `explodeToggleTarget` 0 when the target is 50 or more, else 100) with `test/explode-animation.test.ts` (6 tests). `src/ui/layout.ts`: Control_Bar now holds the Mode button, orbit scrub (0 to 359), zoom slider, explode slider, `Reset position` and a disabled `Gestures (not available yet)` button; each has a visible label with its key hint; `setControls` and `setHint` added. `src/main.ts`: one `keydown` handler (M, E, R, + and =, -, arrows per mode, Escape clears the selection, all through `keyToAction` and the focus guard); drag on the Stage rotates or moves after leaving the 5 px click radius; wheel zooms; E animates 600 ms or jumps under `prefers-reduced-motion`; first-use hint per mode stored with `hasSeenHint` / `markHintSeen`. `index.html`: control styles. Escape-to-clear (Requirement 14.13) is now wired.
+- Decisions to check: E from a slider value of 50 or more goes to 0 (below 50 goes to 100). Up and down arrows do nothing in Rotate mode. The controls do nothing if baking or WebGL failed. State objects are created per drag or animation step (the evaluation path itself, `placeAtAmount`, still allocates nothing).
+- Not built (later tasks): Tour, Pause, Stop and the "Stop the tour to use this" label, Look toggle, About, impeller spin.
+- Broke: nothing known. Nothing has been run (no terminal).
+- Not run: `npm.cmd test` (expected 27 files, 282 tests) and `npx tsc --noEmit -p .` (forbidden by project rules). Not tested: the DOM and pointer, key and wheel wiring, the animation, reduced motion, the look, WebGL, view offset, clicking.
+- PathKit feature used: none new (Part placement still reads baked Part scenes; the camera still reads the baked laps).

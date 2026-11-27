@@ -32,7 +32,7 @@
       }
       .left-column { grid-area: left; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; border-right: 1px solid var(--line); background: var(--panel); }
       .stage { grid-area: stage; min-width: 0; min-height: 0; position: relative; }
-      #inspector { grid-area: inspector; overflow-y: auto; border-left: 1px solid var(--line); background: var(--panel); }
+      #inspector { grid-area: inspector; position: relative; overflow-y: auto; border-left: 1px solid var(--line); background: var(--panel); }
       .control-bar { grid-area: controls; border-top: 1px solid var(--line); background: var(--panel); padding: 10px 12px; min-height: 56px; }
       .region { padding: 10px 12px; }
       .region.small { border-top: 1px solid var(--line); font-size: 13px; }
@@ -55,8 +55,35 @@
       }
       .card svg { display: block; max-width: 100%; height: auto; margin: 0 auto 6px; }
       .card-name { display: block; text-align: center; font-weight: 600; }
-      .card[aria-pressed="true"], .part-button[aria-pressed="true"] { border-color: var(--accent); border-width: 2px; padding: 7px; }
-      .part-button[aria-pressed="true"] { font-weight: 700; }
+      .card[aria-pressed="true"], .part-button[aria-expanded="true"] { border-color: var(--accent); border-width: 2px; padding: 7px; }
+      .part-heading { margin: 0; font-size: inherit; font-weight: inherit; }
+      .part-button { position: relative; padding-right: 30px; }
+      .part-button[aria-expanded="true"] { font-weight: 700; padding-right: 29px; }
+      /* Arrow drawn with a rotated border corner: points right when closed, down when open. */
+      .part-button::after {
+        content: "";
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        margin-top: -4px;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(-45deg);
+      }
+      .part-button[aria-expanded="true"]::after { transform: rotate(45deg); }
+      .part-panel { margin: -4px 0 8px; padding: 8px 10px; border-left: 3px solid var(--accent); background: #1f2a37; }
+      .part-panel:not([hidden]) { min-height: calc(100vh - 160px); } /* approximate: lets the last Part's button reach the top of the Inspector */
+      .part-panel p { margin: 0 0 8px; }
+      .control-row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; }
+      .control { display: flex; flex-direction: column; gap: 4px; }
+      .control-label { font-size: 13px; color: var(--muted); }
+      .control-readout { font-size: 13px; color: var(--muted); }
+      .control input[type="range"] { width: 160px; accent-color: var(--accent); }
+      .control-button { padding: 8px 12px; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; font: inherit; cursor: pointer; }
+      .control-button:disabled { color: var(--muted); border-style: dashed; cursor: not-allowed; }
+      #control-hint { margin-top: 8px; font-size: 13px; }
       button:hover { background: #222c38; }
       button:focus-visible { outline: 3px solid #5cc8ff; outline-offset: 2px; }
       .badge { color: var(--muted); font-style: italic; }

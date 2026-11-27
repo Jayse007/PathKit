@@ -2,7 +2,7 @@
 // Inspector on the right, Control_Bar at the bottom, Motion_Check as a small region.
 // DOM only. All text is set with textContent (no HTML parsing). Not unit tested (no browser in the tests).
 import type { Catalogue, MachineId, PartEntry } from '../data/catalogue-types.js';
-import { inspectorContent, SAMPLE_DATA_LABEL } from './inspector-text.js';
+import { EMPTY_INSPECTOR_TEXT, inspectorContent, SAMPLE_DATA_LABEL } from './inspector-text.js';
 import { buildThumbnail } from './thumbnails.js';
 
 export interface Layout {
@@ -13,17 +13,47 @@ export interface Layout {
   setCurrentMachine(machine: MachineId): void;
   /** Replace the Inspector text and the Parts_List for a Machine. Selected is the Part id or null. */
   setParts(parts: readonly PartEntry[], selectedId: string | null): void;
-  /** Update the Inspector text and the pressed state of the Parts_List buttons. */
+  /** Open only this Part's details (null closes all), update the empty line, and scroll the Inspector to the button. */
   setSelected(part: PartEntry | null): void;
   /** Show Motion_Check lines in plain words. */
   setMotionCheck(lines: readonly string[]): void;
+  /** Bring the Control_Bar into step with the state (slider values, mode button text, readouts). */
+  setControls(view: ControlsView): void;
+  /** Show a one-line hint under the controls (empty text hides it). */
+  setHint(text: string): void;
+}
+
+/** The part of the app state the Control_Bar shows. */
+export interface ControlsView {
+  readonly mode: 'rotate' | 'move';
+  readonly orbitAngleDeg: number;
+  readonly zoom: number;
+  readonly explode: number;
 }
 
 export interface LayoutHandlers {
   onMachine(machine: MachineId): void;
   onPartActivate(partId: string): void;
   onPartFocus(partId: string | null): void;
+  onModeToggle(): void;
+  /** Orbit scrub moved: degrees 0 to 359. */
+  onOrbitScrub(angleDeg: number): void;
+  /** Zoom slider moved: 0 to 1. */
+  onZoomSlider(zoom: number): void;
+  /** Explode slider moved: 0 to 100. */
+  onExplodeSlider(percent: number): void;
+  onResetPosition(): void;
 }
+
+/** Visible label text with the key hint beside it (Requirements 10.6, 21.2). */
+export const CONTROL_LABELS = {
+  mode: 'Mode (key M)',
+  orbit: 'Orbit (drag, or keys \u2190 \u2192)',
+  zoom: 'Zoom (wheel, or keys + \u2212)',
+  explode: 'Explode (key E)',
+  reset: 'Reset position (key R)',
+  gestures: 'Gestures (not available yet)',
+} as const;
 
 function make<K extends keyof HTMLElementTagNameMap>(
   doc: Document,
@@ -72,18 +102,78 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
   // Inspector (right) with the Parts_List.
   const inspector = make(doc, 'aside', { id: 'inspector', className: 'region', label: 'Inspector' });
   inspector.appendChild(make(doc, 'h2', { text: 'Inspector' }));
-  const inspectorBody = make(doc, 'div', { className: 'inspector-body' });
-  inspectorBody.setAttribute('aria-live', 'polite');
-  inspector.appendChild(inspectorBody);
+  // Shown only while no Part is selected (Requirement 14.5). No aria-live: the button's aria-expanded is announced.
+  const emptyLine = make(doc, 'p', { className: 'muted', text: EMPTY_INSPECTOR_TEXT });
+  inspector.appendChild(emptyLine);
   inspector.appendChild(make(doc, 'h3', { text: 'Parts' }));
   const partsList = make(doc, 'div', { id: 'parts-list', className: 'parts-list' });
   partsList.setAttribute('role', 'group');
   partsList.setAttribute('aria-label', 'Parts list');
   inspector.appendChild(partsList);
 
-  // Control_Bar (bottom). The controls arrive in Task 20.4.
+  // Control_Bar (bottom): Rotate / Move toggle, orbit scrub, zoom slider, explode slider, Reset position,
+  // and a disabled Gestures toggle (Requirement 20.3). Tour and Look controls come in later tasks.
   const controlBar = make(doc, 'footer', { id: 'control-bar', className: 'control-bar', label: 'Control bar' });
-  controlBar.appendChild(make(doc, 'p', { className: 'muted', text: 'Controls: the buttons and sliders are added in the next build step.' }));
+  const controlRow = make(doc, 'div', { className: 'control-row' });
+
+  const modeButton = make(doc, 'button', { id: 'mode-toggle', className: 'control-button' });
+  modeButton.type = 'button';
+  modeButton.addEventListener('click', () => handlers.onModeToggle());
+  const modeGroup = make(doc, 'div', { className: 'control' });
+  modeGroup.appendChild(make(doc, 'span', { className: 'control-label', text: CONTROL_LABELS.mode }));
+  modeGroup.appendChild(modeButton);
+  controlRow.appendChild(modeGroup);
+
+  function addSlider(
+    id: string,
+    labelText: string,
+    min: number,
+    max: number,
+    step: number,
+    onInput: (value: number) => void,
+  ): { input: HTMLInputElement; readout: HTMLSpanElement } {
+    const group = make(doc, 'div', { className: 'control' });
+    const label = doc.createElement('label');
+    label.htmlFor = id;
+    label.className = 'control-label';
+    label.textContent = labelText;
+    const input = doc.createElement('input');
+    input.type = 'range';
+    input.id = id;
+    input.min = String(min);
+    input.max = String(max);
+    input.step = String(step);
+    input.addEventListener('input', () => {
+      const value = Number(input.value);
+      if (Number.isFinite(value)) onInput(value);
+    });
+    const readout = make(doc, 'span', { className: 'control-readout' });
+    group.appendChild(label);
+    group.appendChild(input);
+    group.appendChild(readout);
+    controlRow.appendChild(group);
+    return { input, readout };
+  }
+  const orbitControl = addSlider('orbit-scrub', CONTROL_LABELS.orbit, 0, 359, 1, (v) => handlers.onOrbitScrub(v));
+  const zoomControl = addSlider('zoom-slider', CONTROL_LABELS.zoom, 0, 1, 0.01, (v) => handlers.onZoomSlider(v));
+  const explodeControl = addSlider('explode-slider', CONTROL_LABELS.explode, 0, 100, 1, (v) => handlers.onExplodeSlider(v));
+
+  const resetButton = make(doc, 'button', { id: 'reset-position', className: 'control-button', text: CONTROL_LABELS.reset });
+  resetButton.type = 'button';
+  resetButton.addEventListener('click', () => handlers.onResetPosition());
+  controlRow.appendChild(resetButton);
+
+  // The Gestures toggle is shown disabled while Tier B is locked.
+  const gesturesButton = make(doc, 'button', { id: 'gestures-toggle', className: 'control-button', text: CONTROL_LABELS.gestures });
+  gesturesButton.type = 'button';
+  gesturesButton.disabled = true;
+  controlRow.appendChild(gesturesButton);
+
+  const hintLine = make(doc, 'p', { id: 'control-hint', className: 'muted' });
+  hintLine.setAttribute('role', 'status');
+  hintLine.hidden = true;
+  controlBar.appendChild(controlRow);
+  controlBar.appendChild(hintLine);
 
   shell.appendChild(left);
   shell.appendChild(stageHost);
@@ -92,6 +182,42 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
   root.appendChild(shell);
 
   const buttons = new Map<string, HTMLButtonElement>();
+  const panels = new Map<string, HTMLElement>();
+
+  /** Open or close one Part's details and keep aria-expanded in step with the hidden state. */
+  function setOpen(id: string, open: boolean): void {
+    buttons.get(id)?.setAttribute('aria-expanded', open ? 'true' : 'false');
+    const panel = panels.get(id);
+    if (panel !== undefined) panel.hidden = !open;
+  }
+
+  /** The panel under a button: Job, Material, Typical position and the sample specification. */
+  function buildPanel(part: PartEntry, panelId: string, buttonId: string): HTMLDivElement {
+    const panel = make(doc, 'div', { id: panelId, className: 'part-panel' });
+    panel.setAttribute('role', 'region');
+    panel.setAttribute('aria-labelledby', buttonId);
+    const content = inspectorContent(part);
+    if (content.kind !== 'part') return panel;
+    const fields: ReadonlyArray<readonly [string, string]> = [
+      ['Job', content.job],
+      ['Material', content.material],
+      ['Typical position', content.positionText],
+    ];
+    for (const [label, value] of fields) {
+      const p = make(doc, 'p');
+      p.appendChild(make(doc, 'strong', { text: `${label}: ` }));
+      p.appendChild(doc.createTextNode(value));
+      panel.appendChild(p);
+    }
+    for (const spec of content.sampleSpecs) {
+      const p = make(doc, 'p');
+      p.appendChild(make(doc, 'strong', { text: `${spec.label}: ` }));
+      p.appendChild(doc.createTextNode(`${spec.value} `));
+      p.appendChild(make(doc, 'span', { className: 'badge', text: `(${SAMPLE_DATA_LABEL})` }));
+      panel.appendChild(p);
+    }
+    return panel;
+  }
 
   function setCurrentMachine(machine: MachineId): void {
     for (const [id, card] of cards) {
@@ -102,47 +228,39 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
   function setParts(parts: readonly PartEntry[], selectedId: string | null): void {
     partsList.textContent = '';
     buttons.clear();
+    panels.clear();
     for (const part of parts) {
-      const button = make(doc, 'button', { className: 'part-button', text: part.name });
+      const buttonId = `part-button-${part.id}`;
+      const panelId = `part-panel-${part.id}`;
+      const button = make(doc, 'button', { id: buttonId, className: 'part-button', text: part.name });
       button.type = 'button';
-      button.setAttribute('aria-pressed', part.id === selectedId ? 'true' : 'false');
+      button.setAttribute('aria-controls', panelId);
       button.addEventListener('click', () => handlers.onPartActivate(part.id));
       button.addEventListener('focus', () => handlers.onPartFocus(part.id));
       button.addEventListener('blur', () => handlers.onPartFocus(null));
+      const heading = make(doc, 'h4', { className: 'part-heading' });
+      heading.appendChild(button);
       buttons.set(part.id, button);
-      partsList.appendChild(button);
+      panels.set(part.id, buildPanel(part, panelId, buttonId));
+      setOpen(part.id, part.id === selectedId);
+      partsList.appendChild(heading);
+      const panel = panels.get(part.id);
+      if (panel !== undefined) partsList.appendChild(panel);
     }
   }
 
   function setSelected(part: PartEntry | null): void {
-    for (const [id, button] of buttons) {
-      button.setAttribute('aria-pressed', part !== null && id === part.id ? 'true' : 'false');
+    for (const id of buttons.keys()) {
+      setOpen(id, part !== null && id === part.id);
     }
-    const content = inspectorContent(part);
-    inspectorBody.textContent = '';
-    if (content.kind === 'empty') {
-      inspectorBody.appendChild(make(doc, 'p', { className: 'muted', text: content.message }));
-      return;
-    }
-    inspectorBody.appendChild(make(doc, 'h3', { text: content.name }));
-    const fields: ReadonlyArray<readonly [string, string]> = [
-      ['Job', content.job],
-      ['Material', content.material],
-      ['Typical position', content.positionText],
-    ];
-    for (const [label, value] of fields) {
-      const p = make(doc, 'p');
-      p.appendChild(make(doc, 'strong', { text: `${label}: ` }));
-      p.appendChild(doc.createTextNode(value));
-      inspectorBody.appendChild(p);
-    }
-    for (const spec of content.sampleSpecs) {
-      const p = make(doc, 'p');
-      p.appendChild(make(doc, 'strong', { text: `${spec.label}: ` }));
-      p.appendChild(doc.createTextNode(`${spec.value} `));
-      p.appendChild(make(doc, 'span', { className: 'badge', text: `(${SAMPLE_DATA_LABEL})` }));
-      inspectorBody.appendChild(p);
-    }
+    emptyLine.hidden = part !== null;
+    if (part === null) return;
+    const button = buttons.get(part.id);
+    if (button === undefined) return;
+    // Scroll only the Inspector (not the page), so this Part's button is at its top (Requirement 14.11).
+    // #inspector is position: relative, so offsetTop is measured from the Inspector.
+    const reduced = doc.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches === true;
+    inspector.scrollTo({ top: button.offsetTop, behavior: reduced ? 'auto' : 'smooth' });
   }
 
   function setMotionCheck(lines: readonly string[]): void {
@@ -152,5 +270,33 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
     }
   }
 
-  return { stageHost, motionCheckBody, controlBar, setCurrentMachine, setParts, setSelected, setMotionCheck };
+  function setControls(view: ControlsView): void {
+    modeButton.textContent = view.mode === 'rotate' ? 'Rotate (press M for Move)' : 'Move (press M for Rotate)';
+    modeButton.setAttribute('aria-pressed', view.mode === 'move' ? 'true' : 'false');
+    // The scrub shows the angle wrapped to 0 to 359 whole degrees.
+    const wrapped = Math.floor((((view.orbitAngleDeg % 360) + 360) % 360) + 0.5) % 360;
+    orbitControl.input.value = String(wrapped);
+    orbitControl.readout.textContent = `${wrapped}\u00b0`;
+    zoomControl.input.value = String(view.zoom);
+    zoomControl.readout.textContent = `${Math.round(view.zoom * 100)}%`;
+    explodeControl.input.value = String(view.explode);
+    explodeControl.readout.textContent = `${Math.round(view.explode)}%`;
+  }
+
+  function setHint(text: string): void {
+    hintLine.textContent = text;
+    hintLine.hidden = text === '';
+  }
+
+  return {
+    stageHost,
+    motionCheckBody,
+    controlBar,
+    setCurrentMachine,
+    setParts,
+    setSelected,
+    setMotionCheck,
+    setControls,
+    setHint,
+  };
 }
