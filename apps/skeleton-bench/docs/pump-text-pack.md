@@ -84,7 +84,7 @@ export const PUMP_PARTS: readonly PartEntry[] = [
     name: 'Impeller',
     job: 'The rotating wheel with curved vanes. It pushes the liquid outward, which gives it speed. The casing then turns that speed into pressure. Every impeller has a back plate (shroud). One with no front plate is called open.',
     material: 'Bronze is the most widely used impeller material for water and other non-corrosive liquids. Cast iron is used in small, low-cost pumps. Stainless steel (304 or 316) is used where bronze is not enough.',
-    positionText: 'Inside the casing, on the end of the shaft. The model draws six curved vanes on a back plate and hub,.',
+    positionText: 'Inside the casing, on the end of the shaft. The model draws six curved vanes on a back plate and hub.',
     sourceId: 'pump-impeller',
     restPosition: [0.38, 0, 0],
     explodeVector: [0.2, 0.39, -0.18],

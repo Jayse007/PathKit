@@ -339,7 +339,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 3.4, 3.9, 25.1, 25.2_
 
 - [ ] 31. Stage_Overview
-  - [-] 31.1 Implement `src/view/stage-overview.ts`
+  - [x] 31.1 Implement `src/view/stage-overview.ts`
     - A small top-down view using the shared auxiliary renderer, drawing the car, the road, the camera positions and the camera rails (push-in and crane). After its render the image is copied into its own 2D canvas with `drawImage` before the shared renderer is reused.
     - _Requirements: 17.2_
   - [~] 31.2 User checkpoint: view the Stage_Overview
