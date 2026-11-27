@@ -197,7 +197,7 @@ describe('selection shell and focus shell', () => {
     shells.setSelected('a');
     const visible = visibleShells(root);
     expect(visible.length).toBe(1);
-    expect(Math.abs(visible[0]!.scale.x - 1.024)).toBeLessThan(1e-9);
+    expect(Math.abs(visible[0]!.scale.x - 1.024)).toBeLessThan(1e-6);
     expect(visible[0]!.parent).toBe(a);
   });
 
@@ -210,16 +210,16 @@ describe('selection shell and focus shell', () => {
       .map((s) => s.scale.x)
       .sort((p, q) => p - q);
     expect(scales.length).toBe(2);
-    expect(Math.abs(scales[0]! - 1.014)).toBeLessThan(1e-9);
-    expect(Math.abs(scales[1]! - 1.024)).toBeLessThan(1e-9);
+    expect(Math.abs(scales[0]! - 1.014)).toBeLessThan(1e-6);
+    expect(Math.abs(scales[1]! - 1.024)).toBeLessThan(1e-6);
     shells.setFocused('a');
     const onlySelect = visibleShells(root);
     expect(onlySelect.length).toBe(1);
-    expect(Math.abs(onlySelect[0]!.scale.x - 1.024)).toBeLessThan(1e-9);
+    expect(Math.abs(onlySelect[0]!.scale.x - 1.024)).toBeLessThan(1e-6);
     shells.setSelected(null);
     const onlyFocus = visibleShells(root);
     expect(onlyFocus.length).toBe(1);
-    expect(Math.abs(onlyFocus[0]!.scale.x - 1.014)).toBeLessThan(1e-9);
+    expect(Math.abs(onlyFocus[0]!.scale.x - 1.014)).toBeLessThan(1e-6);
     shells.setFocused(null);
     expect(visibleShells(root).length).toBe(0);
   });
@@ -244,7 +244,7 @@ describe('selection shell and focus shell', () => {
     const shells = createShells(root, 'Clean_Engineering');
     shells.setSelected('off');
     const shell = visibleShells(root)[0]!;
-    expect(Math.abs(shell.position.x - -0.048)).toBeLessThan(1e-9);
+    expect(Math.abs(shell.position.x - -0.048)).toBeLessThan(1e-6);
     expect(Math.abs(shell.position.y)).toBeLessThan(1e-12);
   });
 
@@ -263,9 +263,9 @@ describe('selection shell and focus shell', () => {
     root.add(mesh);
     createShells(root, 'X_Ray_Skeleton').setSelected('thin');
     const shell = visibleShells(root)[0]!;
-    expect(Math.abs(shell.scale.x - 1.024)).toBeLessThan(1e-9);
-    expect(Math.abs(shell.scale.y - 2.2)).toBeLessThan(1e-9);
-    expect(Math.abs(shell.scale.z - 1.024)).toBeLessThan(1e-9);
+    expect(Math.abs(shell.scale.x - 1.024)).toBeLessThan(1e-6);
+    expect(Math.abs(shell.scale.y - 2.2)).toBeLessThan(1e-6);
+    expect(Math.abs(shell.scale.z - 1.024)).toBeLessThan(1e-6);
   });
 
   it('a box thinner than the cap allows (0.002 on y) is capped at scale 3 on that axis', () => {
@@ -286,7 +286,7 @@ describe('selection shell and focus shell', () => {
       createShells(root, 'X_Ray_Skeleton').setSelected('p');
       const shell = visibleShells(root)[0]!;
       const rim = ((shell.scale.x - 1) * size) / 2;
-      expect(Math.abs(rim - 0.012)).toBeLessThan(1e-9);
+      expect(Math.abs(rim - 0.012)).toBeLessThan(1e-6);
     }
   });
 

@@ -133,6 +133,7 @@ export class CameraRig {
   private placements = new Map<string, { bakedScene: BakedData; sceneIndexInSet: number }>();
   private mainFindings: Finding[] = [];
   private bakeTotal = 0;
+  private bakedShotLength = 0; // shot length of the last good bake; evaluateSubject range-checks against it
 
   // Transport state. The rig holds it only so that a re-bake can leave it alone.
   private playing = false;
@@ -223,6 +224,7 @@ export class CameraRig {
     this.subjectBaked = subject;
     this.cachedSubjectKey = key;
     this.bakeTotal++;
+    this.bakedShotLength = settings.shotLengthFrames;
 
     const byCamera = new Map<string, BakedData>();
     const placements = new Map<string, { bakedScene: BakedData; sceneIndexInSet: number }>();
@@ -277,14 +279,18 @@ export class CameraRig {
   /**
    * Writes the subject's baked position and rotation at `displayedFrame` into `out` and returns `out`.
    * Uses the same remap as the camera targets, then calls evaluateEntity on the subject bake only.
-   * Throws when no bake has run yet, or when the frame is not a whole number of 0 or more (a caller
-   * defect). A frame past the shot length is not an error: the subject repeats its lap.
-   * No allocation on the success path.
+   * Throws when no bake has run yet. Then it checks the frame against the shot length of the last good
+   * bake: a frame that is not a whole number in [0, shot length - 1] throws the same Error, with the same
+   * message, as evaluate() does for that frame (a caller defect: frames are clamped first). `out` is not
+   * touched when it throws. No allocation on the success path.
    */
   evaluateSubject(displayedFrame: number, out: OutBuffer): OutBuffer {
     const baked = this.subjectBaked;
     if (baked === null) {
       throw new Error('CameraRig.evaluateSubject: the subject has not been baked yet');
+    }
+    if (!(Number.isInteger(displayedFrame) && displayedFrame >= 0 && displayedFrame < this.bakedShotLength)) {
+      throw new Error(`Frame ${displayedFrame} is outside the valid range [0, ${this.bakedShotLength - 1}]`);
     }
     return evaluateEntity(baked, SUBJECT_ENTITY_ID, remap(displayedFrame), out);
   }

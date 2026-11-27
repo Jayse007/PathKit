@@ -19,7 +19,13 @@
 //   4. use a different ease amplitude than the camera targets use (the keyframe comparison differs).
 //   5. leave this.subjectBaked unchanged when the Road changes (frame 0 stays at (22, 0.7, 0)).
 //   6. make subjectKey include the lens, or rebake the subject on every bake (subjectBakeCount becomes 2).
-//   7. round or floor the frame before remap (1.5 no longer throws).
+//   7. delete the Number.isInteger part of the range check, or round the frame first (1.5 no longer throws).
+//      Delete `displayedFrame >= 0` (-1 no longer throws, or throws a different message).
+//      Delete the `< this.bakedShotLength` part, or use a hard-coded 240 (frame 240 wraps and does not
+//      throw; the 120-frame case fails). Use `<=` (frame = shot length does not throw).
+//   8. change the message text or the "- 1" in the upper limit (message differs from evaluate()).
+//   9. write into `out` before the check (the buffer no longer matches the sentinel copy).
+//  10. use `> 239`-style off-by-one on the limit (frame 239 or 119 would throw).
 
 import { describe, expect, it } from 'vitest';
 import { bake, createArcLengthTable, createCurve, evaluateEntity, rotateVec } from '../../src/logic/pathkit.js';
@@ -258,20 +264,53 @@ describe('CameraRig evaluateSubject', () => {
     expect([b.rotation.x, b.rotation.y, b.rotation.z, b.rotation.w]).toEqual(aq);
   });
 
-  it('a bad frame throws an Error, like evaluate() does, and leaves the buffer alone', () => {
-    const rig = bakedRig(makeSettings());
-    const out = makeOut();
-    out.position.x = 11;
-    out.position.y = 12;
-    out.position.z = 13;
-    // evaluate() says "Frame -1 is outside the valid range [0, 239]". evaluateSubject goes through the
-    // frame remap first, which says "displayedFrame must be a whole number of 0 or more". Both are Error.
-    for (const bad of [-1, 1.5, Number.NaN]) {
-      expect(() => rig.evaluate('cam-1', bad, out), `evaluate(${bad})`).toThrow(Error);
-      expect(() => rig.evaluateSubject(bad, out), `evaluateSubject(${bad})`).toThrow(/whole number/);
+  function thrownMessage(fn: () => unknown, label: string): string {
+    try {
+      fn();
+    } catch (e) {
+      if (!(e instanceof Error)) throw new Error(`${label}: threw a non-Error`);
+      return e.message;
     }
-    expect(out.position.x).toBe(11);
-    expect(out.position.y).toBe(12);
-    expect(out.position.z).toBe(13);
+    throw new Error(`${label}: did not throw`);
+  }
+
+  function sentinelOut(): OutBuffer {
+    return { position: { x: 11, y: 12, z: 13 }, rotation: { x: 0.1, y: 0.2, z: 0.3, w: 0.4 } };
+  }
+
+  function values(o: OutBuffer): number[] {
+    return [o.position.x, o.position.y, o.position.z, o.rotation.x, o.rotation.y, o.rotation.z, o.rotation.w];
+  }
+
+  it('a bad frame (-1, 1.5, NaN, Infinity, the shot length) throws the same message as evaluate() and leaves the buffer alone', () => {
+    const rig = bakedRig(makeSettings());
+    for (const bad of [-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, SHOT_FRAMES]) {
+      const expected = thrownMessage(() => rig.evaluate('cam-1', bad, makeOut()), `evaluate(${bad})`);
+      const out = sentinelOut();
+      const before = values(out);
+      const actual = thrownMessage(() => rig.evaluateSubject(bad, out), `evaluateSubject(${bad})`);
+      expect(actual, `message for ${bad}`).toBe(expected);
+      expect(values(out), `buffer after ${bad}`).toEqual(before);
+    }
+  });
+
+  it('the last frame, 239, still works with a 240-frame shot', () => {
+    const rig = bakedRig(makeSettings());
+    const out = sentinelOut();
+    expect(() => rig.evaluateSubject(SHOT_FRAMES - 1, out)).not.toThrow();
+    expectNear(out.position.y, 0.7, TOLERANCE, 'frame 239 y');
+  });
+
+  it('with a 120-frame shot, frame 120 throws the same message as evaluate() and frame 119 works', () => {
+    const rig = bakedRig(makeSettings());
+    rig.setSettings(makeSettings({ shotLengthFrames: 120 }));
+    expect(rig.tick()?.ok).toBe(true);
+    const expected = thrownMessage(() => rig.evaluate('cam-1', 120, makeOut()), 'evaluate(120)');
+    const out = sentinelOut();
+    const before = values(out);
+    expect(thrownMessage(() => rig.evaluateSubject(120, out), 'evaluateSubject(120)')).toBe(expected);
+    expect(values(out)).toEqual(before);
+    expect(() => rig.evaluateSubject(119, out)).not.toThrow();
+    expectNear(out.position.y, 0.7, TOLERANCE, 'frame 119 y');
   });
 });
