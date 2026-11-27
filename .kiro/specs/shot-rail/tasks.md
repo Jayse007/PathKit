@@ -378,7 +378,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 11.8, 11.9, 11.13, 11.14, 8.15, 10.6 (design Rendering layer)_
 
 - [ ] 34. Timeline UI
-  - [-] 34.1 Implement `src/view/timeline.ts`
+  - [x] 34.1 Implement `src/view/timeline.ts`
     - Play, pause, scrub, frame counter, finding marks at the frames of the findings. Play and pause use the pure state from Task 33. The scrub uses `scrubToFrame`. Labels and tooltips on every control. Starts paused at frame 0. Stops at the last frame. While playing it evaluates only and never bakes.
     - _Requirements: 11.7, 11.8, 11.9, 11.10, 11.12, 11.13, 18.1_
   - [~] 34.2 User checkpoint: try the Timeline

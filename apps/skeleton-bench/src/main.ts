@@ -22,13 +22,17 @@ import { collectPartMeshes, createPicker } from './render/picking.js';
 import type { Picker } from './render/picking.js';
 import {
   createInitialState,
-  isTourPlaying,
+  pauseTour,
+  resumeTour,
   selectPart,
   setExplode,
+  setLook,
   setMachine,
   setOffset,
   setOrbitAngle,
   setZoom,
+  startTour,
+  stopTour,
   toggleMode,
 } from './state.js';
 import type { AppState } from './state.js';
@@ -42,7 +46,17 @@ import {
 } from './ui/input.js';
 import { findMachinePart, machineParts, selectionAfterStageClick, togglePartSelection } from './ui/inspector-text.js';
 import { createLayout } from './ui/layout.js';
-import { hasSeenHint, loadLook, markHintSeen } from './ui/storage.js';
+import { hasSeenHint, loadLook, markHintSeen, saveLook } from './ui/storage.js';
+import {
+  readTourPose,
+  reducedMotionFrame,
+  reducedMotionHasEnded,
+  reducedMotionPartIndex,
+  tourFrameAtElapsed,
+  tourHasEnded,
+} from './logic/tour-playback.js';
+import type { BakedTour } from './pathkit/bake-all.js';
+import type { OutBuffer } from './pathkit-api.js';
 
 const MODE_HINTS = {
   rotate:
@@ -74,24 +88,49 @@ function start(): void {
   let animStartMs = 0;
   let animFrameId = 0;
 
+  // Tour playback: plain numbers and one pose buffer, changed in place (nothing is allocated per frame).
+  const tourPose: OutBuffer = { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0, w: 1 } };
+  let tourData: BakedTour | null = null;
+  let tourElapsedMs = 0;
+  let tourLastMs = 0;
+  let tourRafId = 0;
+  let tourReduced = false;
+
+  /** True while a Tour is playing or paused: the orbit, zoom, explode and move controls do nothing. */
+  function tourLocked(): boolean {
+    return state.tour.status !== 'idle';
+  }
+
   const layout = createLayout(document, root, CATALOGUE, {
     onModeToggle: () => {
       if (ready) switchMode();
     },
     onOrbitScrub: (angleDeg) => {
-      if (ready) commit(setOrbitAngle(state, angleDeg));
+      if (ready && !tourLocked()) commit(setOrbitAngle(state, angleDeg));
     },
     onZoomSlider: (zoom) => {
-      if (ready) commit(setZoom(state, zoom));
+      if (ready && !tourLocked()) commit(setZoom(state, zoom));
     },
     onExplodeSlider: (percent) => {
-      if (!ready) return;
+      if (!ready || tourLocked()) return;
       cancelExplodeAnimation();
       explodeTarget = percent;
       applyExplodeAmount(percent);
     },
     onResetPosition: () => {
-      if (ready) commit(setOffset(state, 0, 0));
+      if (ready && !tourLocked()) commit(setOffset(state, 0, 0));
+    },
+    onTour: () => {
+      if (ready) startTourAction();
+    },
+    onTourPause: () => {
+      if (ready) toggleTourPause();
+    },
+    onTourStop: () => {
+      if (ready) endTour();
+    },
+    onLookToggle: () => {
+      if (ready) toggleLook();
     },
     onMachine: (machine) => showMachine(machine),
     onPartActivate: (partId) => {
@@ -143,6 +182,7 @@ function start(): void {
 
   function showMachine(machine: MachineId): void {
     if (!baked.ok) return;
+    if (tourLocked()) endTour(); // a Tour belongs to one Machine
     if (shells !== null) shells.dispose();
     if (model !== null) {
       stage.machineGroup.remove(model.root);
@@ -198,7 +238,7 @@ function start(): void {
 
   /** Key E: toggle 0 and 100 with a 600 ms animation, or jump under reduced motion (Requirement 13.7). */
   function toggleExplode(): void {
-    if (isTourPlaying(state)) return;
+    if (tourLocked()) return;
     cancelExplodeAnimation();
     explodeTarget = explodeToggleTarget(explodeTarget);
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -211,6 +251,116 @@ function start(): void {
     animStartMs = performance.now();
     animActive = true;
     animFrameId = requestAnimationFrame(animateExplode);
+  }
+
+  /**
+   * Write the Tour camera pose for the current elapsed time into tourPose and ask for a draw.
+   * Returns false when the Tour has reached its end. Allocates nothing.
+   */
+  function writeTourFrame(): boolean {
+    const tour = tourData;
+    if (tour === null) return false;
+    let frame: number;
+    if (tourReduced) {
+      // Reduced motion: one jump per Part, held for TOUR_REDUCED_MOTION_HOLD_MS (Requirements 16.10, 22.5).
+      if (reducedMotionHasEnded(tourElapsedMs, tour.partIds.length)) return false;
+      frame = reducedMotionFrame(reducedMotionPartIndex(tourElapsedMs));
+    } else {
+      if (tourHasEnded(tourElapsedMs, tour.baked.frameCount)) return false;
+      frame = tourFrameAtElapsed(tourElapsedMs);
+    }
+    readTourPose(tour.baked, frame, tourPose);
+    stage.requestRender();
+    return true;
+  }
+
+  // Created once. Time is added only while the status is 'playing', so Pause holds the frame.
+  const tourTick = (now: number): void => {
+    if (state.tour.status !== 'playing') return;
+    tourElapsedMs += Math.max(0, now - tourLastMs);
+    tourLastMs = now;
+    try {
+      if (!writeTourFrame()) {
+        endTour();
+        return;
+      }
+    } catch (error) {
+      failTour(error);
+      return;
+    }
+    tourRafId = requestAnimationFrame(tourTick);
+  };
+
+  /** Stop or end the Tour: cut back to the saved orbit angle and Zoom_Value (Requirement 16.6). */
+  function endTour(): void {
+    cancelAnimationFrame(tourRafId);
+    state = stopTour(state);
+    tourData = null;
+    stage.setTourPose(null);
+    stage.setView(state);
+    layout.setControls(state);
+  }
+
+  function failTour(error: unknown): void {
+    const detail = error instanceof Error ? error.message : String(error);
+    endTour();
+    layout.setMessage(
+      `The Tour stopped because of an error (${detail}). Your earlier view is back. Press Tour to try again, or reload the page if it keeps happening.`,
+    );
+  }
+
+  /** Tour button: explode and position go to 0, then a cut to the first Tour pose (Requirement 16.2). */
+  function startTourAction(): void {
+    if (!baked.ok || state.tour.status !== 'idle') return;
+    const tour = baked.tours.get(state.machine);
+    if (tour === undefined) {
+      layout.setMessage(
+        'The Tour for this Machine is not available. Reload the page to try again. The rest of the app still works.',
+      );
+      return;
+    }
+    layout.setMessage('');
+    cancelExplodeAnimation();
+    explodeTarget = 0;
+    state = startTour(state);
+    if (placer !== null) placer.placeAtAmount(0);
+    tourData = tour;
+    tourElapsedMs = 0;
+    tourReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    try {
+      writeTourFrame();
+    } catch (error) {
+      failTour(error);
+      return;
+    }
+    stage.setTourPose(tourPose);
+    layout.setControls(state);
+    tourLastMs = performance.now();
+    tourRafId = requestAnimationFrame(tourTick);
+  }
+
+  /** Pause and Resume share one button. A paused Tour draws no frames and adds no time. */
+  function toggleTourPause(): void {
+    if (state.tour.status === 'playing') {
+      state = pauseTour(state);
+      cancelAnimationFrame(tourRafId);
+    } else if (state.tour.status === 'paused') {
+      state = resumeTour(state);
+      tourLastMs = performance.now();
+      tourRafId = requestAnimationFrame(tourTick);
+    }
+    layout.setControls(state);
+  }
+
+  /** Switch the Look, store it (failures are silent, Requirement 17.6) and recolour everything. */
+  function toggleLook(): void {
+    state = setLook(state, state.look === 'X_Ray_Skeleton' ? 'Clean_Engineering' : 'X_Ray_Skeleton');
+    saveLook(state.look);
+    if (model !== null) model.setLook(state.look);
+    if (shells !== null) shells.setLook(state.look);
+    applySceneBackground(stage.scene, state.look);
+    layout.setControls(state);
+    redraw();
   }
 
   /** Show the first-use hint for a mode once, and remember that it was seen (Requirement 21.4). */
@@ -234,6 +384,11 @@ function start(): void {
   document.addEventListener('keydown', (event) => {
     const action = keyToAction(event, activeElementKind(document.activeElement));
     if (action === null) return;
+    // While a Tour plays or is paused, the keys that change the view do nothing (Requirement 16.11).
+    if (tourLocked() && action !== 'toggle-mode' && action !== 'clear-selection') {
+      event.preventDefault();
+      return;
+    }
     switch (action) {
       case 'toggle-mode':
         if (!event.repeat) switchMode();
@@ -297,6 +452,7 @@ function start(): void {
   canvas.addEventListener('pointermove', (event) => {
     tracker.move(event.clientX, event.clientY);
     if (!tracker.active) return;
+    if (tourLocked()) return; // a click still selects; a drag does nothing during the Tour
     if (!dragging) {
       if (Math.hypot(event.clientX - pressX, event.clientY - pressY) <= CLICK_THRESHOLD_PX) return;
       dragging = true;
@@ -326,6 +482,7 @@ function start(): void {
     'wheel',
     (event) => {
       event.preventDefault();
+      if (tourLocked()) return;
       commit(setZoom(state, zoomWheelStep(state.zoom, event.deltaY)));
     },
     { passive: false },

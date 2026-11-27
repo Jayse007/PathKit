@@ -980,6 +980,11 @@
         "executionId": "c38b90e6-6d70-44d0-838c-925881a502c6",
         "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
         "timestamp": 1795796416803
+      },
+      {
+        "executionId": "cf2013f5-fe39-4a35-bd61-06b286dc5976",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795797121560
       }
     ],
     "20.5 User checkpoint: try the controls": [
@@ -992,6 +997,16 @@
         "executionId": "94cc7db7-e0a5-48e4-ac98-8219732a524d",
         "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
         "timestamp": 1795784032148
+      },
+      {
+        "executionId": "fcee39a0-3eea-4221-9e2c-b41aa14fda7a",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795797142123
+      },
+      {
+        "executionId": "529746b3-33f3-4411-a266-dcf86cc9ca7d",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795797721262
       }
     ],
     "20.6 Tour, Look toggle and About wiring": [
@@ -1004,6 +1019,16 @@
         "executionId": "94cc7db7-e0a5-48e4-ac98-8219732a524d",
         "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
         "timestamp": 1795784032440
+      },
+      {
+        "executionId": "c16783d0-885a-480b-ba76-8606ec9e17b7",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795797761870
+      },
+      {
+        "executionId": "d5c3dc82-d1e3-49c8-b21d-8b510596f803",
+        "chatSessionId": "sess_c94c38e3-8bb0-41f9-9fcd-bc44acd0d70d",
+        "timestamp": 1795798579361
       }
     ],
     "20.7 User checkpoint: try the Tour, the Look toggle and the About panel": [

@@ -2,7 +2,10 @@
 // Inspector on the right, Control_Bar at the bottom, Motion_Check as a small region.
 // DOM only. All text is set with textContent (no HTML parsing). Not unit tested (no browser in the tests).
 import type { Catalogue, MachineId, PartEntry } from '../data/catalogue-types.js';
+import { TOUR_LOCKED_LABEL } from '../logic/tour-playback.js';
+import { ABOUT_LINES, ABOUT_TITLE } from './about-text.js';
 import { EMPTY_INSPECTOR_TEXT, inspectorContent, SAMPLE_DATA_LABEL } from './inspector-text.js';
+import type { Look } from './storage.js';
 import { buildThumbnail } from './thumbnails.js';
 
 export interface Layout {
@@ -21,6 +24,8 @@ export interface Layout {
   setControls(view: ControlsView): void;
   /** Show a one-line hint under the controls (empty text hides it). */
   setHint(text: string): void;
+  /** Show an error under the controls. It says what went wrong and what to do (empty text hides it). */
+  setMessage(text: string): void;
 }
 
 /** The part of the app state the Control_Bar shows. */
@@ -29,6 +34,8 @@ export interface ControlsView {
   readonly orbitAngleDeg: number;
   readonly zoom: number;
   readonly explode: number;
+  readonly look: Look;
+  readonly tour: { readonly status: 'idle' | 'playing' | 'paused' };
 }
 
 export interface LayoutHandlers {
@@ -43,6 +50,11 @@ export interface LayoutHandlers {
   /** Explode slider moved: 0 to 100. */
   onExplodeSlider(percent: number): void;
   onResetPosition(): void;
+  onTour(): void;
+  /** The Pause button; it reads Resume while the Tour is paused. */
+  onTourPause(): void;
+  onTourStop(): void;
+  onLookToggle(): void;
 }
 
 /** Visible label text with the key hint beside it (Requirements 10.6, 21.2). */
@@ -52,6 +64,12 @@ export const CONTROL_LABELS = {
   zoom: 'Zoom (wheel, or keys + \u2212)',
   explode: 'Explode (key E)',
   reset: 'Reset position (key R)',
+  tour: 'Tour',
+  tourPause: 'Pause tour',
+  tourResume: 'Resume tour',
+  tourStop: 'Stop tour',
+  look: 'Look',
+  about: 'About',
   gestures: 'Gestures (not available yet)',
 } as const;
 
@@ -163,6 +181,61 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
   resetButton.addEventListener('click', () => handlers.onResetPosition());
   controlRow.appendChild(resetButton);
 
+  // Tour controls (Requirement 16.1, 16.4): Tour is always shown; Pause and Stop show while a Tour is not idle.
+  const tourGroup = make(doc, 'div', { className: 'control tour-group' });
+  tourGroup.setAttribute('role', 'group');
+  tourGroup.setAttribute('aria-label', 'Tour');
+  const tourButtons = make(doc, 'div', { className: 'control-row-inline' });
+  const tourButton = make(doc, 'button', { id: 'tour-button', className: 'control-button', text: CONTROL_LABELS.tour });
+  tourButton.type = 'button';
+  tourButton.addEventListener('click', () => handlers.onTour());
+  const pauseButton = make(doc, 'button', { id: 'tour-pause', className: 'control-button', text: CONTROL_LABELS.tourPause });
+  pauseButton.type = 'button';
+  pauseButton.hidden = true;
+  pauseButton.addEventListener('click', () => handlers.onTourPause());
+  const stopButton = make(doc, 'button', { id: 'tour-stop', className: 'control-button', text: CONTROL_LABELS.tourStop });
+  stopButton.type = 'button';
+  stopButton.hidden = true;
+  stopButton.addEventListener('click', () => handlers.onTourStop());
+  tourButtons.appendChild(tourButton);
+  tourButtons.appendChild(pauseButton);
+  tourButtons.appendChild(stopButton);
+  tourGroup.appendChild(tourButtons);
+  // Visible label while the Tour plays (Requirement 16.11). It is text, so it does not rely on colour.
+  const lockedLabel = make(doc, 'span', { id: 'tour-locked-label', className: 'control-readout', text: TOUR_LOCKED_LABEL });
+  lockedLabel.hidden = true;
+  tourGroup.appendChild(lockedLabel);
+  controlRow.appendChild(tourGroup);
+
+  // Look toggle (Requirement 17.1): the button names the current Look and says what a press does.
+  const lookButton = make(doc, 'button', { id: 'look-toggle', className: 'control-button' });
+  lookButton.type = 'button';
+  lookButton.addEventListener('click', () => handlers.onLookToggle());
+  controlRow.appendChild(lookButton);
+
+  // About button (Requirement 24.10) and the About_Panel it opens.
+  const aboutButton = make(doc, 'button', { id: 'about-button', className: 'control-button', text: CONTROL_LABELS.about });
+  aboutButton.type = 'button';
+  aboutButton.setAttribute('aria-expanded', 'false');
+  aboutButton.setAttribute('aria-controls', 'about-panel');
+  controlRow.appendChild(aboutButton);
+
+  const aboutPanel = make(doc, 'section', { id: 'about-panel', className: 'about-panel', label: ABOUT_TITLE });
+  aboutPanel.hidden = true;
+  aboutPanel.appendChild(make(doc, 'h2', { text: ABOUT_TITLE }));
+  for (const line of ABOUT_LINES) aboutPanel.appendChild(make(doc, 'p', { text: line }));
+  const aboutClose = make(doc, 'button', { id: 'about-close', className: 'control-button', text: 'Close' });
+  aboutClose.type = 'button';
+  aboutPanel.appendChild(aboutClose);
+  function setAboutOpen(open: boolean): void {
+    aboutPanel.hidden = !open;
+    aboutButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) aboutClose.focus();
+    else aboutButton.focus();
+  }
+  aboutButton.addEventListener('click', () => setAboutOpen(aboutPanel.hidden));
+  aboutClose.addEventListener('click', () => setAboutOpen(false));
+
   // The Gestures toggle is shown disabled while Tier B is locked.
   const gesturesButton = make(doc, 'button', { id: 'gestures-toggle', className: 'control-button', text: CONTROL_LABELS.gestures });
   gesturesButton.type = 'button';
@@ -172,15 +245,21 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
   const hintLine = make(doc, 'p', { id: 'control-hint', className: 'muted' });
   hintLine.setAttribute('role', 'status');
   hintLine.hidden = true;
+  const messageLine = make(doc, 'p', { id: 'control-message', className: 'control-message' });
+  messageLine.setAttribute('role', 'alert');
+  messageLine.hidden = true;
   controlBar.appendChild(controlRow);
   controlBar.appendChild(hintLine);
+  controlBar.appendChild(messageLine);
 
   shell.appendChild(left);
   shell.appendChild(stageHost);
+  shell.appendChild(aboutPanel);
   shell.appendChild(inspector);
   shell.appendChild(controlBar);
   root.appendChild(shell);
 
+  let lastTourStatus: 'idle' | 'playing' | 'paused' = 'idle';
   const buttons = new Map<string, HTMLButtonElement>();
   const panels = new Map<string, HTMLElement>();
 
@@ -281,11 +360,46 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
     zoomControl.readout.textContent = `${Math.round(view.zoom * 100)}%`;
     explodeControl.input.value = String(view.explode);
     explodeControl.readout.textContent = `${Math.round(view.explode)}%`;
+
+    // Look button: names the current Look and what a press does.
+    const xray = view.look === 'X_Ray_Skeleton';
+    lookButton.textContent = `${CONTROL_LABELS.look}: ${xray ? 'X-ray skeleton' : 'Clean engineering'} (press for ${xray ? 'Clean engineering' : 'X-ray skeleton'})`;
+    lookButton.setAttribute('aria-pressed', xray ? 'false' : 'true');
+
+    // Tour controls. The orbit, zoom, explode and move controls are disabled while the Tour plays and also
+    // while it is paused: the state accepts them when paused, but the Stage still shows the Tour camera,
+    // so a change would not be visible. The locked label shows with them.
+    const status = view.tour.status;
+    const locked = status !== 'idle';
+    orbitControl.input.disabled = locked;
+    zoomControl.input.disabled = locked;
+    explodeControl.input.disabled = locked;
+    resetButton.disabled = locked;
+    lockedLabel.hidden = !locked;
+    tourButton.disabled = status !== 'idle';
+    pauseButton.hidden = status === 'idle';
+    stopButton.hidden = status === 'idle';
+    pauseButton.textContent = status === 'paused' ? CONTROL_LABELS.tourResume : CONTROL_LABELS.tourPause;
+    // A disabled or hidden button loses focus, so hand it to the button that takes over.
+    if (status !== lastTourStatus) {
+      const active = doc.activeElement;
+      const onTourControl = active === tourButton || active === pauseButton || active === stopButton || active === doc.body;
+      if (onTourControl) {
+        if (status !== 'idle' && lastTourStatus === 'idle') pauseButton.focus();
+        else if (status === 'idle') tourButton.focus();
+      }
+      lastTourStatus = status;
+    }
   }
 
   function setHint(text: string): void {
     hintLine.textContent = text;
     hintLine.hidden = text === '';
+  }
+
+  function setMessage(text: string): void {
+    messageLine.textContent = text;
+    messageLine.hidden = text === '';
   }
 
   return {
@@ -298,5 +412,6 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
     setMotionCheck,
     setControls,
     setHint,
+    setMessage,
   };
 }

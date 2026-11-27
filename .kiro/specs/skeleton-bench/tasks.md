@@ -292,13 +292,13 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 20.3 User checkpoint: view the layout, the Inspector and the Parts_List
     - The User views the layout, the Inspector and the Parts_List in a browser in their own way and reports problems. Kiro states what was not tested. Checks: open a Part: its details open under the button and the button is at the top of the Inspector; scroll up to see the earlier Parts; click the open Part: it closes; open the last Part: its button still reaches the top; click a Part: it is selected and its details open; click empty space: the selection clears and the details close; drag on empty space: the Machine rotates and the selection stays.
     - _Requirements: 21.3, 37.1_
-  - [-] 20.4 Controls
+  - [x] 20.4 Controls
     - Rotate / Move toggle (M), orbit scrub, zoom slider, keys and wheel, explode slider and key E (600 ms animation, jump under reduced motion), Reset position and key R, arrow keys per mode, key hints beside every control, "hint seen" flags. Gestures toggle absent or disabled with a label.
     - _Requirements: 10.1, 10.3, 10.6, 11.1, 12.1, 12.3, 12.5, 12.8, 13.1, 20.2, 20.3, 20.5, 21.2, 21.4_
-  - [ ] 20.5 User checkpoint: try the controls
+  - [x] 20.5 User checkpoint: try the controls
     - The User tries the controls in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
-  - [ ] 20.6 Tour, Look toggle and About wiring
+  - [-] 20.6 Tour, Look toggle and About wiring
     - Tour with Pause and Stop wired to the state; Look toggle stored in try/catch; About_Panel access from the main screen; error messages that say what to do.
     - _Requirements: 17.5, 17.7, 21.5, 16.1 to 16.11, 22.5_
   - [ ] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel

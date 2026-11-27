@@ -13,7 +13,7 @@ import {
   WebGLRenderer,
   type LineBasicMaterial,
 } from 'three';
-import type { BakedData } from '../pathkit-api.js';
+import type { BakedData, OutBuffer } from '../pathkit-api.js';
 import { blendCamera, createCameraBlender } from '../pathkit/camera-blend.js';
 import { angleToFrame } from '../logic/frame-mapper.js';
 import { fractionToPixels } from '../logic/drag-range.js';
@@ -41,6 +41,11 @@ export interface Stage {
   readonly canvas: HTMLCanvasElement;
   /** Store a new view and schedule one draw. Allocates nothing. */
   setView(view: StageView): void;
+  /**
+   * Draw from a Tour pose instead of the orbit and zoom (null goes back to them). The caller keeps the buffer,
+   * changes it in place and calls requestRender. The view offset is ignored while a pose is set.
+   */
+  setTourPose(pose: OutBuffer | null): void;
   /** Schedule one draw (for example after a model or Look change). Allocates nothing. */
   requestRender(): void;
   /** Stop the loop, release the renderer and remove the canvas. */
@@ -109,6 +114,7 @@ export function createStage(container: HTMLElement, laps: readonly BakedData[]):
   let offsetY = 0;
   let width = 1;
   let height = 1;
+  let tourPose: OutBuffer | null = null;
   let rafId = 0;
   let pending = false;
   let disposed = false;
@@ -123,11 +129,17 @@ export function createStage(container: HTMLElement, laps: readonly BakedData[]):
   // Draws one picture. No allocation: blendCamera writes into the preallocated blender,
   // and set() / setViewOffset() change existing objects.
   function draw(): void {
-    blendCamera(laps, angleToFrame(orbitAngleDeg), zoom, blender);
-    camera.position.set(blender.position.x, blender.position.y, blender.position.z);
-    camera.quaternion.set(blender.rotation.x, blender.rotation.y, blender.rotation.z, blender.rotation.w);
+    const pose = tourPose;
+    if (pose !== null) {
+      camera.position.set(pose.position.x, pose.position.y, pose.position.z);
+      camera.quaternion.set(pose.rotation.x, pose.rotation.y, pose.rotation.z, pose.rotation.w);
+    } else {
+      blendCamera(laps, angleToFrame(orbitAngleDeg), zoom, blender);
+      camera.position.set(blender.position.x, blender.position.y, blender.position.z);
+      camera.quaternion.set(blender.rotation.x, blender.rotation.y, blender.rotation.z, blender.rotation.w);
+    }
     camera.updateMatrixWorld(true);
-    if (offsetX === 0 && offsetY === 0) {
+    if (pose !== null || (offsetX === 0 && offsetY === 0)) {
       camera.clearViewOffset();
     } else {
       // Spike S4: shifting the sub-window by -d moves the picture by +d.
@@ -165,6 +177,11 @@ export function createStage(container: HTMLElement, laps: readonly BakedData[]):
     requestRender();
   }
 
+  function setTourPose(pose: OutBuffer | null): void {
+    tourPose = pose;
+    requestRender();
+  }
+
   const observer = new ResizeObserver(() => {
     applySize();
     requestRender();
@@ -186,6 +203,6 @@ export function createStage(container: HTMLElement, laps: readonly BakedData[]):
 
   return {
     ok: true,
-    stage: { scene, camera, machineGroup, canvas, setView, requestRender, dispose },
+    stage: { scene, camera, machineGroup, canvas, setView, setTourPose, requestRender, dispose },
   };
 }

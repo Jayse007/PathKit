@@ -444,3 +444,12 @@
 - Broke: nothing known. Nothing has been run (no terminal).
 - Not run: `npm.cmd test` (expected 27 files, 282 tests) and `npx tsc --noEmit -p .` (forbidden by project rules). Not tested: the DOM and pointer, key and wheel wiring, the animation, reduced motion, the look, WebGL, view offset, clicking.
 - PathKit feature used: none new (Part placement still reads baked Part scenes; the camera still reads the baked laps).
+
+## Task 20.6: Tour, Look toggle and About wiring
+
+- Done: Tour, Pause/Resume and Stop buttons wired to `startTour`/`pauseTour`/`resumeTour`/`stopTour`. A frame loop in `src/main.ts` adds time only while playing, reads the baked Tour with `readTourPose` and draws it through the new `stage.setTourPose` (the stage uses the pose instead of the orbit blend; no allocation per frame). The Tour ends or stops with a cut back to the saved view. Reduced motion jumps one Part per hold. Switching Machine stops the Tour. A Look button stores the Look with `saveLook` (silent on failure), recolours the model, shells and background. An About button opens an About_Panel (`src/ui/about-text.ts`, four true limits only; Task 22.1 writes the full list). Error line (`layout.setMessage`) says what failed and what to do. Files: main.ts, ui/layout.ts, ui/about-text.ts, render/stage.ts, index.html (styles).
+- Decisions where the spec was silent: controls are locked while the Tour is playing and also while paused (the state accepts changes when paused, but the Stage still shows the Tour camera); the mode toggle and key M stay active; a click still selects during the Tour; the reduced-motion setting is read when the Tour starts.
+- Broke: nothing known. Not run (no terminal). No new tests: the wiring is DOM and WebGL code.
+- Kiro got wrong: nothing known yet.
+- PathKit features used: `followPath` and `aimAt` Tour baked earlier, read with `evaluateEntity`; `motionLinter` result shown by existing Motion_Check.
+- Not tested: the look, WebGL, view offset, clicking, load time, the Tour animation in a browser, focus movement between the Tour buttons, the About_Panel layout. `npx tsc --noEmit -p .` was NOT run.

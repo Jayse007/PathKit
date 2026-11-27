@@ -112,6 +112,14 @@ describe('step', () => {
     expect(second.frame).toBe(1);
     expect(second.accumulatorMs).toBeCloseTo(6.6667, 3);
   });
+
+  it('144 ticks of 1000 / 144 ms (one second on a 144 Hz screen) advance exactly 30 frames', () => {
+    // 144 ticks x 6.9444 ms = 1000 ms = 30 frames at 30 fps. Without PLAYBACK_FRAME_EPSILON the running total comes out a hair under 30 frames and the result is frame 29.
+    let state = playPlayback(initialPlaybackState(), 1000);
+    for (let i = 0; i < 144; i++) state = stepPlayback(state, 1000 / 144, 1000);
+    expect(state.frame).toBe(30);
+    expect(state.accumulatorMs).toBe(0);
+  });
 });
 
 describe('catch-up cap', () => {
