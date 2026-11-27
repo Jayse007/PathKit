@@ -274,6 +274,21 @@ export class CameraRig {
     return evaluateEntity(baked, cameraId, displayedFrame, out);
   }
 
+  /**
+   * Writes the subject's baked position and rotation at `displayedFrame` into `out` and returns `out`.
+   * Uses the same remap as the camera targets, then calls evaluateEntity on the subject bake only.
+   * Throws when no bake has run yet, or when the frame is not a whole number of 0 or more (a caller
+   * defect). A frame past the shot length is not an error: the subject repeats its lap.
+   * No allocation on the success path.
+   */
+  evaluateSubject(displayedFrame: number, out: OutBuffer): OutBuffer {
+    const baked = this.subjectBaked;
+    if (baked === null) {
+      throw new Error('CameraRig.evaluateSubject: the subject has not been baked yet');
+    }
+    return evaluateEntity(baked, SUBJECT_ENTITY_ID, remap(displayedFrame), out);
+  }
+
   /** The main camera's findings from the last good bake. Findings for other cameras are dropped. */
   findingsForMain(): Finding[] {
     return this.mainFindings;

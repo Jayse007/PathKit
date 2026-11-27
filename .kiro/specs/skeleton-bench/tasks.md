@@ -240,7 +240,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - User answers: (1) starts in X_Ray_Skeleton: yes; (2) X-ray background, translucent ivory Parts, cyan outlines, inner Parts visible: yes; (3) outlines stay on explode, orbit and zoom and turn with the impeller: yes; (4) Clean_Engineering background, matte grey, no outlines: yes, but assembled Parts were all one grey; (5) Look persists after reload: yes; (6) casing recognisable but the spiral is subtle; impeller recognisable.
     - Decisions: Clean_Engineering uses three greys A #7d8793, B #5f6974, C #444e59 (contrast against #eceff1: 3.16, 4.84, 7.33), assigned by catalogue index mod 3 (`cleanFillIndex`); volute radius is now 0.165 + 0.085 * (a / 2PI). Test: `test/looks.test.ts`.
     - _Requirements: 37.1, 37.2_
-  - [x] 17.7 Picking and shells
+  - [-] 17.7 Picking and shells
     - Raycast on meshes only; the click rule (5 px); selection shell and focus shell.
     - _Requirements: 14.1, 14.6, 14.7, 14.9_
   - [ ] 17.8 User checkpoint: click and focus a Part

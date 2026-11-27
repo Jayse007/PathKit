@@ -8,8 +8,10 @@ import { CameraRig } from './view/camera-rig.js';
 import type { RigSettings } from './view/camera-rig.js';
 import { createGuideToggle, createGuidesOverlay } from './view/guides-view.js';
 import { createMainView } from './view/main-view.js';
+import { createSubjectView } from './view/subject-view.js';
 
 const CAMERA_ID = 'cam-1';
+const DISPLAYED_FRAME = 0;
 
 function start(): void {
   const stage = document.getElementById('stage');
@@ -68,8 +70,12 @@ function start(): void {
     return;
   }
 
+  const subjectView = createSubjectView(settings.road.points);
+  view.addObject(subjectView.object);
+  subjectView.showFrame(rig, DISPLAYED_FRAME);
+
   view.setLensMm(sample.placement.lensMm);
-  view.showFrame(rig, CAMERA_ID, 0);
+  view.showFrame(rig, CAMERA_ID, DISPLAYED_FRAME);
 
   lensSelect.addEventListener('change', () => {
     view.setLensMm(Number(lensSelect.value));

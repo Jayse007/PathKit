@@ -1,13 +1,14 @@
 // Selection shell and focus shell (Task 17.7, Requirements 14.7 and 14.9, decision 18).
 // An inverted hull: for each mesh of a Part, a back-face copy that shares the geometry, scaled about the
-// geometry's own centre (SELECT_SHELL_SCALE 1.05 for selection, FOCUS_SHELL_SCALE 1.03 for focus) and drawn in
+// geometry's own centre, per axis, so the rim has a fixed width (SELECT_SHELL_RIM_M 0.012 m for selection,
+// FOCUS_SHELL_RIM_M 0.007 m for focus; scale capped at SHELL_MAX_SCALE) and drawn in
 // the accent colour of the Look. Only its rim shows around the Part, so the cue is a thicker outline, not a
 // colour change alone. The shells are children of the meshes, so they move, explode and spin with them.
 // Shells carry userData.isShell and no partId, and are never in the picking list.
 // Setup allocates; setSelected, setFocused and setLook only toggle `visible` and set a colour.
 import { BackSide, Color, Mesh, MeshBasicMaterial, Vector3 } from 'three';
 import type { Object3D } from 'three';
-import { FOCUS_SHELL_SCALE, SELECT_SHELL_SCALE } from '../constants.js';
+import { FOCUS_SHELL_RIM_M, SELECT_SHELL_RIM_M, SHELL_MAX_SCALE } from '../constants.js';
 import type { Look } from '../ui/storage.js';
 import { LOOK_PALETTES } from './looks.js';
 import { collectPartMeshes } from './picking.js';
@@ -31,13 +32,22 @@ interface ShellPair {
   readonly focus: Mesh;
 }
 
-function makeShell(source: Mesh, scale: number, material: MeshBasicMaterial, centre: Vector3): Mesh {
+/** Scale of one axis for a rim of `rim` metres: min(SHELL_MAX_SCALE, 1 + rim / (size / 2)); SHELL_MAX_SCALE for size 0. */
+export function shellAxisScale(size: number, rim: number): number {
+  if (!(size > 0)) return SHELL_MAX_SCALE;
+  return Math.min(SHELL_MAX_SCALE, 1 + rim / (size / 2));
+}
+
+function makeShell(source: Mesh, rim: number, material: MeshBasicMaterial, centre: Vector3, size: Vector3): Mesh {
   const shell = new Mesh(source.geometry, material);
   shell.name = `${source.name}:shell`;
   shell.userData.isShell = true;
-  shell.scale.setScalar(scale);
-  // Scaling about the geometry centre c: p -> c + s * (p - c) = s * p + c * (1 - s).
-  shell.position.copy(centre).multiplyScalar(1 - scale);
+  const sx = shellAxisScale(size.x, rim);
+  const sy = shellAxisScale(size.y, rim);
+  const sz = shellAxisScale(size.z, rim);
+  shell.scale.set(sx, sy, sz);
+  // Scaling about the geometry centre c, per axis: p -> s * p + c * (1 - s).
+  shell.position.set(centre.x * (1 - sx), centre.y * (1 - sy), centre.z * (1 - sz));
   shell.visible = false;
   source.add(shell);
   return shell;
@@ -50,15 +60,17 @@ export function createShells(root: Object3D, initialLook: Look): Shells {
   const accent = new Color();
   const pairs: ShellPair[] = [];
   const centre = new Vector3();
+  const size = new Vector3();
 
   for (const mesh of collectPartMeshes(root)) {
     const geometry = mesh.geometry;
     if (geometry.boundingBox === null) geometry.computeBoundingBox();
     geometry.boundingBox!.getCenter(centre);
+    geometry.boundingBox!.getSize(size);
     pairs.push({
       partId: mesh.userData.partId as string,
-      select: makeShell(mesh, SELECT_SHELL_SCALE, selectMaterial, centre),
-      focus: makeShell(mesh, FOCUS_SHELL_SCALE, focusMaterial, centre),
+      select: makeShell(mesh, SELECT_SHELL_RIM_M, selectMaterial, centre, size),
+      focus: makeShell(mesh, FOCUS_SHELL_RIM_M, focusMaterial, centre, size),
     });
   }
 

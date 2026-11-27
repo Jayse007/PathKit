@@ -13,7 +13,7 @@ import type { Object3D } from 'three';
 import { createClickTracker } from '../src/logic/click-tracker.js';
 import { clientToNdc } from '../src/logic/pick-math.js';
 import { collectPartMeshes, createPicker } from '../src/render/picking.js';
-import { createShells } from '../src/render/shells.js';
+import { createShells, shellAxisScale } from '../src/render/shells.js';
 
 // Task 17.7. Three.js runs in Node here; no WebGL, no browser. Expected values are written by hand.
 
@@ -191,34 +191,35 @@ describe('selection shell and focus shell', () => {
     expect(a.children.filter((c) => c.userData.isShell === true).length).toBe(2);
   });
 
-  it('selecting a shows exactly one shell, scale 1.05, on a', () => {
+  it('selecting a shows exactly one shell, scale 1.024 (rim 0.012 on a unit box), on a', () => {
     const { root, a } = buildScene();
     const shells = createShells(root, 'X_Ray_Skeleton');
     shells.setSelected('a');
     const visible = visibleShells(root);
     expect(visible.length).toBe(1);
-    expect(visible[0]!.scale.x).toBe(1.05);
+    expect(Math.abs(visible[0]!.scale.x - 1.024)).toBeLessThan(1e-9);
     expect(visible[0]!.parent).toBe(a);
   });
 
-  it('focus uses scale 1.03 and gives way to the selection shell on the same Part', () => {
+  it('focus uses scale 1.014 and gives way to the selection shell on the same Part', () => {
     const { root } = buildScene();
     const shells = createShells(root, 'X_Ray_Skeleton');
     shells.setSelected('a');
     shells.setFocused('b');
-    expect(
-      visibleShells(root)
-        .map((s) => s.scale.x)
-        .sort(),
-    ).toEqual([1.03, 1.05]);
+    const scales = visibleShells(root)
+      .map((s) => s.scale.x)
+      .sort((p, q) => p - q);
+    expect(scales.length).toBe(2);
+    expect(Math.abs(scales[0]! - 1.014)).toBeLessThan(1e-9);
+    expect(Math.abs(scales[1]! - 1.024)).toBeLessThan(1e-9);
     shells.setFocused('a');
     const onlySelect = visibleShells(root);
     expect(onlySelect.length).toBe(1);
-    expect(onlySelect[0]!.scale.x).toBe(1.05);
+    expect(Math.abs(onlySelect[0]!.scale.x - 1.024)).toBeLessThan(1e-9);
     shells.setSelected(null);
     const onlyFocus = visibleShells(root);
     expect(onlyFocus.length).toBe(1);
-    expect(onlyFocus[0]!.scale.x).toBe(1.03);
+    expect(Math.abs(onlyFocus[0]!.scale.x - 1.014)).toBeLessThan(1e-9);
     shells.setFocused(null);
     expect(visibleShells(root).length).toBe(0);
   });
@@ -233,7 +234,7 @@ describe('selection shell and focus shell', () => {
     expect(hex()).toBe('1f6feb');
   });
 
-  it('scales about the geometry centre: a box centred at x = 2 gets a shell offset of 2 * (1 - 1.05) = -0.1', () => {
+  it('scales about the geometry centre: a box centred at x = 2 gets a shell offset of 2 * (1 - 1.024) = -0.048', () => {
     const root = new Group();
     const geometry = new BoxGeometry(1, 1, 1);
     geometry.translate(2, 0, 0);
@@ -243,8 +244,50 @@ describe('selection shell and focus shell', () => {
     const shells = createShells(root, 'Clean_Engineering');
     shells.setSelected('off');
     const shell = visibleShells(root)[0]!;
-    expect(Math.abs(shell.position.x - -0.1)).toBeLessThan(1e-9);
+    expect(Math.abs(shell.position.x - -0.048)).toBeLessThan(1e-9);
     expect(Math.abs(shell.position.y)).toBeLessThan(1e-12);
+  });
+
+  it('shellAxisScale: size 1 gives 1.024 (select) and 1.014 (focus); 0.02 gives 2.2; 0.002 is capped at 3; size 0 gives 3', () => {
+    expect(Math.abs(shellAxisScale(1, 0.012) - 1.024)).toBeLessThan(1e-9);
+    expect(Math.abs(shellAxisScale(1, 0.007) - 1.014)).toBeLessThan(1e-9);
+    expect(Math.abs(shellAxisScale(0.02, 0.012) - 2.2)).toBeLessThan(1e-9);
+    expect(shellAxisScale(0.002, 0.012)).toBe(3);
+    expect(shellAxisScale(0, 0.012)).toBe(3);
+  });
+
+  it('a box thin on one axis (0.02) gets scale 2.2 on that axis and 1.024 on the others', () => {
+    const root = new Group();
+    const mesh = new Mesh(new BoxGeometry(1, 0.02, 1), new MeshBasicMaterial());
+    mesh.userData.partId = 'thin';
+    root.add(mesh);
+    createShells(root, 'X_Ray_Skeleton').setSelected('thin');
+    const shell = visibleShells(root)[0]!;
+    expect(Math.abs(shell.scale.x - 1.024)).toBeLessThan(1e-9);
+    expect(Math.abs(shell.scale.y - 2.2)).toBeLessThan(1e-9);
+    expect(Math.abs(shell.scale.z - 1.024)).toBeLessThan(1e-9);
+  });
+
+  it('a box thinner than the cap allows (0.002 on y) is capped at scale 3 on that axis', () => {
+    const root = new Group();
+    const mesh = new Mesh(new BoxGeometry(1, 0.002, 1), new MeshBasicMaterial());
+    mesh.userData.partId = 'film';
+    root.add(mesh);
+    createShells(root, 'X_Ray_Skeleton').setSelected('film');
+    expect(visibleShells(root)[0]!.scale.y).toBe(3);
+  });
+
+  it('boxes of size 0.04 and 0.4 get the same rim width: (scale - 1) * size / 2 = 0.012', () => {
+    for (const size of [0.04, 0.4]) {
+      const root = new Group();
+      const mesh = new Mesh(new BoxGeometry(size, size, size), new MeshBasicMaterial());
+      mesh.userData.partId = 'p';
+      root.add(mesh);
+      createShells(root, 'X_Ray_Skeleton').setSelected('p');
+      const shell = visibleShells(root)[0]!;
+      const rim = ((shell.scale.x - 1) * size) / 2;
+      expect(Math.abs(rim - 0.012)).toBeLessThan(1e-9);
+    }
   });
 
   it('both visible shells (selection and focus) take the accent of the Look, and follow a Look change', () => {

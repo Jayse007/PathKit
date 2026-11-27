@@ -6,6 +6,7 @@
 // render callback and the camera are made once in createMainView.
 
 import { GridHelper, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import type { Object3D } from 'three';
 import type { OutBuffer } from '../logic/pathkit.js';
 import { ASPECT_RATIO, DEVICE_PIXEL_RATIO_CAP, FILM_GAUGE } from '../logic/constants.js';
 import type { CameraRig } from './camera-rig.js';
@@ -24,6 +25,8 @@ export interface MainView {
   setLensMm(focalLengthMm: number): void;
   /** Evaluate the camera at a displayed frame through the rig, place the camera, and ask for a render. */
   showFrame(rig: CameraRig, cameraId: string, displayedFrame: number): void;
+  /** Add a Three.js object (for example a Group) to the stage scene. Does not ask for a render. */
+  addObject(object: Object3D): void;
   /** Ask for one render on the next animation frame. Calls before it runs are merged. */
   requestRender(): void;
   /** Stop observing and release the renderer. */
@@ -128,6 +131,9 @@ export function createMainView(container: HTMLElement): MainView | null {
       camera.position.set(out.position.x, out.position.y, out.position.z);
       camera.quaternion.set(out.rotation.x, out.rotation.y, out.rotation.z, out.rotation.w);
       requestRender();
+    },
+    addObject(object: Object3D): void {
+      scene.add(object);
     },
     requestRender,
     dispose(): void {

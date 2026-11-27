@@ -335,7 +335,7 @@ There are 20 scenes (Pump 8, Heat_Exchanger 6, Desk_Lamp 6). Each is 5,280 B (tr
 - Every Part is a named Three.js Group or Mesh (`part:<id>`) with `userData.partId`. The Heat_Exchanger tube bundle is one `InstancedMesh` with that tag. Edge lines (`EdgesGeometry`) and the selection shell are excluded from picking (only meshes are tested).
 - On a click, the pointer position is converted to normalised device coordinates from the canvas rectangle. A Three.js `Raycaster` picks the first mesh hit that has a `partId`. Because `setViewOffset` changes the projection matrix, the same conversion should still give the right ray. This is part of the manual S4 check ("clicking a Part").
 - **Keyboard path.** A visible Parts list (buttons in catalogue order, in the Inspector area) is the Tab and Enter path (Requirements 14.2 and 14.8). Focus on a button highlights that Part in 3D with a small shell. Enter or Space selects it. The list takes the place of tabbing to objects inside the canvas (change list).
-- **Selection cue besides colour (decision 18).** An inverted-hull "shell" (a back-face clone of each mesh of the Part, scaled `SELECT_SHELL_SCALE` = 1.05, in the accent colour of the Look), because Three.js line width is not reliable. Focus uses `FOCUS_SHELL_SCALE` = 1.03. The Inspector also shows the name.
+- **Selection cue besides colour (decision 18).** An inverted-hull "shell" (a back-face clone of each mesh of the Part, scaled per axis so that its rim is a fixed width of `SELECT_SHELL_RIM_M` = 0.012 m, in the accent colour of the Look), because Three.js line width is not reliable. The per-axis scale is `min(SHELL_MAX_SCALE, 1 + rim / (size / 2))` with `SHELL_MAX_SCALE` = 3, and 3 for an axis of size 0; a fixed width replaces a scale factor because a factor of 1.05 gave a rim of about 1 mm on small Parts (bolts, seal). Focus uses `FOCUS_SHELL_RIM_M` = 0.007 m. The Inspector also shows the name.
 - **Shortcuts** (M, E, R, +, -, arrow keys) are handled in one place and ignored when focus is in a text field, select or range slider (Requirement 12.9).
 - **Input steps.** `ORBIT_DEG_PER_PIXEL` = 0.5 (720 px is one lap). Arrow keys in Rotate mode step `ORBIT_KEY_STEP_FRAMES` = 5. A wheel event steps `ZOOM_WHEEL_STEP` = 0.05 (sign of `deltaY`). Keys + and - step `ZOOM_KEY_STEP` = 0.1.
 - **Explode input.** The slider is direct. Key E toggles 0 and 100 with a short app-time animation (`EXPLODE_TOGGLE_MS` = 600), or a jump under reduced motion. The impeller spin is ordinary Three.js (`IMPELLER_SPIN_RAD_PER_S` = pi) and stops under reduced motion.
@@ -463,8 +463,9 @@ All live in `src/constants.ts`. "Derived" values are checked by a consistency te
 | `TOUR_RING_RADIUS` | 3.6 m |
 | `TOUR_RING_HEIGHT` | 1.5 m |
 | `TOUR_REDUCED_MOTION_HOLD_MS` | 3000 |
-| `SELECT_SHELL_SCALE` | 1.05 |
-| `FOCUS_SHELL_SCALE` | 1.03 |
+| `SELECT_SHELL_RIM_M` | 0.012 m |
+| `FOCUS_SHELL_RIM_M` | 0.007 m |
+| `SHELL_MAX_SCALE` | 3 |
 | `STORAGE_KEY_LOOK`, `STORAGE_KEY_HINT_PREFIX` | as given in the PathKit facts section |
 
 **Tier B initial values (proposals, tuned in the Gesture_Lab, not final)**
