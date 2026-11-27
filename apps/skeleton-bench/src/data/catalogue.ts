@@ -135,7 +135,7 @@ export const HEAT_EXCHANGER_PARTS: readonly PartEntry[] = [
   {
     id: 'hx-channel-head',
     name: 'Channel head',
-    job: 'An end cover that directs the tube-side fluid into and out of the tube bundle. A cover of this kind also caps the end of the tube sheet to contain that fluid, and it can give access to the tubes for inspection and cleaning.',
+    job: 'An end cover that directs the tube-side fluid into and out of the tube bundle. A head cover caps the end of the tube sheet to contain that fluid. A bonnet, a similar end cover, gives access to the tubes for inspection and cleaning.',
     material: 'A bonnet, which is a similar end cover, is typically stainless steel or carbon steel.',
     positionText: 'At an end of the shell. A bonnet is attached to the end of the shell with bolts or clamps.',
     sourceId: 'hx-channel-head',
@@ -190,7 +190,7 @@ export const HEAT_EXCHANGER_PARTS: readonly PartEntry[] = [
   {
     id: 'hx-nozzles',
     name: 'Nozzles',
-    job: 'The inlet and outlet connections for the shell-side and tube-side fluids. Each is a short pipe section with a flange on the outer end to connect to the pipework.',
+    job: 'The inlet and outlet connections for the shell-side and tube-side fluids. Each is a small pipe section with a flange on the outer end to connect to the pipework.',
     material: 'Not stated by the sources.',
     positionText: 'On both the shell side and the tube side, welded to the shell or to the bonnet end cover. The model shows them as one group on top of the shell.',
     sourceId: 'hx-nozzles',
@@ -257,7 +257,7 @@ export const DESK_LAMP_PARTS: readonly PartEntry[] = [
   {
     id: 'lamp-shade',
     name: 'Shade',
-    job: 'Surrounds the bulb and redirects its light. A cone-shaped metal shade helps direct light downward while reducing glare, which suits task lighting.',
+    job: 'Surrounds the bulb and redirects its light. A cone-shaped metal shade helps direct light downward while reducing glare, and is a popular choice for task lighting.',
     material: 'Metal shades are made of steel, brass or aluminium. Other shades are made of fabric, parchment, glass, paper or plastic.',
     positionText: 'Around the bulb, on the lamp head at the end of the arms.',
     sourceId: 'lamp-shade',

@@ -253,10 +253,10 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 18.1 Research and write the facts
     - Search for reputable sources for the six Heat_Exchanger parts and the six Desk_Lamp parts. Write `docs/sources.md` entries and the catalogue entries.
     - _Requirements: 18.2, 18.3, 19.1, 19.2, 19.3, 19.5_
-  - [ ] 18.2 User checkpoint: approve the texts
+  - [x] 18.2 User checkpoint: approve the texts
     - The User reads and approves every text and source before it is kept.
     - _Requirements: 19.4_
-  - [ ] 18.3 Build the models and scenes
+  - [-] 18.3 Build the models and scenes
     - Shape models for both Machines (the tube bundle is one `InstancedMesh` Part), named objects, Part scenes baked at load, Inventory switching.
     - _Requirements: 15.1, 15.3, 18.2, 18.3, 18.4, 18.5_
   - [ ] 18.4 Rerun the tests and User checkpoint: visual check

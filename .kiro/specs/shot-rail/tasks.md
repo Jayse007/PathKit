@@ -330,16 +330,16 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User toggles both guides in a browser in their own way, with the mouse and with T and G. Kiro states what was not tested.
     - _Requirements: 17.7, 17.8, 25.1, 25.2_
 
-- [ ] 30. Subject and road drawing
+- [x] 30. Subject and road drawing
   - [x] 30.1 Implement the car and the road in `src/view/subject-view.ts`
     - Car from boxes and cylinders only, no brand, logo or plate text, drawn offset down by `SUBJECT_CENTRE_HEIGHT` so the entity origin is the box centre. Road mesh at ground level from `ROAD_DRAW_SAMPLES` samples along the curve. The car pose comes from the baked subject at the remapped baked frame.
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.12_
-  - [~] 30.2 User checkpoint: view the car on the road
+  - [x] 30.2 User checkpoint: view the car on the road
     - The User views the car and the road in a browser in their own way and scrubs through frames (without a dev-server request from Kiro). Check the car sits on the road, faces its direction of travel, and speeds up and slows down along a lap. Kiro states what was not tested.
     - _Requirements: 3.4, 3.9, 25.1, 25.2_
 
 - [ ] 31. Stage_Overview
-  - [~] 31.1 Implement `src/view/stage-overview.ts`
+  - [-] 31.1 Implement `src/view/stage-overview.ts`
     - A small top-down view using the shared auxiliary renderer, drawing the car, the road, the camera positions and the camera rails (push-in and crane). After its render the image is copied into its own 2D canvas with `drawImage` before the shared renderer is reused.
     - _Requirements: 17.2_
   - [~] 31.2 User checkpoint: view the Stage_Overview
