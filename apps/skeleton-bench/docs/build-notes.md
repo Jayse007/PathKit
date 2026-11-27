@@ -394,3 +394,12 @@
 - Spec issue found: task 19.2 says frame counts 720, 540 and 540, but the Desk_Lamp has 7 Parts, so design.md and `TOUR_FRAMES_PER_PART` give 630. Needs the User's decision before 19.2.
 - PathKit features used: `bake`, `validateScene` (inside `bake`), `motionLinter`, `evaluateEntity`, `followPath`, `aimAt` (through the existing tour scene).
 - Not tested: everything new; also the look, WebGL, view offset, clicking, load time, bake time of the three Tours.
+
+### Task 19.2: Tour tests with the real catalogue
+
+- Done: wrote test/tour-catalogue.test.ts (7 tests) using `bakeAll()` and the real CATALOGUE. Frame counts 720, 540, 630 (typed in); `motionLinter` does not throw and returns a list for each Tour; camera at least `CAMERA_MIN_CLEARANCE_M` outside the Exploded_Box on every frame of every Tour; keyboard order per Machine checked against typed-in Part ids; slot keyframe i is at frame i * 90 + 45 and holds the rest position of Part i; `bakeTour` throws for an unknown Machine. No source changes.
+- Broke: nothing known. Not run (no terminal). Expected: 7 new tests, total 241 in 24 files.
+- Kiro assumption to check: the expected Part id order was read from catalogue.ts (Pump 8, Heat exchanger 6, Desk lamp 7 Parts). The rest positions compared against are read from the catalogue by id, not typed in.
+- Source line it should catch: in `bakeTour` (src/pathkit/bake-all.ts) swap two entries of the `rest` array before `buildTourScene(rest)`. The keyframe order test fails.
+- PathKit features used: `bake`, `evaluateEntity`, `motionLinter` (through bakeAll).
+- Not tested: the look, WebGL, view offset, clicking, load time, Tour start/stop state reset and restore (Property 19 is not in this task's list).

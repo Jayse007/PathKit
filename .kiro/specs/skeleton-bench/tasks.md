@@ -264,11 +264,11 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - _Requirements: 9.5, 35.6, 37.1_
 
 - [ ] 19. Tour for the real catalogue
-  - [-] 19.1 Bake and wire the Tours
+  - [x] 19.1 Bake and wire the Tours
     - Bake all three Tours at load; run `motionLinter`; show findings in plain words in the Motion_Check; Tour start and stop wired to the state; Pause and Stop; controls disabled with the visible label "Stop the tour to use this" while playing; reduced-motion jumps with a 3000 ms hold per Part; an error message when baking or linting fails.
     - _Requirements: 16.1 to 16.11, 22.5_
-  - [ ] 19.2 Write the tests with the real catalogue
-    - Clearance on every frame of every Tour; `motionLinter` does not throw; the Tour visits Parts in keyboard order (slot keyframes match the catalogue order); frame counts 720, 540 and 540.
+  - [-] 19.2 Write the tests with the real catalogue
+    - Clearance on every frame of every Tour; `motionLinter` does not throw; the Tour visits Parts in keyboard order (slot keyframes match the catalogue order); frame counts 720, 540 and 630.
     - Source line it should catch: reorder two Parts in a Machine's keyboard order only in the tour builder input.
     - _Requirements: 16.2, 16.5, 16.7, 35.7 (design Property 10, 19)_
 

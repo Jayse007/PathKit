@@ -350,11 +350,11 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 32.1 Implement the grid rules in `src/view/coverage-grid-rules.ts` (pure)
     - `shouldRenderGrid(mode, changed, playing, msSinceLast)`: false outside Angle mode; true on change; while playing, true at `PLAYBACK_RATE_GRID` (every 100 ms); false when nothing changed and the Timeline is stopped. `addCamera(count)`: refuses a seventh camera with a message that states the limit of 6. `selectMain(id)`: returns the clicked camera as the Main_Camera.
     - _Requirements: 7.1, 7.5, 7.8, 7.9, 7.10, 7.11_
-  - [-] 32.2 Write the grid rules tests
+  - [x] 32.2 Write the grid rules tests
     - Table over mode (Angle, Move) x changed x playing x time (0, 99, 100, 250 ms): the render decision matches a hand-written table. Adding cameras 1 to 6 works; the seventh is refused with "6" in the message and the camera list unchanged. Click on tile 3 selects `cam-3`.
     - Source line it should catch: remove the Angle-mode check, or change the grid refresh interval to 1000 / 30.
     - _Requirements: 7.1, 7.5, 7.8, 7.9, 7.10, 7.11 (design Rendering layer)_
-  - [~] 32.3 Implement the grid view in `src/view/coverage-grid.ts`
+  - [-] 32.3 Implement the grid view in `src/view/coverage-grid.ts`
     - The shared auxiliary renderer draws each tile and copies it into a per-tile 2D canvas, with the Angle_Label and Framing_Label on each tile (text, from `labels.ts` and `fill.ts`). Click or Enter on a tile makes it the Main_Camera. Renders only in Angle mode.
     - _Requirements: 7.1, 7.4, 7.5, 7.8, 7.9, 7.10_
   - [~] 32.4 User checkpoint: view the Coverage_Grid

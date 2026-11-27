@@ -7,13 +7,18 @@ import { SAMPLE_SHOTS } from './logic/samples.js';
 import { CameraRig } from './view/camera-rig.js';
 import type { RigSettings } from './view/camera-rig.js';
 import { createAuxRenderer } from './view/aux-renderer.js';
+import { createCoverageGrid } from './view/coverage-grid.js';
+import type { CoverageGrid } from './view/coverage-grid.js';
+import type { GridMode } from './view/coverage-grid-rules.js';
 import { createGuideToggle, createGuidesOverlay } from './view/guides-view.js';
 import { createMainView } from './view/main-view.js';
 import { createStageOverview } from './view/stage-overview.js';
+import type { StageOverview } from './view/stage-overview.js';
 import { createSubjectView } from './view/subject-view.js';
 
 const CAMERA_ID = 'cam-1';
 const DISPLAYED_FRAME = 0;
+const MODE: GridMode = 'angle'; // Move mode does not exist yet; the grid draws in Angle mode only
 
 function start(): void {
   const stage = document.getElementById('stage');
@@ -82,16 +87,70 @@ function start(): void {
   view.addObject(subjectView.object);
   subjectView.showFrame(rig, DISPLAYED_FRAME);
 
+  // The overview and the grid share one auxiliary renderer; each copies its image out right after it draws.
   const overviewBox = document.getElementById('overview');
-  if (overviewBox !== null) {
+  const gridBox = document.getElementById('grid');
+  let overview: StageOverview | null = null;
+  let grid: CoverageGrid | null = null;
+  let current: RigSettings = settings;
+
+  // A tile click or Enter asks for a new Main_Camera. Only the main camera can be a rail shot
+  // (scene-set.ts), so the change is refused, with a message, while any other camera is a rail shot.
+  // The rig is not touched in that case, so the app never builds an invalid camera set.
+  const onSelect = (id: string): void => {
+    if (id === current.mainCameraId) return;
+    const rail = current.cameras.find((c) => c.id !== id && (c.shotType === 'push-in' || c.shotType === 'crane'));
+    if (rail !== undefined) {
+      status.textContent =
+        `${id} cannot be the main camera yet: ${rail.id} is a ${rail.shotType} shot, and only the main camera can be a rail shot. ` +
+        `Change ${rail.id} to an orbit shot first.`;
+      return;
+    }
+    const next: RigSettings = { ...current, mainCameraId: id };
+    rig.setSettings(next);
+    const result = rig.tick();
+    if (result === null || !result.ok) {
+      status.textContent = `${id} could not be made the main camera: ${result?.message ?? 'no settings'}`;
+      rig.setSettings(current); // the pending settings must not stay on the failed ones
+      rig.tick();
+      return;
+    }
+    current = next;
+    status.textContent = '';
+    const camera = next.cameras.find((c) => c.id === id);
+    if (camera !== undefined) {
+      view.setLensMm(camera.lensMm);
+      lensSelect.value = String(camera.lensMm);
+    }
+    view.showFrame(rig, id, DISPLAYED_FRAME);
+    if (overview !== null) {
+      overview.setLayout(rig, next);
+      overview.showFrame(rig, DISPLAYED_FRAME);
+    }
+    if (grid !== null) {
+      grid.setMain(id);
+      grid.render(rig, DISPLAYED_FRAME, MODE, true, false, 0);
+    }
+  };
+
+  if (overviewBox !== null || gridBox !== null) {
     const aux = createAuxRenderer();
     if (aux.renderer === null) {
-      overviewBox.textContent = `The overview could not start: this browser could not create a WebGL context (${aux.reason}).`;
+      const text = `could not start: this browser could not create a WebGL context (${aux.reason}).`;
+      if (overviewBox !== null) overviewBox.textContent = `The overview ${text}`;
+      if (gridBox !== null) gridBox.textContent = `The grid ${text}`;
     } else {
-      const overview = createStageOverview(overviewBox, aux.renderer, settings.road.points);
-      if (overview !== null) {
-        overview.setLayout(rig, settings);
-        overview.showFrame(rig, DISPLAYED_FRAME);
+      if (overviewBox !== null) {
+        overview = createStageOverview(overviewBox, aux.renderer, settings.road.points);
+        if (overview !== null) {
+          overview.setLayout(rig, settings);
+          overview.showFrame(rig, DISPLAYED_FRAME);
+        }
+      }
+      if (gridBox !== null) {
+        grid = createCoverageGrid(gridBox, aux.renderer, settings.road.points, onSelect);
+        grid.setLayout(settings);
+        grid.render(rig, DISPLAYED_FRAME, MODE, true, false, 0);
       }
     }
   }
