@@ -2,7 +2,8 @@
 // Not the final app entry (index.html is not changed in this task).
 import { bakeLaps } from '../pathkit/laps.js';
 import { bakeParts } from '../pathkit/part-scenes.js';
-import { PUMP_PARTS } from '../data/catalogue.js';
+import { DESK_LAMP_PARTS, HEAT_EXCHANGER_PARTS, PUMP_PARTS } from '../data/catalogue.js';
+import type { PartEntry } from '../data/catalogue-types.js';
 import { createClickTracker } from '../logic/click-tracker.js';
 import {
   createInitialState,
@@ -19,7 +20,11 @@ import type { Look } from '../ui/storage.js';
 import { applySceneBackground, createLookLights } from './looks.js';
 import { createPartPlacer } from './part-placement.js';
 import { collectPartMeshes, createPicker } from './picking.js';
+import { buildDeskLampModel } from './desk-lamp-model.js';
+import { buildHeatExchangerModel } from './heat-exchanger-model.js';
+import type { MachineModel } from './model-kit.js';
 import { buildPumpModel, spinImpeller } from './pump-model.js';
+import type { PumpModel } from './pump-model.js';
 import { createShells } from './shells.js';
 import { createStage, showStageMessage } from './stage.js';
 
@@ -47,8 +52,23 @@ try {
     const stage = result.stage;
     let state: AppState = createInitialState(loadLook());
 
-    // Pump: built and baked once here. The slider only reads baked frames.
-    const model = buildPumpModel(undefined, state.look);
+    // The URL picks the machine: ?machine=pump, heat-exchanger or desk-lamp. Anything else gives the Pump.
+    const machineParam = new URLSearchParams(window.location.search).get('machine');
+    let model: MachineModel;
+    let machineParts: readonly PartEntry[];
+    let pumpModel: PumpModel | null = null;
+    if (machineParam === 'heat-exchanger') {
+      machineParts = HEAT_EXCHANGER_PARTS;
+      model = buildHeatExchangerModel(machineParts, state.look);
+    } else if (machineParam === 'desk-lamp') {
+      machineParts = DESK_LAMP_PARTS;
+      model = buildDeskLampModel(machineParts, state.look);
+    } else {
+      machineParts = PUMP_PARTS;
+      pumpModel = buildPumpModel(machineParts, state.look);
+      model = pumpModel;
+    }
+    // Built and baked once here. The slider only reads baked frames.
     stage.machineGroup.add(model.root);
     stage.scene.add(createLookLights());
     applySceneBackground(stage.scene, state.look);
@@ -73,7 +93,7 @@ try {
     const tracker = createClickTracker();
     const partsBox = el<HTMLDivElement>('parts');
     const partButtons = new Map<string, HTMLButtonElement>();
-    const partName = (id: string | null): string => PUMP_PARTS.find((p) => p.id === id)?.name ?? 'none';
+    const partName = (id: string | null): string => machineParts.find((p) => p.id === id)?.name ?? 'none';
 
     const applySelection = (): void => {
       shells.setSelected(state.selectedPart);
@@ -82,7 +102,7 @@ try {
       }
       show();
     };
-    for (const part of PUMP_PARTS) {
+    for (const part of machineParts) {
       const button = document.createElement('button');
       button.textContent = part.name;
       button.setAttribute('aria-pressed', 'false');
@@ -141,14 +161,14 @@ try {
       spinning = false;
       const dt = lastMs === 0 ? 0 : Math.min(0.1, (nowMs - lastMs) / 1000);
       lastMs = nowMs;
-      if (spinImpeller(model, dt, reduced)) stage.requestRender();
+      if (pumpModel !== null && spinImpeller(pumpModel, dt, reduced)) stage.requestRender();
       if (!reduced) {
         spinning = true;
         requestAnimationFrame(spinTick);
       }
     };
     const startSpin = (): void => {
-      if (spinning || reduced) return;
+      if (pumpModel === null || spinning || reduced) return;
       lastMs = 0;
       spinning = true;
       requestAnimationFrame(spinTick);

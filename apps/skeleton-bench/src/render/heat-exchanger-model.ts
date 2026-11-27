@@ -15,6 +15,8 @@ import type { MachineModel, PartBuilder } from './model-kit.js';
 export const TUBE_R = 0.012;
 /** x of the centre of every U-bend, in the tube bundle's frame. */
 export const BEND_X = 0.53;
+/** x of the left (tube sheet) end of every tube leg, in the tube bundle's frame. */
+export const LEG_START_X = -0.65;
 
 /** One U-tube: bend radius R and the z of its two legs (the legs sit at y = +R and y = -R). */
 export interface UTube {
@@ -137,8 +139,9 @@ function tubeBundleGeometry(): BufferGeometry {
   const pieces: BufferGeometry[] = [];
   for (const u of U_TUBES) {
     for (const y of [u.r, -u.r]) {
-      const leg = cylinderX(TUBE_R, 1.18, 10);
-      leg.translate(-0.06, y, u.z);
+      // The leg runs from LEG_START_X to the bend centre, so the legs and the bends always meet.
+      const leg = cylinderX(TUBE_R, BEND_X - LEG_START_X, 10);
+      leg.translate((BEND_X + LEG_START_X) / 2, y, u.z);
       pieces.push(leg);
     }
     const bend = new TorusGeometry(u.r, TUBE_R, 8, 16, Math.PI);

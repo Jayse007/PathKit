@@ -1,5 +1,16 @@
 # Build notes
 
+## Task 32.2: Coverage_Grid rules tests (newest entry, kept at top)
+- Done: wrote `test/view/coverage-grid-rules.test.ts` (9 `it` blocks, 50 Vitest tests: the 32-row table via `it.each`, 6 `addCamera` counts via `it.each`, 6 `selectMain` ids via `it.each`). Expected values are hand-written literals (interval 100 = 1000 / 10, limit 6, message contains "At most 6"). No src change. PathKit not used.
+- Broke: nothing known. Not run by Kiro.
+- Not tested: look, WebGL output, real browser, the grid view (task 32.3), click and Enter handling on tiles.
+
+## Task 32.1: Coverage_Grid rules (newest entry, kept at top)
+- Done: wrote pure `src/view/coverage-grid-rules.ts` (`shouldRenderGrid`, `addCamera`, `selectMain`; imports only `MAX_CAMERAS` and `PLAYBACK_RATE_GRID` from `constants.ts`). No camera-rig.ts or src/logic change. PathKit not used.
+- Open API shape, my choice: `GridMode = 'angle' | 'move'` is defined locally (no mode type existed). `GRID_REFRESH_INTERVAL_MS = 1000 / PLAYBACK_RATE_GRID` (100). `addCamera(count)` returns `{ ok, count, message? }` and never mutates; the message is `CAMERA_LIMIT_MESSAGE` and contains the limit 6 from `MAX_CAMERAS`. `selectMain(id)` returns `id` unchanged (no id validation).
+- Broke: nothing known. Not run by Kiro.
+- Not tested: no tests yet (task 32.2).
+
 ## Text pack: Term_Text module, sources table, cut-off wording (newest entry, kept at top)
 - Done: applied `docs/shot-rail-text-pack.md`. Created `src/logic/term-text.ts` (section 2) and `test/logic/term-text.test.ts` (section 3, 11 `it` blocks) character for character. Replaced the table in `docs/sources.md` with the section 4 table (an Id column added; heading and sentence kept). Added a "Facts and sources" section to `THIRD_PARTY.md`. Spec wording edits: "commonly used" became "this app's own cut-offs" in `requirements.md` (Requirement 5 criterion 6 and Requirement 6 criterion 5), `tasks.md` (Task 38.1 only) and `brief.md` (line 103). Requirement 5.8 and Task 38.2 unchanged. No task status changed.
 - Broke: nothing known. Not run by Kiro.

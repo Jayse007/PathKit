@@ -366,3 +366,31 @@
 - Edited existing tests: test/catalogue.test.ts only. The desk-lamp expected count 6 became 7, and the full-catalogue test and its text went from 20 Parts (8 + 6 + 6) to 21 Parts (8 + 6 + 7). The tour test still uses fixtures of 8 and 6 Parts and is unchanged.
 - Known limits: the bulb holder is mostly hidden inside the shade in Clean_Engineering (it shows when exploded, in X_Ray_Skeleton, or from below); the spring is thin and small at the default zoom; the pass partition, impingement plate, spacers, bulb and wiring are not drawn; the inside of the bonnet and shell are solid.
 - Not run (no terminal). Not tested: the look in a browser; the Part scenes and the Explode-length and Clearance checks were checked by the pack's prototype, not by Kiro here.
+
+## Task 18.3 follow-up: Heat_Exchanger hardening
+
+- Done: followed docs/hx-hardening-pack.md. In src/render/heat-exchanger-model.ts added `LEG_START_X = -0.65` under `BEND_X`, and the tube legs now use length `BEND_X - LEG_START_X` and centre `(BEND_X + LEG_START_X) / 2` (same values as before: 1.18 and -0.06, so the model does not change). Added three tests to test/heat-exchanger-model.test.ts: baffle window cut at y = 0.08, tube bundle x range -0.65 to 0.642, and 4,777 vertices (17 x 281) in the merged bundle. No existing test or import changed.
+- Broke: nothing known. Not run (no terminal). Expected: Skeleton Bench 234 tests (231 + 3).
+- Not tested: the look, WebGL.
+
+## Stage preview: machine chosen by the URL
+- Done: `src/render/stage-preview.ts` reads `?machine=pump`, `?machine=heat-exchanger` or `?machine=desk-lamp`; no parameter or an unknown value gives the Pump. It picks the builder (`buildPumpModel`, `buildHeatExchangerModel`, `buildDeskLampModel`) and the Part list (`PUMP_PARTS`, `HEAT_EXCHANGER_PARTS`, `DESK_LAMP_PARTS`), and uses that list for the part buttons and the readout name. `spinImpeller` and the spin loop run only for the Pump. `stage-preview.html` has three plain links at the top. No other file changed; no task status changed.
+- Broke: nothing known. Not run (no terminal, no browser).
+- Kiro assumption to check: `PumpModel` is assigned to a `MachineModel` variable, which needs `PumpModel` to have the same `root`, `partsById` and `setLook` members; editor diagnostics were not visible.
+- Not tested: everything; the User opens each of the three links to check.
+
+## Task 18.4: Three Machines checkpoint result
+
+- Tests (pasted by the User, `npm.cmd test` from apps/skeleton-bench): 234 passed, 0 failed, 0 skipped, 23 files.
+- Visual check: the User opened the stage preview page (src/render/stage-preview.html) with `?machine=pump`, `?machine=heat-exchanger` and `?machine=desk-lamp`, and reported that all three Machines work as expected.
+- Scope of the visual check: done by the User, by eye, on the stage preview page only. The full app UI does not exist yet, so nothing in it was checked. These were manual answers, not automated tests.
+- Docs-only change. No code, tests, spec files or task checkboxes edited. Nothing run by Kiro.
+
+## Task 19.1: Bake and wire the Tours
+
+- Done: added `src/pathkit/bake-all.ts` (`bakeTour(machine)`, `bakeAll()`, `bakeFailureMessage`). `bakeAll` bakes the four laps, 21 Part scenes and one Tour per Machine at load, runs `motionLinter` on each Tour, turns the findings into plain lines with `findingsToPlainText` ("No findings reported." when empty), and returns `{ ok: false, message }` instead of throwing, so the UI can show what failed and what to do. Tour order is the Machine's `partIds` (keyboard order). Added `src/logic/tour-playback.ts`: `TOUR_LOCKED_LABEL` ("Stop the tour to use this"), `tourFrameAtElapsed` (whole frames at 30 fps), `tourHasEnded`, reduced-motion helpers (`reducedMotionPartIndex` with the 3000 ms hold, `reducedMotionFrame` = slot middle, `reducedMotionHasEnded`), `readTourPose` (writes into a caller buffer) and `tourControlsLocked`.
+- Start, Pause, Resume and Stop state changes already exist in src/state.ts (`startTour`, `pauseTour`, `resumeTour`, `stopTour`) and were not changed. The Control_Bar, the Motion_Check panel and the render loop do not exist yet (task 20), so the buttons, the visible label and the error display are not placed on screen in this task. This task only supplies the baked data, text and pure helpers they will call.
+- Broke: nothing known. Not run (no terminal). No new test file; tests are task 19.2. Expected `npm.cmd test` count is unchanged: 234 passed, 23 files.
+- Spec issue found: task 19.2 says frame counts 720, 540 and 540, but the Desk_Lamp has 7 Parts, so design.md and `TOUR_FRAMES_PER_PART` give 630. Needs the User's decision before 19.2.
+- PathKit features used: `bake`, `validateScene` (inside `bake`), `motionLinter`, `evaluateEntity`, `followPath`, `aimAt` (through the existing tour scene).
+- Not tested: everything new; also the look, WebGL, view offset, clicking, load time, bake time of the three Tours.

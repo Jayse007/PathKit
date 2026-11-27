@@ -338,19 +338,19 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User views the car and the road in a browser in their own way and scrubs through frames (without a dev-server request from Kiro). Check the car sits on the road, faces its direction of travel, and speeds up and slows down along a lap. Kiro states what was not tested.
     - _Requirements: 3.4, 3.9, 25.1, 25.2_
 
-- [ ] 31. Stage_Overview
+- [x] 31. Stage_Overview
   - [x] 31.1 Implement `src/view/stage-overview.ts`
     - A small top-down view using the shared auxiliary renderer, drawing the car, the road, the camera positions and the camera rails (push-in and crane). After its render the image is copied into its own 2D canvas with `drawImage` before the shared renderer is reused.
     - _Requirements: 17.2_
-  - [~] 31.2 User checkpoint: view the Stage_Overview
+  - [x] 31.2 User checkpoint: view the Stage_Overview
     - The User views the overview in a browser in their own way. Check the cameras and rails show in the right places. Kiro states what was not tested.
     - _Requirements: 17.2, 25.1, 25.2_
 
 - [ ] 32. Coverage_Grid
-  - [~] 32.1 Implement the grid rules in `src/view/coverage-grid-rules.ts` (pure)
+  - [x] 32.1 Implement the grid rules in `src/view/coverage-grid-rules.ts` (pure)
     - `shouldRenderGrid(mode, changed, playing, msSinceLast)`: false outside Angle mode; true on change; while playing, true at `PLAYBACK_RATE_GRID` (every 100 ms); false when nothing changed and the Timeline is stopped. `addCamera(count)`: refuses a seventh camera with a message that states the limit of 6. `selectMain(id)`: returns the clicked camera as the Main_Camera.
     - _Requirements: 7.1, 7.5, 7.8, 7.9, 7.10, 7.11_
-  - [~] 32.2 Write the grid rules tests
+  - [-] 32.2 Write the grid rules tests
     - Table over mode (Angle, Move) x changed x playing x time (0, 99, 100, 250 ms): the render decision matches a hand-written table. Adding cameras 1 to 6 works; the seventh is refused with "6" in the message and the camera list unchanged. Click on tile 3 selects `cam-3`.
     - Source line it should catch: remove the Angle-mode check, or change the grid refresh interval to 1000 / 30.
     - _Requirements: 7.1, 7.5, 7.8, 7.9, 7.10, 7.11 (design Rendering layer)_

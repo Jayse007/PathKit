@@ -249,22 +249,22 @@ The plan follows the approved design (option A: four baked laps blended with `le
 
 ### Phase 3: Rest of Tier A
 
-- [ ] 18. Heat_Exchanger and Desk_Lamp
+- [x] 18. Heat_Exchanger and Desk_Lamp
   - [x] 18.1 Research and write the facts
     - Search for reputable sources for the six Heat_Exchanger parts and the six Desk_Lamp parts. Write `docs/sources.md` entries and the catalogue entries.
     - _Requirements: 18.2, 18.3, 19.1, 19.2, 19.3, 19.5_
   - [x] 18.2 User checkpoint: approve the texts
     - The User reads and approves every text and source before it is kept.
     - _Requirements: 19.4_
-  - [-] 18.3 Build the models and scenes
+  - [x] 18.3 Build the models and scenes
     - Shape models for both Machines (the Heat_Exchanger tube bundle is one merged mesh Part; the Catalogue has 21 Parts in total), named objects, Part scenes baked at load, Inventory switching.
     - _Requirements: 15.1, 15.3, 18.2, 18.3, 18.4, 18.5_
-  - [ ] 18.4 Rerun the tests and User checkpoint: visual check
+  - [x] 18.4 Rerun the tests and User checkpoint: visual check
     - The User runs `npm.cmd test` and pastes the output (Tasks 13 and 15 checks now cover all 21 Parts). The User checks both Machines in a browser.
     - _Requirements: 9.5, 35.6, 37.1_
 
 - [ ] 19. Tour for the real catalogue
-  - [ ] 19.1 Bake and wire the Tours
+  - [-] 19.1 Bake and wire the Tours
     - Bake all three Tours at load; run `motionLinter`; show findings in plain words in the Motion_Check; Tour start and stop wired to the state; Pause and Stop; controls disabled with the visible label "Stop the tour to use this" while playing; reduced-motion jumps with a 3000 ms hold per Part; an error message when baking or linting fails.
     - _Requirements: 16.1 to 16.11, 22.5_
   - [ ] 19.2 Write the tests with the real catalogue

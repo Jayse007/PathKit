@@ -119,4 +119,30 @@ describe('heat exchanger model', () => {
     expect(meshes[0] instanceof InstancedMesh).toBe(false);
     model.dispose();
   });
+
+  it('the baffle windows are cut at y = 0.08: the top-cut plate spans y -0.16 to 0.08, the bottom-cut plate -0.08 to 0.16', () => {
+    // Plate radius 0.16, window cut at 25 percent of the diameter (0.08 from the axis).
+    const ys = (topCut: boolean): number[] => baffleShape(topCut).getPoints(12).map((p) => p.y);
+    expect(Math.max(...ys(true))).toBeCloseTo(0.08, 6);
+    expect(Math.min(...ys(true))).toBeCloseTo(-0.16, 6);
+    expect(Math.max(...ys(false))).toBeCloseTo(0.16, 6);
+    expect(Math.min(...ys(false))).toBeCloseTo(-0.08, 6);
+  });
+
+  it('the tube bundle runs from x -0.65 to x 0.642 (bend centre 0.53 + largest bend radius 0.1 + tube radius 0.012)', () => {
+    const model = buildHeatExchangerModel();
+    const geometry = meshesOf(model.partsById.get('hx-tube-bundle')!)[0]!.geometry;
+    geometry.computeBoundingBox();
+    expect(geometry.boundingBox!.min.x).toBeCloseTo(-0.65, 6);
+    expect(geometry.boundingBox!.max.x).toBeCloseTo(0.642, 6);
+    model.dispose();
+  });
+
+  it('the merged tube bundle holds all 17 U-tubes: 4,777 vertices (each U-tube is 2 legs of 64 and 1 bend of 153 = 281)', () => {
+    // Leg: cylinder with 10 sides = 11 x 2 side vertices + 2 caps of 21 = 64. Bend: torus 8 x 16 = 9 x 17 = 153.
+    const model = buildHeatExchangerModel();
+    const geometry = meshesOf(model.partsById.get('hx-tube-bundle')!)[0]!.geometry;
+    expect(geometry.getAttribute('position').count).toBe(17 * 281);
+    model.dispose();
+  });
 });
