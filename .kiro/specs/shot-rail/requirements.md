@@ -186,7 +186,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 3. WHEN the Elevation is above 10 degrees and up to and including 60 degrees, THE Label_Module SHALL return "high angle".
 4. WHEN the Elevation is above 60 degrees, THE Label_Module SHALL return "overhead".
 5. THE Label_Module SHALL define the thresholds -10, 10 and 60 as named constants in one file.
-6. THE Shot_Rail_App SHALL show each threshold next to its label and describe the thresholds as "commonly used".
+6. THE Shot_Rail_App SHALL show each threshold next to its label and describe the thresholds as this app's own cut-offs, in the wording of the Term_Text module.
 7. THE Shot_Rail_App SHALL NOT state as fact what an angle does to the viewer.
 8. WHERE a note about the effect of an angle is shown, THE Shot_Rail_App SHALL mark it "commonly said" and the Sources_File SHALL record its source.
 9. THE Label_Module SHALL calculate Elevation from the Camera position to the true Subject centre, not to the shifted Orbit_Centre.
@@ -201,7 +201,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 2. WHEN the Fill_Fraction is from 35 percent up to and including 70 percent, THE Label_Module SHALL return "medium".
 3. WHEN the Fill_Fraction is below 35 percent, THE Label_Module SHALL return "wide".
 4. THE Label_Module SHALL define the thresholds 35 and 70 as named constants in the same file as the angle thresholds.
-5. THE Shot_Rail_App SHALL show each threshold next to its label and describe the thresholds as "commonly used".
+5. THE Shot_Rail_App SHALL show each threshold next to its label and describe the thresholds as this app's own cut-offs, in the wording of the Term_Text module.
 6. THE Fill_Fraction function SHALL return the larger of (projected 3D bounding box height / frame height) and (projected 3D bounding box width / frame width), as a percentage.
 7. THE Fill_Fraction function SHALL be pure and SHALL work over projected points passed in as input.
 8. IF the Fill_Fraction is below 0 or above 100 percent, or is not a finite number, THEN THE Label_Module SHALL fail with an error message that names the invalid value.

@@ -27,14 +27,13 @@ function start(): void {
   const settings: RigSettings = {
     shotLengthFrames: sample.shotLengthFrames,
     mainCameraId: CAMERA_ID,
-    // Only the main camera may be a rail shot (scene-set.ts), so the push-in is the main camera (cam-1)
-    // and the orbit is the second camera (cam-2). The crane is left out for the same reason.
-    // Remove this when the camera list (task 35) takes over.
-    cameras: [SAMPLE_SHOTS[1], SAMPLE_SHOTS[0]].map((s, i) => ({
-      id: CAMERA_IDS[i],
-      shotType: s.shotType,
-      ...s.placement,
-    })),
+    // cam-1 is the main camera and is the push-in sample, so the Stage_Overview shows its rail. Only the main
+    // camera can be a rail shot (scene-set.ts), so cam-2 is the orbit sample. Remove both when the camera list
+    // (task 35) takes over.
+    cameras: [
+      { id: CAMERA_IDS[0], shotType: sample.shotType, ...sample.placement },
+      { id: CAMERA_IDS[1], shotType: SAMPLE_SHOTS[0].shotType, ...SAMPLE_SHOTS[0].placement },
+    ],
     road: { points: DEFAULT_ROAD_POINTS.map((p) => ({ x: p.x, y: p.y, z: p.z })), closed: true },
     subjectKind: 'car',
   };

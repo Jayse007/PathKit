@@ -411,7 +411,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 
 - [ ] 38. Readout
   - [~] 38.1 Implement `src/view/readout.ts`
-    - Angle_Label, Framing_Label, horizontal and vertical field of view, Straight_Line_Distance (read-only), each with a text label. Each threshold is shown next to its label and described as "commonly used". The angle effect notes, if any, are marked "commonly said" and each has its source in `docs/sources.md`; with no source found, no note is shown. Elevation uses the true subject position.
+    - Angle_Label, Framing_Label, horizontal and vertical field of view, Straight_Line_Distance (read-only), each with a text label. Each threshold is shown next to its label and described as this app's own cut-offs (wording and hover lines from src/logic/term-text.ts). The angle effect notes, if any, are marked "commonly said" and each has its source in `docs/sources.md`; with no source found, no note is shown. Elevation uses the true subject position.
     - _Requirements: 5.6, 5.7, 5.8, 6.5, 7.3, 7.4, 17.4_
   - [~] 38.2 User checkpoint: view the readout and approve any angle notes
     - The User views the readout in a browser in their own way and approves every "commonly said" note and its source before it is kept. Kiro states what was not tested.

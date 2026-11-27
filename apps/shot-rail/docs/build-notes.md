@@ -1,5 +1,16 @@
 # Build notes
 
+## Text pack: Term_Text module, sources table, cut-off wording (newest entry, kept at top)
+- Done: applied `docs/shot-rail-text-pack.md`. Created `src/logic/term-text.ts` (section 2) and `test/logic/term-text.test.ts` (section 3, 11 `it` blocks) character for character. Replaced the table in `docs/sources.md` with the section 4 table (an Id column added; heading and sentence kept). Added a "Facts and sources" section to `THIRD_PARTY.md`. Spec wording edits: "commonly used" became "this app's own cut-offs" in `requirements.md` (Requirement 5 criterion 6 and Requirement 6 criterion 5), `tasks.md` (Task 38.1 only) and `brief.md` (line 103). Requirement 5.8 and Task 38.2 unchanged. No task status changed.
+- Broke: nothing known. Not run by Kiro.
+- Not tested: the new test file has not been run.
+
+## Task 31.1 fix pack: main.ts cameras and framing test (newest entry, kept at top)
+- Done: applied `docs/task-31-1-fix-pack.md`. In `src/main.ts`, `sample` stays `SAMPLE_SHOTS[1]` (the push-in), and the comment and `cameras:` list in `settings` are now the exact block from section 2 (cam-1 from `sample`, cam-2 from `SAMPLE_SHOTS[0]`, the orbit). `CAMERA_ID` is still `'cam-1'`, equal to `CAMERA_IDS[0]`. Created `test/view/stage-overview-framing.test.ts` from section 3, character for character (15 `it` blocks: 9 for `computeTopDownFraming`, 6 for `extendRailEnd`).
+- Broke: nothing known. Not run by Kiro.
+- Kiro got wrong: nothing known yet.
+- Not tested: the new test file has not been run; the browser check (task 31.2) is not done.
+
 ## Task 31.1 fix: camera list in main.ts (newest entry, kept at top)
 - Done: in `src/main.ts` the camera list is now two cameras: cam-1 is `SAMPLE_SHOTS[1]` (the push-in, the main camera) and cam-2 is `SAMPLE_SHOTS[0]` (the orbit). `sample` is now `SAMPLE_SHOTS[1]`, so the shot length and the initial lens menu value follow the push-in. The crane is no longer in the list. The file header comment now says "push-in sample shot".
 - Why: the earlier three-camera list put the push-in on cam-2. `buildSceneSet` refuses any rail shot (push-in or crane) that is not the main camera, because one scene has one path. Only the main camera may be a rail shot, so the push-in must be cam-1, and the crane has to stay out for the same reason.

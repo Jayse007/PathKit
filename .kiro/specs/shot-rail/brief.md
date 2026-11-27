@@ -100,7 +100,7 @@ Vertical = 2 x atan(10.125 / focal length). Set the Three.js camera `filmGauge` 
 
 ## Labels (app rules, not film standards)
 
-Thresholds are named constants in one file, shown to the user next to each label, and described as "commonly used".
+Thresholds are named constants in one file, shown to the user next to each label, and described as this app's own cut-offs.
 - Angle label from the camera's elevation above or below the subject centre: below -10 degrees "low angle", -10 to 10 "eye level",
   above 10 "high angle", above 60 "overhead". (Starting values, to be tuned and shown.)
 - Framing label from how much of the frame height the subject fills: above 70% "close-up", 35 to 70% "medium", below 35% "wide".
