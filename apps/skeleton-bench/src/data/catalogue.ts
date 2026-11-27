@@ -127,7 +127,164 @@ export const PUMP_MACHINE: MachineEntry = {
   partIds: PUMP_PARTS.map((p) => p.id),
 };
 
+// Heat_Exchanger layout (Task 18.1): shell-and-tube, shell along x, channel head at -x. Metres.
+// Facts come from docs/sources.md (ids hx-*). Text is waiting for User approval (Task 18.2).
+// Rest and end boxes stay inside x +-1.2, y +-0.6, z +-0.4. Order = keyboard order and tour order, from the channel head end.
+// End centres at Explode_Amount 100 (rest + explode vector), hand-checked pair gaps are in docs/build-notes.md.
+export const HEAT_EXCHANGER_PARTS: readonly PartEntry[] = [
+  {
+    id: 'hx-channel-head',
+    name: 'Channel head',
+    job: 'An end cover that directs the tube-side fluid into and out of the tube bundle. A cover of this kind also caps the end of the tube sheet to contain that fluid, and it can give access to the tubes for inspection and cleaning.',
+    material: 'A bonnet, which is a similar end cover, is typically stainless steel or carbon steel.',
+    positionText: 'At an end of the shell. A bonnet is attached to the end of the shell with bolts or clamps.',
+    sourceId: 'hx-channel-head',
+    restPosition: [-0.85, 0, 0],
+    explodeVector: [-0.17, 0, 0],
+    extents: [0.3, 0.42, 0.42],
+  },
+  {
+    id: 'hx-tube-sheet',
+    name: 'Tube sheet',
+    job: 'A thick metal plate with holes drilled through it. The tube ends are fixed in the holes, so the tubes are held in place and rigidly supported, and the fluid inside the tubes stays separate from the fluid in the shell.',
+    material: 'A thick metal plate. The metal is not stated by the sources.',
+    positionText: 'At the ends of the shell, where the tubes end. The model shows one tube sheet, at the channel head end.',
+    sourceId: 'hx-tube-sheet',
+    restPosition: [-0.675, 0, 0],
+    explodeVector: [-0.075, 0.07, 0],
+    extents: [0.05, 0.42, 0.42],
+  },
+  {
+    id: 'hx-shell',
+    name: 'Shell',
+    job: 'The outer cylindrical vessel. It holds the shell-side fluid and encloses the tube bundle and the other internal parts.',
+    material: 'Carbon steel is the most widely used material, though the choice depends on the operating conditions and the fluid. Specialised alloys are also used.',
+    positionText: 'The outermost part, surrounding the tube bundle.',
+    sourceId: 'hx-shell',
+    restPosition: [0.05, 0, 0],
+    explodeVector: [0.1, -0.15, 0.19],
+    extents: [1.4, 0.4, 0.4],
+  },
+  {
+    id: 'hx-tube-bundle',
+    name: 'Tube bundle',
+    job: 'A bundle of many parallel tubes. One fluid flows through the tubes. The tube walls keep the two fluids apart and are the surface that heat passes through.',
+    material: 'Tubes are mostly carbon steel. Stainless steel, cupronickel, copper, brass and aluminium are also used.',
+    positionText: 'Inside the shell, with the tubes running parallel along its length.',
+    sourceId: 'hx-tube-bundle',
+    restPosition: [0.05, 0, 0],
+    explodeVector: [0.1, 0, -0.25],
+    extents: [1.3, 0.2, 0.2],
+  },
+  {
+    id: 'hx-baffles',
+    name: 'Baffles',
+    job: 'Plates inside the shell. They support the tubes and reduce their vibration. They also make the shell-side fluid change direction again and again, which creates turbulence and improves heat transfer.',
+    material: 'Metal plate. The metal is not stated by the sources.',
+    positionText: 'Inside the shell, spaced out along the tubes. Each baffle has holes for the tubes to pass through.',
+    sourceId: 'hx-baffles',
+    restPosition: [0.05, 0, 0],
+    explodeVector: [0, 0.4, 0],
+    extents: [0.9, 0.32, 0.32],
+  },
+  {
+    id: 'hx-nozzles',
+    name: 'Nozzles',
+    job: 'The inlet and outlet connections for the shell-side and tube-side fluids. Each is a short pipe section with a flange on the outer end to connect to the pipework.',
+    material: 'Not stated by the sources.',
+    positionText: 'On both the shell side and the tube side, welded to the shell or to the bonnet end cover. The model shows them as one group on top of the shell.',
+    sourceId: 'hx-nozzles',
+    restPosition: [0.05, 0.27, 0],
+    explodeVector: [0, 0, -0.32],
+    extents: [0.8, 0.14, 0.12],
+  },
+];
+
+export const HEAT_EXCHANGER_MACHINE: MachineEntry = {
+  id: 'heat-exchanger',
+  name: 'Heat exchanger',
+  partIds: HEAT_EXCHANGER_PARTS.map((p) => p.id),
+};
+
+// Desk_Lamp layout (Task 18.1): balanced-arm desk lamp, arms lean towards +x. Metres.
+// Facts come from docs/sources.md (ids lamp-*). Text is waiting for User approval (Task 18.2).
+// Rest and end boxes stay inside x +-1.2, y +-0.6, z +-0.4. Order = keyboard order and tour order, from the base up.
+export const DESK_LAMP_PARTS: readonly PartEntry[] = [
+  {
+    id: 'lamp-base',
+    name: 'Base',
+    job: 'Gives the lamp its footing. A weighted desk or table base keeps the lamp from tipping when the arm is extended. Clamp and grommet mounts are alternatives that need no heavy base.',
+    material: 'Not stated by the sources.',
+    positionText: 'At the bottom of the lamp, on the desk or table.',
+    sourceId: 'lamp-base',
+    restPosition: [-0.5, -0.5, 0],
+    explodeVector: [-0.3, 0, 0],
+    extents: [0.5, 0.1, 0.5],
+  },
+  {
+    id: 'lamp-lower-arm',
+    name: 'Lower arm',
+    job: 'One of the two connected arms. The jointed arms let the shade be moved up, down, forwards and backwards. Springs or other balancing mechanisms help the lamp hold its position.',
+    material: 'Lamps with aluminium or steel arms and joints are more stable and carry more weight than plastic ones.',
+    positionText: 'The arm nearer the base. The sources describe two connected arms between the base and the lamp head. The names lower and upper are this app\'s.',
+    sourceId: 'lamp-lower-arm',
+    restPosition: [-0.4, -0.15, 0],
+    explodeVector: [0, 0.15, 0],
+    extents: [0.3, 0.6, 0.1],
+  },
+  {
+    id: 'lamp-joint',
+    name: 'Joint',
+    job: 'The pivot where arm segments meet. In a spring-balanced lamp each joint acts as a lever. Spring tension balances the turning force from the lamp\'s weight, and friction in the joint helps hold the arm in its final position.',
+    material: 'Aluminium or steel joints are sturdier than plastic ones.',
+    positionText: 'Where arm segments meet. The model shows the joint between the lower and upper arm.',
+    sourceId: 'lamp-joint',
+    restPosition: [-0.3, 0.2, 0],
+    explodeVector: [0, 0, 0.25],
+    extents: [0.12, 0.12, 0.16],
+  },
+  {
+    id: 'lamp-upper-arm',
+    name: 'Upper arm',
+    job: 'The other of the two connected arms. It carries the lamp head. In a spring-balanced lamp the spring force nearly equals the weight of the lamp head and arm at any angle, so the arm stays where it is put.',
+    material: 'Lamps with aluminium or steel arms and joints are more stable and carry more weight than plastic ones.',
+    positionText: 'The arm farther from the base, reaching out to the shade.',
+    sourceId: 'lamp-upper-arm',
+    restPosition: [0.1, 0.22, 0],
+    explodeVector: [0.15, 0, 0],
+    extents: [0.8, 0.3, 0.1],
+  },
+  {
+    id: 'lamp-shade',
+    name: 'Shade',
+    job: 'Surrounds the bulb and redirects its light. A cone-shaped metal shade helps direct light downward while reducing glare, which suits task lighting.',
+    material: 'Metal shades are made of steel, brass or aluminium. Other shades are made of fabric, parchment, glass, paper or plastic.',
+    positionText: 'Around the bulb, on the lamp head at the end of the arms.',
+    sourceId: 'lamp-shade',
+    restPosition: [0.6, 0.15, 0],
+    explodeVector: [0.35, -0.15, 0],
+    extents: [0.3, 0.25, 0.3],
+  },
+  {
+    id: 'lamp-bulb-holder',
+    name: 'Bulb holder',
+    job: 'Supports the bulb mechanically and provides its electrical connection. It lets the bulb be replaced safely and conveniently.',
+    material: 'Ceramic insulation withstands much higher operating temperatures than bakelite or other plastics.',
+    positionText: 'Inside the shade, where it holds the bulb.',
+    sourceId: 'lamp-bulb-holder',
+    restPosition: [0.6, 0.2, 0],
+    explodeVector: [0.35, 0.1, 0],
+    extents: [0.1, 0.14, 0.1],
+  },
+];
+
+export const DESK_LAMP_MACHINE: MachineEntry = {
+  id: 'desk-lamp',
+  name: 'Desk lamp',
+  partIds: DESK_LAMP_PARTS.map((p) => p.id),
+};
+
 export const CATALOGUE: Catalogue = {
-  machines: [PUMP_MACHINE],
-  parts: [...PUMP_PARTS],
+  machines: [PUMP_MACHINE, HEAT_EXCHANGER_MACHINE, DESK_LAMP_MACHINE],
+  parts: [...PUMP_PARTS, ...HEAT_EXCHANGER_PARTS, ...DESK_LAMP_PARTS],
 };

@@ -218,7 +218,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: forget to restore the saved zoom on stop.
     - _Requirements: 15.3, 15.4, 16.2, 16.6, 16.11, 35.17 (design Property 19)_
 
-- [ ] 17. Render core
+- [x] 17. Render core
   - [x] 17.1 Renderer, stage, camera and view offset
     - Renderer with a WebGL-failure message; stage and bench grid at y = -0.6; camera from the blend (`position.set`, `quaternion.set`); view offset from the offset fraction; render-on-change loop.
     - _Requirements: 10.1, 10.2, 11.1, 12.2, 12.6, 21.5, 20.4_
@@ -243,14 +243,14 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 17.7 Picking and shells
     - Raycast on meshes only; the click rule (5 px); selection shell and focus shell.
     - _Requirements: 14.1, 14.6, 14.7, 14.9_
-  - [ ] 17.8 User checkpoint: click and focus a Part
+  - [x] 17.8 User checkpoint: click and focus a Part
     - The User clicks and focuses a Part in a browser and checks the selection cue. Kiro states what was not tested.
     - _Requirements: 37.1, 37.2_
 
 ### Phase 3: Rest of Tier A
 
 - [ ] 18. Heat_Exchanger and Desk_Lamp
-  - [ ] 18.1 Research and write the facts
+  - [x] 18.1 Research and write the facts
     - Search for reputable sources for the six Heat_Exchanger parts and the six Desk_Lamp parts. Write `docs/sources.md` entries and the catalogue entries.
     - _Requirements: 18.2, 18.3, 19.1, 19.2, 19.3, 19.5_
   - [ ] 18.2 User checkpoint: approve the texts

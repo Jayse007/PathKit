@@ -331,7 +331,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 17.7, 17.8, 25.1, 25.2_
 
 - [ ] 30. Subject and road drawing
-  - [-] 30.1 Implement the car and the road in `src/view/subject-view.ts`
+  - [x] 30.1 Implement the car and the road in `src/view/subject-view.ts`
     - Car from boxes and cylinders only, no brand, logo or plate text, drawn offset down by `SUBJECT_CENTRE_HEIGHT` so the entity origin is the box centre. Road mesh at ground level from `ROAD_DRAW_SAMPLES` samples along the curve. The car pose comes from the baked subject at the remapped baked frame.
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.12_
   - [~] 30.2 User checkpoint: view the car on the road
