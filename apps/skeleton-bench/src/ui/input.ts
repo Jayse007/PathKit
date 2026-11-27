@@ -106,6 +106,14 @@ export function orbitKeyStep(angleDeg: number, direction: 'left' | 'right'): num
   return direction === 'left' ? angleDeg + stepDeg : angleDeg - stepDeg;
 }
 
+/**
+ * What the Escape key does (Requirement 24.11): with the About_Panel open it closes the panel
+ * and leaves the selection alone; otherwise it clears the selection (Requirement 14).
+ */
+export function escapeAction(aboutOpen: boolean): 'close-about' | 'clear-selection' {
+  return aboutOpen ? 'close-about' : 'clear-selection';
+}
+
 /** Zoom_Value after a step in direction +1 (closer) or -1 (further), clamped to 0 to 1. */
 export function stepZoom(zoom: number, direction: 1 | -1, step: number): number {
   requireFinite(zoom, 'stepZoom', 'zoom');

@@ -453,3 +453,10 @@
 - Kiro got wrong: nothing known yet.
 - PathKit features used: `followPath` and `aimAt` Tour baked earlier, read with `evaluateEntity`; `motionLinter` result shown by existing Motion_Check.
 - Not tested: the look, WebGL, view offset, clicking, load time, the Tour animation in a browser, focus movement between the Tour buttons, the About_Panel layout. `npx tsc --noEmit -p .` was NOT run.
+
+## About_Panel: Escape closes it, and the PathKit-use line moves to the README
+
+- Done: spec change (Requirement 24.3 now README only; new 24.11 for Escape; tasks 20.6 and 22.1 updated). Added `escapeAction(aboutOpen)` to src/ui/input.ts. Removed the "impeller spin, dragging and cursor" line from src/ui/about-text.ts. Added `isAboutOpen()` and `closeAbout()` to the Layout in src/ui/layout.ts (`setAboutOpen(false)` already focuses the About button). In src/main.ts, the Escape case closes the panel instead of clearing the selection when the panel is open. Added 3 tests to test/ui-layout.test.ts.
+- Broke: nothing known. Not run (no terminal). `npx tsc --noEmit -p .` was NOT run. Expected after `npm.cmd test`: 27 files, 285 passed.
+- Not tested: the real keypress in a browser (focus return and the selection staying). The README text is written in task 22.1.
+- PathKit feature used: none.

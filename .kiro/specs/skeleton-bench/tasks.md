@@ -298,8 +298,8 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 20.5 User checkpoint: try the controls
     - The User tries the controls in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
-  - [-] 20.6 Tour, Look toggle and About wiring
-    - Tour with Pause and Stop wired to the state; Look toggle stored in try/catch; About_Panel access from the main screen; error messages that say what to do.
+  - [x] 20.6 Tour, Look toggle and About wiring
+    - Tour with Pause and Stop wired to the state; Look toggle stored in try/catch; About_Panel access from the main screen; error messages that say what to do. Escape closes the About_Panel (focus returns to the About button; that press does not clear the selection).
     - _Requirements: 17.5, 17.7, 21.5, 16.1 to 16.11, 22.5_
   - [ ] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
     - The User tries the Tour, the Look toggle and the About panel in a browser in their own way and reports problems. Kiro states what was not tested.
@@ -320,7 +320,8 @@ The plan follows the approved design (option A: four baked laps blended with `le
 
 - [ ] 22. About_Panel and README
   - [ ] 22.1 Write the honest limits and the README
-    - About_Panel and README state: models are simplified and not to scale with each other; specifications are sample data; impeller spin, dragging and the cursor are not PathKit; PathKit cannot follow a live hand; gestures need a webcam, light and HTTPS; two-hand zoom is the least stable; moving the Machine has no gesture; the classifier is our own code over 21 points; MediaPipe sends usage metrics to Google.
+    - About_Panel and README state: models are simplified and not to scale with each other; specifications are sample data; PathKit cannot follow a live hand; gestures need a webcam, light and HTTPS; two-hand zoom is the least stable; moving the Machine has no gesture; the classifier is our own code over 21 points; MediaPipe sends usage metrics to Google.
+    - The README (not the About_Panel) states that the impeller spin is ordinary Three.js code, and dragging and the cursor are ordinary browser code; none use PathKit. The About_Panel does not state which parts use PathKit.
     - README also lists every stored key, notes that "Skeleton Bench" is a working name not trademark-checked, and uses none of the names J.A.R.V.I.S., Marvel or Stark anywhere. The README is the only existing file edited.
     - _Requirements: 1.6, 3.8, 3.9, 23.2, 24.1 to 24.10_
 

@@ -11,6 +11,8 @@ import {
   selectionAfterStageClick,
   togglePartSelection,
 } from '../src/ui/inspector-text.js';
+import { ABOUT_LINES } from '../src/ui/about-text.js';
+import { escapeAction } from '../src/ui/input.js';
 import { THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH, thumbnailShapes } from '../src/ui/thumbnails.js';
 
 // Task 20.2. Tests for the pure parts of the layout: Inspector text, Parts_List order, thumbnail data.
@@ -159,5 +161,23 @@ describe('Inventory thumbnails', () => {
         }
       });
     }
+  });
+});
+
+describe('Escape key and About text (Requirement 24)', () => {
+  it('closes the About_Panel when it is open', () => {
+    expect(escapeAction(true)).toBe('close-about');
+  });
+
+  it('clears the selection when the About_Panel is closed', () => {
+    expect(escapeAction(false)).toBe('clear-selection');
+  });
+
+  it('says nothing about which parts use or do not use PathKit', () => {
+    const text = ABOUT_LINES.join('\n');
+    expect(text).not.toMatch(/not PathKit/i);
+    expect(text).not.toMatch(/Three\.js/i);
+    expect(text).toContain('The Machines are simplified models built from shapes');
+    expect(text).toContain('PathKit cannot follow a live hand');
   });
 });

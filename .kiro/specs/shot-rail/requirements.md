@@ -174,6 +174,9 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 7. IF a focal length is not a finite number, THEN THE Lens_Module SHALL fail with an error message that names the invalid value.
 8. THE Lens_Module SHALL work in radians internally and SHALL convert to degrees only at the output boundary.
 9. THE Lens_Module SHALL be pure: the same input SHALL always give the same output.
+10. THE Shot_Rail_App SHALL let the User change the Main_Camera's lens continuously from 24 mm to 85 mm at any frame, including while the Timeline is scrubbed or playing, with the mouse wheel over the Main_Camera view (wheel up zooms in, 5 percent per wheel event), the keys + and - (= counts as +, 10 percent per key press) and a lens slider. WHEN the lens changes, THE Shot_Rail_App SHALL update the picture, the Camera's lens in the Coverage_Grid, the field of view and the Framing_Label at once, and SHALL NOT re-bake or move the Timeline.
+11. THE lens menu SHALL set the lens to the chosen preset, and WHILE the lens is between presets THE lens menu SHALL show 'Custom' with the lens in mm.
+12. THE lens zoom SHALL change only the lens and not the Camera position, and the interface SHALL say so in a one-line hover and focus text (Requirement 17.10).
 
 ### Requirement 5: Angle label (P1)
 

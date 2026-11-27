@@ -22,6 +22,10 @@ export interface Layout {
   setMotionCheck(lines: readonly string[]): void;
   /** Bring the Control_Bar into step with the state (slider values, mode button text, readouts). */
   setControls(view: ControlsView): void;
+  /** True when the About_Panel is shown. */
+  isAboutOpen(): boolean;
+  /** Close the About_Panel and move focus to the About button. */
+  closeAbout(): void;
   /** Show a one-line hint under the controls (empty text hides it). */
   setHint(text: string): void;
   /** Show an error under the controls. It says what went wrong and what to do (empty text hides it). */
@@ -411,6 +415,8 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
     setSelected,
     setMotionCheck,
     setControls,
+    isAboutOpen: () => !aboutPanel.hidden,
+    closeAbout: () => setAboutOpen(false),
     setHint,
     setMessage,
   };

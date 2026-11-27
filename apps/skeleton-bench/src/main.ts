@@ -37,6 +37,7 @@ import {
 } from './state.js';
 import type { AppState } from './state.js';
 import {
+  escapeAction,
   keyToAction,
   moveKeyStep,
   orbitAngleFromDrag,
@@ -406,6 +407,10 @@ function start(): void {
         commit(setZoom(state, zoomKeyStep(state.zoom, -1)));
         break;
       case 'clear-selection':
+        if (escapeAction(layout.isAboutOpen()) === 'close-about') {
+          layout.closeAbout();
+          break;
+        }
         state = selectPart(state, null);
         applySelection();
         break;

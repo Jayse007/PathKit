@@ -476,6 +476,8 @@ Both wrap every `localStorage` access in try/catch; on any thrown error (includi
 | Move mode tab | M |
 | Select camera 1–6 | 1–6 |
 | Cycle lens preset | L |
+| Zoom lens in | + (and =) |
+| Zoom lens out | - |
 | Cycle shot type | S |
 | Toggle thirds guide | T |
 | Toggle safe-area guide | G |
