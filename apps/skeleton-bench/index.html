@@ -4,8 +4,70 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Skeleton Bench</title>
+    <style>
+      :root {
+        --bg: #10151b;
+        --panel: #18202a;
+        --line: #3a4757;
+        --text: #e6edf3;
+        --muted: #b4c0cc;
+        --accent: #ff8a1f;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 15px;
+        line-height: 1.4;
+      }
+      #app { height: 100%; }
+      .bench {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1fr) 320px;
+        grid-template-rows: minmax(0, 1fr) auto;
+        grid-template-areas: "left stage inspector" "controls controls controls";
+      }
+      .left-column { grid-area: left; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; border-right: 1px solid var(--line); background: var(--panel); }
+      .stage { grid-area: stage; min-width: 0; min-height: 0; position: relative; }
+      #inspector { grid-area: inspector; overflow-y: auto; border-left: 1px solid var(--line); background: var(--panel); }
+      .control-bar { grid-area: controls; border-top: 1px solid var(--line); background: var(--panel); padding: 10px 12px; min-height: 56px; }
+      .region { padding: 10px 12px; }
+      .region.small { border-top: 1px solid var(--line); font-size: 13px; }
+      h2 { font-size: 16px; margin: 0 0 8px; }
+      h3 { font-size: 15px; margin: 12px 0 6px; }
+      .muted { color: var(--muted); margin: 0; }
+      .plain-list { margin: 0; padding-left: 18px; }
+      .card, .part-button {
+        display: block;
+        width: 100%;
+        margin: 0 0 8px;
+        padding: 8px;
+        color: var(--text);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .card svg { display: block; max-width: 100%; height: auto; margin: 0 auto 6px; }
+      .card-name { display: block; text-align: center; font-weight: 600; }
+      .card[aria-pressed="true"], .part-button[aria-pressed="true"] { border-color: var(--accent); border-width: 2px; padding: 7px; }
+      .part-button[aria-pressed="true"] { font-weight: 700; }
+      button:hover { background: #222c38; }
+      button:focus-visible { outline: 3px solid #5cc8ff; outline-offset: 2px; }
+      .badge { color: var(--muted); font-style: italic; }
+      @media (max-width: 800px) {
+        .bench { grid-template-columns: 150px minmax(0, 1fr); grid-template-areas: "left stage" "inspector inspector" "controls controls"; grid-template-rows: minmax(240px, 1fr) auto auto; }
+        #inspector { border-left: 0; border-top: 1px solid var(--line); }
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
+    <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

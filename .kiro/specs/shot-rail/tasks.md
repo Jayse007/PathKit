@@ -361,7 +361,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Pure function `planMainChange(cameras, newMainId)` in `src/view/coverage-grid-rules.ts`, hand-written tests in the existing `test/view/coverage-grid-rules.test.ts`, then wire it into `onSelect` in `src/main.ts` in place of the refusal.
     - Source line it should catch: convert the new Main_Camera as well, or leave crane out of the check.
     - _Requirements: 7.5_
-  - [~] 32.4 User checkpoint: view the Coverage_Grid
+  - [x] 32.4 User checkpoint: view the Coverage_Grid
     - The User views the grid in a browser in their own way: up to six tiles, labels on each tile, click to make main, seventh camera refused, click tile 2: cam-2 becomes main, cam-1 becomes an orbit shot, and the status line says so. Kiro states what was not tested.
     - _Requirements: 7.1, 7.4, 7.5, 7.11, 25.1, 25.2_
 

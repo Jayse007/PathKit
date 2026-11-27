@@ -412,3 +412,12 @@
 - Source line it should catch: in `orbitAngleFromDrag` change `startAngleDeg - dxPx * ORBIT_DEG_PER_PIXEL` to `+`; the drag table test must fail.
 - PathKit feature used: none (app code).
 - Not tested: the look, WebGL, view offset, clicking, load time, real keyboard and wheel events, the wiring of these helpers to the page (tasks 20.2 and later).
+
+### Task 20.2: Layout and Inspector with Parts_List
+
+- Done: added `src/main.ts` (app entry: `bakeAll`, `createStage`, Pump at start, Machine switching from the cards, selection shell and focus shell), `src/ui/layout.ts` (DOM: Inventory with three cards, Stage host, Inspector with Parts_List, Motion_Check list, Control_Bar region), `src/ui/inspector-text.ts` (pure: empty text "Pick a part to read about it", "sample data" label, `machineParts` in catalogue order, `findMachinePart`, `modelSizeText`) and `src/ui/thumbnails.ts` (SVG shape data for three drawings, DOM builder). `index.html` now holds the page styles and loads `./src/main.ts` (CSS is inline so no non-`.js` relative import is needed). Test file: `test/ui-layout.test.ts` (8 tests).
+- Decision to check: `PartEntry` has no specification fields, so the only "sample data" value shown is the drawn model size taken from `extents` (for example "500 x 400 x 400 mm"). It is the project's own number and needs no source. Say if you want other sample values.
+- Not built yet (Task 20.4): every control, key hints, click-to-select on the Stage, impeller spin, Look toggle. The Control_Bar shows a one-line note. Parts_List buttons already select (click, Enter, Space) and focus shows the focus shell.
+- Broke: nothing known. Nothing has been run (no terminal).
+- Not tested: the look, WebGL, view offset, clicking, load time, the DOM builders in `layout.ts` and `main.ts`, the CSS grid, small-screen layout.
+- PathKit feature used: none new (the Stage reads the baked laps and Part scenes made earlier; the Motion_Check text comes from `motionLinter` findings through `bakeAll`).

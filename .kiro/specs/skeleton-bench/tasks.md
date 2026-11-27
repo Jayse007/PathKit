@@ -273,12 +273,12 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - _Requirements: 16.2, 16.5, 16.7, 35.7 (design Property 10, 19)_
 
 - [ ] 20. UI shell
-  - [-] 20.1 Implement and test the pure UI helpers
+  - [x] 20.1 Implement and test the pure UI helpers
     - Key map (M, E, R, +, -, arrows, Escape) and the step functions (orbit key step, zoom step, wheel step, move step, `orbitAngleFromDrag`).
     - Tests with hand-written tables, including that shortcuts are ignored with text-field focus.
     - Source line it should catch: change the sign in `orbitAngleFromDrag`.
     - _Requirements: 10.3, 11.1, 12.1, 12.3, 12.5, 12.9, 13.1_
-  - [ ] 20.2 Layout and Inspector with Parts_List
+  - [-] 20.2 Layout and Inspector with Parts_List
     - Inventory (three cards, SVG thumbnails drawn by us), Stage, Inspector (empty state "Pick a part to read about it", "sample data" label), Parts_List buttons in catalogue order with focus highlight, Motion_Check region, Control_Bar region.
     - _Requirements: 14.2, 14.3, 14.4, 14.5, 14.8, 15.1, 15.2, 20.1, 21.1_
   - [ ] 20.3 User checkpoint: view the layout, the Inspector and the Parts_List
