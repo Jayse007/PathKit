@@ -2,6 +2,7 @@
 // and which camera a click selects. No Three.js, no DOM, no I/O, no clock.
 
 import { MAX_CAMERAS, PLAYBACK_RATE_GRID } from '../logic/constants.js';
+import type { ShotType } from '../logic/shot-builders.js';
 
 /** The two app modes. The grid is drawn only in Angle mode. */
 export type GridMode = 'angle' | 'move';
@@ -49,4 +50,39 @@ export function addCamera(count: number): AddCameraResult {
 /** A click (or Enter) on a tile makes that camera the Main_Camera. */
 export function selectMain(id: string): string {
   return id;
+}
+
+export interface MainChange<T extends { id: string; shotType: ShotType }> {
+  /** A new list of new objects; the input is never changed. */
+  cameras: T[];
+  /** Ids of the cameras changed to orbit, in list order. */
+  converted: string[];
+  /** '' when nothing was converted. */
+  message: string;
+}
+
+/**
+ * Plan a change of Main_Camera. Only the Main_Camera can be a rail shot (push-in or crane),
+ * so every other camera with one of those shot types becomes an orbit shot. All other
+ * fields are kept. The new main camera is never changed. Pure: the input is not mutated.
+ */
+export function planMainChange<T extends { id: string; shotType: ShotType }>(
+  cameras: readonly T[],
+  newMainId: string,
+): MainChange<T> {
+  if (!cameras.some((c) => c.id === newMainId)) {
+    throw new Error(`Camera "${newMainId}" is not in the camera list.`);
+  }
+  const converted: string[] = [];
+  const sentences: string[] = [];
+  const next = cameras.map((c): T => {
+    if (c.id !== newMainId && (c.shotType === 'push-in' || c.shotType === 'crane')) {
+      converted.push(c.id);
+      sentences.push(`${c.id} changed from ${c.shotType} to orbit.`);
+      return { ...c, shotType: 'orbit' };
+    }
+    return { ...c };
+  });
+  const message = converted.length === 0 ? '' : `${sentences.join(' ')} Only the main camera can be a rail shot.`;
+  return { cameras: next, converted, message };
 }

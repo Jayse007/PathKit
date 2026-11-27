@@ -403,3 +403,12 @@
 - Source line it should catch: in `bakeTour` (src/pathkit/bake-all.ts) swap two entries of the `rest` array before `buildTourScene(rest)`. The keyframe order test fails.
 - PathKit features used: `bake`, `evaluateEntity`, `motionLinter` (through bakeAll).
 - Not tested: the look, WebGL, view offset, clicking, load time, Tour start/stop state reset and restore (Property 19 is not in this task's list).
+
+## Task 20.1: Pure UI helpers
+
+- Done: added `src/ui/input.ts` and `test/ui-input.test.ts` (16 tests). `keyToAction(input, focus)` maps M, E, R, `+` (also `=`), `-`, the four arrows and Escape to action names, returns null when `shouldHandleShortcut` says no (text field, textarea, select, range slider; reused from `src/logic/shortcut-guard.ts`) and when Ctrl, Meta or Alt is held. Step functions: `orbitAngleFromDrag` (start - dx * 0.5), `orbitKeyStep` (5 frames = 5 degrees), `stepZoom`, `zoomKeyStep` (0.1), `zoomWheelStep` (0.05, sign of deltaY), `moveKeyStep` (0.02 of the viewport, clamped with the existing `clampOffset`). Constants and `clampOffset` are reused; nothing new in constants.ts or state.ts.
+- Kiro choices to check (the spec is silent): (1) Arrow-left adds 5 degrees and arrow-right subtracts 5, so a key matches a drag in the same direction (drag right lowers the angle). (2) Wheel up (negative deltaY) zooms in. (3) Escape maps to `clear-selection` (design error table). (4) `=` counts as `+`. (5) Ctrl, Meta and Alt combinations are ignored so Ctrl+R still reloads. (6) Move arrows: right and down are positive, matching `setOffset`. (7) The E toggle rule for an in-between Explode_Amount is not decided here; it belongs to the Control_Bar wiring task.
+- Broke: nothing known. Not run (no terminal). Expected: 25 files, 257 passed (241 + 16).
+- Source line it should catch: in `orbitAngleFromDrag` change `startAngleDeg - dxPx * ORBIT_DEG_PER_PIXEL` to `+`; the drag table test must fail.
+- PathKit feature used: none (app code).
+- Not tested: the look, WebGL, view offset, clicking, load time, real keyboard and wheel events, the wiring of these helpers to the page (tasks 20.2 and later).

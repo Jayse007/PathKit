@@ -354,11 +354,15 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Table over mode (Angle, Move) x changed x playing x time (0, 99, 100, 250 ms): the render decision matches a hand-written table. Adding cameras 1 to 6 works; the seventh is refused with "6" in the message and the camera list unchanged. Click on tile 3 selects `cam-3`.
     - Source line it should catch: remove the Angle-mode check, or change the grid refresh interval to 1000 / 30.
     - _Requirements: 7.1, 7.5, 7.8, 7.9, 7.10, 7.11 (design Rendering layer)_
-  - [-] 32.3 Implement the grid view in `src/view/coverage-grid.ts`
+  - [x] 32.3 Implement the grid view in `src/view/coverage-grid.ts`
     - The shared auxiliary renderer draws each tile and copies it into a per-tile 2D canvas, with the Angle_Label and Framing_Label on each tile (text, from `labels.ts` and `fill.ts`). Click or Enter on a tile makes it the Main_Camera. Renders only in Angle mode.
     - _Requirements: 7.1, 7.4, 7.5, 7.8, 7.9, 7.10_
+  - [x] 32.3a Main_Camera swap rule
+    - Pure function `planMainChange(cameras, newMainId)` in `src/view/coverage-grid-rules.ts`, hand-written tests in the existing `test/view/coverage-grid-rules.test.ts`, then wire it into `onSelect` in `src/main.ts` in place of the refusal.
+    - Source line it should catch: convert the new Main_Camera as well, or leave crane out of the check.
+    - _Requirements: 7.5_
   - [~] 32.4 User checkpoint: view the Coverage_Grid
-    - The User views the grid in a browser in their own way: up to six tiles, labels on each tile, click to make main, seventh camera refused. Kiro states what was not tested.
+    - The User views the grid in a browser in their own way: up to six tiles, labels on each tile, click to make main, seventh camera refused, click tile 2: cam-2 becomes main, cam-1 becomes an orbit shot, and the status line says so. Kiro states what was not tested.
     - _Requirements: 7.1, 7.4, 7.5, 7.11, 25.1, 25.2_
 
 ### Phase 3: Modes, timeline and motion check

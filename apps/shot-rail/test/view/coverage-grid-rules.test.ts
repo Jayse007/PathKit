@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   addCamera,
   GRID_REFRESH_INTERVAL_MS,
+  planMainChange,
   selectMain,
   shouldRenderGrid,
 } from '../../src/view/coverage-grid-rules.js';
@@ -129,4 +130,107 @@ describe('selectMain', () => {
       expect(selectMain(id)).toBe(id);
     },
   );
+});
+
+describe('planMainChange', () => {
+  type Cam = {
+    id: string;
+    shotType: 'push-in' | 'orbit' | 'tracking' | 'crane';
+    bearingDeg: number;
+    heightM: number;
+    horizontalDistanceM: number;
+    lensMm: number;
+  };
+  const cam = (id: string, shotType: Cam['shotType']): Cam => ({
+    id,
+    shotType,
+    bearingDeg: 30,
+    heightM: -0.3,
+    horizontalDistanceM: 12,
+    lensMm: 50,
+  });
+
+  // Catches: leaving a push-in on a non-main camera, or a wrong message.
+  it('converts a push-in camera to orbit when another camera becomes main', () => {
+    const plan = planMainChange([cam('cam-1', 'push-in'), cam('cam-2', 'orbit')], 'cam-2');
+    expect(plan.cameras.map((c) => c.shotType)).toEqual(['orbit', 'orbit']);
+    expect(plan.converted).toEqual(['cam-1']);
+    expect(plan.message).toBe('cam-1 changed from push-in to orbit. Only the main camera can be a rail shot.');
+  });
+
+  // Catches: leaving crane out of the check.
+  it('converts a crane camera to orbit when another camera becomes main', () => {
+    const plan = planMainChange([cam('cam-1', 'crane'), cam('cam-2', 'orbit')], 'cam-2');
+    expect(plan.cameras.map((c) => c.shotType)).toEqual(['orbit', 'orbit']);
+    expect(plan.message).toBe('cam-1 changed from crane to orbit. Only the main camera can be a rail shot.');
+  });
+
+  // Catches: converting the camera that is already main.
+  it('changes nothing when the new main is the push-in camera itself', () => {
+    const plan = planMainChange([cam('cam-1', 'push-in'), cam('cam-2', 'orbit')], 'cam-1');
+    expect(plan.cameras.map((c) => c.shotType)).toEqual(['push-in', 'orbit']);
+    expect(plan.converted).toEqual([]);
+    expect(plan.message).toBe('');
+  });
+
+  // Catches: rebuilding the converted camera from defaults.
+  it('keeps bearing, height, distance and lens of a converted camera', () => {
+    const plan = planMainChange([cam('cam-1', 'push-in'), cam('cam-2', 'orbit')], 'cam-2');
+    expect(plan.cameras[0]).toEqual({
+      id: 'cam-1',
+      shotType: 'orbit',
+      bearingDeg: 30,
+      heightM: -0.3,
+      horizontalDistanceM: 12,
+      lensMm: 50,
+    });
+  });
+
+  // Catches: mutating the input or returning the same array or objects.
+  it('does not change the input and returns a different list', () => {
+    const input = [cam('cam-1', 'push-in'), cam('cam-2', 'orbit')];
+    const plan = planMainChange(input, 'cam-2');
+    expect(input[0].shotType).toBe('push-in');
+    expect(input[1].shotType).toBe('orbit');
+    expect(plan.cameras).not.toBe(input);
+    expect(plan.cameras[0]).not.toBe(input[0]);
+    expect(plan.cameras[1]).not.toBe(input[1]);
+  });
+
+  // Catches: silently accepting an unknown id.
+  it('throws with the id when the new main is not in the list', () => {
+    expect(() => planMainChange([cam('cam-1', 'orbit')], 'cam-9')).toThrow('cam-9');
+  });
+
+  // Catches: converting the new main camera.
+  it('keeps the crane shot of the new main camera', () => {
+    const plan = planMainChange([cam('cam-1', 'orbit'), cam('cam-2', 'crane')], 'cam-2');
+    expect(plan.cameras.map((c) => c.shotType)).toEqual(['orbit', 'crane']);
+    expect(plan.converted).toEqual([]);
+    expect(plan.message).toBe('');
+  });
+
+  // Catches: stopping after the first conversion, or a wrong sentence order.
+  it('converts several cameras in list order with one message', () => {
+    const plan = planMainChange(
+      [cam('cam-1', 'push-in'), cam('cam-2', 'crane'), cam('cam-3', 'orbit')],
+      'cam-3',
+    );
+    expect(plan.cameras.map((c) => c.shotType)).toEqual(['orbit', 'orbit', 'orbit']);
+    expect(plan.converted).toEqual(['cam-1', 'cam-2']);
+    expect(plan.message).toBe(
+      'cam-1 changed from push-in to orbit. cam-2 changed from crane to orbit. Only the main camera can be a rail shot.',
+    );
+  });
+
+  // Catches: converting tracking cameras.
+  it('never changes orbit or tracking cameras', () => {
+    const plan = planMainChange(
+      [cam('cam-1', 'orbit'), cam('cam-2', 'tracking'), cam('cam-3', 'orbit')],
+      'cam-3',
+    );
+    expect(plan.cameras.map((c) => c.shotType)).toEqual(['orbit', 'tracking', 'orbit']);
+    expect(plan.converted).toEqual([]);
+    expect(plan.message).toBe('');
+  });
 });

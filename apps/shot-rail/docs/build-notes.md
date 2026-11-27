@@ -1,5 +1,11 @@
 # Build notes
 
+## Task 32.3a: Main_Camera swap rule (newest entry, kept at top)
+
+- Done, user-requested, in three steps. Step 1 (specs): Requirement 7.5 now says that clicking a Camera view makes it the Main_Camera and that any other push-in or crane Camera becomes an orbit shot (bearing, height, Horizontal_Distance and lens kept) with a status-line message; `tasks.md` has a new sub-task 32.3a between 32.3 and 32.4, and 32.4 has a new check (click tile 2). No checkbox changed. Step 2: added pure `planMainChange(cameras, newMainId)` and the `MainChange` type to `src/view/coverage-grid-rules.ts` (new import: `type ShotType` from `../logic/shot-builders.js`) and 9 `it` blocks to `test/view/coverage-grid-rules.test.ts` (file now 18 `it` blocks, 59 Vitest tests expected). Step 3: in `src/main.ts`, `onSelect` no longer refuses with "cannot be the main camera yet"; it calls `planMainChange`, builds `next` with `cameras: plan.cameras`, and sets the status line to `plan.message` on success. The rig revert-on-failure code is unchanged.
+- Broke: nothing known. Nothing was run by Kiro.
+- Not tested: the new tests, the browser behaviour, the status line on screen.
+
 ## Task 32.3: Coverage_Grid view (newest entry, kept at top)
 
 - Done: wrote `src/view/coverage-grid.ts` (`createCoverageGrid(container, auxRenderer, roadPoints, onSelect)` returns `{ setLayout(settings), setMain(id), render(rig, frame, mode, changed, playing, msSinceLast), dispose() }`). One tile per camera: a `<button>` holding a 2D canvas (160x90 CSS px, times the pixel ratio capped at 2) and a caption with the camera id, the Angle_Label, the Framing_Label and a "Main" tag on the main tile (teal border plus the tag, so colour is not the only cue). Each tile is drawn by the shared auxiliary renderer and copied with `drawImage` straight after its render. `render` asks `shouldRenderGrid` and draws nothing outside Angle mode. A click or Enter (a button turns Enter and Space into a click, so there is no key handler) calls `onSelect(selectMain(id))`. No camera-rig.ts, coverage-grid-rules.ts or src/logic change. PathKit used only through the rig (`rig.evaluate`, `rig.evaluateSubject`) and `framingPercent` from `fill.ts`.

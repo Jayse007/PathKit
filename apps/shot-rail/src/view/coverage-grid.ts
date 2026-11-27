@@ -148,8 +148,8 @@ export function createCoverageGrid(
   const sizeScratch = new Vector2();
 
   let tiles: Tile[] = [];
-  let tileWidthPx = TILE_SIZE_PX.width;
-  let tileHeightPx = TILE_SIZE_PX.height;
+  let tileWidthPx: number = TILE_SIZE_PX.width;
+  let tileHeightPx: number = TILE_SIZE_PX.height;
   let disposed = false;
 
   // One listener on the container (created once). A tile is a <button>, so Enter and Space arrive as clicks.
