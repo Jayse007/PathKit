@@ -7,6 +7,7 @@ import { CAMERA_IDS, LENS_PRESETS_MM } from './logic/constants.js';
 import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
 import { lensAfterWheel, presetOf } from './logic/lens-zoom.js';
 import { SAMPLE_SHOTS } from './logic/samples.js';
+import { MEASURE_TERMS } from './logic/term-text.js';
 import { CameraRig } from './view/camera-rig.js';
 import type { RigSettings } from './view/camera-rig.js';
 import { createAuxRenderer } from './view/aux-renderer.js';
@@ -15,6 +16,7 @@ import type { CoverageGrid } from './view/coverage-grid.js';
 import { planMainChange } from './view/coverage-grid-rules.js';
 import type { GridMode } from './view/coverage-grid-rules.js';
 import { createGuideToggle, createGuidesOverlay } from './view/guides-view.js';
+import { applyLayout } from './view/layout.js';
 import { createMainView } from './view/main-view.js';
 import { createStageOverview } from './view/stage-overview.js';
 import type { StageOverview } from './view/stage-overview.js';
@@ -26,6 +28,7 @@ const CAMERA_ID = 'cam-1';
 const MODE: GridMode = 'angle'; // Move mode does not exist yet; the grid draws in Angle mode only
 
 function start(): void {
+  applyLayout(); // region messages, term titles and the focus hint line (task 36.1)
   const stage = document.getElementById('stage');
   const timelineBox = document.getElementById('timeline');
   const lensSelect = document.getElementById('lens') as HTMLSelectElement | null;
@@ -69,13 +72,13 @@ function start(): void {
       guidesBox,
       'guide-thirds',
       'Thirds (T)',
-      'Show or hide the rule-of-thirds lines. Key: T',
+      MEASURE_TERMS.thirdsGuide.text,
     );
     const safeAreaInput = createGuideToggle(
       guidesBox,
       'guide-safe',
       'Safe area (G)',
-      'Show or hide the safe-area rectangle. Key: G',
+      MEASURE_TERMS.safeAreaGuide.text,
     );
     createGuidesOverlay(stage, { thirdsInput, safeAreaInput });
   }

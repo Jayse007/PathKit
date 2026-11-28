@@ -1,5 +1,11 @@
 # Build notes
 
+## Task 36.1: interface layout (newest entry, kept at top)
+
+- Done: rewrote `index.html` as a CSS grid: Controls column (left), main view column (centre: `#stage`, `#status`, hint line, then the Stage overview and Camera views), Readout column (right), Timeline (bottom, full width). Wrote `src/view/layout.ts` (`applyLayout()`, `setRegionEmpty(id, empty)`) and pure `src/view/layout-rules.ts` (`TERM_BINDINGS`, `EMPTY_REGIONS`, `HINT_PLACEHOLDER`, `hintTextFor`). `main.ts`: imports `applyLayout` and `MEASURE_TERMS`, calls `applyLayout()` first, and passes `MEASURE_TERMS.thirdsGuide.text` and `MEASURE_TERMS.safeAreaGuide.text` as the guide tooltips (they were hand-written strings). No camera-rig.ts, src/logic or other view file changed. PathKit not used.
+- Choices: explanations on hover are `title`; on keyboard focus one visible hint line (`#term-hint`) copies the focused element's title. Colours and sizes are CSS custom properties in `index.html`. Narrow breakpoint 900px is my own value. `#stage` got `tabindex="0"` so the wheel-zoom line can be reached by keyboard.
+- Not tested: the layout has not been opened in a browser; the new files have not been type-checked or built; no tests were written (none asked for).
+
 ## Task 35.2: key map tests (newest entry, kept at top)
 
 - Done: wrote `test/logic/key-map.test.ts` (9 `it` blocks, 61 Vitest tests expected: 21 table keys + 7 upper-case + 1 for `=` + 6 unknown keys + 22 text-field keys (21 plus `=`) + 1 for "a"/"1" in a field + 1 PRIMARY_KEYS + 1 KEY_ACTIONS + 1 KEY_ALIASES). The key table and the count 21 are hand-written literals. Imports only `key-map.js` and `vitest`. No src change. PathKit not used.

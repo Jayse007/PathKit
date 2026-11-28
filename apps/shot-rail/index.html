@@ -5,42 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shot Rail</title>
     <style>
+      /* Layout values the spec does not name. Change them here only. Text colours are checked against the
+         4.5 minimum (CONTRAST_MIN_RATIO): text on page 16:1, muted text on panel 8.6:1, text on button 12:1. */
+      :root {
+        color-scheme: dark;
+        --page-bg: #14171b;
+        --panel-bg: #1b1f25;
+        --view-bg: #20242a; /* the same dark as the 3D views */
+        --control-bg: #2a2f37;
+        --border: #4a515c;
+        --text: #f2f2f2;
+        --text-muted: #b4bcc8;
+        --focus: #2ee6c4; /* the main-camera teal; amber is kept free for warnings */
+        --column-width: 260px;
+        --gap: 16px;
+        --overview-size: 240px;
+        --main-height-offset: 280px; /* page height the main view leaves for the status line, hint and timeline */
+      }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
+        background: var(--page-bg);
+        color: var(--text);
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.4;
       }
+      #app {
+        display: grid;
+        grid-template-columns: var(--column-width) minmax(0, 1fr) var(--column-width);
+        grid-template-areas:
+          "controls main readout"
+          "timeline timeline timeline";
+        gap: var(--gap);
+        padding: var(--gap);
+        min-height: 100vh;
+        align-content: start;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+      .panel {
+        background: var(--panel-bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 12px;
+        min-width: 0;
+      }
+      .empty-message {
+        margin: 12px 0 0;
+        color: var(--text-muted);
+      }
+      .empty-message[hidden] {
+        display: none;
+      }
+      #controls-column {
+        grid-area: controls;
+        align-self: start;
+      }
+      #readout-column {
+        grid-area: readout;
+        align-self: start;
+      }
+      #main-column {
+        grid-area: main;
+        min-width: 0;
+      }
+      #timeline-region {
+        grid-area: timeline;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 12px;
+      }
+      #guides {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 4px 8px;
+      }
+      select,
+      button {
+        background: var(--control-bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 4px 8px;
+        font: inherit;
+      }
+      :focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      /* The main view is the largest region: it fills its column, capped so the timeline stays on screen. */
       #stage {
-        width: min(100vw, calc((100vh - 48px) * 16 / 9));
+        width: min(100%, calc((100vh - var(--main-height-offset)) * 16 / 9));
+        min-width: 320px;
+        max-width: 100%;
         aspect-ratio: 16 / 9;
-        background: #20242a;
+        background: var(--view-bg);
       }
-      #timeline {
-        box-sizing: border-box;
-        width: min(100vw, calc((100vh - 48px) * 16 / 9));
-        padding: 8px 12px;
+      #status {
+        display: block;
+        min-height: 1.4em;
+        margin-top: 8px;
       }
-      #bar {
-        padding: 8px 12px;
+      #term-hint {
+        margin: 4px 0 0;
+        min-height: 1.4em;
+        color: var(--text-muted);
+      }
+      #side-views {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: var(--gap);
+        margin-top: var(--gap);
       }
       #overview {
-        width: 240px;
-        height: 240px;
-        background: #20242a;
+        width: var(--overview-size);
+        height: var(--overview-size);
+        background: var(--view-bg);
+      }
+      #timeline {
+        width: 100%;
+      }
+      /* Narrow window: one column, main view first. 900px is this app's own choice. */
+      @media (max-width: 900px) {
+        #app {
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-areas:
+            "main"
+            "controls"
+            "readout"
+            "timeline";
+        }
+        #stage {
+          width: 100%;
+          min-width: 0;
+        }
       }
     </style>
   </head>
   <body>
     <div id="app">
-      <div id="stage"></div>
-      <div id="timeline" role="group" aria-label="Timeline: play, pause, scrub and frame counter"></div>
-      <div id="bar">
-        <label for="lens">Lens</label>
-        <select id="lens" title="Focal length of the main camera"></select>
-        <span id="guides"></span>
+      <aside id="controls-column" class="panel" aria-label="Controls">
+        <h2>Controls</h2>
+        <div class="field">
+          <label for="lens">Lens</label>
+          <select id="lens"></select>
+        </div>
+        <div class="field">
+          <span id="guides-label">Guides</span>
+          <span id="guides" role="group" aria-labelledby="guides-label"></span>
+        </div>
+        <p id="controls-empty" class="empty-message"></p>
+      </aside>
+
+      <main id="main-column">
+        <div id="stage" tabindex="0" role="group" aria-label="Main camera view"></div>
         <span id="status" role="status"></span>
-      </div>
-      <div id="overview" title="Stage overview: top-down view of the car, road, cameras and rails"></div>
-      <div id="grid" role="group" aria-label="Coverage grid: one tile per camera. Choose a tile to make it the main camera."></div>
+        <p id="term-hint"></p>
+        <div id="side-views">
+          <section aria-label="Stage overview">
+            <h2>Stage overview</h2>
+            <div id="overview" title="Stage overview: top-down view of the car, road, cameras and rails"></div>
+          </section>
+          <section aria-label="Camera views">
+            <h2>Camera views</h2>
+            <div id="grid" role="group" aria-label="Coverage grid: one tile per camera. Choose a tile to make it the main camera."></div>
+          </section>
+        </div>
+      </main>
+
+      <aside id="readout-column" class="panel" aria-label="Readout">
+        <h2>Readout</h2>
+        <p id="readout-empty" class="empty-message"></p>
+      </aside>
+
+      <section id="timeline-region" class="panel" aria-label="Timeline">
+        <h2>Timeline</h2>
+        <div id="timeline" role="group" aria-label="Timeline: play, pause, scrub and frame counter"></div>
+      </section>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

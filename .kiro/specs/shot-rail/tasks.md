@@ -398,7 +398,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 11.12, 18.2 (design Keyboard map)_
 
 - [ ] 36. Interface layout
-  - [~] 36.1 Implement the layout in `index.html` and `src/view/layout.ts`
+  - [x] 36.1 Implement the layout in `index.html` and `src/view/layout.ts`
     - Regions only: the main camera view (16:9, the largest region), the Stage_Overview, the controls column on the left, the readout column on the right, the Timeline at the bottom. Empty regions show a message that says what the User can do next. Plain labels. One-line explanations on hover and on keyboard focus for terms that need them.
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5, 17.9, 17.10, 18.5_
   - [~] 36.2 User checkpoint: view the layout
