@@ -489,10 +489,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 ### Phase P2: Extra features (regular tasks, after the P1 checkpoint)
 
 - [ ] 44. Shot_Strip
-  - [-] 44.1 Implement the picker in `src/logic/strip-frames.ts` (pure)
+  - [ ] 44.1 Implement the picker in `src/logic/strip-frames.ts` (pure)
     - `stripFrames(shotLength)`: six whole frame numbers from 0 to `shotLength - 1`, increasing, spread evenly, distinct for every length 60 to 600.
     - _Requirements: 12.2, 12.6_
-  - [~] 44.2 Write the picker tests
+  - [-] 44.2 Write the picker tests
     - For every length 60 to 600: six values, whole, strictly increasing, first 0, last `length - 1`. Hand-written: length 60 gives 0, 12, 24, 35, 47, 59; length 240 gives 0, 48, 96, 143, 191, 239.
     - Source line it should catch: use `round(k * length / 5)` so the last value is the shot length (out of range).
     - _Requirements: 12.2, 12.6_

@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 44.2: picker tests (newest entry, kept at top)
+
+- Done: removed the `+ 0` after `Math.round(...)` in `src/logic/strip-frames.ts` (comment-free one-line change). New `test/logic/strip-frames.test.ts`: 5 `it`/`it.each` calls, 13 tests expected in Vitest (3 hand-written rows, whole/increasing/ends check for lengths 60 to 600, exact-rounding cross-check, 7 bad lengths, new array each call).
+- Not tested: nothing was run. Not covered: the Shot_Strip view, drawing, or any use of `stripFrames` outside this file.
+
 ## Task 44.1: Shot_Strip picker (newest entry, kept at top)
 
 - Done: new pure `src/logic/strip-frames.ts` with `stripFrames(shotLength): number[]`, `round(k * (shotLength - 1) / 5)` for k = 0 to 5 (STRIP_PICTURE_COUNT - 1 gaps). Throws an Error naming the value if the length is not a whole number from 60 to 600. No existing file changed. PathKit not used.

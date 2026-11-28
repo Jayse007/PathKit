@@ -24,7 +24,7 @@ export function stripFrames(shotLength: number): number[] {
   const gaps = STRIP_PICTURE_COUNT - 1;
   const frames: number[] = [];
   for (let k = 0; k < STRIP_PICTURE_COUNT; k++) {
-    frames.push(Math.round((k * lastFrame) / gaps) + 0);
+    frames.push(Math.round((k * lastFrame) / gaps));
   }
   return frames;
 }
