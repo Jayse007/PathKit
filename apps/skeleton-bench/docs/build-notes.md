@@ -517,3 +517,11 @@
 - Broke: nothing known. Not run (no terminal). `npx tsc --noEmit -p .` was NOT run. Expected: 28 files, 303 passed (no test added or changed).
 - PathKit feature used: none (text only).
 - Not tested: how the About panel looks with eight lines, and the README text beyond a read-through.
+
+## Task 22.1 follow-up: Tier A gesture wording and the Tour aim limit
+
+- Done: `ABOUT_LINES` in src/ui/about-text.ts is now four lines (simplified models, sample data, PathKit cannot follow a live hand, "Hand gestures are not available in this version."). The gesture-detail lines and the future-tense sentence are removed; header comment updated (24.1, 24.2, 24.4 stated; 24.5 to 24.9 are written when Tier B is built). README honest limits: same removal, plus the new Tour aim limit. Requirement 24.5 to 24.9 now start "WHEN gestures (Tier B) are built, ..."; the design UI-regions row and task 22.1 wording match. 22.1 is not ticked.
+- Tour aim limit: "The Tour aim glides between Parts and does not hold on each one." Found in the 20.7 checkpoint: the camera circles at constant speed and the aim target has one keyframe per Part, so it glides. The User chose to record it as a limit rather than fix it.
+- Broke: nothing known. Not run (no terminal). `npx tsc --noEmit -p .` was NOT run. The existing test in test/ui-layout.test.ts was read and should still hold (no edit). Expected: 30 files, 303 passed.
+- PathKit feature used: none (text only).
+- Not tested: how the shorter About panel looks, and the README text beyond a read-through.

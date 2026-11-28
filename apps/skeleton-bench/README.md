@@ -27,11 +27,8 @@ The impeller spin is ordinary Three.js code. Dragging and the cursor are ordinar
 - The Machines are simplified models built from shapes. They are not to scale with each other, because they share one stage box.
 - The specifications are invented sample data. The facts about each Part are paraphrased from the web pages listed in `THIRD_PARTY.md` and `docs/sources.md`. Several of those pages are supplier or blog pages, not standards, and some claims are thinly sourced (see `docs/sources.md`).
 - PathKit cannot follow a live hand, because it bakes ahead of time.
-- Hand gestures are not available in this version (the Gestures button is disabled). When they are added, they will need a webcam, good light and a page served over HTTPS.
-- Two-hand zoom is the least stable gesture.
-- Moving the Machine has no gesture. Use the mouse or the arrow keys in Move mode.
-- The pose classifier is our own code over the 21 hand points. No second model is used.
-- Hand tracking will use MediaPipe, which sends usage metrics to Google.
+- Hand gestures are not available in this version.
+- The Tour aim glides between Parts and does not hold on each one.
 - Move mode has arrow keys and mouse drag, and a Reset position button, but no on-screen buttons that move the Machine. A user with only a mouse can drag, but has no click-only way to move it in steps.
 - The Inspector's open Part panel has a minimum height of `calc(100vh - 160px)`. The 160 px is an estimate, not a measured value.
 - Colour contrast is tested, but the Stage graphics are held to 3 to 1, not 4.5 to 1. The Clean_Engineering fill #7d8793 is 3.16 to 1 and its accent #1f6feb is 4.02 to 1. The X_Ray_Skeleton translucent fill is about 1.7 to 1 against the background by design; the outlines and the accent carry the shape. That fill contrast is not tested.

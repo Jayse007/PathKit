@@ -7,7 +7,7 @@ import { CAMERA_IDS, LENS_PRESETS_MM } from './logic/constants.js';
 import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
 import { lensAfterWheel, presetOf } from './logic/lens-zoom.js';
 import { SAMPLE_SHOTS } from './logic/samples.js';
-import { MEASURE_TERMS } from './logic/term-text.js';
+import { LENS_TERMS, MEASURE_TERMS } from './logic/term-text.js';
 import { CameraRig } from './view/camera-rig.js';
 import type { RigSettings } from './view/camera-rig.js';
 import { createAuxRenderer } from './view/aux-renderer.js';
@@ -15,6 +15,8 @@ import { createCoverageGrid } from './view/coverage-grid.js';
 import type { CoverageGrid } from './view/coverage-grid.js';
 import { planMainChange } from './view/coverage-grid-rules.js';
 import type { GridMode } from './view/coverage-grid-rules.js';
+import { createControls } from './view/controls.js';
+import type { Controls } from './view/controls.js';
 import { createGuideToggle, createGuidesOverlay } from './view/guides-view.js';
 import { applyLayout } from './view/layout.js';
 import { createMainView } from './view/main-view.js';
@@ -25,7 +27,8 @@ import { createTimeline } from './view/timeline.js';
 import type { TimelineTick } from './view/timeline.js';
 
 const CAMERA_ID = 'cam-1';
-const MODE: GridMode = 'angle'; // Move mode does not exist yet; the grid draws in Angle mode only
+const MODE_CHANGED_MESSAGE = 'Mode changed. The camera grid is drawn in Angle mode only.';
+const SHOT_CHANGED_PREFIX = 'The change could not be applied';
 
 function start(): void {
   applyLayout(); // region messages, term titles and the focus hint line (task 36.1)
@@ -56,6 +59,8 @@ function start(): void {
     const option = document.createElement('option');
     option.value = String(mm);
     option.textContent = `${mm} mm`;
+    const lensLine = LENS_TERMS[mm];
+    if (lensLine !== undefined) option.title = lensLine.text;
     option.selected = mm === sample.placement.lensMm;
     lensSelect.appendChild(option);
   }
@@ -102,6 +107,8 @@ function start(): void {
   let grid: CoverageGrid | null = null;
   let current: RigSettings = settings;
   let lastGridDrawMs = 0;
+  let mode: GridMode = 'angle'; // Move mode only changes what the grid does so far: it draws in Angle mode only
+  let controls: Controls | null = null;
 
   // Draws everything at the Timeline's displayed frame. Evaluates baked data only; it never bakes.
   // Created once. While playing the grid is redrawn at 10 Hz (shouldRenderGrid); every other change redraws it.
@@ -111,7 +118,7 @@ function start(): void {
     if (overview !== null) overview.showFrame(rig, tick.frame);
     if (
       grid !== null &&
-      grid.render(rig, tick.frame, MODE, tick.gridChanged, tick.playing, tick.nowMs - lastGridDrawMs)
+      grid.render(rig, tick.frame, mode, tick.gridChanged, tick.playing, tick.nowMs - lastGridDrawMs)
     ) {
       lastGridDrawMs = tick.nowMs;
     }
@@ -136,8 +143,9 @@ function start(): void {
     current = { ...current, cameras: current.cameras.map((c) => (c.id === mainId ? { ...c, lensMm: mm } : c)) };
     if (grid !== null) {
       grid.setLensMm(mainId, mm);
-      grid.render(rig, timeline.frame(), MODE, true, false, 0);
+      grid.render(rig, timeline.frame(), mode, true, false, 0);
     }
+    if (controls !== null) controls.setLens(mm);
     const preset = presetOf(mm);
     if (preset !== null) {
       lensSelect.value = String(preset);
@@ -185,8 +193,42 @@ function start(): void {
     }
     if (grid !== null) {
       grid.setMain(id);
-      grid.render(rig, frame, MODE, true, false, 0);
+      grid.render(rig, frame, mode, true, false, 0);
     }
+    if (controls !== null) controls.show(current);
+  };
+
+  // Applies new settings from the controls (task 37.1). Pauses first, re-bakes through the rig, then
+  // redraws everything. `next` was built from `current`, which carries the zoomed lens, so a zoom is kept.
+  // Returns false and restores the old settings when the rig cannot build the new set. Never starts playback.
+  const applySettings = (next: RigSettings, message: string): boolean => {
+    timeline.pause();
+    rig.setSettings(next); // marks the rig dirty
+    const result = rig.tick();
+    if (result === null || !result.ok) {
+      status.textContent = `${SHOT_CHANGED_PREFIX}: ${result?.message ?? 'no settings'}`;
+      rig.setSettings(current); // the pending settings must not stay on the failed ones
+      rig.tick();
+      return false;
+    }
+    current = next;
+    status.textContent = result.message === null ? message : `${message} ${result.message}`.trim();
+    if (grid !== null) {
+      grid.setLayout(next);
+      grid.setMain(next.mainCameraId);
+    }
+    timeline.setShot(next.shotLengthFrames, rig.findingsForMain()); // pauses, new marks; the frame is kept
+    const frame = timeline.frame();
+    const main = next.cameras.find((c) => c.id === next.mainCameraId);
+    if (main !== undefined) applyMainLens(main.lensMm); // view, lens menu, slider and a grid redraw
+    view.showFrame(rig, next.mainCameraId, frame);
+    subjectView.showFrame(rig, frame);
+    if (overview !== null) {
+      overview.setLayout(rig, next);
+      overview.showFrame(rig, frame);
+    }
+    if (controls !== null) controls.show(current);
+    return true;
   };
 
   if (overviewBox !== null || gridBox !== null) {
@@ -206,13 +248,38 @@ function start(): void {
       if (gridBox !== null) {
         grid = createCoverageGrid(gridBox, aux.renderer, settings.road.points, onSelect);
         grid.setLayout(settings);
-        grid.render(rig, timeline.frame(), MODE, true, false, 0);
+        grid.render(rig, timeline.frame(), mode, true, false, 0);
       }
     }
   }
 
   view.setLensMm(sample.placement.lensMm);
   view.showFrame(rig, current.mainCameraId, timeline.frame());
+
+  // The controls panel (task 37.1). Edits start from `current`, never from the rig's own copy.
+  const controlsTop = document.getElementById('controls-top');
+  const controlsAfterLens = document.getElementById('controls-after-lens');
+  const lensField = document.getElementById('lens-field');
+  if (controlsTop !== null && controlsAfterLens !== null && lensField !== null) {
+    controls = createControls({
+      topBox: controlsTop,
+      afterLensBox: controlsAfterLens,
+      lensField,
+      mode,
+      getSettings: () => current,
+      onChange: applySettings,
+      onSelectCamera: onSelect,
+      onLens: applyMainLens,
+      onMode: (next: GridMode) => {
+        mode = next;
+        status.textContent = MODE_CHANGED_MESSAGE;
+        if (grid !== null) grid.render(rig, timeline.frame(), mode, true, false, 0);
+      },
+      onRefuse: (message: string) => {
+        status.textContent = message;
+      },
+    });
+  }
 
   lensSelect.addEventListener('change', () => {
     applyMainLens(Number(lensSelect.value));

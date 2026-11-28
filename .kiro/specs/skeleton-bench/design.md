@@ -358,7 +358,7 @@ Two palette objects and two material sets share one layout. X_Ray_Skeleton uses 
 | Inspector | Name, job, material, position text, "sample data" label; the Parts list; empty state "Pick a part to read about it" |
 | Control_Bar | Rotate / Move toggle, explode slider, orbit scrub, zoom slider, Tour, Pause, Stop, Reset position, Spin impeller toggle (Pump only), Look toggle, About button, Gestures toggle (absent or disabled in Tier A) |
 | Motion_Check | Linter findings in plain words |
-| About_Panel | Honest limits (Requirement 24), including "machines are not to scale with each other" |
+| About_Panel | Honest limits (Requirement 24), including "machines are not to scale with each other". The gesture statements of 24.5 to 24.9 are stated when Tier B is built; Tier A states only "Hand gestures are not available in this version." |
 
 Every control has a visible label and a key hint. Every single-letter shortcut has a visible button (decision 17).
 

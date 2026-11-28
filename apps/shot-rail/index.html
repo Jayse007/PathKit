@@ -89,7 +89,22 @@
         align-items: center;
         gap: 4px 8px;
       }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 8px;
+      }
+      .key-hint {
+        color: var(--text-muted);
+      }
+      #controls-column button[aria-pressed="true"] {
+        border-color: var(--focus);
+        border-width: 2px;
+        font-weight: 700;
+      }
       select,
+      input[type="number"],
       button {
         background: var(--control-bg);
         color: var(--text);
@@ -155,10 +170,12 @@
     <div id="app">
       <aside id="controls-column" class="panel" aria-label="Controls">
         <h2>Controls</h2>
-        <div class="field">
+        <div id="controls-top"></div>
+        <div id="lens-field" class="field">
           <label for="lens">Lens</label>
           <select id="lens"></select>
         </div>
+        <div id="controls-after-lens"></div>
         <div class="field">
           <span id="guides-label">Guides</span>
           <span id="guides" role="group" aria-labelledby="guides-label"></span>

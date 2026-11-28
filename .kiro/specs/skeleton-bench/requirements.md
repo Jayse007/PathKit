@@ -471,11 +471,11 @@ Each item states the issue, the assumption used in this document, and who must d
 2. THE About_Panel and the README SHALL state that specifications are invented sample data.
 3. THE README SHALL state that the impeller spin is ordinary Three.js code, and that the dragging and the cursor are ordinary browser code. None of these use PathKit. THE About_Panel SHALL NOT state which parts of the app do or do not use PathKit; that is left to the write-up.
 4. THE About_Panel and the README SHALL state that PathKit cannot follow a live hand because it bakes ahead of time.
-5. THE About_Panel and the README SHALL state that gestures need a webcam, light and a page served over HTTPS.
-6. THE About_Panel and the README SHALL state that two-hand zoom is the least stable gesture.
-7. THE About_Panel and the README SHALL state that moving the Machine has no gesture.
-8. THE About_Panel and the README SHALL state that the pose classifier is our own code over the 21 hand points and that no second model is used.
-9. THE About_Panel and the README SHALL state that MediaPipe sends usage metrics to Google.
+5. WHEN gestures (Tier B) are built, the About_Panel and the README SHALL state that gestures need a webcam, light and a page served over HTTPS.
+6. WHEN gestures (Tier B) are built, the About_Panel and the README SHALL state that two-hand zoom is the least stable gesture.
+7. WHEN gestures (Tier B) are built, the About_Panel and the README SHALL state that moving the Machine has no gesture.
+8. WHEN gestures (Tier B) are built, the About_Panel and the README SHALL state that the pose classifier is our own code over the 21 hand points and that no second model is used.
+9. WHEN gestures (Tier B) are built, the About_Panel and the README SHALL state that MediaPipe sends usage metrics to Google.
 10. THE Skeleton_Bench_App SHALL give the User access to the About_Panel from the main screen.
 11. WHEN the About_Panel is open and the User presses Escape, THE Skeleton_Bench_App SHALL close the panel and move focus to the About button, and that key press SHALL NOT clear the Part selection. When the panel is closed, Escape clears the selection as in Requirement 14.
 
