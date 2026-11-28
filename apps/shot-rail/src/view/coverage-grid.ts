@@ -82,6 +82,11 @@ export interface CoverageGrid {
     playing: boolean,
     msSinceLast: number,
   ): boolean;
+  /**
+   * Show or hide the whole grid (the tiles stay in the DOM, so focus and the main marker are kept).
+   * Does not draw: after showing, call render with changed = true, because tiles built while hidden are blank.
+   */
+  setVisible(visible: boolean): void;
   /** Release this view's geometries and materials and remove the tiles. The shared renderer is not touched. */
   dispose(): void;
 }
@@ -333,6 +338,10 @@ export function createCoverageGrid(
       rig.evaluateSubject(displayedFrame, subjectOut);
       for (let i = 0; i < tiles.length; i++) drawTile(rig, tiles[i], displayedFrame);
       return true;
+    },
+    setVisible(visible: boolean): void {
+      // The container's display is set inline (grid), so the hidden attribute would lose; set display itself.
+      container.style.display = visible ? 'grid' : 'none';
     },
     dispose(): void {
       disposed = true;

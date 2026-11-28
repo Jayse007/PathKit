@@ -490,6 +490,8 @@ Each action has exactly one primary key (= is an alias of +); none collides with
 
 Two WebGL contexts total, not eight: one shared auxiliary `THREE.WebGLRenderer` used in turn for the Coverage_Grid tiles, the Shot_Strip and the Stage_Overview — after each of its renders, the result is copied into that view's own 2D `<canvas>` via `drawImage` immediately, before the shared renderer is reused for the next view — and one main `THREE.WebGLRenderer` for the main camera view and for Capture. The Coverage_Grid renders only while Angle_Mode is active, and only on a settings change or, while the Timeline is playing, at `PLAYBACK_RATE_GRID` (10 Hz), never every display frame (Requirement 7.9, 7.10). The playback loop advances whole frames using a time accumulator, capped by `PLAYBACK_MAX_CATCHUP_FRAMES` so a slow frame cannot cause a large jump (it drops the backlog instead of racing to catch up). `prefers-reduced-motion: reduce` removes interface transitions (mode switches, panel open/close) and replaces them with instant jumps, but leaves the subject's eased speed profile (`Frame_Remap`) untouched during playback, per Requirement 19.6's explicit carve-out — "motion" here means interface animation, not the simulated camera subject.
 
+WHILE Move_Mode is active, the Coverage_Grid tile pictures are hidden and the line 'Camera views are shown in Angle mode (key A).' is shown in their place; the pictures are drawn again when Angle_Mode becomes active (Requirement 7.1). The tiles' DOM is kept, not rebuilt, on a mode change.
+
 ### Project layout
 
 ```

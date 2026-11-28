@@ -215,7 +215,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 
 #### Acceptance Criteria
 
-1. WHILE Angle_Mode is active, THE Shot_Rail_App SHALL show a Coverage_Grid of up to 6 small Camera views.
+1. WHILE Angle_Mode is active, THE Shot_Rail_App SHALL show a Coverage_Grid of up to 6 small Camera views. WHILE Move_Mode is active, THE Shot_Rail_App SHALL hide the Camera view pictures and show the line 'Camera views are shown in Angle mode (key A).' The pictures SHALL be drawn again when Angle_Mode becomes active.
 2. THE Shot_Rail_App SHALL let the User set each Camera's bearing, height, Horizontal_Distance and lens.
 3. THE Shot_Rail_App SHALL label the distance control as the horizontal distance (the orbit radius) and SHALL show the Straight_Line_Distance as a read-only value.
 4. THE Shot_Rail_App SHALL show the Angle_Label and the Framing_Label on each Camera view in the Coverage_Grid.
