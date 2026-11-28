@@ -68,10 +68,13 @@ describe('stripFrames', () => {
     expect(() => stripFrames(bad)).toThrow(/stripFrames/);
   });
 
+  // A shared array returned by every call would make `first` change after the second call.
   it('returns a new array each call', () => {
     const first = stripFrames(60);
+    const second = stripFrames(240);
+    expect(first).toEqual([0, 12, 24, 35, 47, 59]);
+    expect(second).not.toBe(first);
     first[1] = 999;
-    first.push(1);
     expect(stripFrames(60)).toEqual([0, 12, 24, 35, 47, 59]);
   });
 });

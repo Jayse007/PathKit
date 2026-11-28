@@ -34,6 +34,8 @@ import { createSamplesMenu } from './view/samples-menu.js';
 import { STARTUP_SAMPLE_INDEX, sampleLoadedMessage, sampleToSettings } from './view/samples-menu-rules.js';
 import { createStageOverview } from './view/stage-overview.js';
 import type { StageOverview } from './view/stage-overview.js';
+import { createShotStrip } from './view/shot-strip.js';
+import type { ShotStrip } from './view/shot-strip.js';
 import { createSubjectView } from './view/subject-view.js';
 import { createTimeline } from './view/timeline.js';
 import type { TimelineTick } from './view/timeline.js';
@@ -111,6 +113,7 @@ function start(): void {
   const gridBox = document.getElementById('grid');
   let overview: StageOverview | null = null;
   let grid: CoverageGrid | null = null;
+  let strip: ShotStrip | null = null; // the Shot_Strip (task 44.3); drawn from applyMainLens only (after the first draw)
   let current: RigSettings = settings;
   let lastGridDrawMs = 0;
   let mode: GridMode = 'angle'; // decides which control panels are shown, and the grid draws in Angle mode only
@@ -173,6 +176,9 @@ function start(): void {
       grid.setLensMm(mainId, mm);
       grid.render(rig, timeline.frame(), mode, true, false, 0);
     }
+    // Every shot, main camera and lens change comes through here (applySettings, onSelect, the lens menu,
+    // the slider, the wheel and the keys), so this is the only place the Shot_Strip is redrawn after its first draw.
+    if (strip !== null) strip.render(rig, mainId, mm, current.shotLengthFrames);
     if (controls !== null) controls.setLens(mm);
     const preset = presetOf(mm);
     if (preset !== null) {
@@ -261,12 +267,14 @@ function start(): void {
     return true;
   };
 
-  if (overviewBox !== null || gridBox !== null) {
+  const stripBox = document.getElementById('strip');
+  if (overviewBox !== null || gridBox !== null || stripBox !== null) {
     const aux = createAuxRenderer();
     if (aux.renderer === null) {
       const text = `could not start: this browser could not create a WebGL context (${aux.reason}).`;
       if (overviewBox !== null) overviewBox.textContent = `The overview ${text}`;
       if (gridBox !== null) gridBox.textContent = `The grid ${text}`;
+      if (stripBox !== null) stripBox.textContent = `The shot strip ${text}`;
     } else {
       if (overviewBox !== null) {
         overview = createStageOverview(overviewBox, aux.renderer, settings.road.points);
@@ -279,6 +287,11 @@ function start(): void {
         grid = createCoverageGrid(gridBox, aux.renderer, settings.road.points, onSelect);
         grid.setLayout(settings);
         grid.render(rig, timeline.frame(), mode, true, false, 0);
+      }
+      if (stripBox !== null) {
+        // The Timeline exists here. A picture click seeks (pauses, never starts playback).
+        strip = createShotStrip(stripBox, aux.renderer, settings.road.points, (frame: number) => timeline.seekTo(frame));
+        strip.render(rig, current.mainCameraId, mainLensMm, current.shotLengthFrames); // the first draw
       }
     }
   }

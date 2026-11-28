@@ -492,12 +492,13 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [ ] 44.1 Implement the picker in `src/logic/strip-frames.ts` (pure)
     - `stripFrames(shotLength)`: six whole frame numbers from 0 to `shotLength - 1`, increasing, spread evenly, distinct for every length 60 to 600.
     - _Requirements: 12.2, 12.6_
-  - [-] 44.2 Write the picker tests
+  - [ ] 44.2 Write the picker tests
     - For every length 60 to 600: six values, whole, strictly increasing, first 0, last `length - 1`. Hand-written: length 60 gives 0, 12, 24, 35, 47, 59; length 240 gives 0, 48, 96, 143, 191, 239.
     - Source line it should catch: use `round(k * length / 5)` so the last value is the shot length (out of range).
     - _Requirements: 12.2, 12.6_
-  - [~] 44.3 Implement the strip view in `src/view/shot-strip.ts`
+  - [-] 44.3 Implement the strip view in `src/view/shot-strip.ts`
     - Six pictures from the shared auxiliary renderer into per-picture 2D canvases, each labelled with its frame number; activating one moves the Timeline there; redraws when the shot changes.
+    - The pure label text is in `src/view/shot-strip-rules.ts`, with its tests in `test/view/shot-strip-rules.test.ts`.
     - _Requirements: 12.1, 12.3, 12.4, 12.5_
   - [~] 44.4 User checkpoint: view the Shot_Strip
     - The User views the strip in a browser in their own way. Kiro states what was not tested.

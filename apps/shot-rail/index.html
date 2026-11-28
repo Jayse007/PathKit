@@ -171,6 +171,12 @@
         height: var(--overview-size);
         background: var(--view-bg);
       }
+      /* Shot strip (task 44.3): the pictures sit in a row that wraps. 8px is the same gap as the camera tiles. */
+      #strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
       #timeline {
         width: 100%;
       }
@@ -288,6 +294,7 @@
             <div id="grid" role="group" aria-label="Coverage grid: one tile per camera. Choose a tile to make it the main camera."></div>
             <p id="grid-move-message" class="empty-message" hidden></p>
           </section>
+          <section aria-label="Shot strip"><h2>Shot strip</h2><div id="strip"></div></section>
         </div>
       </main>
 

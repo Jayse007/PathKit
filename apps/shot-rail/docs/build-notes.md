@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 44.3: Shot_Strip view (newest entry, kept at top)
+
+- Done: test fix first. "returns a new array each call" in `test/logic/strip-frames.test.ts` now calls `stripFrames` twice before changing the first array, so a shared array would be caught (still 13 tests). New pure `src/view/shot-strip-rules.ts` (`stripLabel`, `stripAriaLabel`) with `test/view/shot-strip-rules.test.ts` (6 tests expected). New `src/view/shot-strip.ts` (`createShotStrip(container, auxRenderer, roadPoints, onActivate)` returns `{ render, dispose }`), modelled on `coverage-grid.ts`: six `<button>`s, each with its own 2D canvas and a caption, built at the first render and when the shot length changes; one click listener on the container reads `data-frame`. `index.html`: a "Shot strip" section with `#strip` after Camera views, plus a small flex-wrap rule. `main.ts`: the strip is made next to the grid with the same aux renderer (after `timeline` exists; a picture click calls `timeline.seekTo`), drawn once at creation, and redrawn by one call in `applyMainLens`. If WebGL fails, `#strip` gets the same kind of text message as the grid. PathKit not used directly.
+- Not tested: nothing was run. The strip was not opened in a browser (look, picture size, focus outline, click and keyboard activation, redraw after each kind of change). The view file is not imported by any test.
+
 ## Task 44.2: picker tests (newest entry, kept at top)
 
 - Done: removed the `+ 0` after `Math.round(...)` in `src/logic/strip-frames.ts` (comment-free one-line change). New `test/logic/strip-frames.test.ts`: 5 `it`/`it.each` calls, 13 tests expected in Vitest (3 hand-written rows, whole/increasing/ends check for lengths 60 to 600, exact-rounding cross-check, 7 bad lengths, new array each call).
