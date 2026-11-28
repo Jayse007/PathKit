@@ -132,10 +132,20 @@ export function withShotType(settings: RigSettings, cameraId: string, shotType: 
   const converted = isRail && cameraId !== settings.mainCameraId;
   const applied: ShotType = converted ? FALLBACK_SHOT_TYPE : shotType;
   const message = converted ? `${cameraId} changed from ${shotType} to ${applied}. Only the main camera can be a rail shot.` : '';
+  const isMain = cameraId === settings.mainCameraId;
+  const change = (c: CameraSetting): CameraSetting => {
+    if (converted) return { ...c, shotType: applied, railShotWhenMain: shotType as 'push-in' | 'crane' };
+    if (isMain) {
+      // The User set the Main_Camera's shot type: forget any remembered rail shot (no key left).
+      const { railShotWhenMain: _forgotten, ...rest } = c;
+      return { ...rest, shotType: applied };
+    }
+    return { ...c, shotType: applied };
+  };
   return {
     settings: {
       ...settings,
-      cameras: settings.cameras.map((c) => (c.id === cameraId ? { ...c, shotType: applied } : { ...c })),
+      cameras: settings.cameras.map((c) => (c.id === cameraId ? change(c) : { ...c })),
     },
     message,
   };
@@ -157,7 +167,8 @@ export function withAddedCamera(settings: RigSettings): ChangeResult {
   const id = CAMERA_IDS.find((candidate) => !used.has(candidate));
   if (id === undefined) return { ok: false, message: 'No free camera id is left. Remove a camera first.' };
   const main = settings.cameras[cameraIndex(settings, settings.mainCameraId)];
-  const added: CameraSetting = { ...main, id, shotType: ADDED_CAMERA_SHOT_TYPE };
+  const { railShotWhenMain: _notCopied, ...mainCopy } = main;
+  const added: CameraSetting = { ...mainCopy, id, shotType: ADDED_CAMERA_SHOT_TYPE };
   return {
     ok: true,
     settings: { ...settings, cameras: [...settings.cameras.map((c) => ({ ...c })), added] },

@@ -14,7 +14,7 @@
 import { LENS_ZOOM_MAX_MM, LENS_ZOOM_MIN_MM, MAX_CAMERAS, SHOT_LENGTH_MAX, SHOT_LENGTH_MIN } from '../logic/constants.js';
 import type { ShotType } from '../logic/shot-builders.js';
 import { MEASURE_TERMS, SHOT_TYPE_TERMS } from '../logic/term-text.js';
-import type { RigSettings } from './camera-rig.js';
+import type { CameraSetting, RigSettings } from './camera-rig.js';
 import type { GridMode } from './coverage-grid-rules.js';
 import {
   FIELD_KEY_HINT,
@@ -313,6 +313,11 @@ export function createControls(options: ControlsOptions): Controls {
   // The camera rows built last time, in order. Every row keeps a Remove button; the main row's is hidden.
   let rowParts: RowParts[] = [];
 
+  // "orbit" or, when a rail shot is remembered, "orbit (push-in when main)".
+  function shotText(c: CameraSetting): string {
+    return c.railShotWhenMain === undefined ? c.shotType : `${c.shotType} (${c.railShotWhenMain} when main)`;
+  }
+
   function fillRow(part: RowParts, index: number, id: string, shotType: string, isMain: boolean): void {
     part.select.setAttribute(ATTR_SELECT, id);
     part.select.setAttribute('aria-pressed', isMain ? 'true' : 'false');
@@ -339,7 +344,7 @@ export function createControls(options: ControlsOptions): Controls {
     }
     if (sameIds) {
       for (let i = 0; i < rowParts.length; i++) {
-        fillRow(rowParts[i], i, settings.cameras[i].id, settings.cameras[i].shotType, settings.cameras[i].id === settings.mainCameraId);
+        fillRow(rowParts[i], i, settings.cameras[i].id, shotText(settings.cameras[i]), settings.cameras[i].id === settings.mainCameraId);
       }
     } else {
       const rows: HTMLElement[] = [];
@@ -358,7 +363,7 @@ export function createControls(options: ControlsOptions): Controls {
         remove.textContent = REMOVE_TEXT;
         row.append(select, remove);
         const part: RowParts = { id: camera.id, select, label, key, remove };
-        fillRow(part, i, camera.id, camera.shotType, camera.id === settings.mainCameraId);
+        fillRow(part, i, camera.id, shotText(camera), camera.id === settings.mainCameraId);
         parts.push(part);
         rows.push(row);
       }

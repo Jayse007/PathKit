@@ -33,6 +33,8 @@ export interface CameraSetting {
   heightM: number;
   horizontalDistanceM: number;
   lensMm: number;
+  /** The rail shot this camera had before it became orbit; restored when it is main again. The rig ignores it. */
+  railShotWhenMain?: 'push-in' | 'crane';
 }
 
 export interface RigSettings {
