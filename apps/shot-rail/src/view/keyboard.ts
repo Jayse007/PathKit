@@ -7,7 +7,7 @@
 //
 // T and G (thirds and safe area) are NOT handled here: guides-view.ts already has its own listener for
 // them. This module ignores those two actions and does not call preventDefault for them, so they run once.
-// capture-frame (task 45) does not exist yet: it is ignored too.
+// capture-frame (C key, task 45.1) calls onCapture, the same path as the Capture button.
 // open-about (? key, task 42.1) calls onOpenAbout. While any modal <dialog> is open (the About panel) this
 // module ignores every key; about-panel.ts also stops keys before they get here.
 //
@@ -40,6 +40,8 @@ export interface KeyboardOptions {
   onCycleShotType: () => void;
   /** Opens the About panel (the ? key). Same path as the About button. */
   onOpenAbout: () => void;
+  /** Saves the main view at the frame shown now as a PNG (the C key). Same path as the Capture button. */
+  onCapture: () => void;
 }
 
 export interface Keyboard {
@@ -94,9 +96,11 @@ function run(action: KeyAction, options: KeyboardOptions): boolean {
     case 'open-about':
       options.onOpenAbout();
       return true;
+    case 'capture-frame':
+      options.onCapture();
+      return true;
     case 'toggle-thirds': // guides-view.ts handles T
     case 'toggle-safe-area': // guides-view.ts handles G
-    case 'capture-frame': // task 45
       return false;
   }
 }

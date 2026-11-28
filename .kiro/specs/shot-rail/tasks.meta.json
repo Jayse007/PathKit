@@ -1715,6 +1715,11 @@
         "executionId": "591735f7-cf32-4e23-bd33-902676d12f66",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795871282503
+      },
+      {
+        "executionId": "981167ee-89ab-4d74-aa8c-00f54b275066",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795873910299
       }
     ],
     "44.2 Write the picker tests": [
@@ -1732,6 +1737,11 @@
         "executionId": "488cc889-b9a4-4f26-ad5d-73180ef26bbd",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795872867823
+      },
+      {
+        "executionId": "981167ee-89ab-4d74-aa8c-00f54b275066",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795873912516
       }
     ],
     "44.3 Implement the strip view in `src/view/shot-strip.ts`": [
@@ -1744,6 +1754,11 @@
         "executionId": "488cc889-b9a4-4f26-ad5d-73180ef26bbd",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795872874847
+      },
+      {
+        "executionId": "50bce080-13bf-491a-a195-1c0be8abe095",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795873965088
       }
     ],
     "44.4 User checkpoint: view the Shot_Strip": [
@@ -1751,6 +1766,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529431298
+      },
+      {
+        "executionId": "f77985c4-67c7-418b-88e3-fd8c1a6f1d57",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795874510775
       }
     ],
     "45.1 Implement `src/view/capture.ts` and `src/logic/capture-name.ts`": [
@@ -1758,6 +1778,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529431936
+      },
+      {
+        "executionId": "2512f2f0-b02c-446f-9d5a-212e697d5fcb",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795874617870
       }
     ],
     "45.2 Write the file name tests": [
@@ -2265,6 +2290,13 @@
         "executionId": "c22e74b5-e2f1-4af9-a843-4cdf71244d88",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795870720610
+      }
+    ],
+    "44. Shot_Strip": [
+      {
+        "executionId": "f77985c4-67c7-418b-88e3-fd8c1a6f1d57",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795874511547
       }
     ]
   }

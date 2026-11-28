@@ -29,6 +29,12 @@ export interface MainView {
   addObject(object: Object3D): void;
   /** Ask for one render on the next animation frame. Calls before it runs are merged. */
   requestRender(): void;
+  /**
+   * Draw the current camera state at once (not on the next animation frame) and return the canvas, or null
+   * when the view has been disposed or lost its context. The caller must read the canvas (toBlob) in the
+   * same task, because the drawing buffer is cleared after the browser composites it. Used by Capture.
+   */
+  renderNow(): HTMLCanvasElement | null;
   /** Stop observing and release the renderer. */
   dispose(): void;
 }
@@ -136,6 +142,11 @@ export function createMainView(container: HTMLElement): MainView | null {
       scene.add(object);
     },
     requestRender,
+    renderNow(): HTMLCanvasElement | null {
+      if (disposed) return null;
+      renderer.render(scene, camera);
+      return canvas;
+    },
     dispose(): void {
       disposed = true;
       observer.disconnect();

@@ -24,7 +24,7 @@ const REPEATING_ACTIONS: readonly KeyAction[] = ['step-back', 'step-forward', 'z
 /** Actions on keys that a range slider already uses (Left, Right, Home, End). */
 const SLIDER_NATIVE_ACTIONS: readonly KeyAction[] = ['step-back', 'step-forward', 'first-frame', 'last-frame'];
 /** Actions keyboard.ts leaves alone. */
-const UNHANDLED_ACTIONS: readonly KeyAction[] = ['toggle-thirds', 'toggle-safe-area', 'capture-frame'];
+const UNHANDLED_ACTIONS: readonly KeyAction[] = ['toggle-thirds', 'toggle-safe-area'];
 const SLOT_ACTIONS: readonly KeyAction[] = [
   'select-slot-1',
   'select-slot-2',
@@ -61,7 +61,7 @@ export function nativeKeyConflict(action: KeyAction, tagName: string, inputType:
 
 /**
  * Whether keyboard.ts acts on the action. False for the actions it leaves alone: T and G (guides-view.ts has
- * its own listener), and capture-frame (task 45 does not exist yet). open-about is handled here (task 42.1).
+ * its own listener). open-about (task 42.1) and capture-frame (task 45.1) are handled here.
  */
 export function isHandledHere(action: KeyAction): boolean {
   return !UNHANDLED_ACTIONS.includes(action);

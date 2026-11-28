@@ -10,6 +10,7 @@ import { motionCheckFailureOf } from './logic/motion-check-model.js';
 import { SAMPLE_SHOTS } from './logic/samples.js';
 import { LENS_TERMS, MEASURE_TERMS } from './logic/term-text.js';
 import { createAboutPanel } from './view/about-panel.js';
+import { createCapture } from './view/capture.js';
 import { CameraRig } from './view/camera-rig.js';
 import type { RigSettings } from './view/camera-rig.js';
 import { createAuxRenderer } from './view/aux-renderer.js';
@@ -121,6 +122,7 @@ function start(): void {
   let readout: Readout | null = null; // created once the Timeline exists (task 38.1)
   let mainLensMm: number = sample.placement.lensMm; // the main camera's lens; applyMainLens keeps it current
   let motionCheck: MotionCheck | null = null; // created after the readout (task 39.1); updated after each re-bake only
+  let shotName: string = sample.name; // the name of the last loaded sample; Capture puts it in the file name (task 45.1)
 
   // Draws everything at the Timeline's displayed frame. Evaluates baked data only; it never bakes.
   // Created once. While playing the grid is redrawn at 10 Hz (shouldRenderGrid); every other change redraws it.
@@ -352,6 +354,7 @@ function start(): void {
         const chosen = SAMPLE_SHOTS[index];
         const next = sampleToSettings(chosen, current.road.points, current.subjectKind);
         if (!applySettings(next, sampleLoadedMessage(chosen))) return false;
+        shotName = chosen.name;
         timeline.seekTo(0);
         return true;
       },
@@ -359,6 +362,17 @@ function start(): void {
   }
   status.textContent = sampleLoadedMessage(sample);
   if (hints !== null) hints.show(mode); // the starting mode (Angle) opens for the first time
+
+  // Capture (task 45.1): the Capture button and the C key. It reads the Timeline's frame and the shot name at
+  // the moment of capture; it never pauses, starts or seeks, and writes only to the status line.
+  const captureTool = createCapture({
+    view,
+    getShotName: () => shotName,
+    getFrame: () => timeline.frame(),
+    onStatus: (message: string) => {
+      status.textContent = message;
+    },
+  });
 
   // The keyboard (task 37.2). Every handler takes the same path as the control it stands for.
   const mainCamera = (): RigSettings['cameras'][number] | undefined =>
@@ -398,6 +412,7 @@ function start(): void {
     onOpenAbout: () => {
       if (aboutPanel !== null) aboutPanel.open();
     },
+    onCapture: () => captureTool.capture(),
   });
 
   lensSelect.addEventListener('change', () => {
