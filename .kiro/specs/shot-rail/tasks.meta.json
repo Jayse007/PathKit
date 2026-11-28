@@ -1230,6 +1230,11 @@
         "executionId": "62d160ea-765f-484c-8e9e-299ba0dc2b38",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795827880855
+      },
+      {
+        "executionId": "fea1ff6f-b187-4329-ad86-27b8ed100401",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795829300066
       }
     ],
     "36.1 Implement the layout in `index.html` and `src/view/layout.ts`": [
@@ -1808,6 +1813,13 @@
         "executionId": "ff658d59-dc1e-418a-8f01-f4b8a905b92e",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795826330526
+      }
+    ],
+    "35. Keyboard map (pure first)": [
+      {
+        "executionId": "fea1ff6f-b187-4329-ad86-27b8ed100401",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795829301095
       }
     ]
   }

@@ -49,6 +49,8 @@ export const CAMERA_MIN_CLEARANCE_M = 1.0;
 export const S2_ZOOM_GRID_STEPS = 12; // Z = k / 12, k = 0 to 12
 export const END_POSITION_TOLERANCE_M = 1e-6;
 export const CONTRAST_MIN = 4.5;
+/** WCAG 2.2 minimum for graphical objects (Success Criterion 1.4.11). Used only for solid Part fills and the Clean_Engineering accent on the Stage. */
+export const GRAPHIC_CONTRAST_MIN = 3;
 
 // Input and motion
 export const ORBIT_KEY_STEP_FRAMES = 5;

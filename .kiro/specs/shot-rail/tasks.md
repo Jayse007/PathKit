@@ -388,11 +388,11 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Pure functions in `src/logic/lens-zoom.ts` with hand-written tests in `test/logic/lens-zoom.test.ts`; a `lensZoom` line in `term-text.ts`; then one function in `src/main.ts` that sets the main camera's lens everywhere (the picture, the camera's saved lens, its Coverage_Grid tile, the lens menu), used by the lens menu and by the wheel over the main view. The slider and the + and - keys come with tasks 37.1 and 37.2. Source line it should catch: swap the zoom direction, or remove the 24 to 85 clamp.
     - _Requirements: 4.10, 4.11, 4.12_
 
-- [ ] 35. Keyboard map (pure first)
+- [x] 35. Keyboard map (pure first)
   - [x] 35.1 Implement `src/logic/key-map.ts`
     - Pure `actionForKey(key, focusInTextField)` from the design's Keyboard map: Space, Left, Right, Home, End, A, M, 1 to 6, L, + (and =), -, S, T, G, C, ?. No action while focus is in a text or number field. Each action has exactly one primary key (= is an alias of +).
     - _Requirements: 11.12, 18.2_
-  - [-] 35.2 Write the key map tests
+  - [x] 35.2 Write the key map tests
     - Every key in the table gives its action (hand-written). Unknown keys give none. Every action appears for exactly one primary key (= is an alias of +). Typing "a" or "1" in a number field gives no action.
     - Source line it should catch: map `M` to the same action as `A`, or drop the text-field check.
     - _Requirements: 11.12, 18.2 (design Keyboard map)_

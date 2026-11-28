@@ -312,7 +312,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - _Requirements: 13.5, 20.2, 22.5_
 
 - [ ] 21. Accessibility pass
-  - [ ] 21.1 Choose the palettes and write the contrast test
+  - [-] 21.1 Choose the palettes and write the contrast test
     - Choose palette values for both Looks. Test every text and background pair, and non-text interface parts, at or above `CONTRAST_MIN`.
     - Source line it should catch: lighten one palette text colour until a pair drops below 4.5.
     - _Requirements: 17.3, 17.4, 22.1, 22.2 (design Property 17)_

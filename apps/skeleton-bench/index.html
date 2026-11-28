@@ -9,6 +9,10 @@
         --bg: #10151b;
         --panel: #18202a;
         --line: #3a4757;
+        --control-border: #8b98a6;
+        --panel-open: #1f2a37;
+        --hover: #222c38;
+        --focus: #5cc8ff;
         --text: #e6edf3;
         --muted: #b4c0cc;
         --accent: #ff8a1f;
@@ -47,7 +51,7 @@
         padding: 8px;
         color: var(--text);
         background: var(--bg);
-        border: 1px solid var(--line);
+        border: 1px solid var(--control-border);
         border-radius: 6px;
         font: inherit;
         text-align: left;
@@ -73,7 +77,7 @@
         transform: rotate(-45deg);
       }
       .part-button[aria-expanded="true"]::after { transform: rotate(45deg); }
-      .part-panel { margin: -4px 0 8px; padding: 8px 10px; border-left: 3px solid var(--accent); background: #1f2a37; }
+      .part-panel { margin: -4px 0 8px; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--panel-open); }
       .part-panel:not([hidden]) { min-height: calc(100vh - 160px); } /* approximate: lets the last Part's button reach the top of the Inspector */
       .part-panel p { margin: 0 0 8px; }
       .control-row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; }
@@ -82,7 +86,7 @@
       .control-label { font-size: 13px; color: var(--muted); }
       .control-readout { font-size: 13px; color: var(--muted); }
       .control input[type="range"] { width: 160px; accent-color: var(--accent); }
-      .control-button { padding: 8px 12px; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; font: inherit; cursor: pointer; }
+      .control-button { padding: 8px 12px; color: var(--text); background: var(--bg); border: 1px solid var(--control-border); border-radius: 6px; font: inherit; cursor: pointer; }
       .control-button:disabled { color: var(--muted); border-style: dashed; cursor: not-allowed; }
       #control-hint { margin-top: 8px; font-size: 13px; }
       .control-message { margin: 8px 0 0; padding: 8px 10px; font-size: 14px; color: var(--text); background: var(--bg); border: 2px solid var(--accent); border-radius: 6px; }
@@ -92,8 +96,8 @@
       .about-panel { grid-area: stage; align-self: start; justify-self: start; z-index: 2; max-width: 34em; margin: 12px; padding: 12px 16px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
       .about-panel[hidden] { display: none; }
       .about-panel p { margin: 0 0 8px; }
-      button:hover { background: #222c38; }
-      button:focus-visible { outline: 3px solid #5cc8ff; outline-offset: 2px; }
+      button:hover { background: var(--hover); }
+      button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
       .badge { color: var(--muted); font-style: italic; }
       @media (max-width: 800px) {
         .bench { grid-template-columns: 150px minmax(0, 1fr); grid-template-areas: "left stage" "inspector inspector" "controls controls"; grid-template-rows: minmax(240px, 1fr) auto auto; }
