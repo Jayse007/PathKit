@@ -446,10 +446,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 9.3, 9.4, 25.1, 25.2_
 
 - [ ] 40. Sample shots loading
-  - [-] 40.1 Implement loading in `src/view/samples-menu.ts`
+  - [x] 40.1 Implement loading in `src/view/samples-menu.ts`
     - The first sample loads at start, paused at frame 0. Selecting a sample replaces the current shot within one frame update and leaves the Timeline paused.
     - _Requirements: 10.1, 10.2, 10.3, 10.6, 11.13_
-  - [~] 40.2 Write the loading tests
+  - [x] 40.2 Write the loading tests
     - Start state: first sample loaded, `playing` false, frame 0. Loading each of the three samples leaves `playing` false and frame 0, even when the state was playing at frame 100 before the load (that case is forced). The settings after load equal the hand-written sample values.
     - Source line it should catch: keep the old frame number on load, or start playing after load.
     - _Requirements: 10.1, 10.3, 10.6, 11.14_

@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 40.2: sample loading tests (newest entry, kept at top)
+
+- Done: new `test/view/samples-menu-rules.test.ts`, 9 `it` blocks (19 tests as Vitest counts them: 5 `it.each` tables expand 3 times each). Expected values are hand-written literals from the Samples table. Covers shape per sample, no `railShotWhenMain`, road copy, `subjectKind` pass-through, no input mutation (deep-frozen inputs), bake with `CameraRig` for each sample, a load from playing at frame 100 leaves the rig not playing, the exact loaded message, `STARTUP_SAMPLE_INDEX` and `SAMPLE_CAMERA_ID`. No src file changed.
+- Not tested: nothing was run. "Frame 0 after load" and "starts at frame 0" live in `main.ts` (`timeline.seekTo(0)`) and the Timeline, which need the DOM; `CameraRig.bake` leaves the frame alone, so it is not asserted. Left to the 40.3 browser checkpoint.
+
 ## Task 40.1: sample shots loading (newest entry, kept at top)
 
 - Done: new pure `src/view/samples-menu-rules.ts` (`sampleToSettings(sample, roadPoints, subjectKind)`, `sampleLoadedMessage(sample)`, `STARTUP_SAMPLE_INDEX` = 0, `SAMPLE_CAMERA_ID` = cam-1) and `src/view/samples-menu.ts` (`createSamplesMenu(container, { samples, initialIndex, onLoad })` returns `{ show(index) }`; a labelled native `<select>`, option titles from `SHOT_TYPE_TERMS`). `index.html` has `<div id="samples-box">` at the top of the controls column. `main.ts`: the app now starts with the first sample (orbit, one camera, `cam-1`, main), so the stop-gap two-camera startup list (push-in main plus orbit cam-2), `CAMERA_ID` and the `CAMERA_IDS` import were removed. Loading calls `applySettings(sampleToSettings(...), message)` (pause, re-bake, revert on failure, lens, grid, overview, readout, motion check) and then `timeline.seekTo(0)`, because `applySettings` keeps the old frame. New settings are built from the sample, so no camera has `railShotWhenMain`; the Road and subject in use are kept. No camera-rig.ts, src/logic or coverage-grid-rules.ts change. PathKit used only through the rig.
