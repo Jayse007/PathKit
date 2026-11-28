@@ -1,5 +1,12 @@
 # Build notes
 
+## Task 42.2: About_Panel text tests (newest entry, kept at top)
+
+- Done: new `test/view/about-panel-rules.test.ts` (9 `it`/`it.each` calls, 23 tests expected in Vitest). Checks: six limit lines in order with hand-written key phrases; the five third-party rows (name, version, licence) equal hand-written literals; each row version equals the pinned value in `package.json` (read with `import ... from '../../package.json?raw'`, the only outside value); `thirdPartyLine` on a hand-written row; five section ids and headings in order, no empty section or line; `aboutFullText()` has the title and headings and no "figure" or "abstract". No src, package.json or tsconfig change.
+- Broke / Kiro got wrong: nothing known. Not run.
+- PathKit feature used: none (pure text module).
+- Not tested: wording quality (task 42.3), the DOM panel, focus, Escape, layout, a browser. The tests read the text module only, not what the panel shows.
+
 ## Task 42.1 fix: About Close button always visible (newest entry, kept at top)
 
 - Done: in `index.html` the title and Close button are now one `<header id="about-header">` (flex, space-between) as the first child of the dialog, before `#about-body`. The dialog itself scrolls (`overflow-y: auto`, padding 0); the header is `position: sticky; top: 0; z-index: 1` with `background: var(--panel-bg)` (the dialog's colour). The old 16px dialog padding moved into the header (8px 16px) and `#about-body` (0 16px 16px), so no gap sits above the header. `about-panel.ts`: comments only; focus (autofocus on Close, return to the opener), `showModal()` and the `scrollTop` reset are unchanged. No text constant changed.
