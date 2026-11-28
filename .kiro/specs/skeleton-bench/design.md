@@ -317,6 +317,7 @@ There are 21 scenes (Pump 8, Heat_Exchanger 6, Desk_Lamp 7). Each is 5,280 B (tr
 - **Playback** uses whole frames from elapsed time at 30 fps.
 - **While the Tour plays**, the orbit, zoom, explode and move controls are disabled with a visible label: "Stop the tour to use this".
 - **Reduced motion.** Jump to the middle frame of each Part's slot and hold `TOUR_REDUCED_MOTION_HOLD_MS` = 3000.
+- **Selection during the Tour.** While the Tour plays or is paused, the app selects the Part whose slot holds the current frame, Part number floor(frame / `TOUR_FRAMES_PER_PART`) counting from 0 in keyboard order, so its selection shell and Inspector details show. Under reduced motion each jump selects the Part it shows. The selection changes only when the Part number changes. The Part buttons, Stage clicks and the selection-clearing Escape press are ignored while the Tour is locked. When the Tour stops or ends, the selection is cleared.
 - **Clearance.** Every baked tour frame must satisfy `CAMERA_MIN_CLEARANCE_M` against the envelope. The ring keeps at least 3.6 * cos(15 degrees) = 3.477 m horizontal radius, so it passes by a wide margin. The test checks all frames anyway.
 - **Linter.** `motionLinter(scene, baked)` runs at load for each tour. Findings go to the Motion_Check in plain words. With no findings the Motion_Check says "No findings reported."
 - **Limits to state.** The tour looks at each Part from the ring distance, so small Parts look small and a Part can be hidden behind others. Zoom-to-part rails are out of Tier A (decision 10).

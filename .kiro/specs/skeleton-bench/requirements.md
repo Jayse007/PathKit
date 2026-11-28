@@ -366,6 +366,10 @@ Each item states the issue, the assumption used in this document, and who must d
 9. IF the baking or the linting fails, THEN THE Skeleton_Bench_App SHALL show a message that states what failed and what the User can do next.
 10. WHERE the User has asked for reduced motion, THE Skeleton_Bench_App SHALL replace the Tour animation with a jump from one Part to the next (decision 19).
 11. WHILE the Tour plays, THE Skeleton_Bench_App SHALL disable the orbit, zoom, explode and move controls and SHALL show a visible label that says the Tour must be stopped to use them.
+12. WHILE the Tour plays or is paused, THE Skeleton_Bench_App SHALL select the Part the camera is aiming at: the Part whose slot holds the current Tour frame, which is Part number floor(frame / TOUR_FRAMES_PER_PART) counting from 0 in keyboard order. Its selection shell and its Inspector details SHALL show.
+13. WHILE the Tour plays or is paused, the Part buttons, clicks on the Stage and the Escape key SHALL NOT change the selection.
+14. WHEN the Tour stops or ends, THE Skeleton_Bench_App SHALL clear the selection.
+15. WHERE the User has asked for reduced motion, each jump SHALL select the Part it shows.
 
 ### Requirement 17: Theme toggle (Tier A)
 

@@ -304,6 +304,9 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [-] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
     - The User tries the Tour, the Look toggle and the About panel in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
+  - [ ] 20.7a Tour selects each Part
+    - Add pure `tourPartIndexAt(frame, partCount)` with tests. In `writeTourFrame`, select the Part for the current frame (or the jump under reduced motion) only when it changes. Clear the selection in `endTour`. Ignore the Part buttons, Stage clicks and the selection-clearing Escape branch while the Tour is locked.
+    - _Requirements: 16.12 to 16.15_
 
 - [ ] 21. Accessibility pass
   - [ ] 21.1 Choose the palettes and write the contrast test
