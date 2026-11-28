@@ -38,10 +38,12 @@ export const ABOUT_ANGLES_TEXT =
   "Angles are measured from the world axes and not from the car's heading, so a turning car changes its relation to a fixed-bearing camera.";
 /**
  * 21.3. First sentence from the requirement. The recorded outcome of spike S6 is Outcome A (build-notes, task 11.2),
- * so the main camera has no scene of its own. The last two sentences are DRAFT; they follow scene-set.ts and main.ts.
+ * so the main camera has no scene of its own. The User approved the first sentence's wording (with "baked (worked
+ * out ahead of time)") on 28 November 2026. The last two sentences were DRAFT and follow scene-set.ts and main.ts;
+ * the User approved this whole line then, so no DRAFT mark remains here.
  */
 export const ABOUT_SCENES_TEXT =
-  'PathKit allows one path per scene, so the car and the cameras are baked in separate scenes. ' +
+  'PathKit allows one path per scene, so the car and the cameras are baked (worked out ahead of time) in separate scenes. ' +
   'All the cameras share one scene, because a check made while building this app found that one scene gives the same values as separate scenes. ' +
   "That scene has one path, the main camera's rail, so only the main camera can be a push-in or crane shot.";
 /** 21.4. The frame used is 36 mm wide and 16:9. */
@@ -65,9 +67,9 @@ export const ABOUT_LIMIT_LINES: readonly string[] = [
 // ---- Labels, sources, third-party software, keys ----
 /** The label cut-offs note, reused from term-text.ts so the two places cannot disagree. */
 export const ABOUT_LABELS_TEXT = CUTOFF_NOTE;
-/** From THIRD_PARTY.md, "Facts and sources". The file name is given in plain words. */
+/** From THIRD_PARTY.md, "Facts and sources". Wording approved by the User, 28 November 2026. */
 export const ABOUT_SOURCES_TEXT =
-  'The explanation texts paraphrase the pages listed in docs/sources.md. No text, image, font or data from those pages is copied into the app.';
+  "The explanation texts paraphrase the pages listed in docs/sources.md in the project's repository. No text, image, font or data from those pages is copied into the app.";
 /** DRAFT. */
 export const ABOUT_THIRD_PARTY_INTRO = 'Shot Rail uses these packages. PathKit, the motion library, is part of this project.';
 

@@ -5,7 +5,9 @@
 // Source lines these tests should catch:
 // - dropping or reordering a limit line in ABOUT_LIMIT_LINES (the count test and the key-phrase rows);
 // - changing the sensor text so it no longer says "36 mm" (the sensor row);
-// - a package version drifting from package.json without an About update (the package.json rows).
+// - a package version drifting from package.json without an About update (the package.json rows);
+// - removing either approved wording edit of 28 November 2026: "baked (worked out ahead of time)" in the scenes
+//   line, or "docs/sources.md in the project's repository" in the sources line (the approved-wording tests).
 //
 // Note on imports: '../../package.json?raw' is a Vite raw-text import, not a TypeScript module, so it keeps its
 // own extension and does not end in .js. The relative TS import below ends in .js as the project rules require.
@@ -14,7 +16,9 @@ import { describe, expect, it } from 'vitest';
 import pkgText from '../../package.json?raw';
 import {
   ABOUT_LIMIT_LINES,
+  ABOUT_SCENES_TEXT,
   ABOUT_SECTIONS,
+  ABOUT_SOURCES_TEXT,
   THIRD_PARTY_ROWS,
   aboutFullText,
   thirdPartyLine,
@@ -42,6 +46,16 @@ describe('About_Panel limit lines', () => {
     [5, 'fixed rail'],
   ])('limit line %i contains "%s"', (index, phrase) => {
     expect(ABOUT_LIMIT_LINES[index]).toContain(phrase);
+  });
+});
+
+describe('About_Panel approved wording (28 November 2026)', () => {
+  it('the scenes line explains "baked"', () => {
+    expect(ABOUT_SCENES_TEXT).toContain('baked (worked out ahead of time)');
+  });
+
+  it('the sources line names the project repository', () => {
+    expect(ABOUT_SOURCES_TEXT).toContain("docs/sources.md in the project's repository");
   });
 });
 

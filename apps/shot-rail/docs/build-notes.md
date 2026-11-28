@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 42.2 follow-up: two About wording edits approved by the User, 28 November 2026 (newest entry, kept at top)
+
+- Done, in `src/view/about-panel-rules.ts` only: (a) `ABOUT_SCENES_TEXT` first sentence is now "PathKit allows one path per scene, so the car and the cameras are baked (worked out ahead of time) in separate scenes." (was "... are baked in separate scenes."); the other two sentences are unchanged. (b) `ABOUT_SOURCES_TEXT` is now "The explanation texts paraphrase the pages listed in docs/sources.md in the project's repository. No text, image, font or data from those pages is copied into the app." (was "... listed in docs/sources.md. No text, ..."), in double quotes because of the apostrophe. The "DRAFT" note on the last two sentences of the scenes line was replaced by a note that the User approved the whole line. Two new `it` blocks in `test/view/about-panel-rules.test.ts` pin the two new phrases.
+- Not tested: nothing was run. Not changed (same old wording): THIRD_PARTY.md line 13, docs/shot-rail-text-pack.md line 281, requirements.md 21.3 and tasks.md 42.1.
+
 ## Task 42.2: About_Panel text tests (newest entry, kept at top)
 
 - Done: new `test/view/about-panel-rules.test.ts` (9 `it`/`it.each` calls, 23 tests expected in Vitest). Checks: six limit lines in order with hand-written key phrases; the five third-party rows (name, version, licence) equal hand-written literals; each row version equals the pinned value in `package.json` (read with `import ... from '../../package.json?raw'`, the only outside value); `thirdPartyLine` on a hand-written row; five section ids and headings in order, no empty section or line; `aboutFullText()` has the title and headings and no "figure" or "abstract". No src, package.json or tsconfig change.
