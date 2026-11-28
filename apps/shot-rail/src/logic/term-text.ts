@@ -67,6 +67,7 @@ export const LENS_TERMS: Readonly<Record<number, TermLine>> = {
 
 export const MEASURE_TERMS = {
   lens: line('Focal length in millimetres. A smaller number sees a wider view. A larger number sees a narrower view.', 'angle-of-view'),
+  lensZoom: line('Zoom changes the lens only. The camera stays where it is and sees a narrower or wider slice of the scene.', 'angle-of-view'),
   fieldOfView: line('How much of the scene the lens sees, as an angle. Horizontal is side to side. Vertical is top to bottom.', 'angle-of-view'),
   fieldOfViewFormula: line(
     `Field of view = 2 x atan(sensor size / (2 x focal length)), using this app's ${SENSOR_WIDTH_MM} x ${SENSOR_HEIGHT_MM} mm frame.`,

@@ -544,6 +544,10 @@ All in `apps/shot-rail/src/logic/constants.ts`.
 | `CAMERA_IDS` | `['cam-1' .. 'cam-6']` | — | Fixed entity ids | design default |
 | `MAX_CAMERAS` | 6 | — | Coverage_Grid limit | requirement |
 | `LENS_PRESETS_MM` | `[24, 35, 50, 85]` | mm | Lens presets | requirement |
+| `LENS_ZOOM_MIN_MM` | 24 | mm | Shortest lens the zoom reaches | requirement |
+| `LENS_ZOOM_MAX_MM` | 85 | mm | Longest lens the zoom reaches | requirement |
+| `LENS_WHEEL_STEP_RATIO` | 1.05 | — | Lens change per wheel event (5 percent) | design default |
+| `LENS_KEY_STEP_RATIO` | 1.1 | — | Lens change per + or - key press (10 percent) | design default |
 | `SENSOR_WIDTH_MM` | 36 | mm | Sensor width | requirement |
 | `SENSOR_HEIGHT_MM` | 20.25 | mm | Sensor height | derived: `SENSOR_WIDTH_MM * 9/16` |
 | `ASPECT_RATIO` | 16/9 | — | Frame aspect | requirement |

@@ -5,6 +5,7 @@
 
 import { CAMERA_IDS, LENS_PRESETS_MM } from './logic/constants.js';
 import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
+import { lensAfterWheel, presetOf } from './logic/lens-zoom.js';
 import { SAMPLE_SHOTS } from './logic/samples.js';
 import { CameraRig } from './view/camera-rig.js';
 import type { RigSettings } from './view/camera-rig.js';
@@ -122,6 +123,35 @@ function start(): void {
   });
   subjectView.showFrame(rig, timeline.frame());
 
+  // Applies a lens to the main camera: the view, `current` (a new camera object; the rig's settings are not
+  // touched and nothing is re-baked, because the lens does not change the move), the grid tile, and the lens
+  // menu. A lens that is not a preset shows a disabled "Custom (N mm)" option, created once and reused.
+  let customOption: HTMLOptionElement | null = null;
+  const applyMainLens = (mm: number): void => {
+    const mainId = current.mainCameraId;
+    view.setLensMm(mm);
+    current = { ...current, cameras: current.cameras.map((c) => (c.id === mainId ? { ...c, lensMm: mm } : c)) };
+    if (grid !== null) {
+      grid.setLensMm(mainId, mm);
+      grid.render(rig, timeline.frame(), MODE, true, false, 0);
+    }
+    const preset = presetOf(mm);
+    if (preset !== null) {
+      lensSelect.value = String(preset);
+      if (customOption !== null) customOption.hidden = true;
+    } else {
+      if (customOption === null) {
+        customOption = document.createElement('option');
+        customOption.value = 'custom';
+        customOption.disabled = true;
+        lensSelect.appendChild(customOption);
+      }
+      customOption.textContent = `Custom (${Math.round(mm)} mm)`;
+      customOption.hidden = false;
+      lensSelect.value = 'custom';
+    }
+  };
+
   // A tile click or Enter asks for a new Main_Camera. Only the main camera can be a rail shot
   // (scene-set.ts), so planMainChange converts any other push-in or crane camera to orbit and the
   // status line says so. If the rig cannot build the new set, the old settings are restored.
@@ -142,10 +172,7 @@ function start(): void {
     current = next;
     status.textContent = plan.message;
     const camera = next.cameras.find((c) => c.id === id);
-    if (camera !== undefined) {
-      view.setLensMm(camera.lensMm);
-      lensSelect.value = String(camera.lensMm);
-    }
+    if (camera !== undefined) applyMainLens(camera.lensMm); // the new main camera's own lens
     timeline.setShot(next.shotLengthFrames, rig.findingsForMain()); // pauses, new marks; the frame is kept
     const frame = timeline.frame();
     view.showFrame(rig, id, frame);
@@ -185,8 +212,20 @@ function start(): void {
   view.showFrame(rig, current.mainCameraId, timeline.frame());
 
   lensSelect.addEventListener('change', () => {
-    view.setLensMm(Number(lensSelect.value));
+    applyMainLens(Number(lensSelect.value));
   });
+
+  // Wheel over the main view zooms the lens (task 34.3). It never touches the frame or playback.
+  stage.addEventListener(
+    'wheel',
+    (event: WheelEvent) => {
+      event.preventDefault();
+      const main = current.cameras.find((c) => c.id === current.mainCameraId);
+      if (main === undefined) return;
+      applyMainLens(lensAfterWheel(main.lensMm, event.deltaY));
+    },
+    { passive: false },
+  );
 }
 
 start();

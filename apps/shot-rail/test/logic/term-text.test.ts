@@ -24,8 +24,8 @@ const everyLine: Array<[string, TermLine]> = [
 ] as Array<[string, TermLine]>;
 
 describe('term text lines', () => {
-  it('has 4 + 3 + 4 + 4 + 11 + 3 = 29 lines', () => {
-    expect(everyLine).toHaveLength(29);
+  it('has 4 + 3 + 4 + 4 + 12 + 3 = 30 lines', () => {
+    expect(everyLine).toHaveLength(30);
   });
 
   it('keeps every line to one short line of text', () => {

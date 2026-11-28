@@ -46,6 +46,10 @@ export const MAX_CAMERAS = 6;
 
 // Lens and sensor
 export const LENS_PRESETS_MM = [24, 35, 50, 85] as const;
+export const LENS_ZOOM_MIN_MM = 24;
+export const LENS_ZOOM_MAX_MM = 85;
+export const LENS_WHEEL_STEP_RATIO = 1.05; // 5 percent per wheel event
+export const LENS_KEY_STEP_RATIO = 1.1; // 10 percent per + or - key press
 export const SENSOR_WIDTH_MM = 36;
 export const SENSOR_HEIGHT_MM = SENSOR_WIDTH_MM * 9 / 16; // 20.25
 export const ASPECT_RATIO = 16 / 9;

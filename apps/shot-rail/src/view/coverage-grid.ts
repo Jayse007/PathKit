@@ -66,6 +66,11 @@ export interface CoverageGrid {
   /** Mark one tile as the Main_Camera (border, "Main" tag, aria-pressed). No render. */
   setMain(cameraId: string): void;
   /**
+   * Change one tile's lens and vertical field of view. No DOM is rebuilt and nothing is drawn: call render next.
+   * An unknown id, or a lens that is not a finite number above 0, does nothing. Throws nothing.
+   */
+  setLensMm(cameraId: string, lensMm: number): void;
+  /**
    * Draw every tile at `displayedFrame` when shouldRenderGrid says so. Returns true when it drew.
    * Never draws outside Angle mode. `msSinceLast` is the time since the last draw, in ms.
    */
@@ -88,8 +93,8 @@ interface Tile {
   readonly angleText: HTMLElement;
   readonly framingText: HTMLElement;
   readonly mainTag: HTMLElement;
-  readonly lensMm: number;
-  readonly verticalFovRad: number;
+  lensMm: number; // changed in place by setLensMm
+  verticalFovRad: number; // changed in place by setLensMm
   lastAngle: string;
   lastFraming: string;
 }
@@ -303,6 +308,16 @@ export function createCoverageGrid(
     },
     setMain(cameraId: string): void {
       markMain(cameraId);
+    },
+    setLensMm(cameraId: string, lensMm: number): void {
+      if (!Number.isFinite(lensMm) || lensMm <= 0) return;
+      for (let i = 0; i < tiles.length; i++) {
+        const tile = tiles[i];
+        if (tile.id !== cameraId) continue;
+        tile.lensMm = lensMm; // drawTile applies it to the shared camera when it differs
+        tile.verticalFovRad = fieldOfViewForFocalLengthMm(lensMm).verticalDeg / RAD_TO_DEG;
+        return;
+      }
     },
     render(
       rig: CameraRig,

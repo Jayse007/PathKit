@@ -301,7 +301,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 20.6 Tour, Look toggle and About wiring
     - Tour with Pause and Stop wired to the state; Look toggle stored in try/catch; About_Panel access from the main screen; error messages that say what to do. Escape closes the About_Panel (focus returns to the About button; that press does not clear the selection).
     - _Requirements: 17.5, 17.7, 21.5, 16.1 to 16.11, 22.5_
-  - [ ] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
+  - [-] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
     - The User tries the Tour, the Look toggle and the About panel in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
 
