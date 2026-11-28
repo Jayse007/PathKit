@@ -20,6 +20,7 @@ import { createControls } from './view/controls.js';
 import type { Controls } from './view/controls.js';
 import { withShotType } from './view/controls-rules.js';
 import { createGuideToggle, createGuidesOverlay } from './view/guides-view.js';
+import { createHints } from './view/hints.js';
 import { createKeyboard } from './view/keyboard.js';
 import { nextLensPreset, nextShotType } from './view/keyboard-rules.js';
 import { applyLayout } from './view/layout.js';
@@ -286,8 +287,10 @@ function start(): void {
   // again and redraws them at once (changed = true), so a tile built or left stale while hidden is never seen.
   const gridMoveMessage = document.getElementById('grid-move-message');
   if (gridMoveMessage !== null) gridMoveMessage.textContent = GRID_MOVE_MESSAGE;
+  const hints = createHints(); // first-time mode hints (task 41.1); shown on a mode change, never per frame
   const applyMode = (next: GridMode): void => {
     mode = next;
+    if (hints !== null) hints.show(next);
     status.textContent = MODE_CHANGED_MESSAGE;
     if (controls !== null) controls.setMode(next);
     if (grid !== null) {
@@ -337,6 +340,7 @@ function start(): void {
     });
   }
   status.textContent = sampleLoadedMessage(sample);
+  if (hints !== null) hints.show(mode); // the starting mode (Angle) opens for the first time
 
   // The keyboard (task 37.2). Every handler takes the same path as the control it stands for.
   const mainCamera = (): RigSettings['cameras'][number] | undefined =>

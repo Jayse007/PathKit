@@ -14,7 +14,7 @@ const SELECT_ID = 'sample-shot';
 const FIELD_CLASS = 'field';
 const LABEL_TEXT = 'Sample shot';
 const SELECT_TOOLTIP =
-  'Load a ready-made shot. It replaces the camera settings and leaves the timeline paused at frame 0.';
+  'Load a ready-made shot. It replaces all your cameras and settings with one camera and leaves the timeline paused at frame 0.';
 
 export interface SamplesMenuOptions {
   /** The samples to list, in order. */

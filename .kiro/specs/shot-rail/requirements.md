@@ -44,7 +44,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 
 - **Shot_Rail_App**: The browser app in `apps/shot-rail/`.
 - **PathKit**: The library in `packages/pathkit`, imported only through `packages/pathkit/src/index.ts`.
-- **Subject**: The moving thing being filmed. The car (P1), the walking figure (P2) or the abstract object (P3).
+- **Subject**: The moving thing being filmed. The car.
 - **Road**: The flat, closed path the car drives. All control points have the same y value.
 - **Road_Point_Limits**: The named constants for the minimum (3) and maximum (100) number of Road control points. The maximum comes from the accuracy note of PathKit's arc-length table, not from KI-11 (see Requirement 3.13).
 - **Lap_Frames**: The named constant 240, the number of frames in one lap of the Road.
@@ -325,6 +325,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 5. WHERE Capture is provided, THE Shot_Rail_App SHALL create no network request.
 
 ### Requirement 14: Walking figure subject (P2)
+Dropped on 28 November 2026 by the User: the car is the only Subject. Not to be built.
 
 **User Story:** As a planner, I want a walking figure as a second subject, so that I can try shots on a person-sized subject.
 
@@ -337,6 +338,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 5. WHEN the User switches Subject, THE Shot_Rail_App SHALL re-bake the Subject and the Cameras and SHALL leave the Timeline paused.
 
 ### Requirement 15: Abstract subject (P3)
+Dropped on 28 November 2026 by the User: the car is the only Subject. Not to be built.
 
 **User Story:** As a planner, I want an abstract subject, so that I can test a shot without a recognisable object.
 

@@ -111,7 +111,8 @@ describe('sampleToSettings', () => {
     expect(input[0]).toEqual({ x: 1, y: 0.5, z: 2 });
   });
 
-  it.each<SubjectKind>(['car', 'figure', 'abstract'])('passes subjectKind %s through unchanged', (kind) => {
+  it('passes subjectKind car through unchanged', () => {
+    const kind: SubjectKind = 'car';
     expect(sampleToSettings(SAMPLE_SHOTS[0], smallRoad(), kind).subjectKind).toBe(kind);
   });
 
@@ -123,7 +124,7 @@ describe('sampleToSettings', () => {
       shotLengthFrames: 240,
     });
     const road = deepFreeze(smallRoad());
-    const settings = sampleToSettings(sample, road, 'figure');
+    const settings = sampleToSettings(sample, road, 'car');
     expect(settings.cameras[0].shotType).toBe('push-in');
     expect(settings.cameras[0].bearingDeg).toBe(30);
     expect(road.length).toBe(4);

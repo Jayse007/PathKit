@@ -1,5 +1,18 @@
 # Build notes
 
+## Scope change, 28 November 2026: the car is the only Subject (newest entry, kept at top)
+
+- Decision (28 November 2026, by the User): the car is the only Subject. The walking figure and the abstract subject are dropped. Done while task 41.1 was open; not part of 41.1.
+- Spec: `requirements.md` glossary Subject now reads "The moving thing being filmed. The car."; Requirements 14 and 15 carry a "Dropped on 28 November 2026" line under their titles (criteria unchanged, numbers kept). `design.md` RigSettings has `subjectKind: "car"`. `tasks.md` tasks 46 and 54 are marked DROPPED with a dropped line (sub-tasks and checkboxes unchanged).
+- Code: `camera-rig.ts` `SubjectKind` is `'car'` (field `subjectKind` kept). `shot-measures.ts` comment above `SUBJECT_HALF_EXTENTS` now says only that the car is the only Subject.
+- Tests: `samples-menu-rules.test.ts`: the `it.each` over car, figure, abstract is one `it` for 'car'; the no-mutation test passes 'car'. `camera-rig.test.ts`: "a subject kind change rebakes the subject" was removed. With one Subject kind a kind change cannot happen; "a Road change rebakes the subject" still covers a subject rebake.
+- Not tested: nothing was run.
+
+## Task 41.1: first-time hints (newest entry, kept at top)
+
+- Done: new pure `src/view/hints-rules.ts` (`ANGLE_HINT_TEXT`, `MOVE_HINT_TEXT`, `HINT_DISMISS_LABEL`, `hintToShow(mode, seenAngle, seenMove)`, `hintTextForMode(mode)`, `hintStorageKey(mode)`) and `src/view/hints.ts` (`createHints(storage?)` returns `{ show(mode), dispose() }` or null; DOM). Approved wording, used verbatim (User, task 41.1): Angle mode hint "Angle mode: compare up to six cameras side by side. Click a camera view to make it the main camera."; Move mode hint "Move mode: shape how the main camera moves. Camera views are shown in Angle mode (key A)."; dismiss button "Got it". `index.html` has `<div id="mode-hint" role="note" hidden>` (text span and button) right after `#stage`, in the page flow, with no animation; `#term-hint` is untouched. `main.ts`: `createHints()` before `applyMode`, `hints.show(next)` inside `applyMode`, one `hints.show(mode)` at startup. Dismiss (button or Escape while shown) writes `hintSeenAngle` or `hintSeenMove` through `writeSetting` and keeps the flag in memory too. Switching mode without dismissing does not mark a hint seen. Escape is not in `key-map.ts`, so `keyboard.ts` is unaffected; the hint listener never calls `preventDefault`. No camera-rig.ts, src/logic or coverage-grid-rules.ts change.
+- Not tested: nothing was run; no tests written (41.2); not opened in a browser (look, position, Escape, focus return to the main view after the button is used, screen-reader reading of `role="note"`).
+
 ## Task 40.2: sample loading tests (newest entry, kept at top)
 
 - Done: new `test/view/samples-menu-rules.test.ts`, 9 `it` blocks (19 tests as Vitest counts them: 5 `it.each` tables expand 3 times each). Expected values are hand-written literals from the Samples table. Covers shape per sample, no `railShotWhenMain`, road copy, `subjectKind` pass-through, no input mutation (deep-frozen inputs), bake with `CameraRig` for each sample, a load from playing at frame 100 leaves the rig not playing, the exact loaded message, `STARTUP_SAMPLE_INDEX` and `SAMPLE_CAMERA_ID`. No src file changed.

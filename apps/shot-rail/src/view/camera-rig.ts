@@ -24,7 +24,7 @@ import type { SceneSet } from '../logic/scene-set.js';
 import { buildKeyframedTarget } from '../logic/target-converter.js';
 import type { CameraPlacement, ShotType } from '../logic/shot-builders.js';
 
-export type SubjectKind = 'car' | 'figure' | 'abstract';
+export type SubjectKind = 'car';
 
 export interface CameraSetting {
   id: string;

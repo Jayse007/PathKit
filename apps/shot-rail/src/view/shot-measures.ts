@@ -21,8 +21,7 @@ const RAD_TO_DEG = 180 / Math.PI;
 const SCRATCH_CORNERS_LENGTH = 24; // 8 corners x 3
 const SCRATCH_NDC_LENGTH = 16; // 8 corners x 2
 
-// The car's box. Only the car exists as a subject so far (RigSettings.subjectKind is 'car' in every
-// caller); the other kinds will need their own extents when they are built.
+// The car's box. The car is the only Subject.
 export const SUBJECT_HALF_EXTENTS: Vec3 = { x: CAR_HALF_EXTENT_X, y: CAR_HALF_EXTENT_Y, z: CAR_HALF_EXTENT_Z };
 
 /** What measureShot writes. One object, reused for every call. */

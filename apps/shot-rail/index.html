@@ -136,6 +136,21 @@
         min-height: 1.4em;
         color: var(--text-muted);
       }
+      /* First-time mode hint (task 41.1): in the page flow under the main view, so it covers nothing. No animation. */
+      #mode-hint {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 12px;
+        margin-top: 8px;
+        padding: 6px 12px;
+        background: var(--panel-bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+      }
+      #mode-hint[hidden] {
+        display: none;
+      }
       #side-views {
         display: flex;
         flex-wrap: wrap;
@@ -187,6 +202,10 @@
 
       <main id="main-column">
         <div id="stage" tabindex="0" role="group" aria-label="Main camera view"></div>
+        <div id="mode-hint" role="note" hidden>
+          <span id="mode-hint-text"></span>
+          <button id="mode-hint-dismiss" type="button"></button>
+        </div>
         <section id="timeline-region" class="panel" aria-label="Timeline">
           <h2>Timeline</h2>
           <div id="timeline" role="group" aria-label="Timeline: play, pause, scrub and frame counter"></div>

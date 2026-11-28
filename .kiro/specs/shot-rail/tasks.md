@@ -415,7 +415,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 37.1a Camera views in Move mode
     - In Move mode hide the Coverage_Grid tile pictures and show 'Camera views are shown in Angle mode (key A).'; in Angle mode show them again and redraw at once. Use the single mode-change path, so the buttons and the A and M keys behave the same.
     - _Requirements: 7.1_
-  - [ ] 37.1b Remember a camera's rail shot
+  - [x] 37.1b Remember a camera's rail shot
     - `railShotWhenMain` on `CameraSetting`; `planMainChange` sets it when a rail camera becomes orbit and restores it (and removes it) when that camera becomes main again, with "<id> is back to <type>." in the message; `withShotType` sets it for a non-main rail request and clears it when the Main_Camera's shot type is set; `withAddedCamera` does not copy it; the camera list shows "cam-1, orbit (push-in when main)". Hand-written tests in `test/view/coverage-grid-rules.test.ts`. Source line it should catch: not removing the field after restoring, or storing the new type instead of the old one. WHEN the User sets a camera's shot type to orbit or tracking, THE Shot_Rail_App SHALL forget that camera's remembered rail shot.
     - _Requirements: 7.5_
   - [x] 37.2 Wire the keys in `src/view/keyboard.ts`
@@ -445,7 +445,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User tries the list, activates a finding with the mouse and the keyboard, and checks the empty state. Kiro states what was not tested.
     - _Requirements: 9.3, 9.4, 25.1, 25.2_
 
-- [ ] 40. Sample shots loading
+- [x] 40. Sample shots loading
   - [x] 40.1 Implement loading in `src/view/samples-menu.ts`
     - The first sample loads at start, paused at frame 0. Selecting a sample replaces the current shot within one frame update and leaves the Timeline paused.
     - _Requirements: 10.1, 10.2, 10.3, 10.6, 11.13_
@@ -453,12 +453,12 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Start state: first sample loaded, `playing` false, frame 0. Loading each of the three samples leaves `playing` false and frame 0, even when the state was playing at frame 100 before the load (that case is forced). The settings after load equal the hand-written sample values.
     - Source line it should catch: keep the old frame number on load, or start playing after load.
     - _Requirements: 10.1, 10.3, 10.6, 11.14_
-  - [~] 40.3 User checkpoint: first-use check
+  - [x] 40.3 User checkpoint: first-use check
     - The User opens the app and checks that a visible result appears within about ten seconds and that the three samples load. Kiro states what was not tested.
     - _Requirements: 10.4, 25.1, 25.2_
 
 - [ ] 41. First-time hints
-  - [~] 41.1 Implement `src/view/hints.ts`
+  - [-] 41.1 Implement `src/view/hints.ts`
     - One-line hint the first time Angle mode and Move mode open. Dismissing stores `hintSeenAngle` or `hintSeenMove` through `storage.ts`.
     - _Requirements: 18.3, 18.4, 20.1_
   - [~] 41.2 Write the hint tests
@@ -510,7 +510,8 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User captures a frame in a browser in their own way and checks the file name and the picture. Kiro states that the PNG download was not tested.
     - _Requirements: 13.1, 13.4, 25.1, 25.2_
 
-- [ ] 46. Walking figure stand-in
+- [ ] 46. DROPPED Walking figure stand-in
+  - Dropped on 28 November 2026: the car is the only Subject. Not to be built.
   - [~] 46.1 User checkpoint: approve the figure size
     - The design gives no figure dimensions. Kiro proposes half-extents and a centre height (for example 0.25 / 0.9 / 0.2 and 0.9 m) and a Road speed; the User approves or changes them before they are written in `constants.ts`.
     - _Requirements: 14.1, 14.3_
@@ -597,7 +598,8 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 
 ### P3 (optional, blocked until the User says "go")
 
-- [ ] 54. Abstract subject (blocked until the User says "go"; all sub-tasks optional)
+- [ ] 54. DROPPED Abstract subject (blocked until the User says "go"; all sub-tasks optional)
+  - Dropped on 28 November 2026: the car is the only Subject. Not to be built.
   - [ ]* 54.1 Implement the abstract subject
     - A glowing ball or a paper plane, selectable like the other subjects, with axes declared on the entity.
     - _Requirements: 15.1, 15.2_

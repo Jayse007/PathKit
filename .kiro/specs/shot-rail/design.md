@@ -229,7 +229,7 @@ classDiagram
   class Scene { fps: number; frameCount: number; path; targets; entities }
   class Entity { id: string; forwardAxis: AxisToken; upAxis: AxisToken; constraints: Constraint[] }
   class CameraSetting { id: string; shotType: ShotType; bearingDeg; heightM; horizontalDistanceM; lensMm }
-  class RigSettings { shotLengthFrames: number; mainCameraId: string; cameras: CameraSetting[]; road: RoadSetting; subjectKind: "car"|"figure"|"abstract" }
+  class RigSettings { shotLengthFrames: number; mainCameraId: string; cameras: CameraSetting[]; road: RoadSetting; subjectKind: "car" }
   class RoadSetting { points: Vec3[]; closed: true }
   class SceneSet { scenes: { scene: Scene; cameraIds: string[] }[]; mainCameraId: string }
   RigSettings --> CameraSetting

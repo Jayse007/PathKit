@@ -205,16 +205,6 @@ describe('CameraRig scheduling', () => {
     expect(rig.bakeCount).toBe(2);
   });
 
-  it('a subject kind change rebakes the subject', () => {
-    const rig = new CameraRig();
-    rig.setSettings(makeSettings());
-    rig.tick();
-    rig.setSettings(makeSettings({ subjectKind: 'figure' }));
-    const second = rig.tick();
-    expect(second?.subjectRebaked).toBe(true);
-    expect(rig.subjectBakeCount).toBe(2);
-  });
-
   it('after a bake the play state is paused and the displayed frame is unchanged', () => {
     const rig = new CameraRig();
     rig.setSettings(makeSettings());
