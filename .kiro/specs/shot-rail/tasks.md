@@ -475,7 +475,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [-] 42.1 Implement `src/view/about-panel.ts`
     - Reachable from the main screen. Text states: the subject is a stand-in drawn from shapes and there is no lighting, exposure or depth-of-field simulation; angles are measured from the world axes, not from the car's heading; PathKit allows one path per scene, so subject and cameras are baked in separate scenes (and the Main_Camera has its own scene if S6 required it, per the recorded outcome); the lens maths assumes a 36 mm sensor; the app is rough planning, not a prediction of real footage; rail cameras (push-in and crane) move along a fixed rail, do not follow the car and only aim at it.
     - _Requirements: 21.1, 21.2, 21.3, 21.4, 21.5, 21.7, 21.8_
-  - [~] 42.2 Write the About_Panel text tests
+  - [-] 42.2 Write the About_Panel text tests
     - The text exported from the module contains each of the six statements (checked by a hand-written key phrase per statement, including "fixed rail" and "do not follow").
     - Source line it should catch: delete the rail-camera sentence.
     - _Requirements: 21.1 to 21.5, 21.8_

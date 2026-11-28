@@ -179,8 +179,8 @@
       #about-panel {
         width: min(640px, 90vw);
         max-height: 85vh;
-        overflow-y: auto;
-        padding: 16px;
+        overflow-y: auto; /* the dialog itself is the scroll box; the sticky header below sticks inside it */
+        padding: 0; /* no padding above the header: the padding lives in the header and the body instead */
         background: var(--panel-bg);
         color: var(--text);
         border: 1px solid var(--border);
@@ -189,8 +189,24 @@
       #about-panel::backdrop {
         background: rgba(0, 0, 0, 0.7);
       }
+      /* Title and Close in one row, kept at the top of the scroll box with the dialog's own background. */
+      #about-header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 16px;
+        background: var(--panel-bg);
+        border-bottom: 1px solid var(--border);
+      }
+      #about-body {
+        padding: 0 16px 16px;
+      }
       #about-panel h2 {
-        margin: 0 0 12px;
+        margin: 0;
         font-size: 16px;
         color: var(--text);
       }
@@ -211,7 +227,7 @@
         margin: 4px 0;
       }
       #about-close {
-        margin-top: 16px;
+        flex: none;
       }
       /* Narrow window: one column, main view first. 900px is this app's own choice. */
       @media (max-width: 900px) {
@@ -281,9 +297,11 @@
       </aside>
     </div>
     <dialog id="about-panel" aria-labelledby="about-title">
-      <h2 id="about-title"></h2>
+      <header id="about-header">
+        <h2 id="about-title"></h2>
+        <button id="about-close" type="button" autofocus></button>
+      </header>
       <div id="about-body"></div>
-      <button id="about-close" type="button" autofocus></button>
     </dialog>
     <script type="module" src="/src/main.ts"></script>
   </body>

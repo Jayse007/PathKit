@@ -6,6 +6,9 @@
 // moves into the dialog (to the Close button, its first focusable element), and Escape asks it to close.
 // A hand-made overlay would need a focus trap, an aria-modal attribute and a hidden background written by hand.
 //
+// Layout: the dialog itself scrolls (overflow-y:auto). Its first child is a sticky header holding the title and
+// the Close button, so Close stays visible at the top of the scroll box whatever the scroll position.
+//
 // Focus: the element focused before opening is remembered; when the dialog closes (Close button, Escape, or
 // a browser close request) focus goes back to it, or to the About button if that element is gone.
 //
@@ -104,7 +107,7 @@ export function createAboutPanel(): AboutPanel | null {
     if (dialog.open) return;
     opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     dialog.showModal(); // focus moves to the Close button (autofocus in index.html)
-    dialog.scrollTop = SCROLL_TOP;
+    dialog.scrollTop = SCROLL_TOP; // the dialog is the scroll box, so the header starts at its top
   };
 
   const close = (): void => {

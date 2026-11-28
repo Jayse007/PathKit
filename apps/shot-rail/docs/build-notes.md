@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 42.1 fix: About Close button always visible (newest entry, kept at top)
+
+- Done: in `index.html` the title and Close button are now one `<header id="about-header">` (flex, space-between) as the first child of the dialog, before `#about-body`. The dialog itself scrolls (`overflow-y: auto`, padding 0); the header is `position: sticky; top: 0; z-index: 1` with `background: var(--panel-bg)` (the dialog's colour). The old 16px dialog padding moved into the header (8px 16px) and `#about-body` (0 16px 16px), so no gap sits above the header. `about-panel.ts`: comments only; focus (autofocus on Close, return to the opener), `showModal()` and the `scrollTop` reset are unchanged. No text constant changed.
+- Not tested: nothing was run; not opened in a browser.
+
 ## Task 42.1: About_Panel (newest entry, kept at top)
 
 - Done: new pure `src/view/about-panel-rules.ts` (all About text as named constants, `ABOUT_SECTIONS`, `ABOUT_LIMIT_LINES`, `THIRD_PARTY_ROWS`, `thirdPartyLine`, `aboutFullText`) and `src/view/about-panel.ts` (`createAboutPanel()` returns `{ open, close, isOpen, dispose }` or null; DOM). `index.html`: an About button at the bottom of the controls column (`#about-button`, visible label "About", tooltip with the `?` key) and a native `<dialog id="about-panel">` opened with `showModal()`; CSS reuses the existing colours. `main.ts`: the panel is created right after `applyLayout` (before the early returns, so the button works even if WebGL fails) and `onOpenAbout` is passed to the keyboard. `keyboard.ts`: new `onOpenAbout` option, `open-about` now runs it, and every key is ignored while a `dialog[open]` exists. `keyboard-rules.ts`: `open-about` removed from `UNHANDLED_ACTIONS`. Keys inside the open dialog are stopped by a capture-phase keydown listener on the document, so `hints.ts` (its own Escape), `guides-view.ts` (T, G) and `keyboard.ts` never see them; Escape closes the panel and returns focus to the element that had it. The car is the only Subject, so the text names only the car. Nothing under src/logic, camera-rig.ts or coverage-grid-rules.ts changed.
