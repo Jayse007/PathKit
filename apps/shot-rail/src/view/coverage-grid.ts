@@ -18,19 +18,15 @@ import type { Material, WebGLRenderer } from 'three';
 import type { OutBuffer, Vec3 } from '../logic/pathkit.js';
 import {
   ASPECT_RATIO,
-  CAR_HALF_EXTENT_X,
-  CAR_HALF_EXTENT_Y,
-  CAR_HALF_EXTENT_Z,
   DEVICE_PIXEL_RATIO_CAP,
   FILM_GAUGE,
   TILE_SIZE_PX,
 } from '../logic/constants.js';
-import { framingPercent } from '../logic/fill.js';
-import { angleLabel, framingLabel } from '../logic/labels.js';
 import { fieldOfViewForFocalLengthMm } from '../logic/lens.js';
 import type { CameraRig, RigSettings } from './camera-rig.js';
 import { selectMain, shouldRenderGrid } from './coverage-grid-rules.js';
 import type { GridMode } from './coverage-grid-rules.js';
+import { createShotMeasures, measureShot } from './shot-measures.js';
 import { createSubjectView } from './subject-view.js';
 
 // View-only values (not in the design's Named constants table).
@@ -52,13 +48,7 @@ const CAPTION_FONT = '12px system-ui, -apple-system, "Segoe UI", Roboto, "Helvet
 const CAPTION_PADDING = '3px 6px';
 const MAIN_TAG_TEXT = 'Main';
 const RAD_TO_DEG = 180 / Math.PI;
-const SCRATCH_CORNERS_LENGTH = 24; // 8 corners x 3
-const SCRATCH_NDC_LENGTH = 16; // 8 corners x 2
 const NO_LABEL = ''; // before the first draw
-
-// The car's box. Only the car exists as a subject so far (RigSettings.subjectKind is 'car' in every
-// caller); the other kinds will need their own extents when they are built.
-const SUBJECT_HALF_EXTENTS: Vec3 = { x: CAR_HALF_EXTENT_X, y: CAR_HALF_EXTENT_Y, z: CAR_HALF_EXTENT_Z };
 
 export interface CoverageGrid {
   /** Rebuild the tiles from `settings`. Call after every re-bake that succeeded. Does not draw: call render next. */
@@ -153,8 +143,7 @@ export function createCoverageGrid(
 
   const camOut: OutBuffer = { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0, w: 1 } };
   const subjectOut: OutBuffer = { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0, w: 1 } };
-  const scratchCorners = new Float64Array(SCRATCH_CORNERS_LENGTH);
-  const scratchNdc = new Float64Array(SCRATCH_NDC_LENGTH);
+  const measures = createShotMeasures(); // shared calculation with the Readout (shot-measures.ts)
   const sizeScratch = new Vector2();
 
   let tiles: Tile[] = [];
@@ -189,30 +178,15 @@ export function createCoverageGrid(
     auxRenderer.render(scene, camera);
     tile.ctx.drawImage(auxRenderer.domElement, 0, 0, tileWidthPx, tileHeightPx);
 
-    // Angle_Label: elevation from the true subject centre to the camera, in degrees (design: Elevation).
-    const dx = camOut.position.x - subjectOut.position.x;
-    const dz = camOut.position.z - subjectOut.position.z;
-    const horizontal = Math.sqrt(dx * dx + dz * dz);
-    const elevationDeg = Math.atan2(camOut.position.y - subjectOut.position.y, horizontal) * RAD_TO_DEG;
-    const angle = angleLabel(elevationDeg);
+    // Angle_Label (elevation from the true subject centre) and Framing_Label (how much of the frame the
+    // car's box covers): one shared calculation, the same one the Readout uses.
+    measureShot(camOut, subjectOut, tile.verticalFovRad, measures);
+    const angle = measures.angle;
     if (angle !== tile.lastAngle) {
       tile.angleText.textContent = angle;
       tile.lastAngle = angle;
     }
-
-    // Framing_Label: how much of the frame the car's box covers.
-    const fill = framingPercent(
-      subjectOut.position,
-      subjectOut.rotation,
-      SUBJECT_HALF_EXTENTS,
-      camOut.position,
-      camOut.rotation,
-      tile.verticalFovRad,
-      ASPECT_RATIO,
-      scratchCorners,
-      scratchNdc,
-    );
-    const framing = framingLabel(fill);
+    const framing = measures.framing;
     if (framing !== tile.lastFraming) {
       tile.framingText.textContent = framing;
       tile.lastFraming = framing;

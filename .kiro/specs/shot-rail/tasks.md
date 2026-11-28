@@ -409,21 +409,21 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5_
 
 - [ ] 37. Controls and keyboard wiring
-  - [-] 37.1 Implement `src/view/controls.ts`
+  - [x] 37.1 Implement `src/view/controls.ts`
     - Mode tabs (Angle, Move), camera list (up to 6), bearing, height, horizontal distance, lens presets, a lens slider from 24 to 85 mm and a 'Custom' entry in the lens menu, Shot_Type, Shot_Length. Each control has a visible text label, a tooltip and its key shown beside it. A non-drag alternative for every drag action (typed number fields and keys). Shot_Length refuses 59 or 601 with the message from Task 19. Changing any setting marks the rig dirty and never starts playback.
     - _Requirements: 7.2, 7.3, 7.12, 8.1, 8.8, 8.9, 8.12, 8.15, 17.3, 18.1, 18.2, 19.7_
-  - [ ] 37.1a Camera views in Move mode
+  - [x] 37.1a Camera views in Move mode
     - In Move mode hide the Coverage_Grid tile pictures and show 'Camera views are shown in Angle mode (key A).'; in Angle mode show them again and redraw at once. Use the single mode-change path, so the buttons and the A and M keys behave the same.
     - _Requirements: 7.1_
   - [x] 37.2 Wire the keys in `src/view/keyboard.ts`
     - Attach one `keydown` handler that calls `actionForKey` and dispatches the action. Show the key beside each control.
     - _Requirements: 11.12, 18.2_
-  - [~] 37.3 User checkpoint: try the controls
+  - [x] 37.3 User checkpoint: try the controls
     - The User tries the controls and the keys in a browser in their own way and reports problems. Check typed values work as an alternative to dragging. Kiro states what was not tested.
     - _Requirements: 7.12, 18.2, 19.7, 25.1, 25.2_
 
 - [ ] 38. Readout
-  - [~] 38.1 Implement `src/view/readout.ts`
+  - [-] 38.1 Implement `src/view/readout.ts`
     - Angle_Label, Framing_Label, horizontal and vertical field of view, Straight_Line_Distance (read-only), each with a text label. Each threshold is shown next to its label and described as this app's own cut-offs (wording and hover lines from src/logic/term-text.ts). The angle effect notes, if any, are marked "commonly said" and each has its source in `docs/sources.md`; with no source found, no note is shown. Elevation uses the true subject position.
     - _Requirements: 5.6, 5.7, 5.8, 6.5, 7.3, 7.4, 17.4_
   - [~] 38.2 User checkpoint: view the readout and approve any angle notes

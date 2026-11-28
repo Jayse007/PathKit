@@ -23,6 +23,8 @@ import { createKeyboard } from './view/keyboard.js';
 import { nextLensPreset, nextShotType } from './view/keyboard-rules.js';
 import { applyLayout } from './view/layout.js';
 import { createMainView } from './view/main-view.js';
+import { createReadout } from './view/readout.js';
+import type { Readout } from './view/readout.js';
 import { createStageOverview } from './view/stage-overview.js';
 import type { StageOverview } from './view/stage-overview.js';
 import { createSubjectView } from './view/subject-view.js';
@@ -114,6 +116,8 @@ function start(): void {
   let lastGridDrawMs = 0;
   let mode: GridMode = 'angle'; // Move mode only changes what the grid does so far: it draws in Angle mode only
   let controls: Controls | null = null;
+  let readout: Readout | null = null; // created once the Timeline exists (task 38.1)
+  let mainLensMm: number = sample.placement.lensMm; // the main camera's lens; applyMainLens keeps it current
 
   // Draws everything at the Timeline's displayed frame. Evaluates baked data only; it never bakes.
   // Created once. While playing the grid is redrawn at 10 Hz (shouldRenderGrid); every other change redraws it.
@@ -121,6 +125,9 @@ function start(): void {
     view.showFrame(rig, current.mainCameraId, tick.frame);
     subjectView.showFrame(rig, tick.frame);
     if (overview !== null) overview.showFrame(rig, tick.frame);
+    // The readout is cheap and writes text only when a shown value changes, so it follows every frame
+    // (up to 30 a second while playing) and not only the grid's 10 Hz redraw.
+    if (readout !== null) readout.show(rig, current.mainCameraId, mainLensMm, tick.frame);
     if (
       grid !== null &&
       grid.render(rig, tick.frame, mode, tick.gridChanged, tick.playing, tick.nowMs - lastGridDrawMs)
@@ -138,6 +145,9 @@ function start(): void {
   });
   subjectView.showFrame(rig, timeline.frame());
 
+  readout = createReadout(document.getElementById('readout-column'));
+  if (readout !== null) readout.show(rig, current.mainCameraId, mainLensMm, timeline.frame());
+
   // Applies a lens to the main camera: the view, `current` (a new camera object; the rig's settings are not
   // touched and nothing is re-baked, because the lens does not change the move), the grid tile, and the lens
   // menu. A lens that is not a preset shows a disabled "Custom (N mm)" option, created once and reused.
@@ -146,6 +156,12 @@ function start(): void {
     const mainId = current.mainCameraId;
     view.setLensMm(mm);
     current = { ...current, cameras: current.cameras.map((c) => (c.id === mainId ? { ...c, lensMm: mm } : c)) };
+    mainLensMm = mm;
+    // The frame is clamped to the current shot: after a re-bake with a shorter shot the Timeline has not
+    // been told yet (setShot comes after this call), so its frame may be past the new last frame.
+    if (readout !== null) {
+      readout.show(rig, mainId, mm, Math.min(timeline.frame(), current.shotLengthFrames - 1));
+    }
     if (grid !== null) {
       grid.setLensMm(mainId, mm);
       grid.render(rig, timeline.frame(), mode, true, false, 0);
