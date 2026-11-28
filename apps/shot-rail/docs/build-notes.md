@@ -1,5 +1,10 @@
 # Build notes
 
+## Clean-ups: Straight_Line_Distance wording and mode message (newest entry, kept at top)
+
+- Done: spec wording only. The Straight_Line_Distance is in the Readout in both modes, not in the placement panel: requirements.md 7.13, tasks.md 37.1c and the design.md "Controls by mode" paragraph now say so (7.3 unchanged). In `main.ts`, `MODE_CHANGED_MESSAGE` is now 'Angle mode: place cameras. Move mode: choose the shot type and length.' and the comments on `mode` and `applyMode` say the mode also decides which control panels are shown. No test quoted the old message.
+- Not tested: nothing was run. Not opened in a browser.
+
 ## Controls by mode and new hint wording, 28 November 2026, part B (newest entry, kept at top)
 
 - Decision (28 November 2026, by the User): Angle mode shows the camera list with Add camera, the placement fields and the lens controls. Move mode shows Shot_Type, Shot_Length and a 'Main camera: <id>' line. The sample menu, guides, Timeline, Readout and Motion_Check show in both modes. New hint wording for both modes.

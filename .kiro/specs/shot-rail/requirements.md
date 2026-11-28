@@ -227,7 +227,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 10. WHILE nothing changes and the Timeline is stopped, THE Shot_Rail_App SHALL NOT re-render the Coverage_Grid.
 11. IF the User tries to add a seventh Camera, THEN THE Shot_Rail_App SHALL refuse and show a message that states the limit of 6 Cameras.
 12. WHERE the User cannot drag, THE Shot_Rail_App SHALL offer the same placement by typing values or using keys.
-13. WHILE Angle_Mode is active, THE Shot_Rail_App SHALL show the camera list with its Add camera button, the placement fields (bearing, height, Horizontal_Distance and the read-only Straight_Line_Distance) and the lens controls. WHILE Move_Mode is active, THE Shot_Rail_App SHALL hide them, and SHALL show them again when Angle_Mode becomes active.
+13. WHILE Angle_Mode is active, THE Shot_Rail_App SHALL show the camera list with its Add camera button, the placement fields (bearing, height and Horizontal_Distance) and the lens controls. WHILE Move_Mode is active, THE Shot_Rail_App SHALL hide them, and SHALL show them again when Angle_Mode becomes active.
 14. WHEN a mode change hides the control that has focus, THE Shot_Rail_App SHALL move focus to the button of the mode that is now active.
 
 ### Requirement 8: Move mode and shot types (P1)

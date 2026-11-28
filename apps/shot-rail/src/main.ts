@@ -37,7 +37,7 @@ import { createSubjectView } from './view/subject-view.js';
 import { createTimeline } from './view/timeline.js';
 import type { TimelineTick } from './view/timeline.js';
 
-const MODE_CHANGED_MESSAGE = 'Mode changed. The camera grid is drawn in Angle mode only.';
+const MODE_CHANGED_MESSAGE = 'Angle mode: place cameras. Move mode: choose the shot type and length.';
 const GRID_MOVE_MESSAGE = 'Camera views are shown in Angle mode (key A).';
 const NO_SLOT_MESSAGE_PREFIX = 'There is no camera in slot';
 const SHOT_CHANGED_PREFIX = 'The change could not be applied';
@@ -108,7 +108,7 @@ function start(): void {
   let grid: CoverageGrid | null = null;
   let current: RigSettings = settings;
   let lastGridDrawMs = 0;
-  let mode: GridMode = 'angle'; // Move mode only changes what the grid does so far: it draws in Angle mode only
+  let mode: GridMode = 'angle'; // decides which control panels are shown, and the grid draws in Angle mode only
   let controls: Controls | null = null;
   let readout: Readout | null = null; // created once the Timeline exists (task 38.1)
   let mainLensMm: number = sample.placement.lensMm; // the main camera's lens; applyMainLens keeps it current
@@ -282,7 +282,7 @@ function start(): void {
   view.showFrame(rig, current.mainCameraId, timeline.frame());
 
   // Switches the mode: the Angle and Move buttons and the A and M keys all come here (the tabs are set too,
-  // which does nothing when the click already set them). Move mode only stops the grid drawing, so far.
+  // which does nothing when the click already set them). The mode also decides which control panels are shown.
   // Move mode hides the tiles (their DOM is kept) and shows GRID_MOVE_MESSAGE; Angle mode shows the tiles
   // again and redraws them at once (changed = true), so a tile built or left stale while hidden is never seen.
   const gridMoveMessage = document.getElementById('grid-move-message');
