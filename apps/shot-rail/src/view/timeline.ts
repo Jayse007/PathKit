@@ -76,6 +76,15 @@ export interface Timeline {
   /** The displayed frame. */
   frame(): number;
   isPlaying(): boolean;
+  /** The last frame of the shot (task 37.2, for the End key). */
+  lastFrame(): number;
+  /** Play if paused, pause if playing: the same as a press of the Play button (task 37.2, Space key). */
+  togglePlay(): void;
+  /**
+   * Go to a frame (clamped to the shot, rounded) and pause, as scrubbing does. Never starts playback.
+   * A value that is not finite is ignored. Used by the step and first/last keys (task 37.2).
+   */
+  seekTo(frame: number): void;
   /** Pause. Calls onChange only when it was playing. Call this before and after any re-bake or settings change. */
   pause(): void;
   /**
@@ -241,7 +250,8 @@ export function createTimeline(container: HTMLElement, options: TimelineOptions)
     publish(performance.now(), true);
   };
 
-  playButton.addEventListener('click', () => {
+  // The Play button and the Space key (task 37.2) both come here.
+  const togglePlay = (): void => {
     if (state.playing) {
       pauseNow();
       return;
@@ -250,10 +260,18 @@ export function createTimeline(container: HTMLElement, options: TimelineOptions)
     lastTimestamp = -1;
     rafId = window.requestAnimationFrame(loop);
     publish(performance.now(), true);
-  });
+  };
+  playButton.addEventListener('click', togglePlay);
 
-  // Scrubbing takes over from playback: it pauses (it never starts playback). A value that is not a
-  // finite number is ignored (design: error handling for the scrub value).
+  // Moves to a frame and pauses (it never starts playback). Scrubbing and the keyboard (task 37.2) both
+  // come here. The frame is clamped to the shot and rounded by seekPlayback; a value that is not a finite
+  // number is ignored (design: error handling for the scrub value).
+  const seekNow = (frame: number): void => {
+    stopLoop();
+    state = pausePlayback(seekPlayback(state, frame, lastFrame));
+    publish(performance.now(), true);
+  };
+
   slider.addEventListener('input', () => {
     let frame: number;
     try {
@@ -261,14 +279,20 @@ export function createTimeline(container: HTMLElement, options: TimelineOptions)
     } catch {
       return;
     }
-    stopLoop();
-    state = pausePlayback(seekPlayback(state, frame, lastFrame));
-    publish(performance.now(), true);
+    seekNow(frame);
   });
 
   return {
     frame(): number {
       return state.frame;
+    },
+    lastFrame(): number {
+      return lastFrame;
+    },
+    togglePlay,
+    seekTo(frame: number): void {
+      if (!Number.isFinite(frame)) return;
+      seekNow(frame);
     },
     isPlaying(): boolean {
       return state.playing;

@@ -272,7 +272,7 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Source line it should catch: reorder two Parts in a Machine's keyboard order only in the tour builder input.
     - _Requirements: 16.2, 16.5, 16.7, 35.7 (design Property 10, 19)_
 
-- [ ] 20. UI shell
+- [x] 20. UI shell
   - [x] 20.1 Implement and test the pure UI helpers
     - Key map (M, E, R, +, -, arrows, Escape) and the step functions (orbit key step, zoom step, wheel step, move step, `orbitAngleFromDrag`).
     - Tests with hand-written tables, including that shortcuts are ignored with text-field focus.
@@ -324,18 +324,18 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - The User does a keyboard-only walkthrough and sends screenshots of both Looks.
     - _Requirements: 22.6, 37.1, 37.2_
 
-- [ ] 22. About_Panel and README
-  - [-] 22.1 Write the honest limits and the README
+- [x] 22. About_Panel and README
+  - [x] 22.1 Write the honest limits and the README
     - About_Panel and README state: models are simplified and not to scale with each other; specifications are sample data; PathKit cannot follow a live hand; "Hand gestures are not available in this version." The gesture statements of 24.5 to 24.9 (webcam, light and HTTPS; two-hand zoom is the least stable; moving the Machine has no gesture; the classifier is our own code over 21 points; MediaPipe sends usage metrics to Google) are written when Tier B is built. Tier A states only "Hand gestures are not available in this version."
     - The README (not the About_Panel) states that the impeller spin is ordinary Three.js code, and dragging and the cursor are ordinary browser code; none use PathKit. The About_Panel does not state which parts use PathKit.
     - README also lists every stored key, notes that "Skeleton Bench" is a working name not trademark-checked, and uses none of the names J.A.R.V.I.S., Marvel or Stark anywhere. The README is the only existing file edited.
     - _Requirements: 1.6, 3.8, 3.9, 23.2, 24.1 to 24.10_
 
-- [ ] 23. Final Tier A checkpoint
-  - [ ] 23.1 Check imports and files
+- [x] 23. Final Tier A checkpoint
+  - [x] 23.1 Check imports and files
     - Open every `.ts` file in `apps/skeleton-bench` and check that each relative import ends in `.js`; list the files checked. Confirm nothing outside the allowed files changed.
     - _Requirements: 1.4, 1.6, 2.7, 2.9_
-  - [ ] 23.2 User checkpoint: final run and report
+  - [x] 23.2 User checkpoint: final run and report
     - The User runs `npm.cmd test`, then `npm.cmd run build`, one at a time from `apps/skeleton-bench`, and pastes both outputs. Kiro reports counts only from that output.
     - The final report states plainly what was not tested (look, WebGL output, the view offset, clicking a Part, the webcam, real gestures, load time), which items the User checked, and the recorded bake times.
     - Deploy is out of scope (decision 6). Tier B starts only when the User says "go".

@@ -3,9 +3,9 @@
 // The Timeline decides which displayed frame is shown; the main view, the car, the overview and the grid
 // all follow it.
 
-import { CAMERA_IDS, LENS_PRESETS_MM } from './logic/constants.js';
+import { CAMERA_IDS, LENS_KEY_STEP_RATIO, LENS_PRESETS_MM } from './logic/constants.js';
 import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
-import { lensAfterWheel, presetOf } from './logic/lens-zoom.js';
+import { lensAfterWheel, presetOf, stepLens } from './logic/lens-zoom.js';
 import { SAMPLE_SHOTS } from './logic/samples.js';
 import { LENS_TERMS, MEASURE_TERMS } from './logic/term-text.js';
 import { CameraRig } from './view/camera-rig.js';
@@ -17,7 +17,10 @@ import { planMainChange } from './view/coverage-grid-rules.js';
 import type { GridMode } from './view/coverage-grid-rules.js';
 import { createControls } from './view/controls.js';
 import type { Controls } from './view/controls.js';
+import { withShotType } from './view/controls-rules.js';
 import { createGuideToggle, createGuidesOverlay } from './view/guides-view.js';
+import { createKeyboard } from './view/keyboard.js';
+import { nextLensPreset, nextShotType } from './view/keyboard-rules.js';
 import { applyLayout } from './view/layout.js';
 import { createMainView } from './view/main-view.js';
 import { createStageOverview } from './view/stage-overview.js';
@@ -28,6 +31,7 @@ import type { TimelineTick } from './view/timeline.js';
 
 const CAMERA_ID = 'cam-1';
 const MODE_CHANGED_MESSAGE = 'Mode changed. The camera grid is drawn in Angle mode only.';
+const NO_SLOT_MESSAGE_PREFIX = 'There is no camera in slot';
 const SHOT_CHANGED_PREFIX = 'The change could not be applied';
 
 function start(): void {
@@ -256,6 +260,15 @@ function start(): void {
   view.setLensMm(sample.placement.lensMm);
   view.showFrame(rig, current.mainCameraId, timeline.frame());
 
+  // Switches the mode: the Angle and Move buttons and the A and M keys all come here (the tabs are set too,
+  // which does nothing when the click already set them). Move mode only stops the grid drawing, so far.
+  const applyMode = (next: GridMode): void => {
+    mode = next;
+    status.textContent = MODE_CHANGED_MESSAGE;
+    if (controls !== null) controls.setMode(next);
+    if (grid !== null) grid.render(rig, timeline.frame(), mode, true, false, 0);
+  };
+
   // The controls panel (task 37.1). Edits start from `current`, never from the rig's own copy.
   const controlsTop = document.getElementById('controls-top');
   const controlsAfterLens = document.getElementById('controls-after-lens');
@@ -270,16 +283,42 @@ function start(): void {
       onChange: applySettings,
       onSelectCamera: onSelect,
       onLens: applyMainLens,
-      onMode: (next: GridMode) => {
-        mode = next;
-        status.textContent = MODE_CHANGED_MESSAGE;
-        if (grid !== null) grid.render(rig, timeline.frame(), mode, true, false, 0);
-      },
+      onMode: applyMode,
       onRefuse: (message: string) => {
         status.textContent = message;
       },
     });
   }
+
+  // The keyboard (task 37.2). Every handler takes the same path as the control it stands for.
+  const mainCamera = (): RigSettings['cameras'][number] | undefined =>
+    current.cameras.find((c) => c.id === current.mainCameraId);
+  createKeyboard({
+    timeline,
+    onMode: applyMode,
+    onSelectSlot: (index: number) => {
+      const camera = current.cameras[index];
+      if (camera === undefined) {
+        status.textContent = `${NO_SLOT_MESSAGE_PREFIX} ${index + 1}.`;
+        return;
+      }
+      onSelect(camera.id);
+    },
+    onCycleLens: () => {
+      const main = mainCamera();
+      if (main !== undefined) applyMainLens(nextLensPreset(main.lensMm));
+    },
+    onZoom: (direction: 1 | -1) => {
+      const main = mainCamera();
+      if (main !== undefined) applyMainLens(stepLens(main.lensMm, direction, LENS_KEY_STEP_RATIO));
+    },
+    onCycleShotType: () => {
+      const main = mainCamera();
+      if (main === undefined) return;
+      const changed = withShotType(current, main.id, nextShotType(main.shotType));
+      applySettings(changed.settings, changed.message); // pauses first, then re-bakes
+    },
+  });
 
   lensSelect.addEventListener('change', () => {
     applyMainLens(Number(lensSelect.value));
