@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 39.2: motion check model tests (newest entry, kept at top)
+
+- Done: new `test/logic/motion-check-model.test.ts`, 16 `it` blocks (29 tests as Vitest counts them, because 5 `it.each` tables expand). Expected texts are hand-written literals (finding wording from the design table, the no-problems message, the what-to-do line in one `WHAT_TO_DO` constant at the top of the file); no model constant is imported. Frames 10, 200 and 7 differ from the indices so a row index returned by mistake fails. No src file changed.
+- Not tested: nothing was run; "Frame N" and the view (`motion-check.ts`) are not covered; no browser.
+
 ## Task 39.1: motion check list (newest entry, kept at top)
 
 - Done: new pure `src/logic/motion-check-model.ts` (`buildMotionCheckRows`, `activateRow`, `motionCheckFailureOf`, constants) and `src/view/motion-check.ts` (`createMotionCheck(container, { onActivate })` returns `{ update(findings, failureMessage) }`; DOM). Rows use `describeFinding` and `NO_PROBLEMS_MESSAGE` from `findings.ts`; the error row is the only new wording (label "Error", a what-to-do line). The list sits below the readout (appended to `#readout-column` after `createReadout`). Each finding is a `<button>` (Enter and Space native) that calls `timeline.seekTo(frame)`. A warning has a text label and the amber `--warning` colour (new in `index.html`). `main.ts` updates the list at start, in `onSelect` and in `applySettings`, after `timeline.setShot`; never per frame. A failed motion check is detected from the successful outcome's `message` starting "the motion check could not run" (`camera-rig.ts` unchanged). `aria-live="polite"` is on the list; `update` skips the rebuild when the rows are the same. No src/logic existing file, camera-rig.ts or coverage-grid-rules.ts change.

@@ -434,10 +434,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 5.8, 24.4, 25.1_
 
 - [ ] 39. Motion check list
-  - [-] 39.1 Implement `src/logic/motion-check-model.ts` (pure) and `src/view/motion-check.ts`
+  - [x] 39.1 Implement `src/logic/motion-check-model.ts` (pure) and `src/view/motion-check.ts`
     - Pure model: findings to rows (wording, one-line explanation, text severity label, frame); activating a row returns that frame; empty list and error states give their messages. The view lists the rows as buttons that work with Enter and Space, uses the amber accent for warnings together with the text label, and moves the Timeline to the frame.
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8_
-  - [~] 39.2 Write the motion check model tests
+  - [x] 39.2 Write the motion check model tests
     - Two findings at frames 10 and 200 give two rows with the right words and the label "Warning" or "Note"; activating row 2 returns 200; an empty list gives the no-problems row; an error gives a row with "what failed" and "what to do".
     - Source line it should catch: return the row index instead of the finding frame, or omit the text severity label.
     - _Requirements: 9.2, 9.3, 9.5, 9.7, 9.8_
