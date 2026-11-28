@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 40.1: sample shots loading (newest entry, kept at top)
+
+- Done: new pure `src/view/samples-menu-rules.ts` (`sampleToSettings(sample, roadPoints, subjectKind)`, `sampleLoadedMessage(sample)`, `STARTUP_SAMPLE_INDEX` = 0, `SAMPLE_CAMERA_ID` = cam-1) and `src/view/samples-menu.ts` (`createSamplesMenu(container, { samples, initialIndex, onLoad })` returns `{ show(index) }`; a labelled native `<select>`, option titles from `SHOT_TYPE_TERMS`). `index.html` has `<div id="samples-box">` at the top of the controls column. `main.ts`: the app now starts with the first sample (orbit, one camera, `cam-1`, main), so the stop-gap two-camera startup list (push-in main plus orbit cam-2), `CAMERA_ID` and the `CAMERA_IDS` import were removed. Loading calls `applySettings(sampleToSettings(...), message)` (pause, re-bake, revert on failure, lens, grid, overview, readout, motion check) and then `timeline.seekTo(0)`, because `applySettings` keeps the old frame. New settings are built from the sample, so no camera has `railShotWhenMain`; the Road and subject in use are kept. No camera-rig.ts, src/logic or coverage-grid-rules.ts change. PathKit used only through the rig.
+- Not tested: nothing was run; no tests written (40.2); not opened in a browser (menu look and keyboard use, re-selecting the same sample after editing, load from a playing state, status text).
+
 ## Task 39.2: motion check model tests (newest entry, kept at top)
 
 - Done: new `test/logic/motion-check-model.test.ts`, 16 `it` blocks (29 tests as Vitest counts them, because 5 `it.each` tables expand). Expected texts are hand-written literals (finding wording from the design table, the no-problems message, the what-to-do line in one `WHAT_TO_DO` constant at the top of the file); no model constant is imported. Frames 10, 200 and 7 differ from the indices so a row index returned by mistake fails. No src file changed.

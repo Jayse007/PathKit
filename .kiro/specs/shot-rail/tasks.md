@@ -433,7 +433,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User views the readout in a browser in their own way and approves every "commonly said" note and its source before it is kept. Kiro states what was not tested.
     - _Requirements: 5.8, 24.4, 25.1_
 
-- [ ] 39. Motion check list
+- [x] 39. Motion check list
   - [x] 39.1 Implement `src/logic/motion-check-model.ts` (pure) and `src/view/motion-check.ts`
     - Pure model: findings to rows (wording, one-line explanation, text severity label, frame); activating a row returns that frame; empty list and error states give their messages. The view lists the rows as buttons that work with Enter and Space, uses the amber accent for warnings together with the text label, and moves the Timeline to the frame.
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8_
@@ -441,12 +441,12 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Two findings at frames 10 and 200 give two rows with the right words and the label "Warning" or "Note"; activating row 2 returns 200; an empty list gives the no-problems row; an error gives a row with "what failed" and "what to do".
     - Source line it should catch: return the row index instead of the finding frame, or omit the text severity label.
     - _Requirements: 9.2, 9.3, 9.5, 9.7, 9.8_
-  - [~] 39.3 User checkpoint: try the Motion_Check
+  - [x] 39.3 User checkpoint: try the Motion_Check
     - The User tries the list, activates a finding with the mouse and the keyboard, and checks the empty state. Kiro states what was not tested.
     - _Requirements: 9.3, 9.4, 25.1, 25.2_
 
 - [ ] 40. Sample shots loading
-  - [~] 40.1 Implement loading in `src/view/samples-menu.ts`
+  - [-] 40.1 Implement loading in `src/view/samples-menu.ts`
     - The first sample loads at start, paused at frame 0. Selecting a sample replaces the current shot within one frame update and leaves the Timeline paused.
     - _Requirements: 10.1, 10.2, 10.3, 10.6, 11.13_
   - [~] 40.2 Write the loading tests

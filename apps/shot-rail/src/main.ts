@@ -3,7 +3,7 @@
 // The Timeline decides which displayed frame is shown; the main view, the car, the overview and the grid
 // all follow it.
 
-import { CAMERA_IDS, LENS_KEY_STEP_RATIO, LENS_PRESETS_MM } from './logic/constants.js';
+import { LENS_KEY_STEP_RATIO, LENS_PRESETS_MM } from './logic/constants.js';
 import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
 import { lensAfterWheel, presetOf, stepLens } from './logic/lens-zoom.js';
 import { motionCheckFailureOf } from './logic/motion-check-model.js';
@@ -28,13 +28,14 @@ import { createMotionCheck } from './view/motion-check.js';
 import type { MotionCheck } from './view/motion-check.js';
 import { createReadout } from './view/readout.js';
 import type { Readout } from './view/readout.js';
+import { createSamplesMenu } from './view/samples-menu.js';
+import { STARTUP_SAMPLE_INDEX, sampleLoadedMessage, sampleToSettings } from './view/samples-menu-rules.js';
 import { createStageOverview } from './view/stage-overview.js';
 import type { StageOverview } from './view/stage-overview.js';
 import { createSubjectView } from './view/subject-view.js';
 import { createTimeline } from './view/timeline.js';
 import type { TimelineTick } from './view/timeline.js';
 
-const CAMERA_ID = 'cam-1';
 const MODE_CHANGED_MESSAGE = 'Mode changed. The camera grid is drawn in Angle mode only.';
 const GRID_MOVE_MESSAGE = 'Camera views are shown in Angle mode (key A).';
 const NO_SLOT_MESSAGE_PREFIX = 'There is no camera in slot';
@@ -50,20 +51,9 @@ function start(): void {
     throw new Error('index.html is missing #stage, #timeline, #lens or #status');
   }
 
-  const sample = SAMPLE_SHOTS[1]; // the push-in
-  const settings: RigSettings = {
-    shotLengthFrames: sample.shotLengthFrames,
-    mainCameraId: CAMERA_ID,
-    // cam-1 is the main camera and is the push-in sample, so the Stage_Overview shows its rail. Only the main
-    // camera can be a rail shot (scene-set.ts), so cam-2 is the orbit sample. Remove both when the camera list
-    // (task 35) takes over.
-    cameras: [
-      { id: CAMERA_IDS[0], shotType: sample.shotType, ...sample.placement },
-      { id: CAMERA_IDS[1], shotType: SAMPLE_SHOTS[0].shotType, ...SAMPLE_SHOTS[0].placement },
-    ],
-    road: { points: DEFAULT_ROAD_POINTS.map((p) => ({ x: p.x, y: p.y, z: p.z })), closed: true },
-    subjectKind: 'car',
-  };
+  // The app starts with the first sample (task 40.1): one camera, the main camera, paused at frame 0.
+  const sample = SAMPLE_SHOTS[STARTUP_SAMPLE_INDEX];
+  const settings: RigSettings = sampleToSettings(sample, DEFAULT_ROAD_POINTS, 'car');
 
   for (const mm of LENS_PRESETS_MM) {
     const option = document.createElement('option');
@@ -327,6 +317,26 @@ function start(): void {
       },
     });
   }
+
+  // The samples menu (task 40.1). Loading builds new settings from the sample (nothing is changed in `current`;
+  // the Road and the subject in use are kept) and goes through applySettings, which pauses, re-bakes, restores
+  // the old settings on failure, and redraws everything including the lens. The Timeline then goes to frame 0,
+  // which pauses and never starts playback (applySettings keeps the old frame, a sample starts at frame 0).
+  const samplesBox = document.getElementById('samples-box');
+  if (samplesBox !== null) {
+    createSamplesMenu(samplesBox, {
+      samples: SAMPLE_SHOTS,
+      initialIndex: STARTUP_SAMPLE_INDEX,
+      onLoad: (index: number): boolean => {
+        const chosen = SAMPLE_SHOTS[index];
+        const next = sampleToSettings(chosen, current.road.points, current.subjectKind);
+        if (!applySettings(next, sampleLoadedMessage(chosen))) return false;
+        timeline.seekTo(0);
+        return true;
+      },
+    });
+  }
+  status.textContent = sampleLoadedMessage(sample);
 
   // The keyboard (task 37.2). Every handler takes the same path as the control it stands for.
   const mainCamera = (): RigSettings['cameras'][number] | undefined =>
