@@ -6,6 +6,7 @@
 import { CAMERA_IDS, LENS_KEY_STEP_RATIO, LENS_PRESETS_MM } from './logic/constants.js';
 import { DEFAULT_ROAD_POINTS } from './logic/default-road.js';
 import { lensAfterWheel, presetOf, stepLens } from './logic/lens-zoom.js';
+import { motionCheckFailureOf } from './logic/motion-check-model.js';
 import { SAMPLE_SHOTS } from './logic/samples.js';
 import { LENS_TERMS, MEASURE_TERMS } from './logic/term-text.js';
 import { CameraRig } from './view/camera-rig.js';
@@ -23,6 +24,8 @@ import { createKeyboard } from './view/keyboard.js';
 import { nextLensPreset, nextShotType } from './view/keyboard-rules.js';
 import { applyLayout } from './view/layout.js';
 import { createMainView } from './view/main-view.js';
+import { createMotionCheck } from './view/motion-check.js';
+import type { MotionCheck } from './view/motion-check.js';
 import { createReadout } from './view/readout.js';
 import type { Readout } from './view/readout.js';
 import { createStageOverview } from './view/stage-overview.js';
@@ -118,6 +121,7 @@ function start(): void {
   let controls: Controls | null = null;
   let readout: Readout | null = null; // created once the Timeline exists (task 38.1)
   let mainLensMm: number = sample.placement.lensMm; // the main camera's lens; applyMainLens keeps it current
+  let motionCheck: MotionCheck | null = null; // created after the readout (task 39.1); updated after each re-bake only
 
   // Draws everything at the Timeline's displayed frame. Evaluates baked data only; it never bakes.
   // Created once. While playing the grid is redrawn at 10 Hz (shouldRenderGrid); every other change redraws it.
@@ -147,6 +151,13 @@ function start(): void {
 
   readout = createReadout(document.getElementById('readout-column'));
   if (readout !== null) readout.show(rig, current.mainCameraId, mainLensMm, timeline.frame());
+
+  // The motion check list goes below the readout in the same column. Activating a finding calls the
+  // Timeline's seekTo, which pauses and never starts playback.
+  motionCheck = createMotionCheck(document.getElementById('readout-column'), {
+    onActivate: (frame: number) => timeline.seekTo(frame),
+  });
+  if (motionCheck !== null) motionCheck.update(rig.findingsForMain(), motionCheckFailureOf(outcome.message));
 
   // Applies a lens to the main camera: the view, `current` (a new camera object; the rig's settings are not
   // touched and nothing is re-baked, because the lens does not change the move), the grid tile, and the lens
@@ -206,6 +217,7 @@ function start(): void {
     const camera = next.cameras.find((c) => c.id === id);
     if (camera !== undefined) applyMainLens(camera.lensMm); // the new main camera's own lens
     timeline.setShot(next.shotLengthFrames, rig.findingsForMain()); // pauses, new marks; the frame is kept
+    if (motionCheck !== null) motionCheck.update(rig.findingsForMain(), motionCheckFailureOf(result.message));
     const frame = timeline.frame();
     view.showFrame(rig, id, frame);
     if (overview !== null) {
@@ -239,6 +251,7 @@ function start(): void {
       grid.setMain(next.mainCameraId);
     }
     timeline.setShot(next.shotLengthFrames, rig.findingsForMain()); // pauses, new marks; the frame is kept
+    if (motionCheck !== null) motionCheck.update(rig.findingsForMain(), motionCheckFailureOf(result.message));
     const frame = timeline.frame();
     const main = next.cameras.find((c) => c.id === next.mainCameraId);
     if (main !== undefined) applyMainLens(main.lensMm); // view, lens menu, slider and a grid redraw

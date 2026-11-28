@@ -415,8 +415,8 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 37.1a Camera views in Move mode
     - In Move mode hide the Coverage_Grid tile pictures and show 'Camera views are shown in Angle mode (key A).'; in Angle mode show them again and redraw at once. Use the single mode-change path, so the buttons and the A and M keys behave the same.
     - _Requirements: 7.1_
-  - [-] 37.1b Remember a camera's rail shot
-    - `railShotWhenMain` on `CameraSetting`; `planMainChange` sets it when a rail camera becomes orbit and restores it (and removes it) when that camera becomes main again, with "<id> is back to <type>." in the message; `withShotType` sets it for a non-main rail request and clears it when the Main_Camera's shot type is set; `withAddedCamera` does not copy it; the camera list shows "cam-1, orbit (push-in when main)". Hand-written tests in `test/view/coverage-grid-rules.test.ts`. Source line it should catch: not removing the field after restoring, or storing the new type instead of the old one.
+  - [ ] 37.1b Remember a camera's rail shot
+    - `railShotWhenMain` on `CameraSetting`; `planMainChange` sets it when a rail camera becomes orbit and restores it (and removes it) when that camera becomes main again, with "<id> is back to <type>." in the message; `withShotType` sets it for a non-main rail request and clears it when the Main_Camera's shot type is set; `withAddedCamera` does not copy it; the camera list shows "cam-1, orbit (push-in when main)". Hand-written tests in `test/view/coverage-grid-rules.test.ts`. Source line it should catch: not removing the field after restoring, or storing the new type instead of the old one. WHEN the User sets a camera's shot type to orbit or tracking, THE Shot_Rail_App SHALL forget that camera's remembered rail shot.
     - _Requirements: 7.5_
   - [x] 37.2 Wire the keys in `src/view/keyboard.ts`
     - Attach one `keydown` handler that calls `actionForKey` and dispatches the action. Show the key beside each control.
@@ -425,16 +425,16 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User tries the controls and the keys in a browser in their own way and reports problems. Check typed values work as an alternative to dragging. Kiro states what was not tested.
     - _Requirements: 7.12, 18.2, 19.7, 25.1, 25.2_
 
-- [ ] 38. Readout
+- [x] 38. Readout
   - [x] 38.1 Implement `src/view/readout.ts`
     - Angle_Label, Framing_Label, horizontal and vertical field of view, Straight_Line_Distance (read-only), each with a text label. Each threshold is shown next to its label and described as this app's own cut-offs (wording and hover lines from src/logic/term-text.ts). The angle effect notes, if any, are marked "commonly said" and each has its source in `docs/sources.md`; with no source found, no note is shown. Elevation uses the true subject position.
     - _Requirements: 5.6, 5.7, 5.8, 6.5, 7.3, 7.4, 17.4_
-  - [ ] 38.2 User checkpoint: view the readout and approve any angle notes
+  - [x] 38.2 User checkpoint: view the readout and approve any angle notes
     - The User views the readout in a browser in their own way and approves every "commonly said" note and its source before it is kept. Kiro states what was not tested.
     - _Requirements: 5.8, 24.4, 25.1_
 
 - [ ] 39. Motion check list
-  - [~] 39.1 Implement `src/logic/motion-check-model.ts` (pure) and `src/view/motion-check.ts`
+  - [-] 39.1 Implement `src/logic/motion-check-model.ts` (pure) and `src/view/motion-check.ts`
     - Pure model: findings to rows (wording, one-line explanation, text severity label, frame); activating a row returns that frame; empty list and error states give their messages. The view lists the rows as buttons that work with Enter and Space, uses the amber accent for warnings together with the text label, and moves the Timeline to the frame.
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8_
   - [~] 39.2 Write the motion check model tests

@@ -132,15 +132,14 @@ export function withShotType(settings: RigSettings, cameraId: string, shotType: 
   const converted = isRail && cameraId !== settings.mainCameraId;
   const applied: ShotType = converted ? FALLBACK_SHOT_TYPE : shotType;
   const message = converted ? `${cameraId} changed from ${shotType} to ${applied}. Only the main camera can be a rail shot.` : '';
-  const isMain = cameraId === settings.mainCameraId;
   const change = (c: CameraSetting): CameraSetting => {
+    // A non-main camera asked for a rail shot: it becomes orbit and remembers the requested type.
     if (converted) return { ...c, shotType: applied, railShotWhenMain: shotType as 'push-in' | 'crane' };
-    if (isMain) {
-      // The User set the Main_Camera's shot type: forget any remembered rail shot (no key left).
-      const { railShotWhenMain: _forgotten, ...rest } = c;
-      return { ...rest, shotType: applied };
-    }
-    return { ...c, shotType: applied };
+    // The Main_Camera set to push-in or crane: the remembered rail shot is left as it is.
+    if (isRail) return { ...c, shotType: applied };
+    // Orbit or tracking on any camera: forget the remembered rail shot (no key left).
+    const { railShotWhenMain: _forgotten, ...rest } = c;
+    return { ...rest, shotType: applied };
   };
   return {
     settings: {

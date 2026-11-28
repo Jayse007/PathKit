@@ -1,10 +1,17 @@
 # Build notes
 
+## Task 39.1: motion check list (newest entry, kept at top)
+
+- Done: new pure `src/logic/motion-check-model.ts` (`buildMotionCheckRows`, `activateRow`, `motionCheckFailureOf`, constants) and `src/view/motion-check.ts` (`createMotionCheck(container, { onActivate })` returns `{ update(findings, failureMessage) }`; DOM). Rows use `describeFinding` and `NO_PROBLEMS_MESSAGE` from `findings.ts`; the error row is the only new wording (label "Error", a what-to-do line). The list sits below the readout (appended to `#readout-column` after `createReadout`). Each finding is a `<button>` (Enter and Space native) that calls `timeline.seekTo(frame)`. A warning has a text label and the amber `--warning` colour (new in `index.html`). `main.ts` updates the list at start, in `onSelect` and in `applySettings`, after `timeline.setShot`; never per frame. A failed motion check is detected from the successful outcome's `message` starting "the motion check could not run" (`camera-rig.ts` unchanged). `aria-live="polite"` is on the list; `update` skips the rebuild when the rows are the same. No src/logic existing file, camera-rig.ts or coverage-grid-rules.ts change.
+- Not tested: nothing was run; no tests written (39.2); not opened in a browser (look, amber contrast, Enter and Space, focus after a re-bake, screen-reader announcement). A failed camera bake (`ok` false) keeps the previous list and shows the message in the status line only.
+
 ## Task 37.1b: remember a camera's rail shot, code only (newest entry, kept at top)
 
 - Done (step 2): `CameraSetting.railShotWhenMain?: 'push-in' | 'crane'` in `camera-rig.ts` (the rig's bake path reads named fields only, so it ignores it). `planMainChange` sets it to the OLD type on conversion, and on the new main camera restores the shot type and drops the key; message order is conversion sentences, "Only the main camera can be a rail shot.", then "<id> is back to <type>." (restore only: just that sentence). `withShotType` sets it to the requested type on a non-main conversion and removes it when the Main_Camera's type is set; `withAddedCamera` does not copy it. `controls.ts` row text is "cam-1, orbit (push-in when main) " (the existing trailing space is kept), updated in place in `fillRow`. 
-- Stopped before step 3: the existing test "keeps bearing, height, distance and lens of a converted camera" now fails (toEqual sees `railShotWhenMain: 'push-in'`). No test was edited and none of the 5 new tests were written.
-- Not tested: nothing was run.
+- Done (step 1): the existing test "keeps bearing, height, distance and lens of a converted camera" now expects `railShotWhenMain: 'push-in'` in its toEqual.
+- Done (step 2): `withShotType` rule changed. Orbit or tracking on ANY camera removes `railShotWhenMain` (key absent); only a non-main rail request (converted to orbit) sets it, to the requested type; the Main_Camera set to push-in or crane leaves it as it is. Sentence added to requirements.md (7.5), design.md ("Remembered rail shot") and this task's line in tasks.md.
+- Done (step 3): 5 new `it` blocks in `describe('planMainChange remembered rail shot')` in `test/view/coverage-grid-rules.test.ts` (remember, restore, crane among four cameras, orbit/tracking get no key, input unchanged and chained calls). Hand-written values. Expected for that file: 23 blocks, 64 reported.
+- Not tested: nothing was run. `withShotType` has no test in this task (the new rule is untested); no browser check.
 
 ## Task 38.1: readout (newest entry, kept at top)
 
