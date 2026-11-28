@@ -31,7 +31,7 @@ const HINT_TEXT_ID = 'mode-hint-text';
 const HINT_BUTTON_ID = 'mode-hint-dismiss';
 const FOCUS_RETURN_ID = 'stage';
 const ESCAPE_KEY = 'Escape';
-const SEEN_FALLBACK = false;
+const SEEN_FALLBACK: boolean = false;
 
 export interface Hints {
   /** Show the hint for this mode if it is unseen; otherwise hide any hint. Call at start and on every mode change. */

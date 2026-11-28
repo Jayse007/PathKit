@@ -60,9 +60,11 @@ PathKit does the work that a plain camera cannot:
 8. Shot strip: six small pictures along the shot.
 9. Capture: save the current frame as a PNG (canvas to blob, a plain download link, no library).
 10. Second subject: a walking figure drawn from capsules. It has no walking animation, so say "stand-in" in the interface.
+   - Dropped on 28 November 2026 by the User: the car is the only Subject.
 
 **P3 (only if time remains)**
 11. Third subject: an abstract one (a glowing ball or a paper plane).
+   - Dropped on 28 November 2026 by the User: the car is the only Subject.
 12. Compare two takes of the same shot side by side.
 
 **Cut:** equipment limits (slider speed, pan rate), lighting, depth of field, physics, imported models, export to video.

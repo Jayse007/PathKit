@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 41.2: hint tests (newest entry, kept at top)
+
+- Done: new `test/view/hints-rules.test.ts`, 11 `it` blocks (21 tests as Vitest counts them: `hintToShow` 8 rows, `hintTextForMode` 2, `hintStorageKey` 2, write-and-read-back 2, and 7 single blocks). Expected texts, keys ('hintSeenAngle', 'hintSeenMove') and stored keys ('shot-rail:hintSeenAngle', 'shot-rail:hintSeenMove') are hand-written literals. The remembered flag is tested through `readSetting`/`writeSetting` with a mock `StorageLike` and `hintStorageKey`, including missing value, invalid JSON, a throwing storage, and the two modes being independent. No src file changed.
+- Not tested: nothing was run. `hints.ts` is not imported (it needs the DOM): Escape dismissal, focus return to `#stage`, the in-memory seen flag, the `=== true` check on a stored non-boolean, the show/hide of `#mode-hint`, and a button click. Left to a browser check.
+
 ## Scope change, 28 November 2026: the car is the only Subject (newest entry, kept at top)
 
 - Decision (28 November 2026, by the User): the car is the only Subject. The walking figure and the abstract subject are dropped. Done while task 41.1 was open; not part of 41.1.

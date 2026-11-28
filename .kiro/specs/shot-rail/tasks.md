@@ -457,11 +457,11 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - The User opens the app and checks that a visible result appears within about ten seconds and that the three samples load. Kiro states what was not tested.
     - _Requirements: 10.4, 25.1, 25.2_
 
-- [ ] 41. First-time hints
-  - [-] 41.1 Implement `src/view/hints.ts`
+- [x] 41. First-time hints
+  - [x] 41.1 Implement `src/view/hints.ts`
     - One-line hint the first time Angle mode and Move mode open. Dismissing stores `hintSeenAngle` or `hintSeenMove` through `storage.ts`.
     - _Requirements: 18.3, 18.4, 20.1_
-  - [~] 41.2 Write the hint tests
+  - [x] 41.2 Write the hint tests
     - With a mock storage: first open shows the hint; after dismiss, the flag is stored and the second open shows none; a storage that throws still shows the hint the first time and does not block use.
     - Source line it should catch: store the flag under the wrong key, or never store it.
     - _Requirements: 18.3, 18.4, 20.3_
@@ -512,17 +512,17 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 
 - [ ] 46. DROPPED Walking figure stand-in
   - Dropped on 28 November 2026: the car is the only Subject. Not to be built.
-  - [~] 46.1 User checkpoint: approve the figure size
+  - [ ]* 46.1 User checkpoint: approve the figure size
     - The design gives no figure dimensions. Kiro proposes half-extents and a centre height (for example 0.25 / 0.9 / 0.2 and 0.9 m) and a Road speed; the User approves or changes them before they are written in `constants.ts`.
     - _Requirements: 14.1, 14.3_
-  - [~] 46.2 Implement the figure
+  - [ ]* 46.2 Implement the figure
     - Drawn from capsules, with the text "stand-in" next to it in the interface. A `subjectKind` switch between car and figure. No walking animation. Axes declared on the entity. Switching Subject re-bakes the subject and the cameras and leaves the Timeline paused.
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 3.16_
-  - [~] 46.3 Write the Subject switch tests
+  - [ ]* 46.3 Write the Subject switch tests
     - Switching car to figure and back marks the rig dirty, rebakes the subject, and leaves `playing` false and the frame unchanged (forced from a playing state at frame 100). The figure entity declares its own forward and up axes on different axes.
     - Source line it should catch: start playing after the switch, or hard-code the car's axes for the figure.
     - _Requirements: 14.5, 11.14, 3.16_
-  - [~] 46.4 User checkpoint: view the figure
+  - [ ]* 46.4 User checkpoint: view the figure
     - The User views the figure in a browser in their own way. Kiro states what was not tested.
     - _Requirements: 14.1, 14.2, 25.1, 25.2_
 
