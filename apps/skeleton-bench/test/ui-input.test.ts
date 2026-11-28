@@ -84,6 +84,27 @@ describe('keyToAction', () => {
   });
 });
 
+describe('keyToAction for the spin toggle (key S)', () => {
+  it('maps s and S to toggle-spin with no focus and with a button focused', () => {
+    expect(keyToAction({ key: 's' }, 'none')).toBe('toggle-spin');
+    expect(keyToAction({ key: 'S' }, 'none')).toBe('toggle-spin');
+    expect(keyToAction({ key: 's' }, 'button')).toBe('toggle-spin');
+    expect(keyToAction({ key: 'S' }, 'button')).toBe('toggle-spin');
+  });
+
+  it('gives no action while a text field, textarea, select or range slider has focus', () => {
+    const blocked: ActiveElementKind[] = ['text-input', 'textarea', 'select', 'range-input'];
+    for (let f = 0; f < blocked.length; f++) {
+      expect(keyToAction({ key: 's' }, blocked[f]!)).toBeNull();
+      expect(keyToAction({ key: 'S' }, blocked[f]!)).toBeNull();
+    }
+  });
+
+  it('gives no action with Ctrl held (browser save keeps working)', () => {
+    expect(keyToAction({ key: 's', ctrlKey: true }, 'none')).toBeNull();
+  });
+});
+
 describe('orbitAngleFromDrag', () => {
   it('follows the table (dragging right lowers the angle by 0.5 degree per pixel)', () => {
     const rows: ReadonlyArray<readonly [number, number, number]> = [

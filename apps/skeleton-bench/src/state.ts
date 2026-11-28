@@ -32,6 +32,8 @@ export interface AppState {
   readonly mode: Mode;
   readonly selectedPart: string | null;
   readonly look: Look;
+  /** True when the Pump impeller spins (Requirement 13.5). Not saved between visits. */
+  readonly impellerSpin: boolean;
   readonly tour: TourState;
 }
 
@@ -62,6 +64,7 @@ export function createInitialState(look: Look = DEFAULT_LOOK): AppState {
     mode: 'rotate',
     selectedPart: null,
     look,
+    impellerSpin: true,
     tour: { status: 'idle', savedAngleDeg: INITIAL_ORBIT_ANGLE_DEG, savedZoom: INITIAL_ZOOM },
   };
 }
@@ -116,6 +119,12 @@ export function selectPart(state: AppState, partId: string | null): AppState {
 /** Set the Look. */
 export function setLook(state: AppState, look: Look): AppState {
   return { ...state, look };
+}
+
+/** Turn the impeller spin on or off. Returns the same object when the value is unchanged. */
+export function setImpellerSpin(state: AppState, spin: boolean): AppState {
+  if (state.impellerSpin === spin) return state;
+  return { ...state, impellerSpin: spin };
 }
 
 /**

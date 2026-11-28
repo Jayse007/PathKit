@@ -23,6 +23,7 @@ export type KeyAction =
   | 'toggle-mode' // M
   | 'toggle-explode' // E
   | 'reset-position' // R
+  | 'toggle-spin' // S
   | 'zoom-in' // + or =
   | 'zoom-out' // -
   | 'arrow-left'
@@ -59,6 +60,9 @@ export function keyToAction(input: KeyInput, focus: ActiveElementKind): KeyActio
     case 'r':
     case 'R':
       return 'reset-position';
+    case 's':
+    case 'S':
+      return 'toggle-spin';
     case '+':
     case '=':
       return 'zoom-in';

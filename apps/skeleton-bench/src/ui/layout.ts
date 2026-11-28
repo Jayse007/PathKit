@@ -39,6 +39,8 @@ export interface ControlsView {
   readonly zoom: number;
   readonly explode: number;
   readonly look: Look;
+  readonly machine: MachineId;
+  readonly impellerSpin: boolean;
   readonly tour: { readonly status: 'idle' | 'playing' | 'paused' };
 }
 
@@ -54,6 +56,8 @@ export interface LayoutHandlers {
   /** Explode slider moved: 0 to 100. */
   onExplodeSlider(percent: number): void;
   onResetPosition(): void;
+  /** The 'Spin impeller' toggle button. */
+  onSpinToggle(): void;
   onTour(): void;
   /** The Pause button; it reads Resume while the Tour is paused. */
   onTourPause(): void;
@@ -68,6 +72,8 @@ export const CONTROL_LABELS = {
   zoom: 'Zoom (wheel, or keys + \u2212)',
   explode: 'Explode (key E)',
   reset: 'Reset position (key R)',
+  spin: 'Spin impeller (key S)',
+  spinReducedMotion: 'Off: your system asks for less motion',
   tour: 'Tour',
   tourPause: 'Pause tour',
   tourResume: 'Resume tour',
@@ -184,6 +190,19 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
   resetButton.type = 'button';
   resetButton.addEventListener('click', () => handlers.onResetPosition());
   controlRow.appendChild(resetButton);
+
+  // Spin impeller toggle (Requirements 13.5, 22.5): shown only while the Pump is the current Machine.
+  const spinGroup = make(doc, 'div', { className: 'control spin-group' });
+  const spinButton = make(doc, 'button', { id: 'spin-toggle', className: 'control-button', text: CONTROL_LABELS.spin });
+  spinButton.type = 'button';
+  spinButton.setAttribute('aria-pressed', 'true');
+  spinButton.addEventListener('click', () => handlers.onSpinToggle());
+  const spinNote = make(doc, 'span', { id: 'spin-note', className: 'control-readout', text: CONTROL_LABELS.spinReducedMotion });
+  spinNote.hidden = true;
+  spinGroup.appendChild(spinButton);
+  spinGroup.appendChild(spinNote);
+  spinGroup.hidden = true;
+  controlRow.appendChild(spinGroup);
 
   // Tour controls (Requirement 16.1, 16.4): Tour is always shown; Pause and Stop show while a Tour is not idle.
   const tourGroup = make(doc, 'div', { className: 'control tour-group' });
@@ -364,6 +383,14 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
     zoomControl.readout.textContent = `${Math.round(view.zoom * 100)}%`;
     explodeControl.input.value = String(view.explode);
     explodeControl.readout.textContent = `${Math.round(view.explode)}%`;
+
+    // Spin toggle: shown only for the Pump. Under reduced motion it shows off and disabled, with the words.
+    const reducedMotion = doc.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches === true;
+    spinGroup.hidden = view.machine !== 'pump';
+    spinButton.setAttribute('aria-pressed', view.impellerSpin && !reducedMotion ? 'true' : 'false');
+    // Disabled under reduced motion, and while the Tour plays or is paused (the locked label then shows).
+    spinButton.disabled = reducedMotion || view.tour.status !== 'idle';
+    spinNote.hidden = !reducedMotion;
 
     // Look button: names the current Look and what a press does.
     const xray = view.look === 'X_Ray_Skeleton';

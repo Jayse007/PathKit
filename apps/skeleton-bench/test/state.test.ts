@@ -8,6 +8,7 @@ import {
   setLook,
   setMachine,
   setOffset,
+  setImpellerSpin,
   setOrbitAngle,
   setZoom,
   startTour,
@@ -263,5 +264,30 @@ describe('Tour', () => {
     expect(stopped.orbitAngleDeg).toBe(30);
     expect(stopped.zoom).toBe(0.25);
     expect(stopped.tour.status).toBe('idle');
+  });
+});
+
+describe('impeller spin (Requirement 13.5)', () => {
+  it('is on by default and setImpellerSpin turns it off and on without changing the input', () => {
+    const s = createInitialState();
+    expect(s.impellerSpin).toBe(true);
+    const off = setImpellerSpin(s, false);
+    expect(off.impellerSpin).toBe(false);
+    expect(s.impellerSpin).toBe(true);
+    expect(off.machine).toBe('pump');
+    expect(off.zoom).toBe(0.25);
+    expect(setImpellerSpin(off, true).impellerSpin).toBe(true);
+  });
+
+  it('returns the same state object when the value does not change', () => {
+    const s = createInitialState();
+    expect(setImpellerSpin(s, true)).toBe(s);
+    const off = setImpellerSpin(s, false);
+    expect(setImpellerSpin(off, false)).toBe(off);
+  });
+
+  it('is kept when the Machine is switched', () => {
+    const off = setImpellerSpin(createInitialState(), false);
+    expect(setMachine(off, 'desk-lamp').impellerSpin).toBe(false);
   });
 });

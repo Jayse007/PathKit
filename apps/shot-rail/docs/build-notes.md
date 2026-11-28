@@ -1,5 +1,15 @@
 # Build notes
 
+## Task 35.2: key map tests (newest entry, kept at top)
+
+- Done: wrote `test/logic/key-map.test.ts` (9 `it` blocks, 61 Vitest tests expected: 21 table keys + 7 upper-case + 1 for `=` + 6 unknown keys + 22 text-field keys (21 plus `=`) + 1 for "a"/"1" in a field + 1 PRIMARY_KEYS + 1 KEY_ACTIONS + 1 KEY_ALIASES). The key table and the count 21 are hand-written literals. Imports only `key-map.js` and `vitest`. No src change. PathKit not used.
+- Not tested: the tests have not been run; the page wiring (task 37.2), real key events in a browser.
+
+## Task 35.1: key map (newest entry, kept at top)
+
+- Done: wrote pure `src/logic/key-map.ts`. Exports `KeyAction`, `PrimaryKey`, `PRIMARY_KEYS`, `KEY_ACTIONS`, `KEY_ALIASES`, `actionForKey(key, focusInTextField)`. No imports, no existing file changed. Slot actions are neutral (`select-slot-1` to `select-slot-6`). PathKit not used.
+- Not tested: no tests yet (task 35.2); not wired to the page (task 37.2).
+
 ## Task 34.3: lens zoom by wheel (newest entry, kept at top)
 
 - Done, user-requested, in three steps. Step 1 (specs): `design.md` Named constants table has four new rows (`LENS_ZOOM_MIN_MM` 24, `LENS_ZOOM_MAX_MM` 85, `LENS_WHEEL_STEP_RATIO` 1.05, `LENS_KEY_STEP_RATIO` 1.1); `tasks.md` 35.1 now says "Each action has exactly one primary key (= is an alias of +)". No checkbox changed. Step 2: added the four constants to `src/logic/constants.ts`; new pure `src/logic/lens-zoom.ts` (`stepLens`, `lensAfterWheel`, `presetOf`); new `test/logic/lens-zoom.test.ts` (10 `it` blocks, no `it.each`); `MEASURE_TERMS.lensZoom` added to `src/logic/term-text.ts`, and the count test in `test/logic/term-text.test.ts` is now 4 + 3 + 4 + 4 + 12 + 3 = 30 lines. Step 3: `CoverageGrid.setLensMm(id, lensMm)` in `src/view/coverage-grid.ts` (tile `lensMm` and `verticalFovRad` are now mutable and changed in place; unknown id or a bad lens does nothing); in `src/main.ts` one `applyMainLens(mm)` (view lens, new camera object in `current.cameras`, grid tile and one grid render, lens menu) used by the menu change handler and by `onSelect`; one non-passive `wheel` listener on `#stage`.

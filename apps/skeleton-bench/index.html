@@ -78,6 +78,7 @@
       .part-panel p { margin: 0 0 8px; }
       .control-row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; }
       .control { display: flex; flex-direction: column; gap: 4px; }
+      .control[hidden] { display: none; } /* author display:flex would otherwise override the hidden attribute */
       .control-label { font-size: 13px; color: var(--muted); }
       .control-readout { font-size: 13px; color: var(--muted); }
       .control input[type="range"] { width: 160px; accent-color: var(--accent); }

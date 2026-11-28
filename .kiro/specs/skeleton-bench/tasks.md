@@ -301,12 +301,15 @@ The plan follows the approved design (option A: four baked laps blended with `le
   - [x] 20.6 Tour, Look toggle and About wiring
     - Tour with Pause and Stop wired to the state; Look toggle stored in try/catch; About_Panel access from the main screen; error messages that say what to do. Escape closes the About_Panel (focus returns to the About button; that press does not clear the selection).
     - _Requirements: 17.5, 17.7, 21.5, 16.1 to 16.11, 22.5_
-  - [-] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
+  - [x] 20.7 User checkpoint: try the Tour, the Look toggle and the About panel
     - The User tries the Tour, the Look toggle and the About panel in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 21.3, 37.1_
-  - [ ] 20.7a Tour selects each Part
+  - [x] 20.7a Tour selects each Part
     - Add pure `tourPartIndexAt(frame, partCount)` with tests. In `writeTourFrame`, select the Part for the current frame (or the jump under reduced motion) only when it changes. Clear the selection in `endTour`. Ignore the Part buttons, Stage clicks and the selection-clearing Escape branch while the Tour is locked.
     - _Requirements: 16.12 to 16.15_
+  - [x] 20.8 Impeller spin: wire it and add the toggle
+    - Add `impellerSpin` (default true) and pure `setImpellerSpin` to the state, key S (`toggle-spin`), and a 'Spin impeller' toggle button (aria-pressed) shown only while the Pump is shown. Under reduced motion it shows off and disabled with 'Off: your system asks for less motion'. One animation-frame loop in `main.ts` calls `spinImpeller` only while the Pump is shown, the spin is on, reduced motion is off and the tab is visible. Pure `spinTimeStep(prevMs, nowMs)` caps the step at 0.1 s.
+    - _Requirements: 13.5, 20.2, 22.5_
 
 - [ ] 21. Accessibility pass
   - [ ] 21.1 Choose the palettes and write the contrast test

@@ -467,3 +467,17 @@
 - Done (code): added pure `tourPartIndexAt(frame, partCount)` to src/logic/tour-playback.ts (min(partCount - 1, floor(frame / TOUR_FRAMES_PER_PART)); throws for a negative or non-whole frame, NaN included, and for partCount below 1). New test/tour-playback.test.ts with 5 `it` blocks and hand-written values. In src/main.ts: `writeTourFrame` works out the Part index (`reducedMotionPartIndex` under reduced motion, else `tourPartIndexAt`) and calls `selectPart` and `applySelection` only when the Part id differs from `state.selectedPart`; `endTour` clears the selection after `stopTour`; `onPartActivate` and the Stage click do nothing while `tourLocked()`; Escape still closes the About panel during the Tour but does not clear the selection while `tourLocked()`.
 - Broke: nothing known. Not run (no terminal). `npx tsc --noEmit -p .` was NOT run. Expected: 28 test files, 290 tests passed (was 27 files, 285).
 - Not tested: main.ts wiring (selection during the Tour, clear on end, ignored clicks and Escape), the Inspector and shell highlight changing in a browser, reduced motion in a browser. These need a manual check.
+
+## Impeller spin toggle (Task 20.8)
+
+- Spec: Requirement 13.5 (toggle, key S, on by default, aria-pressed, not saved), 20.2 (Control_Bar list) and 22.5 (reduced motion shows off and disabled, with the words 'Off: your system asks for less motion'). Design: key S added to the shortcut list with the Requirement 12.9 guard. Task 20.8 added unchecked.
+- Code: `impellerSpin` and `setImpellerSpin` in `state.ts`; `toggle-spin` in `ui/input.ts`; the toggle in `ui/layout.ts`; the loop in `main.ts`; pure `spinTimeStep` in `logic/spin-step.ts`.
+- The loop runs only while the Pump is shown, the spin is on, reduced motion is off and the tab is visible. It starts again on each change of those. `stage-preview.ts` is unchanged.
+- Choices made while wiring: the spin keeps turning during the Tour (the loop does not look at the Tour), and key S and the button still work during the Tour because they do not change the view. S does nothing off the Pump or under reduced motion.
+- Not run by Kiro: `npx tsc --noEmit -p .`, the tests, or a browser check.
+
+### Impeller spin toggle: two fixes after browser check
+
+- Fix 1, button showed on every Machine. Cause: `index.html` line 80, `.control { display: flex; ... }`. The spin group has class `control`, and author CSS `display` beats the browser's `[hidden]` rule, so `spinGroup.hidden = view.machine !== 'pump'` in `ui/layout.ts` (`setControls`) set the attribute but had no visible effect. `main.ts` already passes the state (with `machine`) to `setControls` on each Machine switch. Fix: added `.control[hidden] { display: none; }` after that rule.
+- Fix 2, Tour lock (decision by the User). `ui/layout.ts`: the spin button is disabled while `view.tour.status` is not `idle` (as well as under reduced motion); the shared "Stop the tour to use this" label already shows while locked. `main.ts`: `'toggle-spin'` removed from the Tour key-lock exemption, so key S does nothing during the Tour. The spin state is not touched during the Tour; the button is enabled again when the Tour stops or ends (unless reduced motion is set). This replaces the earlier choice above that S and the button work during the Tour. Requirement 13.5 has one added sentence.
+- No new pure rule, so no new tests. Not tested: both fixes need a browser check (button hidden off the Pump, disabled during Tour, key S ignored during Tour). Not run by Kiro: `npx tsc --noEmit -p .`, the tests.

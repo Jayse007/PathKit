@@ -13,7 +13,9 @@ import { applySceneBackground, createLookLights } from './render/looks.js';
 import type { MachineModel } from './render/model-kit.js';
 import { createPartPlacer } from './render/part-placement.js';
 import type { PartPlacer } from './render/part-placement.js';
-import { buildPumpModel } from './render/pump-model.js';
+import { buildPumpModel, spinImpeller } from './render/pump-model.js';
+import type { PumpModel } from './render/pump-model.js';
+import { spinTimeStep } from './logic/spin-step.js';
 import { createShells } from './render/shells.js';
 import type { Shells } from './render/shells.js';
 import { createStage, showStageMessage } from './render/stage.js';
@@ -26,6 +28,7 @@ import {
   resumeTour,
   selectPart,
   setExplode,
+  setImpellerSpin,
   setLook,
   setMachine,
   setOffset,
@@ -75,6 +78,8 @@ function start(): void {
 
   let state: AppState = createInitialState(loadLook());
   let model: MachineModel | null = null;
+  // Set only while the Pump is the current Machine (the impeller spin needs it).
+  let pumpModel: PumpModel | null = null;
   let shells: Shells | null = null;
   let placer: PartPlacer | null = null;
   let picker: Picker | null = null;
@@ -121,6 +126,9 @@ function start(): void {
     },
     onResetPosition: () => {
       if (ready && !tourLocked()) commit(setOffset(state, 0, 0));
+    },
+    onSpinToggle: () => {
+      if (ready) toggleSpin();
     },
     onTour: () => {
       if (ready) startTourAction();
@@ -172,10 +180,62 @@ function start(): void {
 
   function buildModel(machine: MachineId): MachineModel {
     const parts = machineParts(CATALOGUE, machine);
+    pumpModel = null;
     if (machine === 'heat-exchanger') return buildHeatExchangerModel(parts, state.look);
     if (machine === 'desk-lamp') return buildDeskLampModel(parts, state.look);
-    return buildPumpModel(parts, state.look);
+    const pump = buildPumpModel(parts, state.look);
+    pumpModel = pump;
+    return pump;
   }
+
+  // Impeller spin (Requirement 13.5): one loop, running only while the Pump is shown, the spin is on,
+  // reduced motion is off and the tab is visible. The MediaQueryList is created once; nothing is allocated per frame.
+  const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let spinRunning = false;
+  let spinRafId = 0;
+  let spinLastMs = 0;
+
+  function spinWanted(): boolean {
+    return pumpModel !== null && state.impellerSpin && !reducedQuery.matches && document.visibilityState === 'visible';
+  }
+
+  const spinTick = (now: number): void => {
+    if (!spinWanted() || pumpModel === null) {
+      spinRunning = false;
+      return;
+    }
+    const dt = spinTimeStep(spinLastMs, now);
+    spinLastMs = now;
+    if (spinImpeller(pumpModel, dt, false)) stage.requestRender();
+    spinRafId = requestAnimationFrame(spinTick);
+  };
+
+  /** Start or stop the spin loop to match the conditions. Safe to call at any time. */
+  function updateSpinLoop(): void {
+    if (spinWanted()) {
+      if (spinRunning) return;
+      spinRunning = true;
+      spinLastMs = performance.now();
+      spinRafId = requestAnimationFrame(spinTick);
+    } else if (spinRunning) {
+      cancelAnimationFrame(spinRafId);
+      spinRunning = false;
+    }
+  }
+
+  /** Spin toggle (button and key S). Does nothing off the Pump or under reduced motion (the button is disabled then). */
+  function toggleSpin(): void {
+    if (state.machine !== 'pump' || reducedQuery.matches) return;
+    state = setImpellerSpin(state, !state.impellerSpin);
+    layout.setControls(state);
+    updateSpinLoop();
+  }
+
+  document.addEventListener('visibilitychange', updateSpinLoop);
+  reducedQuery.addEventListener('change', () => {
+    layout.setControls(state);
+    updateSpinLoop();
+  });
 
   function applySelection(): void {
     if (shells !== null) shells.setSelected(state.selectedPart);
@@ -207,6 +267,7 @@ function start(): void {
     layout.setParts(machineParts(CATALOGUE, machine), null);
     layout.setMotionCheck(baked.tours.get(machine)?.findingLines ?? []);
     applySelection();
+    updateSpinLoop();
   }
 
   /** Store a new state (a rejected change returns the same object), redraw and update the controls. */
@@ -412,6 +473,9 @@ function start(): void {
         break;
       case 'reset-position':
         commit(setOffset(state, 0, 0));
+        break;
+      case 'toggle-spin':
+        if (!event.repeat) toggleSpin();
         break;
       case 'zoom-in':
         commit(setZoom(state, zoomKeyStep(state.zoom, 1)));

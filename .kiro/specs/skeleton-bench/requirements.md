@@ -313,7 +313,7 @@ Each item states the issue, the assumption used in this document, and who must d
 2. WHEN the Explode_Amount changes, THE Skeleton_Bench_App SHALL show the frame that the Explode_Easing returns for every Part_Path.
 3. THE Skeleton_Bench_App SHALL build one PathKit scene per Part, and each scene SHALL give that Part a short, curved path. Every Part SHALL move at least 0.1 m (PART_MIN_EXPLODE_M), because the curve needs two distinct points.
 4. THE Skeleton_Bench_App SHALL bake all Part_Paths at load and SHALL NOT bake while the slider moves.
-5. THE Skeleton_Bench_App SHALL spin the impeller of the Pump with ordinary Three.js code and SHALL NOT use PathKit for the spin.
+5. THE Skeleton_Bench_App SHALL spin the impeller of the Pump with ordinary Three.js code and SHALL NOT use PathKit for the spin. THE Control_Bar SHALL show a 'Spin impeller' toggle button (key S) while the Pump is the current Machine. It is on by default. It has a visible text label and aria-pressed. It is not saved between visits. WHILE the Tour plays or is paused, the toggle SHALL be disabled with the label 'Stop the tour to use this' and key S SHALL do nothing; the impeller keeps its current spin state.
 6. WHEN the Explode_Amount changes, THE Skeleton_Bench_App SHALL apply the Drag_Range clamp of Requirement 7.9.
 7. WHERE the User has asked for reduced motion, THE Skeleton_Bench_App SHALL jump to the new explode state without animation (decision 19).
 8. WHEN the Explode_Amount is 100, every two Parts of the same Machine SHALL be at least 0.08 m apart (PART_MIN_CLEARANCE_M). The gap between two Parts is the largest, over the x, y and z axes, of the distance between their centres minus half the sum of their extents on that axis, where each centre is the rest position plus the explode vector.
@@ -417,7 +417,7 @@ Each item states the issue, the assumption used in this document, and who must d
 #### Acceptance Criteria
 
 1. THE Skeleton_Bench_App SHALL show the Stage in the centre, the Inventory on the left, the Inspector on the right, the Control_Bar at the bottom and the Motion_Check as a small region.
-2. THE Control_Bar SHALL hold the Rotate / Move toggle, the explode slider, the orbit scrub, the zoom control, the Tour button, the `Reset position` button and the Theme toggle.
+2. THE Control_Bar SHALL hold the Rotate / Move toggle, the explode slider, the orbit scrub, the zoom control, the Tour button, the `Reset position` button, the Theme toggle and the 'Spin impeller' toggle (shown only while the Pump is the current Machine).
 3. WHILE Tier B is not unlocked, THE Control_Bar SHALL omit the Gestures toggle or show it disabled with a label that gestures are not available yet (decision 12).
 4. THE Stage SHALL show the Machine on a faint bench grid.
 5. THE Skeleton_Bench_App SHALL use left-drag to rotate in Rotate_Mode, left-drag to move in Move_Mode, the wheel to zoom and a click to select.
@@ -444,7 +444,7 @@ Each item states the issue, the assumption used in this document, and who must d
 2. THE Contrast_Function SHALL be pure, and the Test_Suite SHALL check it with hand-computed expected values and SHALL check every text and background pair of both Looks.
 3. THE Skeleton_Bench_App SHALL show a visible focus ring on every focusable control.
 4. THE Skeleton_Bench_App SHALL convey no meaning by colour alone.
-5. WHILE the User has set `prefers-reduced-motion`, THE Skeleton_Bench_App SHALL stop the impeller spin and replace the Tour and explode animation with jumps (decision 19).
+5. WHILE the User has set `prefers-reduced-motion`, THE Skeleton_Bench_App SHALL stop the impeller spin and replace the Tour and explode animation with jumps (decision 19). WHERE reduced motion is set, the toggle SHALL show off and disabled, with the words 'Off: your system asks for less motion'.
 6. THE Skeleton_Bench_App SHALL provide a keyboard path for every mouse action.
 7. THE Skeleton_Bench_App SHALL provide a non-drag alternative for every drag action, to meet WCAG 2.2 Dragging Movements.
 8. THE Skeleton_Bench_App SHALL give each single-letter shortcut a visible button (decision 17).
