@@ -1,7 +1,7 @@
 // Tour playback helpers. Pure functions on numbers: no allocation, no clock access.
 // The caller keeps `elapsedMs` and adds time only while the Tour status is 'playing',
 // so Pause holds the frame and Resume continues from it.
-import { FPS, TOUR_REDUCED_MOTION_HOLD_MS } from '../constants.js';
+import { FPS, TOUR_FRAMES_PER_PART, TOUR_REDUCED_MOTION_HOLD_MS } from '../constants.js';
 import { evaluateEntity, type BakedData, type OutBuffer } from '../pathkit-api.js';
 import { TOUR_ENTITY_ID, tourSlotMiddleFrame } from '../pathkit/tour.js';
 import { isTourPlaying, type AppState } from '../state.js';
@@ -24,6 +24,17 @@ export function tourFrameAtElapsed(elapsedMs: number): number {
 /** True when the elapsed time has reached the last frame's end, so the Tour must stop and cut back. */
 export function tourHasEnded(elapsedMs: number, frameCount: number): boolean {
   return tourFrameAtElapsed(elapsedMs) >= frameCount;
+}
+
+/** Index of the Part whose slot holds this whole frame. The last Part also takes any frame past the end (clamp). */
+export function tourPartIndexAt(frame: number, partCount: number): number {
+  if (!Number.isInteger(frame) || frame < 0) {
+    throw new Error(`tourPartIndexAt: frame must be a whole number of 0 or more, got ${String(frame)}`);
+  }
+  if (!Number.isInteger(partCount) || partCount < 1) {
+    throw new Error(`tourPartIndexAt: partCount must be a whole number of 1 or more, got ${String(partCount)}`);
+  }
+  return Math.min(partCount - 1, Math.floor(frame / TOUR_FRAMES_PER_PART));
 }
 
 /** Reduced motion: the Part index shown at this elapsed time (one Part per hold). */

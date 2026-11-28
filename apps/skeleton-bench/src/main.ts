@@ -53,6 +53,7 @@ import {
   reducedMotionFrame,
   reducedMotionHasEnded,
   reducedMotionPartIndex,
+  tourPartIndexAt,
   tourFrameAtElapsed,
   tourHasEnded,
 } from './logic/tour-playback.js';
@@ -135,6 +136,7 @@ function start(): void {
     },
     onMachine: (machine) => showMachine(machine),
     onPartActivate: (partId) => {
+      if (tourLocked()) return; // the Tour selects the Parts while it plays
       state = selectPart(state, togglePartSelection(state.selectedPart, partId));
       applySelection();
     },
@@ -262,13 +264,22 @@ function start(): void {
     const tour = tourData;
     if (tour === null) return false;
     let frame: number;
+    let partIndex: number;
     if (tourReduced) {
       // Reduced motion: one jump per Part, held for TOUR_REDUCED_MOTION_HOLD_MS (Requirements 16.10, 22.5).
       if (reducedMotionHasEnded(tourElapsedMs, tour.partIds.length)) return false;
-      frame = reducedMotionFrame(reducedMotionPartIndex(tourElapsedMs));
+      partIndex = reducedMotionPartIndex(tourElapsedMs);
+      frame = reducedMotionFrame(partIndex);
     } else {
       if (tourHasEnded(tourElapsedMs, tour.baked.frameCount)) return false;
       frame = tourFrameAtElapsed(tourElapsedMs);
+      partIndex = tourPartIndexAt(frame, tour.partIds.length);
+    }
+    // The Tour selects each Part in turn. The state changes only when the Part changes.
+    const tourPartId = tour.partIds[partIndex];
+    if (tourPartId !== undefined && tourPartId !== state.selectedPart) {
+      state = selectPart(state, tourPartId);
+      applySelection();
     }
     readTourPose(tour.baked, frame, tourPose);
     stage.requestRender();
@@ -296,6 +307,8 @@ function start(): void {
   function endTour(): void {
     cancelAnimationFrame(tourRafId);
     state = stopTour(state);
+    state = selectPart(state, null);
+    applySelection();
     tourData = null;
     stage.setTourPose(null);
     stage.setView(state);
@@ -411,6 +424,7 @@ function start(): void {
           layout.closeAbout();
           break;
         }
+        if (tourLocked()) break; // the Tour owns the selection
         state = selectPart(state, null);
         applySelection();
         break;
@@ -457,7 +471,7 @@ function start(): void {
   canvas.addEventListener('pointermove', (event) => {
     tracker.move(event.clientX, event.clientY);
     if (!tracker.active) return;
-    if (tourLocked()) return; // a click still selects; a drag does nothing during the Tour
+    if (tourLocked()) return; // a click and a drag do nothing during the Tour
     if (!dragging) {
       if (Math.hypot(event.clientX - pressX, event.clientY - pressY) <= CLICK_THRESHOLD_PX) return;
       dragging = true;
@@ -496,7 +510,7 @@ function start(): void {
     if (event.button !== 0) return;
     dragging = false;
     if (tracker.release(event.clientX, event.clientY) !== 'click') return;
-    if (picker === null) return;
+    if (picker === null || tourLocked()) return; // the Tour selects the Parts while it plays
     const id = picker.pickClient(event.clientX, event.clientY, canvas);
     state = selectPart(state, selectionAfterStageClick(state.selectedPart, id));
     applySelection();

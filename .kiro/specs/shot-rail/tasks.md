@@ -377,14 +377,14 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Source line it should catch: remove the catch-up cap, or set `playing: true` in the load-sample action.
     - _Requirements: 11.8, 11.9, 11.13, 11.14, 8.15, 10.6 (design Rendering layer)_
 
-- [ ] 34. Timeline UI
+- [x] 34. Timeline UI
   - [x] 34.1 Implement `src/view/timeline.ts`
     - Play, pause, scrub, frame counter, finding marks at the frames of the findings. Play and pause use the pure state from Task 33. The scrub uses `scrubToFrame`. Labels and tooltips on every control. Starts paused at frame 0. Stops at the last frame. While playing it evaluates only and never bakes.
     - _Requirements: 11.7, 11.8, 11.9, 11.10, 11.12, 11.13, 18.1_
-  - [ ] 34.2 User checkpoint: try the Timeline
+  - [x] 34.2 User checkpoint: try the Timeline
     - The User tries play, pause, scrub and the frame counter in a browser in their own way. Check the app opens paused at frame 0 and never starts by itself. Also check: scrub to a frame, then turn the wheel over the main view: the picture zooms and the lens menu shows Custom; the page does not scroll. Kiro states what was not tested.
     - _Requirements: 11.7, 11.13, 11.14, 25.1, 25.2_
-  - [-] 34.3 Lens zoom rule (pure), tests and wheel wiring
+  - [x] 34.3 Lens zoom rule (pure), tests and wheel wiring
     - Pure functions in `src/logic/lens-zoom.ts` with hand-written tests in `test/logic/lens-zoom.test.ts`; a `lensZoom` line in `term-text.ts`; then one function in `src/main.ts` that sets the main camera's lens everywhere (the picture, the camera's saved lens, its Coverage_Grid tile, the lens menu), used by the lens menu and by the wheel over the main view. The slider and the + and - keys come with tasks 37.1 and 37.2. Source line it should catch: swap the zoom direction, or remove the 24 to 85 clamp.
     - _Requirements: 4.10, 4.11, 4.12_
 

@@ -460,3 +460,10 @@
 - Broke: nothing known. Not run (no terminal). `npx tsc --noEmit -p .` was NOT run. Expected after `npm.cmd test`: 27 files, 285 passed.
 - Not tested: the real keypress in a browser (focus return and the selection staying). The README text is written in task 22.1.
 - PathKit feature used: none.
+
+## Change: Tour selects each Part (Requirements 16.12 to 16.15, task 20.7a)
+
+- Done (spec): requirements.md 16.12 to 16.15, the design.md "Selection during the Tour" paragraph and tasks.md task 20.7a were edited earlier. No checkbox or status was changed.
+- Done (code): added pure `tourPartIndexAt(frame, partCount)` to src/logic/tour-playback.ts (min(partCount - 1, floor(frame / TOUR_FRAMES_PER_PART)); throws for a negative or non-whole frame, NaN included, and for partCount below 1). New test/tour-playback.test.ts with 5 `it` blocks and hand-written values. In src/main.ts: `writeTourFrame` works out the Part index (`reducedMotionPartIndex` under reduced motion, else `tourPartIndexAt`) and calls `selectPart` and `applySelection` only when the Part id differs from `state.selectedPart`; `endTour` clears the selection after `stopTour`; `onPartActivate` and the Stage click do nothing while `tourLocked()`; Escape still closes the About panel during the Tour but does not clear the selection while `tourLocked()`.
+- Broke: nothing known. Not run (no terminal). `npx tsc --noEmit -p .` was NOT run. Expected: 28 test files, 290 tests passed (was 27 files, 285).
+- Not tested: main.ts wiring (selection during the Tour, clear on end, ignored clicks and Escape), the Inspector and shell highlight changing in a browser, reduced motion in a browser. These need a manual check.

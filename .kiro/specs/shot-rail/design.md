@@ -484,7 +484,7 @@ Both wrap every `localStorage` access in try/catch; on any thrown error (includi
 | Capture current frame | C |
 | Open About panel | ? |
 
-Each key is used once; none collides with a common browser shortcut (`Space`/arrows are standard for native `<video>`-like widgets and are safe when focus is inside the app's own controls, not the address bar) or a common screen-reader single-letter navigation key in browse mode (screen readers intercept single letters only in their own browse mode, not when a widget has focus and the app's own `keydown` handler is attached to that widget).
+Each action has exactly one primary key (= is an alias of +); none collides with a common browser shortcut (`Space`/arrows are standard for native `<video>`-like widgets and are safe when focus is inside the app's own controls, not the address bar) or a common screen-reader single-letter navigation key in browse mode (screen readers intercept single letters only in their own browse mode, not when a widget has focus and the app's own `keydown` handler is attached to that widget).
 
 ### Rendering layer
 
