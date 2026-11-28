@@ -399,11 +399,14 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
 
 - [ ] 36. Interface layout
   - [x] 36.1 Implement the layout in `index.html` and `src/view/layout.ts`
-    - Regions only: the main camera view (16:9, the largest region), the Stage_Overview, the controls column on the left, the readout column on the right, the Timeline at the bottom. Empty regions show a message that says what the User can do next. Plain labels. One-line explanations on hover and on keyboard focus for terms that need them.
+    - Regions only: the main camera view (16:9, the largest region), the Stage_Overview, the controls column on the left, the readout column on the right, the Timeline directly below the main camera view. Empty regions show a message that says what the User can do next. Plain labels. One-line explanations on hover and on keyboard focus for terms that need them.
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5, 17.9, 17.10, 18.5_
   - [~] 36.2 User checkpoint: view the layout
     - The User views the layout in a browser in their own way and reports problems. Kiro states what was not tested.
     - _Requirements: 17.1 to 17.5, 25.1, 25.2_
+  - [ ] 36.3 Revisit the layout when every region exists
+    - Plan with the User how everything fits one screen in a full-screen PC window. PC only; phones are not a target.
+    - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5_
 
 - [ ] 37. Controls and keyboard wiring
   - [~] 37.1 Implement `src/view/controls.ts`

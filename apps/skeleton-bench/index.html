@@ -98,6 +98,8 @@
       .about-panel p { margin: 0 0 8px; }
       button:hover { background: var(--hover); }
       button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+      /* Every other focusable control (sliders, the scrollable Inspector) gets the same ring (Requirement 22.3). */
+      input:focus-visible, [tabindex]:focus-visible, #inspector:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
       .badge { color: var(--muted); font-style: italic; }
       @media (max-width: 800px) {
         .bench { grid-template-columns: 150px minmax(0, 1fr); grid-template-areas: "left stage" "inspector inspector" "controls controls"; grid-template-rows: minmax(240px, 1fr) auto auto; }

@@ -1239,11 +1239,6 @@
     ],
     "36.1 Implement the layout in `index.html` and `src/view/layout.ts`": [
       {
-        "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
-        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
-        "timestamp": 1795529414356
-      },
-      {
         "executionId": "aadb09e8-6e54-4f1e-9af5-2c8a2b312412",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795829731059
@@ -1252,6 +1247,46 @@
         "executionId": "84f26e6a-26e4-49ed-8935-704e9085ea74",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795830197116
+      },
+      {
+        "executionId": "71739dca-c176-4fde-8502-31d31691df5b",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795831715329
+      },
+      {
+        "executionId": "9c0f713e-b37e-4616-9476-cd6cf8965e48",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795832416594
+      },
+      {
+        "executionId": "9c0f713e-b37e-4616-9476-cd6cf8965e48",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795832431091
+      },
+      {
+        "executionId": "9c0f713e-b37e-4616-9476-cd6cf8965e48",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795832459610
+      },
+      {
+        "executionId": "9c0f713e-b37e-4616-9476-cd6cf8965e48",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795832469579
+      },
+      {
+        "executionId": "fa3c6a7e-3687-4362-b607-22ca0bb80b4b",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795833599722
+      },
+      {
+        "executionId": "fa3c6a7e-3687-4362-b607-22ca0bb80b4b",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795833608840
+      },
+      {
+        "executionId": "bd855ccb-8c03-40e8-9e28-6257a83eb9cc",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795834564364
       }
     ],
     "36.2 User checkpoint: view the layout": [
@@ -1830,6 +1865,13 @@
         "executionId": "fea1ff6f-b187-4329-ad86-27b8ed100401",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795829301095
+      }
+    ],
+    "36.1a Layout fits one screen": [
+      {
+        "executionId": "9c0f713e-b37e-4616-9476-cd6cf8965e48",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795832572529
       }
     ]
   }

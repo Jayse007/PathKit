@@ -311,21 +311,21 @@ The plan follows the approved design (option A: four baked laps blended with `le
     - Add `impellerSpin` (default true) and pure `setImpellerSpin` to the state, key S (`toggle-spin`), and a 'Spin impeller' toggle button (aria-pressed) shown only while the Pump is shown. Under reduced motion it shows off and disabled with 'Off: your system asks for less motion'. One animation-frame loop in `main.ts` calls `spinImpeller` only while the Pump is shown, the spin is on, reduced motion is off and the tab is visible. Pure `spinTimeStep(prevMs, nowMs)` caps the step at 0.1 s.
     - _Requirements: 13.5, 20.2, 22.5_
 
-- [ ] 21. Accessibility pass
-  - [-] 21.1 Choose the palettes and write the contrast test
+- [x] 21. Accessibility pass
+  - [x] 21.1 Choose the palettes and write the contrast test
     - Choose palette values for both Looks. Test every text and background pair, and non-text interface parts, at or above `CONTRAST_MIN`.
     - Source line it should catch: lighten one palette text colour until a pair drops below 4.5.
     - _Requirements: 17.3, 17.4, 22.1, 22.2 (design Property 17)_
-  - [ ] 21.2 Apply the accessibility rules
+  - [x] 21.2 Apply the accessibility rules
     - Focus rings; no meaning by colour alone (selection shell plus the Inspector name; Tour state in words); reduced motion; a keyboard path and a non-drag alternative for every mouse action (sliders, arrow keys, Reset); a visible button for every single-letter shortcut.
     - Write a WCAG 2.2 checklist (Dragging Movements, Character Key Shortcuts) in the build notes.
     - _Requirements: 12.8, 14.7, 22.3, 22.4, 22.5, 22.6, 22.7, 22.8_
-  - [ ] 21.3 User checkpoint: keyboard-only walkthrough
+  - [x] 21.3 User checkpoint: keyboard-only walkthrough
     - The User does a keyboard-only walkthrough and sends screenshots of both Looks.
     - _Requirements: 22.6, 37.1, 37.2_
 
 - [ ] 22. About_Panel and README
-  - [ ] 22.1 Write the honest limits and the README
+  - [-] 22.1 Write the honest limits and the README
     - About_Panel and README state: models are simplified and not to scale with each other; specifications are sample data; PathKit cannot follow a live hand; gestures need a webcam, light and HTTPS; two-hand zoom is the least stable; moving the Machine has no gesture; the classifier is our own code over 21 points; MediaPipe sends usage metrics to Google.
     - The README (not the About_Panel) states that the impeller spin is ordinary Three.js code, and dragging and the cursor are ordinary browser code; none use PathKit. The About_Panel does not state which parts use PathKit.
     - README also lists every stored key, notes that "Skeleton Bench" is a working name not trademark-checked, and uses none of the names J.A.R.V.I.S., Marvel or Stark anywhere. The README is the only existing file edited.

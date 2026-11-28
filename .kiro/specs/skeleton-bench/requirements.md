@@ -440,7 +440,7 @@ Each item states the issue, the assumption used in this document, and who must d
 
 #### Acceptance Criteria
 
-1. THE Skeleton_Bench_App SHALL show text and interface parts with a contrast ratio of at least 4.5 to 1 in both Looks.
+1. THE Skeleton_Bench_App SHALL show text and interface parts with a contrast ratio of at least 4.5 to 1 in both Looks. Solid Part fills and the accent that are drawn on the Stage are graphical objects and SHALL have a contrast ratio of at least 3 to 1 (WCAG 2.2 criterion 1.4.11).
 2. THE Contrast_Function SHALL be pure, and the Test_Suite SHALL check it with hand-computed expected values and SHALL check every text and background pair of both Looks.
 3. THE Skeleton_Bench_App SHALL show a visible focus ring on every focusable control.
 4. THE Skeleton_Bench_App SHALL convey no meaning by colour alone.

@@ -56,6 +56,8 @@ export interface LayoutHandlers {
   /** Explode slider moved: 0 to 100. */
   onExplodeSlider(percent: number): void;
   onResetPosition(): void;
+  /** The 'Explode or assemble' button (same action as key E). */
+  onExplodeToggle(): void;
   /** The 'Spin impeller' toggle button. */
   onSpinToggle(): void;
   onTour(): void;
@@ -71,6 +73,7 @@ export const CONTROL_LABELS = {
   orbit: 'Orbit (drag, or keys \u2190 \u2192)',
   zoom: 'Zoom (wheel, or keys + \u2212)',
   explode: 'Explode (key E)',
+  explodeToggle: 'Explode or assemble (key E)',
   reset: 'Reset position (key R)',
   spin: 'Spin impeller (key S)',
   spinReducedMotion: 'Off: your system asks for less motion',
@@ -185,6 +188,12 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
   const orbitControl = addSlider('orbit-scrub', CONTROL_LABELS.orbit, 0, 359, 1, (v) => handlers.onOrbitScrub(v));
   const zoomControl = addSlider('zoom-slider', CONTROL_LABELS.zoom, 0, 1, 0.01, (v) => handlers.onZoomSlider(v));
   const explodeControl = addSlider('explode-slider', CONTROL_LABELS.explode, 0, 100, 1, (v) => handlers.onExplodeSlider(v));
+
+  // Visible button for the E shortcut (Requirement 22.8).
+  const explodeButton = make(doc, 'button', { id: 'explode-toggle', className: 'control-button', text: CONTROL_LABELS.explodeToggle });
+  explodeButton.type = 'button';
+  explodeButton.addEventListener('click', () => handlers.onExplodeToggle());
+  controlRow.appendChild(explodeButton);
 
   const resetButton = make(doc, 'button', { id: 'reset-position', className: 'control-button', text: CONTROL_LABELS.reset });
   resetButton.type = 'button';
@@ -405,6 +414,7 @@ export function createLayout(doc: Document, root: HTMLElement, catalogue: Catalo
     orbitControl.input.disabled = locked;
     zoomControl.input.disabled = locked;
     explodeControl.input.disabled = locked;
+    explodeButton.disabled = locked;
     resetButton.disabled = locked;
     lockedLabel.hidden = !locked;
     tourButton.disabled = status !== 'idle';

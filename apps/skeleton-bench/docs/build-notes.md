@@ -490,3 +490,30 @@
 - Note: the header comment in test/contrast.test.ts says "Property 20"; the design numbers contrast as Property 17. Left alone.
 - Not tested: the look, WebGL, rendered (lit) Part colours, text drawn on the Stage, the disabled range slider at opacity 0.5, `--line` dividers, drift of index.html beyond the variables, `npx tsc --noEmit -p .` (NOT run).
 - PathKit feature used: none.
+
+## Task 21.2: Apply the accessibility rules
+
+- Done: audited Requirements 12.8, 14.7, 22.3 to 22.8 against the code. Most were already met. Changed three things: (1) added a visible "Explode or assemble (key E)" button (`explode-toggle`, `onExplodeToggle` handler, disabled while the Tour is locked) because key E had only a slider; (2) extended the focus ring in index.html to range inputs, `[tabindex]` elements and the Inspector scroller (same `--focus` colour, no colour changed); (3) this entry. No palette colour changed. No test changed.
+- Broke: nothing known. Not run (no terminal). `npx tsc --noEmit -p .` was NOT run. Editor diagnostics were not visible.
+- Kiro got wrong / watch: none known. Before the audit the E key was the only letter shortcut with no button.
+- PathKit feature used: none.
+- Not tested: the look, WebGL, view offset, clicking, load time, real focus ring appearance, screen reader output, real `prefers-reduced-motion` behaviour. The new button has no automated test (layout.ts is DOM only).
+
+### WCAG 2.2 checklist
+
+| Criterion | How the app meets it | Status |
+|---|---|---|
+| 2.5.7 Dragging Movements (AA) | Orbit by drag: orbit slider and arrow keys. Move by drag: arrow keys in Move mode, plus Reset position (button, key R). Zoom by wheel: zoom slider and + / - keys. Explode: slider and button. Select a Part by clicking the Stage: Parts_List buttons. | Met. Move has a keyboard path but no on-screen pointer-only button (arrow keys only). See decisions. |
+| 2.1.4 Character Key Shortcuts (A) | M, E, R, S each have a visible button (Mode, Explode or assemble, Reset position, Spin impeller). Shortcuts are ignored while a slider or text field has focus. + / - have the zoom slider. | Met. No single-key off or remap setting; the 2.1.4 "focus only" condition is met for sliders and text fields only, not for buttons. |
+| 2.4.7 / 2.4.11 Focus visible | 3 px outline on every button, range input and tabindex element. | Met in CSS. Not seen in a browser. |
+| 1.4.1 Use of Color | Selection: shell second cue plus Inspector name. Tour state in words (locked label, Pause / Resume text). Look named in the button text. Disabled controls use a dashed border. | Met. |
+| 2.3.3 Animation / reduced motion | Explode and Tour jump, impeller spin stops, Inspector scroll is not smooth; toggle reads "Off: your system asks for less motion". | Met. |
+
+## Task 22.1: Honest limits and the README
+
+- Done: rewrote `ABOUT_LINES` in src/ui/about-text.ts (8 lines; the two lines the test checks are unchanged; the "list is not complete yet" line is gone). Rewrote apps/skeleton-bench/README.md (it held one "not built yet" line): working-name note, what it is, how to run, where PathKit is used, where it is not used (impeller spin is Three.js; dragging and the cursor are browser code), honest limits, stored keys (`skeletonBench.look`, `skeletonBench.hintSeen.rotate`, `skeletonBench.hintSeen.move`). The About text does not say which parts use PathKit. No test edited.
+- Decision to check: gestures are not built (Tier B), so the About and README gesture lines are worded as future ("When they are added, they will need ...", "Hand tracking will use MediaPipe ..."), not as present fact.
+- Limits taken from these notes: sample data and sources (14.1, 18.1); `calc(100vh - 160px)` estimate (20.2a); 3:1 Stage graphic rule, 3.16 and 4.02 ratios, X-ray fill about 1.7:1 untested (21.1); no on-screen move buttons (21.2); bulb holder hidden, thin spring, undrawn details (18.3); Parts may cross mid-explode, unchecked (17.3 revision); disabled Gestures button (20.4); what the automated tests do not cover (many entries). Not listed: "gliding Tour aim", because no entry in these notes records it.
+- Broke: nothing known. Not run (no terminal). `npx tsc --noEmit -p .` was NOT run. Expected: 28 files, 303 passed (no test added or changed).
+- PathKit feature used: none (text only).
+- Not tested: how the About panel looks with eight lines, and the README text beyond a read-through.

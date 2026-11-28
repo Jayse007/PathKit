@@ -127,6 +127,9 @@ function start(): void {
     onResetPosition: () => {
       if (ready && !tourLocked()) commit(setOffset(state, 0, 0));
     },
+    onExplodeToggle: () => {
+      if (ready) toggleExplode();
+    },
     onSpinToggle: () => {
       if (ready) toggleSpin();
     },

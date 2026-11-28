@@ -367,7 +367,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 2. THE Shot_Rail_App SHALL show a Stage_Overview as a small top-down 3D view with the Subject, road, Cameras and Camera paths.
 3. THE Shot_Rail_App SHALL show controls on the left: mode tabs (Angle, Move), camera list, bearing, height, horizontal distance, lens, Shot_Type and Shot_Length.
 4. THE Shot_Rail_App SHALL show a readout on the right: Angle_Label, Framing_Label, field of view, Straight_Line_Distance and the Motion_Check list.
-5. THE Shot_Rail_App SHALL show the Timeline at the bottom.
+5. THE Shot_Rail_App SHALL show the Timeline directly below the main camera view.
 6. THE Shot_Rail_App SHALL use a dark "previz desk" look with one warm amber accent reserved for warnings.
 7. WHEN the User toggles the Thirds_Guide, THE Shot_Rail_App SHALL show or hide the thirds lines on the main camera view.
 8. WHEN the User toggles the Safe_Area_Guide, THE Shot_Rail_App SHALL show or hide the safe-area outline on the main camera view.
