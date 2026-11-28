@@ -7,7 +7,7 @@
 //   written as "the car" because the car is the only Subject (User decision, 28 November 2026);
 // - the label note is CUTOFF_NOTE from term-text.ts, reused as it stands;
 // - the sources line and the third-party list come from THIRD_PARTY.md;
-// - every line marked DRAFT is plain wording for the User to approve at task 42.3.
+// - All text in this file was approved by the User on 28 November 2026 (task 42.3).
 
 import { SENSOR_WIDTH_MM } from '../logic/constants.js';
 import { CUTOFF_NOTE } from '../logic/term-text.js';
@@ -22,7 +22,7 @@ export interface AboutSection {
   readonly lines: readonly string[];
 }
 
-// ---- Panel furniture (DRAFT) ----
+// ---- Panel furniture (wording approved by the User, 28 November 2026) ----
 export const ABOUT_TITLE = 'About Shot Rail';
 export const ABOUT_BUTTON_LABEL = 'About';
 /** Tooltip of the About button. layout.ts also shows it in the hint line when the button has keyboard focus. */
@@ -39,8 +39,8 @@ export const ABOUT_ANGLES_TEXT =
 /**
  * 21.3. First sentence from the requirement. The recorded outcome of spike S6 is Outcome A (build-notes, task 11.2),
  * so the main camera has no scene of its own. The User approved the first sentence's wording (with "baked (worked
- * out ahead of time)") on 28 November 2026. The last two sentences were DRAFT and follow scene-set.ts and main.ts;
- * the User approved this whole line then, so no DRAFT mark remains here.
+ * out ahead of time)") on 28 November 2026. The last two sentences follow scene-set.ts and main.ts;
+ * the User approved this whole line on that date (task 42.3).
  */
 export const ABOUT_SCENES_TEXT =
   'PathKit allows one path per scene, so the car and the cameras are baked (worked out ahead of time) in separate scenes. ' +
@@ -70,14 +70,14 @@ export const ABOUT_LABELS_TEXT = CUTOFF_NOTE;
 /** From THIRD_PARTY.md, "Facts and sources". Wording approved by the User, 28 November 2026. */
 export const ABOUT_SOURCES_TEXT =
   "The explanation texts paraphrase the pages listed in docs/sources.md in the project's repository. No text, image, font or data from those pages is copied into the app.";
-/** DRAFT. */
+/** Wording approved by the User, 28 November 2026. */
 export const ABOUT_THIRD_PARTY_INTRO = 'Shot Rail uses these packages. PathKit, the motion library, is part of this project.';
 
 export interface ThirdPartyRow {
   readonly name: string;
   readonly version: string;
   readonly licence: string;
-  /** DRAFT: what the package is used for. */
+  /** What the package is used for. Wording approved by the User, 28 November 2026. */
   readonly use: string;
 }
 
@@ -95,12 +95,12 @@ export function thirdPartyLine(row: ThirdPartyRow): string {
   return `${row.name} ${row.version}, ${row.licence} licence: ${row.use}.`;
 }
 
-/** DRAFT. The keys are those of key-map.ts ('?') and the dialog's Escape. */
+/** Wording approved by the User, 28 November 2026. The keys are those of key-map.ts ('?') and the dialog's Escape. */
 export const ABOUT_KEYS_TEXT = 'Press ? to open this panel. Press Escape to close it.';
 
 export const ABOUT_THIRD_PARTY_LINES: readonly string[] = THIRD_PARTY_ROWS.map(thirdPartyLine);
 
-// ---- Headings (DRAFT) ----
+// ---- Headings (wording approved by the User, 28 November 2026) ----
 export const ABOUT_LIMITS_HEADING = 'What this app does not do';
 export const ABOUT_LABELS_HEADING = 'Labels';
 export const ABOUT_SOURCES_HEADING = 'Facts and sources';

@@ -471,25 +471,25 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - Set ANGLE_HINT_TEXT and MOVE_HINT_TEXT to the wording in Requirement 18.3's update (28 November 2026) and update the two literals in hints-rules.test.ts.
     - _Requirements: 18.3_
 
-- [ ] 42. About_Panel
-  - [ ] 42.1 Implement `src/view/about-panel.ts`
+- [x] 42. About_Panel
+  - [x] 42.1 Implement `src/view/about-panel.ts`
     - Reachable from the main screen. Text states: the subject is a stand-in drawn from shapes and there is no lighting, exposure or depth-of-field simulation; angles are measured from the world axes, not from the car's heading; PathKit allows one path per scene, so subject and cameras are baked in separate scenes (and the Main_Camera has its own scene if S6 required it, per the recorded outcome); the lens maths assumes a 36 mm sensor; the app is rough planning, not a prediction of real footage; rail cameras (push-in and crane) move along a fixed rail, do not follow the car and only aim at it.
     - _Requirements: 21.1, 21.2, 21.3, 21.4, 21.5, 21.7, 21.8_
-  - [-] 42.2 Write the About_Panel text tests
+  - [x] 42.2 Write the About_Panel text tests
     - The text exported from the module contains each of the six statements (checked by a hand-written key phrase per statement, including "fixed rail" and "do not follow").
     - Source line it should catch: delete the rail-camera sentence.
     - _Requirements: 21.1 to 21.5, 21.8_
-  - [~] 42.3 User checkpoint: approve the About text
+  - [x] 42.3 User checkpoint: approve the About text
     - The User reads the text and approves it before it ships.
     - _Requirements: 21.5, 25.1_
 
-- [~] 43. Checkpoint: P1 complete
+- [x] 43. Checkpoint: P1 complete
   - Ensure all tests pass, ask the user if questions arise. The User runs `npm.cmd test` and pastes the output. Kiro reports the counts.
 
 ### Phase P2: Extra features (regular tasks, after the P1 checkpoint)
 
 - [ ] 44. Shot_Strip
-  - [~] 44.1 Implement the picker in `src/logic/strip-frames.ts` (pure)
+  - [-] 44.1 Implement the picker in `src/logic/strip-frames.ts` (pure)
     - `stripFrames(shotLength)`: six whole frame numbers from 0 to `shotLength - 1`, increasing, spread evenly, distinct for every length 60 to 600.
     - _Requirements: 12.2, 12.6_
   - [~] 44.2 Write the picker tests

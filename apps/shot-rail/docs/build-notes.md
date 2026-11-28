@@ -1,5 +1,15 @@
 # Build notes
 
+## Task 44.1: Shot_Strip picker (newest entry, kept at top)
+
+- Done: new pure `src/logic/strip-frames.ts` with `stripFrames(shotLength): number[]`, `round(k * (shotLength - 1) / 5)` for k = 0 to 5 (STRIP_PICTURE_COUNT - 1 gaps). Throws an Error naming the value if the length is not a whole number from 60 to 600. No existing file changed. PathKit not used.
+- Not tested: nothing was run. No tests yet (44.2).
+
+## Task 42.3: About text approved by the User, 28 November 2026 (newest entry, kept at top)
+
+- The User approved all About text. In `src/view/about-panel-rules.ts` the DRAFT comment marks were replaced by notes that the wording was approved on 28 November 2026 (comments only). No shown text changed. THIRD_PARTY.md is left as it is, by the User's choice.
+- Not tested: nothing was run.
+
 ## Task 42.2 follow-up: two About wording edits approved by the User, 28 November 2026 (newest entry, kept at top)
 
 - Done, in `src/view/about-panel-rules.ts` only: (a) `ABOUT_SCENES_TEXT` first sentence is now "PathKit allows one path per scene, so the car and the cameras are baked (worked out ahead of time) in separate scenes." (was "... are baked in separate scenes."); the other two sentences are unchanged. (b) `ABOUT_SOURCES_TEXT` is now "The explanation texts paraphrase the pages listed in docs/sources.md in the project's repository. No text, image, font or data from those pages is copied into the app." (was "... listed in docs/sources.md. No text, ..."), in double quotes because of the apostrophe. The "DRAFT" note on the last two sentences of the scenes line was replaced by a note that the User approved the whole line. Two new `it` blocks in `test/view/about-panel-rules.test.ts` pin the two new phrases.
