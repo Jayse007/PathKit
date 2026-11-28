@@ -124,6 +124,15 @@ function makeNumberInput(id: string, min: number | null, max: number | null, ste
   return input;
 }
 
+/** The elements of one camera row, kept so show() can update them in place. */
+interface RowParts {
+  id: string;
+  select: HTMLButtonElement;
+  label: Text;
+  key: HTMLElement;
+  remove: HTMLButtonElement;
+}
+
 /** Builds the controls inside the boxes. Call once. Hides the "controls are not built yet" message. */
 export function createControls(options: ControlsOptions): Controls {
   const { topBox, afterLensBox, lensField, getSettings, onChange } = options;
@@ -301,38 +310,64 @@ export function createControls(options: ControlsOptions): Controls {
   afterLensBox.replaceChildren(shotTypeWrap, lengthWrap);
 
   // --- show ----------------------------------------------------------------------------------
+  // The camera rows built last time, in order. Every row keeps a Remove button; the main row's is hidden.
+  let rowParts: RowParts[] = [];
+
+  function fillRow(part: RowParts, index: number, id: string, shotType: string, isMain: boolean): void {
+    part.select.setAttribute(ATTR_SELECT, id);
+    part.select.setAttribute('aria-pressed', isMain ? 'true' : 'false');
+    part.select.title = `Make ${id} the main camera`;
+    part.label.nodeValue = `${id}${isMain ? ` (${MAIN_TEXT})` : ''}, ${shotType} `;
+    part.key.textContent = keyHint(slotAction(index));
+    part.remove.setAttribute(ATTR_REMOVE, id);
+    part.remove.title = `${REMOVE_TEXT} ${id}`;
+    part.remove.setAttribute('aria-label', `${REMOVE_TEXT} ${id}`);
+    part.remove.hidden = isMain;
+  }
+
   function show(settings: RigSettings): void {
     const active = document.activeElement;
     const focusedId = active instanceof Element ? active.getAttribute(ATTR_SELECT) : null;
 
     cameraTitle.textContent = `${CAMERAS_LABEL} (${settings.cameras.length} of ${MAX_CAMERAS})`;
-    const rows: HTMLElement[] = [];
-    for (let i = 0; i < settings.cameras.length; i++) {
-      const camera = settings.cameras[i];
-      const isMain = camera.id === settings.mainCameraId;
-      const row = document.createElement('div');
-      row.className = ROW_CLASS;
-      const select = document.createElement('button');
-      select.type = 'button';
-      select.setAttribute(ATTR_SELECT, camera.id);
-      select.setAttribute('aria-pressed', isMain ? 'true' : 'false');
-      select.title = `Make ${camera.id} the main camera`;
-      select.append(`${camera.id}${isMain ? ` (${MAIN_TEXT})` : ''}, ${camera.shotType} `, makeKeySpan(keyHint(slotAction(i))));
-      row.appendChild(select);
-      if (!isMain) {
+
+    // Same ids in the same order: update the existing rows in place, so a click that follows a field's
+    // change event still lands on a live button. Otherwise (camera added, removed or reordered) rebuild.
+    let sameIds = rowParts.length === settings.cameras.length;
+    for (let i = 0; sameIds && i < rowParts.length; i++) {
+      if (rowParts[i].id !== settings.cameras[i].id) sameIds = false;
+    }
+    if (sameIds) {
+      for (let i = 0; i < rowParts.length; i++) {
+        fillRow(rowParts[i], i, settings.cameras[i].id, settings.cameras[i].shotType, settings.cameras[i].id === settings.mainCameraId);
+      }
+    } else {
+      const rows: HTMLElement[] = [];
+      const parts: RowParts[] = [];
+      for (let i = 0; i < settings.cameras.length; i++) {
+        const camera = settings.cameras[i];
+        const row = document.createElement('div');
+        row.className = ROW_CLASS;
+        const select = document.createElement('button');
+        select.type = 'button';
+        const label = document.createTextNode('');
+        const key = makeKeySpan('');
+        select.append(label, key);
         const remove = document.createElement('button');
         remove.type = 'button';
-        remove.setAttribute(ATTR_REMOVE, camera.id);
         remove.textContent = REMOVE_TEXT;
-        remove.title = `${REMOVE_TEXT} ${camera.id}`;
-        row.appendChild(remove);
+        row.append(select, remove);
+        const part: RowParts = { id: camera.id, select, label, key, remove };
+        fillRow(part, i, camera.id, camera.shotType, camera.id === settings.mainCameraId);
+        parts.push(part);
+        rows.push(row);
       }
-      rows.push(row);
-    }
-    cameraList.replaceChildren(...rows);
-    if (focusedId !== null) {
-      const again = cameraList.querySelector<HTMLElement>(`button[${ATTR_SELECT}="${focusedId}"]`);
-      if (again !== null) again.focus();
+      rowParts = parts;
+      cameraList.replaceChildren(...rows);
+      if (focusedId !== null) {
+        const again = cameraList.querySelector<HTMLElement>(`button[${ATTR_SELECT}="${focusedId}"]`);
+        if (again !== null) again.focus();
+      }
     }
     editingNote.textContent = `${EDITING_PREFIX} ${settings.mainCameraId}.`;
 

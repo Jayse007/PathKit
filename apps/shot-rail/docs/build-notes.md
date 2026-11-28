@@ -1,5 +1,10 @@
 # Build notes
 
+## Task 37.1 fix: first camera click lost after typing in a number field (newest entry, kept at top)
+
+- Done, user-requested, `src/view/controls.ts` only (`controls-rules.ts` not touched). Cause: leaving a number field fires `change`, `show()` rebuilt the camera rows, and the click landed on a button that no longer existed. Now `show()` keeps the built rows (`rowParts`) and, when the camera id list has the same length and the same ids in the same order, updates them in place (select text, `aria-pressed`, `title`, `data-select`, key hint; Remove `data-remove`, `title`, `aria-label`, `hidden`). It rebuilds only when a camera was added, removed or reordered. Every row now has a Remove button; the main row's is hidden with `hidden`, so no rebuild is needed when the main camera changes. Each Remove button has `aria-label` "Remove <id>" (the title is unchanged). Focus: in place, the element is the same so focus stays; on rebuild, the existing restore by `data-select` id is kept. No other control or file changed.
+- Not tested: nothing was run; not opened in a browser (the click-after-typing case, focus after Enter, the hidden Remove button on the main row, screen-reader name).
+
 ## Task 37.2: keyboard wiring (newest entry, kept at top)
 
 - Done: new `src/view/keyboard.ts` (`createKeyboard(options)`, one `keydown` listener on the document; every key goes through `actionForKey`, no second key table) and pure `src/view/keyboard-rules.ts` (`focusInTextField`, `nativeKeyConflict`, `isHandledHere`, `allowsRepeat`, `slotIndexOf`, `nextLensPreset`, `nextShotType`). `timeline.ts` (additive): `lastFrame()`, `togglePlay()`, `seekTo(frame)`; the Play button and the scrub slider now call the same inner functions, behaviour unchanged. `main.ts`: new `applyMode` (the mode buttons and the A/M keys), `createKeyboard` call with handlers for slots (through `onSelect`), lens cycle and zoom (through `applyMainLens`, no re-bake), shot-type cycle (through `withShotType` and `applySettings`, which pauses first). No src/logic, camera-rig.ts, coverage-grid-rules.ts or guides-view.ts change. PathKit not used.

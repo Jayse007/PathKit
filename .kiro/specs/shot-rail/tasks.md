@@ -409,10 +409,10 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5_
 
 - [ ] 37. Controls and keyboard wiring
-  - [x] 37.1 Implement `src/view/controls.ts`
+  - [-] 37.1 Implement `src/view/controls.ts`
     - Mode tabs (Angle, Move), camera list (up to 6), bearing, height, horizontal distance, lens presets, a lens slider from 24 to 85 mm and a 'Custom' entry in the lens menu, Shot_Type, Shot_Length. Each control has a visible text label, a tooltip and its key shown beside it. A non-drag alternative for every drag action (typed number fields and keys). Shot_Length refuses 59 or 601 with the message from Task 19. Changing any setting marks the rig dirty and never starts playback.
     - _Requirements: 7.2, 7.3, 7.12, 8.1, 8.8, 8.9, 8.12, 8.15, 17.3, 18.1, 18.2, 19.7_
-  - [-] 37.2 Wire the keys in `src/view/keyboard.ts`
+  - [x] 37.2 Wire the keys in `src/view/keyboard.ts`
     - Attach one `keydown` handler that calls `actionForKey` and dispatches the action. Show the key beside each control.
     - _Requirements: 11.12, 18.2_
   - [~] 37.3 User checkpoint: try the controls
