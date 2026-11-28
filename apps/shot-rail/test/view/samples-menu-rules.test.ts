@@ -6,7 +6,7 @@
 // false after a re-bake and leaves the frame alone. Frame 0 after a load is left to the 40.3 browser checkpoint.
 //
 // Source line it should catch:
-//  - in sampleToSettings, add `railShotWhenMain: 'push-in'` (or spread a camera) to the camera: "no railShotWhenMain" fails.
+//  - in sampleToSettings, add an extra key (or spread a camera) to the camera: "exactly the six named keys" fails.
 //  - replace `roadPoints.map(...)` with `roadPoints as Vec3[]`: "copies the road points" fails.
 //  - set mainCameraId to something other than SAMPLE_CAMERA_ID: "one main camera" fails.
 //  - in CameraRig.bake, remove `this.playing = false;`: "a load from a playing state" fails.
@@ -83,9 +83,8 @@ describe('sampleToSettings', () => {
     expect(settings.road.closed).toBe(true);
   });
 
-  it.each(TABLE)('sample %i camera has exactly the six named keys and no railShotWhenMain', (index) => {
+  it.each(TABLE)('sample %i camera has exactly the six named keys', (index) => {
     const cam = sampleToSettings(SAMPLE_SHOTS[index], smallRoad(), 'car').cameras[0];
-    expect('railShotWhenMain' in cam).toBe(false);
     expect(Object.keys(cam).sort()).toEqual(
       ['bearingDeg', 'heightM', 'horizontalDistanceM', 'id', 'lensMm', 'shotType'],
     );

@@ -358,17 +358,24 @@ function start(): void {
     },
     onCycleLens: () => {
       const main = mainCamera();
-      if (main !== undefined) applyMainLens(nextLensPreset(main.lensMm));
+      if (main === undefined) return;
+      const mm = nextLensPreset(main.lensMm);
+      applyMainLens(mm);
+      status.textContent = `Lens: ${Math.round(mm)} mm.`;
     },
     onZoom: (direction: 1 | -1) => {
       const main = mainCamera();
-      if (main !== undefined) applyMainLens(stepLens(main.lensMm, direction, LENS_KEY_STEP_RATIO));
+      if (main === undefined) return;
+      const mm = stepLens(main.lensMm, direction, LENS_KEY_STEP_RATIO);
+      applyMainLens(mm);
+      status.textContent = `Lens: ${Math.round(mm)} mm.`;
     },
     onCycleShotType: () => {
       const main = mainCamera();
       if (main === undefined) return;
-      const changed = withShotType(current, main.id, nextShotType(main.shotType));
-      applySettings(changed.settings, changed.message); // pauses first, then re-bakes
+      const nextType = nextShotType(main.shotType);
+      const changed = withShotType(current, main.id, nextType);
+      applySettings(changed.settings, `Shot type: ${nextType}.`); // pauses first, then re-bakes
     },
   });
 

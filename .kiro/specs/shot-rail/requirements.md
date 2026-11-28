@@ -219,7 +219,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 2. THE Shot_Rail_App SHALL let the User set each Camera's bearing, height, Horizontal_Distance and lens.
 3. THE Shot_Rail_App SHALL label the distance control as the horizontal distance (the orbit radius) and SHALL show the Straight_Line_Distance as a read-only value.
 4. THE Shot_Rail_App SHALL show the Angle_Label and the Framing_Label on each Camera view in the Coverage_Grid.
-5. WHEN the User clicks a Camera view, THE Shot_Rail_App SHALL make that Camera the Main_Camera. IF another Camera is a push-in or crane shot (only the Main_Camera can be a rail shot), THEN THE Shot_Rail_App SHALL change that Camera to an orbit shot, keeping its bearing, height, Horizontal_Distance and lens, and SHALL say so in the status line. WHEN a camera is changed from push-in or crane to orbit because another camera became the Main_Camera, THE Shot_Rail_App SHALL remember the earlier shot type for that camera. WHEN that camera becomes the Main_Camera again, THE Shot_Rail_App SHALL give it the remembered shot type back, and the status line SHALL say so. The camera list SHALL show the remembered type, for example 'cam-1, orbit (push-in when main)'. WHEN the User sets a camera's shot type to orbit or tracking, THE Shot_Rail_App SHALL forget that camera's remembered rail shot.
+5. WHEN the User clicks a Camera view, THE Shot_Rail_App SHALL make that Camera the Main_Camera. IF another Camera is a push-in or crane shot (only the Main_Camera can be a rail shot), THEN THE Shot_Rail_App SHALL change that Camera to an orbit shot, keeping its bearing, height, Horizontal_Distance and lens, and SHALL say so in the status line.
 6. THE Shot_Rail_App SHALL keep each Camera aimed at the Subject with PathKit `orbitAround` and `aimAt`, with `orbitAround` listed before `aimAt` in the constraint order.
 7. THE Shot_Rail_App SHALL orbit each Camera around the Orbit_Centre (the Subject position shifted up or down by the Camera height) and SHALL aim each Camera at the true Subject position.
 8. WHEN a Camera setting changes, THE Shot_Rail_App SHALL re-render the Coverage_Grid.
@@ -227,6 +227,8 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 10. WHILE nothing changes and the Timeline is stopped, THE Shot_Rail_App SHALL NOT re-render the Coverage_Grid.
 11. IF the User tries to add a seventh Camera, THEN THE Shot_Rail_App SHALL refuse and show a message that states the limit of 6 Cameras.
 12. WHERE the User cannot drag, THE Shot_Rail_App SHALL offer the same placement by typing values or using keys.
+13. WHILE Angle_Mode is active, THE Shot_Rail_App SHALL show the camera list with its Add camera button, the placement fields (bearing, height, Horizontal_Distance and the read-only Straight_Line_Distance) and the lens controls. WHILE Move_Mode is active, THE Shot_Rail_App SHALL hide them, and SHALL show them again when Angle_Mode becomes active.
+14. WHEN a mode change hides the control that has focus, THE Shot_Rail_App SHALL move focus to the button of the mode that is now active.
 
 ### Requirement 8: Move mode and shot types (P1)
 
@@ -249,6 +251,7 @@ Items 1 to 16, 19 and 20 are decided. Items 17 and 18 remain as written.
 13. IF Spike S6 shows that one scene cannot hold a path camera plus orbiting Cameras, THEN THE Shot_Rail_App SHALL bake the Main_Camera in its own scene, without asking the User, and the result SHALL be recorded in Build_Notes.
 14. THE Shot_Builder SHALL give each orbiting Camera an Orbit_Centre equal to the Subject position shifted up or down by the Camera height, and SHALL give `aimAt` the true Subject position.
 15. WHEN the Shot_Type, its settings or the Shot_Length change, THE Shot_Rail_App SHALL leave the Timeline paused and SHALL NOT start playback after the re-bake.
+16. WHILE Move_Mode is active, THE Shot_Rail_App SHALL show the Shot_Type control, the Shot_Length control and the line 'Main camera: <id>'. WHILE Angle_Mode is active, THE Shot_Rail_App SHALL hide them. The sample menu, the guides, the Timeline, the Readout and the Motion_Check SHALL be shown in both modes. A key that changes a setting whose control is hidden SHALL still change it, and the status line SHALL state the new value.
 
 ### Requirement 9: Motion check (P1)
 

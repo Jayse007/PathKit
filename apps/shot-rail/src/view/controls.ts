@@ -14,7 +14,7 @@
 import { LENS_ZOOM_MAX_MM, LENS_ZOOM_MIN_MM, MAX_CAMERAS, SHOT_LENGTH_MAX, SHOT_LENGTH_MIN } from '../logic/constants.js';
 import type { ShotType } from '../logic/shot-builders.js';
 import { MEASURE_TERMS, SHOT_TYPE_TERMS } from '../logic/term-text.js';
-import type { CameraSetting, RigSettings } from './camera-rig.js';
+import type { RigSettings } from './camera-rig.js';
 import type { GridMode } from './coverage-grid-rules.js';
 import {
   FIELD_KEY_HINT,
@@ -31,6 +31,8 @@ import {
 } from './controls-rules.js';
 import type { FieldSpec } from './controls-rules.js';
 import { setRegionEmpty } from './layout.js';
+import { isPanelVisible } from './mode-panels-rules.js';
+import type { PanelId } from './mode-panels-rules.js';
 
 // View-only values (not in the design's Named constants table).
 const CONTROLS_EMPTY_ID = 'controls-empty';
@@ -57,6 +59,8 @@ const LENS_SLIDER_LABEL = 'Lens zoom';
 const SHOT_TYPE_LABEL = 'Shot type';
 const SHOT_LENGTH_LABEL = 'Shot length';
 const SHOT_LENGTH_UNIT = 'frames';
+const MAIN_LINE_PREFIX = 'Main camera:';
+const MAIN_LINE_CLASS = 'main-line';
 
 const SHOT_TYPES: readonly { readonly type: ShotType; readonly text: string }[] = [
   { type: 'push-in', text: 'Push-in' },
@@ -155,7 +159,8 @@ export function createControls(options: ControlsOptions): Controls {
   modeRow.append(angleTab, moveTab);
   modeGroup.append(modeTitle, modeRow);
 
-  const setMode = (mode: GridMode): void => {
+  // The tabs only. The public setMode (below, once every panel exists) also shows and hides the panels.
+  const setTabs = (mode: GridMode): void => {
     angleTab.setAttribute('aria-pressed', mode === 'angle' ? 'true' : 'false');
     moveTab.setAttribute('aria-pressed', mode === 'move' ? 'true' : 'false');
   };
@@ -167,7 +172,6 @@ export function createControls(options: ControlsOptions): Controls {
     setMode('move');
     options.onMode('move');
   });
-  setMode(options.mode);
 
   // --- camera list ---------------------------------------------------------------------------
   const cameraGroup = document.createElement('div');
@@ -307,16 +311,38 @@ export function createControls(options: ControlsOptions): Controls {
     if (!onChange(withShotLength(getSettings(), checked.value), '')) show(getSettings());
   });
 
-  afterLensBox.replaceChildren(shotTypeWrap, lengthWrap);
+  // The 'Main camera: <id>' line at the top of the Move panel. show() updates its text in place.
+  const mainLine = document.createElement('p');
+  mainLine.className = MAIN_LINE_CLASS;
+  afterLensBox.replaceChildren(mainLine, shotTypeWrap, lengthWrap);
+
+  // --- panels by mode (Requirements 7.13, 7.14, 8.16) ----------------------------------------
+  // Hidden with the `hidden` property; the DOM is kept and nothing is rebuilt. The Straight_Line_Distance
+  // line is in the Readout, not here, so it is not hidden by this code.
+  const panels: readonly { readonly id: PanelId; readonly element: HTMLElement }[] = [
+    { id: 'cameras', element: cameraGroup },
+    { id: 'placement', element: placementBox },
+    { id: 'lens', element: lensField },
+    { id: 'shot', element: afterLensBox },
+  ];
+
+  const setMode = (mode: GridMode): void => {
+    setTabs(mode);
+    const active = document.activeElement;
+    let focusHidden = false;
+    for (const panel of panels) {
+      const visible = isPanelVisible(panel.id, mode);
+      panel.element.hidden = !visible;
+      if (!visible && active !== null && panel.element.contains(active)) focusHidden = true;
+    }
+    // A hidden element cannot keep focus: move it to the button of the mode that is now active.
+    if (focusHidden) (mode === 'angle' ? angleTab : moveTab).focus();
+  };
+  setMode(options.mode);
 
   // --- show ----------------------------------------------------------------------------------
   // The camera rows built last time, in order. Every row keeps a Remove button; the main row's is hidden.
   let rowParts: RowParts[] = [];
-
-  // "orbit" or, when a rail shot is remembered, "orbit (push-in when main)".
-  function shotText(c: CameraSetting): string {
-    return c.railShotWhenMain === undefined ? c.shotType : `${c.shotType} (${c.railShotWhenMain} when main)`;
-  }
 
   function fillRow(part: RowParts, index: number, id: string, shotType: string, isMain: boolean): void {
     part.select.setAttribute(ATTR_SELECT, id);
@@ -335,6 +361,8 @@ export function createControls(options: ControlsOptions): Controls {
     const focusedId = active instanceof Element ? active.getAttribute(ATTR_SELECT) : null;
 
     cameraTitle.textContent = `${CAMERAS_LABEL} (${settings.cameras.length} of ${MAX_CAMERAS})`;
+    const mainLineText = `${MAIN_LINE_PREFIX} ${settings.mainCameraId}`;
+    if (mainLine.textContent !== mainLineText) mainLine.textContent = mainLineText;
 
     // Same ids in the same order: update the existing rows in place, so a click that follows a field's
     // change event still lands on a live button. Otherwise (camera added, removed or reordered) rebuild.
@@ -344,7 +372,7 @@ export function createControls(options: ControlsOptions): Controls {
     }
     if (sameIds) {
       for (let i = 0; i < rowParts.length; i++) {
-        fillRow(rowParts[i], i, settings.cameras[i].id, shotText(settings.cameras[i]), settings.cameras[i].id === settings.mainCameraId);
+        fillRow(rowParts[i], i, settings.cameras[i].id, settings.cameras[i].shotType, settings.cameras[i].id === settings.mainCameraId);
       }
     } else {
       const rows: HTMLElement[] = [];
@@ -363,7 +391,7 @@ export function createControls(options: ControlsOptions): Controls {
         remove.textContent = REMOVE_TEXT;
         row.append(select, remove);
         const part: RowParts = { id: camera.id, select, label, key, remove };
-        fillRow(part, i, camera.id, shotText(camera), camera.id === settings.mainCameraId);
+        fillRow(part, i, camera.id, camera.shotType, camera.id === settings.mainCameraId);
         parts.push(part);
         rows.push(row);
       }

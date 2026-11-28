@@ -1,5 +1,21 @@
 # Build notes
 
+## Controls by mode and new hint wording, 28 November 2026, part B (newest entry, kept at top)
+
+- Decision (28 November 2026, by the User): Angle mode shows the camera list with Add camera, the placement fields and the lens controls. Move mode shows Shot_Type, Shot_Length and a 'Main camera: <id>' line. The sample menu, guides, Timeline, Readout and Motion_Check show in both modes. New hint wording for both modes.
+- Spec: `requirements.md` criteria 7.13, 7.14 and 8.16 added. `design.md` has one paragraph "Controls by mode" after the Coverage_Grid paragraph in "Rendering layer" (there is no controls section). `tasks.md` has new unchecked sub-tasks 37.1c and 41.3. No requirement quotes the old hint wording (18.3 quotes none), so no spec wording was replaced.
+- Code: new pure `src/view/mode-panels-rules.ts` (`PanelId`, `isPanelVisible`). `src/view/controls.ts`: `setMode` now also sets `hidden` on the camera group, the placement box, `#lens-field` and `#controls-after-lens`; a 'Main camera: <id>' line is the first child of `#controls-after-lens`, updated in `show()` only when its text changes; focus moves to the active mode button when the focused element is hidden. `index.html`: rule `#controls-column [hidden] { display: none !important; }` (`.field` sets `display:flex`, which beats the `hidden` attribute) and a `.main-line` margin. `src/view/hints-rules.ts`: new hint wording. `src/main.ts`: the L, + / - and S keys now set the status line ('Lens: <mm> mm.' and 'Shot type: <type>.').
+- Tests: new `test/view/mode-panels-rules.test.ts` (8 rows). `test/view/hints-rules.test.ts`: the two text literals only.
+- Not tested: nothing was run. Not opened in a browser (hiding, focus move, layout, the key messages).
+
+## Remembered rail shot removed, 28 November 2026, part A
+
+- Decision (28 November 2026, by the User): the remembered rail shot (task 37.1b) is removed. A camera that stops being the Main_Camera stays an orbit camera, as in the original rule of Requirement 7.5. The field `railShotWhenMain`, the "is back to" message and the "(push-in when main)" text in the camera list are gone.
+- Spec: `requirements.md` Requirement 7 criterion 5 back to the push-in/crane to orbit rule only. `design.md` paragraph "Remembered rail shot (Requirement 7.5)" deleted. `tasks.md` task 37.1b is now `[ ]*` "REMOVED", with a removed note; not to be built.
+- Code: `src/view/camera-rig.ts` (field removed from `CameraSetting`), `src/view/coverage-grid-rules.ts` (`planMainChange` back to conversion only), `src/view/controls-rules.ts` (`withShotType` and `withAddedCamera` simplified, `change` helper and mainCopy line removed), `src/view/controls.ts` (`shotText` removed, plain `shotType` passed to `fillRow`, unused `CameraSetting` import removed), `src/view/samples-menu-rules.ts` (comments only).
+- Tests: `test/view/coverage-grid-rules.test.ts` (the 5-test "remembered rail shot" describe block deleted, `railShotWhenMain` removed from one expected object), `test/view/samples-menu-rules.test.ts` (test renamed "...has exactly the six named keys", the `railShotWhenMain` check and header mention removed). `test/view/hints-rules.test.ts` was already fixed.
+- Not tested: nothing was run. Part B is separate.
+
 ## Task 41.2: hint tests (newest entry, kept at top)
 
 - Done: new `test/view/hints-rules.test.ts`, 11 `it` blocks (21 tests as Vitest counts them: `hintToShow` 8 rows, `hintTextForMode` 2, `hintStorageKey` 2, write-and-read-back 2, and 7 single blocks). Expected texts, keys ('hintSeenAngle', 'hintSeenMove') and stored keys ('shot-rail:hintSeenAngle', 'shot-rail:hintSeenMove') are hand-written literals. The remembered flag is tested through `readSetting`/`writeSetting` with a mock `StorageLike` and `hintStorageKey`, including missing value, invalid JSON, a throwing storage, and the two modes being independent. No src file changed.

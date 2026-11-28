@@ -13,9 +13,9 @@ import type { GridMode } from '../../src/view/coverage-grid-rules.js';
 
 // All expected values are hand-written literals. Nothing is imported from constants.ts.
 const ANGLE_TEXT =
-  'Angle mode: compare up to six cameras side by side. Click a camera view to make it the main camera.';
+  'Angle mode: add up to six cameras and compare their views. Click a view to make it the main camera.';
 const MOVE_TEXT =
-  'Move mode: shape how the main camera moves. Camera views are shown in Angle mode (key A).';
+  'Move mode: choose how the main camera moves, by shot type and shot length. Camera views are shown in Angle mode (key A).';
 
 /** A working in-memory mock. `data` exposes the raw keys and text. */
 function makeMock(): { storage: StorageLike; data: Map<string, string> } {
@@ -136,7 +136,7 @@ describe('hints-rules (pure; the DOM file hints.ts is not imported)', () => {
   // or never storing (the second open would show again, or the other mode would be hidden).
   it('first open shows, dismissing stores the flag, the second open shows none', () => {
     const { storage } = makeMock();
-    const seen = (mode: GridMode): boolean => readSetting(hintStorageKey(mode), false, storage) === true;
+    const seen = (mode: GridMode): boolean => readSetting<boolean>(hintStorageKey(mode), false, storage) === true;
     const toShow = (mode: GridMode): GridMode | null => hintToShow(mode, seen('angle'), seen('move'));
 
     expect(toShow('angle')).toBe('angle');

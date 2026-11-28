@@ -183,7 +183,6 @@ describe('planMainChange', () => {
       heightM: -0.3,
       horizontalDistanceM: 12,
       lensMm: 50,
-      railShotWhenMain: 'push-in',
     });
   });
 
@@ -233,92 +232,5 @@ describe('planMainChange', () => {
     expect(plan.cameras.map((c) => c.shotType)).toEqual(['orbit', 'tracking', 'orbit']);
     expect(plan.converted).toEqual([]);
     expect(plan.message).toBe('');
-  });
-});
-
-describe('planMainChange remembered rail shot', () => {
-  // Source lines these tests should catch: not removing railShotWhenMain after restoring
-  // (the "'railShotWhenMain' in" checks fail), or storing the new type instead of the old one
-  // (the 'push-in' and 'crane' values fail).
-  type RCam = {
-    id: string;
-    shotType: 'push-in' | 'orbit' | 'tracking' | 'crane';
-    bearingDeg: number;
-    heightM: number;
-    horizontalDistanceM: number;
-    lensMm: number;
-    railShotWhenMain?: 'push-in' | 'crane';
-  };
-  const cam = (id: string, shotType: RCam['shotType']): RCam => ({
-    id,
-    shotType,
-    bearingDeg: 30,
-    heightM: -0.3,
-    horizontalDistanceM: 12,
-    lensMm: 50,
-  });
-
-  it('a converted camera remembers its old rail shot and the new main camera is unchanged', () => {
-    const plan = planMainChange([cam('cam-1', 'push-in'), cam('cam-2', 'orbit')], 'cam-2');
-    expect(plan.cameras[0]).toEqual({
-      id: 'cam-1',
-      shotType: 'orbit',
-      bearingDeg: 30,
-      heightM: -0.3,
-      horizontalDistanceM: 12,
-      lensMm: 50,
-      railShotWhenMain: 'push-in',
-    });
-    expect(plan.cameras[1]).toEqual(cam('cam-2', 'orbit'));
-    expect('railShotWhenMain' in plan.cameras[1]).toBe(false);
-    expect(plan.message).toBe('cam-1 changed from push-in to orbit. Only the main camera can be a rail shot.');
-  });
-
-  it('a camera that becomes main again gets its rail shot back and loses the field', () => {
-    const first = planMainChange([cam('cam-1', 'push-in'), cam('cam-2', 'orbit')], 'cam-2');
-    const second = planMainChange(first.cameras, 'cam-1');
-    expect(second.cameras[0]).toEqual({
-      id: 'cam-1',
-      shotType: 'push-in',
-      bearingDeg: 30,
-      heightM: -0.3,
-      horizontalDistanceM: 12,
-      lensMm: 50,
-    });
-    expect('railShotWhenMain' in second.cameras[0]).toBe(false);
-    expect(second.cameras[1]).toEqual(cam('cam-2', 'orbit'));
-    expect(second.message).toBe('cam-1 is back to push-in.');
-  });
-
-  it('remembers crane among four cameras and restores it', () => {
-    const input = [cam('cam-1', 'orbit'), cam('cam-2', 'orbit'), cam('cam-3', 'orbit'), cam('cam-4', 'crane')];
-    const first = planMainChange(input, 'cam-1');
-    expect(first.cameras[3]).toEqual({ ...cam('cam-4', 'orbit'), railShotWhenMain: 'crane' });
-    const second = planMainChange(first.cameras, 'cam-4');
-    expect(second.cameras[3]).toEqual(cam('cam-4', 'crane'));
-    expect('railShotWhenMain' in second.cameras[3]).toBe(false);
-    expect(second.message).toBe('cam-4 is back to crane.');
-  });
-
-  it('orbit and tracking cameras get no railShotWhenMain when the main camera changes', () => {
-    const input = [cam('cam-1', 'orbit'), cam('cam-2', 'tracking'), cam('cam-3', 'orbit')];
-    const toTwo = planMainChange(input, 'cam-2');
-    const toThree = planMainChange(input, 'cam-3');
-    for (const c of [...toTwo.cameras, ...toThree.cameras]) {
-      expect('railShotWhenMain' in c).toBe(false);
-    }
-  });
-
-  it('does not change the input, and cam-4 still remembers crane after cam-1 and then cam-2 become main', () => {
-    const input = [cam('cam-1', 'orbit'), cam('cam-2', 'orbit'), cam('cam-3', 'orbit'), cam('cam-4', 'crane')];
-    const before1 = JSON.parse(JSON.stringify(input));
-    const first = planMainChange(input, 'cam-1');
-    expect(JSON.parse(JSON.stringify(input))).toEqual(before1);
-
-    const before2 = JSON.parse(JSON.stringify(first.cameras));
-    const second = planMainChange(first.cameras, 'cam-2');
-    expect(JSON.parse(JSON.stringify(first.cameras))).toEqual(before2);
-
-    expect(second.cameras[3]).toEqual({ ...cam('cam-4', 'orbit'), railShotWhenMain: 'crane' });
   });
 });

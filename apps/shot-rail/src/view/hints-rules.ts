@@ -7,9 +7,9 @@ import type { GridMode } from './coverage-grid-rules.js';
 
 /** Approved wording. Do not change without the User's approval. */
 export const ANGLE_HINT_TEXT =
-  'Angle mode: compare up to six cameras side by side. Click a camera view to make it the main camera.';
+  'Angle mode: add up to six cameras and compare their views. Click a view to make it the main camera.';
 export const MOVE_HINT_TEXT =
-  'Move mode: shape how the main camera moves. Camera views are shown in Angle mode (key A).';
+  'Move mode: choose how the main camera moves, by shot type and shot length. Camera views are shown in Angle mode (key A).';
 export const HINT_DISMISS_LABEL = 'Got it';
 
 /**

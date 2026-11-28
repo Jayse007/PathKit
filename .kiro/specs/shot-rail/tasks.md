@@ -415,9 +415,11 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 37.1a Camera views in Move mode
     - In Move mode hide the Coverage_Grid tile pictures and show 'Camera views are shown in Angle mode (key A).'; in Angle mode show them again and redraw at once. Use the single mode-change path, so the buttons and the A and M keys behave the same.
     - _Requirements: 7.1_
-  - [x] 37.1b Remember a camera's rail shot
-    - `railShotWhenMain` on `CameraSetting`; `planMainChange` sets it when a rail camera becomes orbit and restores it (and removes it) when that camera becomes main again, with "<id> is back to <type>." in the message; `withShotType` sets it for a non-main rail request and clears it when the Main_Camera's shot type is set; `withAddedCamera` does not copy it; the camera list shows "cam-1, orbit (push-in when main)". Hand-written tests in `test/view/coverage-grid-rules.test.ts`. Source line it should catch: not removing the field after restoring, or storing the new type instead of the old one. WHEN the User sets a camera's shot type to orbit or tracking, THE Shot_Rail_App SHALL forget that camera's remembered rail shot.
-    - _Requirements: 7.5_
+  - [ ]* 37.1b REMOVED Remember a camera's rail shot
+    - Removed on 28 November 2026 by the User. A camera that is no longer the Main_Camera stays an orbit camera. Not to be built.
+  - [ ] 37.1c Controls by mode
+    - In Angle mode show the camera list with Add camera, the placement fields (bearing, height, Horizontal_Distance and the read-only Straight_Line_Distance) and the lens controls, and hide the Shot_Type and Shot_Length controls. In Move mode do the reverse and show the line 'Main camera: <id>'. Hide with the `hidden` attribute, keep the DOM, update rows in place, and move focus to the active mode button if the focused control is hidden. Use the single mode-change path. A pure `isPanelVisible` in `src/view/mode-panels-rules.ts` decides which panel shows in which mode, with a table test. Keys for a hidden control still work and the status line states the new value.
+    - _Requirements: 7.13, 7.14, 8.16_
   - [x] 37.2 Wire the keys in `src/view/keyboard.ts`
     - Attach one `keydown` handler that calls `actionForKey` and dispatches the action. Show the key beside each control.
     - _Requirements: 11.12, 18.2_
@@ -461,10 +463,13 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 41.1 Implement `src/view/hints.ts`
     - One-line hint the first time Angle mode and Move mode open. Dismissing stores `hintSeenAngle` or `hintSeenMove` through `storage.ts`.
     - _Requirements: 18.3, 18.4, 20.1_
-  - [x] 41.2 Write the hint tests
+  - [-] 41.2 Write the hint tests
     - With a mock storage: first open shows the hint; after dismiss, the flag is stored and the second open shows none; a storage that throws still shows the hint the first time and does not block use.
     - Source line it should catch: store the flag under the wrong key, or never store it.
     - _Requirements: 18.3, 18.4, 20.3_
+  - [ ] 41.3 Hint wording for the real modes
+    - Set ANGLE_HINT_TEXT and MOVE_HINT_TEXT to the wording in Requirement 18.3's update (28 November 2026) and update the two literals in hints-rules.test.ts.
+    - _Requirements: 18.3_
 
 - [ ] 42. About_Panel
   - [~] 42.1 Implement `src/view/about-panel.ts`

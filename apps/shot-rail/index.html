@@ -99,6 +99,14 @@
       .key-hint {
         color: var(--text-muted);
       }
+      /* Mode panels (Requirements 7.13, 8.16) are hidden with the hidden attribute. .field sets display:flex,
+         which would beat the browser's own [hidden] rule, so this rule restores it. */
+      #controls-column [hidden] {
+        display: none !important;
+      }
+      .main-line {
+        margin: 0 0 12px;
+      }
       #controls-column button[aria-pressed="true"] {
         border-color: var(--focus);
         border-width: 2px;

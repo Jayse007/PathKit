@@ -2,7 +2,7 @@
 // test may import this file (task 40.2).
 //
 // A sample is one main camera. Loading it replaces ALL settings at once: the settings are built new from the
-// sample, never by changing the settings that were showing. No camera keeps a remembered rail shot.
+// sample, never by changing the settings that were showing.
 // The Road and the subject are not part of a sample, so the caller passes the ones in use.
 
 import { CAMERA_IDS } from '../logic/constants.js';
@@ -18,8 +18,7 @@ export const SAMPLE_CAMERA_ID: string = CAMERA_IDS[0];
 
 /**
  * New RigSettings for a sample: one camera, which is the main camera, with the sample's shot type, placement,
- * lens and shot length. The road points are copied, so the result shares nothing with the arguments, and the
- * camera has no `railShotWhenMain` key.
+ * lens and shot length. The road points are copied, so the result shares nothing with the arguments.
  */
 export function sampleToSettings(
   sample: SampleShot,

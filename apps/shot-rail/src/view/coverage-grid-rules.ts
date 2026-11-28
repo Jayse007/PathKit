@@ -64,39 +64,26 @@ export interface MainChange<T extends { id: string; shotType: ShotType }> {
 /**
  * Plan a change of Main_Camera. Only the Main_Camera can be a rail shot (push-in or crane),
  * so every other camera with one of those shot types becomes an orbit shot. All other
- * fields are kept. A converted camera remembers its old rail shot in `railShotWhenMain`. When the new
- * main camera has a remembered rail shot, it gets that shot type back and the field is removed (the key
- * is absent). Other cameras keep their remembered shot. Pure: the input is not mutated.
+ * fields are kept. A camera that stops being the main camera stays an orbit camera. Pure: the input is
+ * not mutated.
  *
- * Message order: the conversion sentences, then "Only the main camera can be a rail shot.", then
- * "<id> is back to <type>." Each part is separated by one space. With a restore only, just the last sentence.
+ * Message: one "<id> changed from <type> to orbit." sentence per converted camera, then
+ * "Only the main camera can be a rail shot.", separated by single spaces. '' when nothing was converted.
  */
-export function planMainChange<T extends { id: string; shotType: ShotType; railShotWhenMain?: 'push-in' | 'crane' }>(
-  cameras: readonly T[],
-  newMainId: string,
-): MainChange<T> {
+export function planMainChange<T extends { id: string; shotType: ShotType }>(cameras: readonly T[], newMainId: string): MainChange<T> {
   if (!cameras.some((c) => c.id === newMainId)) {
     throw new Error(`Camera "${newMainId}" is not in the camera list.`);
   }
   const converted: string[] = [];
   const sentences: string[] = [];
-  const restored: string[] = [];
   const next = cameras.map((c): T => {
     if (c.id !== newMainId && (c.shotType === 'push-in' || c.shotType === 'crane')) {
       converted.push(c.id);
       sentences.push(`${c.id} changed from ${c.shotType} to orbit.`);
-      return { ...c, shotType: 'orbit', railShotWhenMain: c.shotType };
-    }
-    if (c.id === newMainId && c.railShotWhenMain !== undefined) {
-      restored.push(`${c.id} is back to ${c.railShotWhenMain}.`);
-      // Build the copy without the key (not even as undefined).
-      const { railShotWhenMain, ...rest } = c;
-      return { ...rest, shotType: railShotWhenMain } as unknown as T;
+      return { ...c, shotType: 'orbit' };
     }
     return { ...c };
   });
-  const parts: string[] = [];
-  if (converted.length > 0) parts.push(`${sentences.join(' ')} Only the main camera can be a rail shot.`);
-  parts.push(...restored);
-  return { cameras: next, converted, message: parts.join(' ') };
+  const message = converted.length === 0 ? '' : `${sentences.join(' ')} Only the main camera can be a rail shot.`;
+  return { cameras: next, converted, message };
 }
