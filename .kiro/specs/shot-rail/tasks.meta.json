@@ -1554,11 +1554,6 @@
       {
         "executionId": "97c0e523-2c58-4c8b-870e-6bbe827e4cfc",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
-        "timestamp": 1795855375360
-      },
-      {
-        "executionId": "97c0e523-2c58-4c8b-870e-6bbe827e4cfc",
-        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795855387790
       },
       {
@@ -1600,6 +1595,11 @@
         "executionId": "cbfc6b57-988f-4c06-aa70-beb7195967e0",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795867184242
+      },
+      {
+        "executionId": "f63aacc0-1a64-4cb7-9b37-3d9c9f1a2751",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795868156858
       }
     ],
     "42.1 Implement `src/view/about-panel.ts`": [
@@ -1607,6 +1607,11 @@
         "executionId": "e0cbb514-8dc6-47c3-98b7-4186cc5d40de",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795529426694
+      },
+      {
+        "executionId": "e2713365-698f-4547-93fb-e96c26ea352f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795868392427
       }
     ],
     "42.2 Write the About_Panel text tests": [
@@ -2149,6 +2154,20 @@
         "executionId": "e8050386-ae07-4aa5-8a25-6917ef562dd1",
         "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
         "timestamp": 1795865563601
+      }
+    ],
+    "37.1c Controls by mode": [
+      {
+        "executionId": "e2713365-698f-4547-93fb-e96c26ea352f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795868385083
+      }
+    ],
+    "41.3 Hint wording for the real modes": [
+      {
+        "executionId": "e2713365-698f-4547-93fb-e96c26ea352f",
+        "chatSessionId": "sess_77f210b3-7294-4630-92fd-6f6aa1aa562c",
+        "timestamp": 1795868389079
       }
     ]
   }

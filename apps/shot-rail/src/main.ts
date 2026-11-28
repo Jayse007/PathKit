@@ -9,6 +9,7 @@ import { lensAfterWheel, presetOf, stepLens } from './logic/lens-zoom.js';
 import { motionCheckFailureOf } from './logic/motion-check-model.js';
 import { SAMPLE_SHOTS } from './logic/samples.js';
 import { LENS_TERMS, MEASURE_TERMS } from './logic/term-text.js';
+import { createAboutPanel } from './view/about-panel.js';
 import { CameraRig } from './view/camera-rig.js';
 import type { RigSettings } from './view/camera-rig.js';
 import { createAuxRenderer } from './view/aux-renderer.js';
@@ -44,6 +45,10 @@ const SHOT_CHANGED_PREFIX = 'The change could not be applied';
 
 function start(): void {
   applyLayout(); // region messages, term titles and the focus hint line (task 36.1)
+  // The About panel (task 42.1): the About button opens it, and so does the ? key (through the keyboard below).
+  // Created before the early returns below, so the limits can be read even when WebGL or the rig fails.
+  // It fills its text once here and is never touched per frame.
+  const aboutPanel = createAboutPanel();
   const stage = document.getElementById('stage');
   const timelineBox = document.getElementById('timeline');
   const lensSelect = document.getElementById('lens') as HTMLSelectElement | null;
@@ -376,6 +381,9 @@ function start(): void {
       const nextType = nextShotType(main.shotType);
       const changed = withShotType(current, main.id, nextType);
       applySettings(changed.settings, `Shot type: ${nextType}.`); // pauses first, then re-bakes
+    },
+    onOpenAbout: () => {
+      if (aboutPanel !== null) aboutPanel.open();
     },
   });
 

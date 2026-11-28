@@ -417,7 +417,7 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
     - _Requirements: 7.1_
   - [ ]* 37.1b REMOVED Remember a camera's rail shot
     - Removed on 28 November 2026 by the User. A camera that is no longer the Main_Camera stays an orbit camera. Not to be built.
-  - [ ] 37.1c Controls by mode
+  - [x] 37.1c Controls by mode
     - In Angle mode show the camera list with Add camera, the placement fields (bearing, height and Horizontal_Distance) and the lens controls, and hide the Shot_Type and Shot_Length controls. In Move mode do the reverse and show the line 'Main camera: <id>'. Hide with the `hidden` attribute, keep the DOM, update rows in place, and move focus to the active mode button if the focused control is hidden. Use the single mode-change path. A pure `isPanelVisible` in `src/view/mode-panels-rules.ts` decides which panel shows in which mode, with a table test. Keys for a hidden control still work and the status line states the new value.
     - _Requirements: 7.13, 7.14, 8.16_
   - [x] 37.2 Wire the keys in `src/view/keyboard.ts`
@@ -463,16 +463,16 @@ Requirement and property numbers refer to `requirements.md` and to the Correctne
   - [x] 41.1 Implement `src/view/hints.ts`
     - One-line hint the first time Angle mode and Move mode open. Dismissing stores `hintSeenAngle` or `hintSeenMove` through `storage.ts`.
     - _Requirements: 18.3, 18.4, 20.1_
-  - [-] 41.2 Write the hint tests
+  - [x] 41.2 Write the hint tests
     - With a mock storage: first open shows the hint; after dismiss, the flag is stored and the second open shows none; a storage that throws still shows the hint the first time and does not block use.
     - Source line it should catch: store the flag under the wrong key, or never store it.
     - _Requirements: 18.3, 18.4, 20.3_
-  - [ ] 41.3 Hint wording for the real modes
+  - [x] 41.3 Hint wording for the real modes
     - Set ANGLE_HINT_TEXT and MOVE_HINT_TEXT to the wording in Requirement 18.3's update (28 November 2026) and update the two literals in hints-rules.test.ts.
     - _Requirements: 18.3_
 
 - [ ] 42. About_Panel
-  - [~] 42.1 Implement `src/view/about-panel.ts`
+  - [-] 42.1 Implement `src/view/about-panel.ts`
     - Reachable from the main screen. Text states: the subject is a stand-in drawn from shapes and there is no lighting, exposure or depth-of-field simulation; angles are measured from the world axes, not from the car's heading; PathKit allows one path per scene, so subject and cameras are baked in separate scenes (and the Main_Camera has its own scene if S6 required it, per the recorded outcome); the lens maths assumes a 36 mm sensor; the app is rough planning, not a prediction of real footage; rail cameras (push-in and crane) move along a fixed rail, do not follow the car and only aim at it.
     - _Requirements: 21.1, 21.2, 21.3, 21.4, 21.5, 21.7, 21.8_
   - [~] 42.2 Write the About_Panel text tests

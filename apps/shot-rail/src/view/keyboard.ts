@@ -7,7 +7,9 @@
 //
 // T and G (thirds and safe area) are NOT handled here: guides-view.ts already has its own listener for
 // them. This module ignores those two actions and does not call preventDefault for them, so they run once.
-// capture-frame (task 45) and open-about (task 42) do not exist yet: they are ignored too.
+// capture-frame (task 45) does not exist yet: it is ignored too.
+// open-about (? key, task 42.1) calls onOpenAbout. While any modal <dialog> is open (the About panel) this
+// module ignores every key; about-panel.ts also stops keys before they get here.
 //
 // Nothing is created per key press: the listener is made once and reads only what the event gives.
 
@@ -20,6 +22,8 @@ import type { Timeline } from './timeline.js';
 // View-only values (not in the design's Named constants table).
 const FRAME_STEP = 1;
 const FIRST_FRAME = 0;
+/** Matches a dialog that is open. The browser sets the `open` attribute while showModal() is in effect. */
+const OPEN_DIALOG_SELECTOR = 'dialog[open]';
 
 export interface KeyboardOptions {
   /** Only the transport methods are used. Stepping and first/last pause, as scrubbing does. */
@@ -34,6 +38,8 @@ export interface KeyboardOptions {
   onZoom: (direction: 1 | -1) => void;
   /** Next Shot_Type for the main camera, through the same path as the Shot_Type menu. */
   onCycleShotType: () => void;
+  /** Opens the About panel (the ? key). Same path as the About button. */
+  onOpenAbout: () => void;
 }
 
 export interface Keyboard {
@@ -85,10 +91,12 @@ function run(action: KeyAction, options: KeyboardOptions): boolean {
     case 'cycle-shot-type':
       options.onCycleShotType();
       return true;
+    case 'open-about':
+      options.onOpenAbout();
+      return true;
     case 'toggle-thirds': // guides-view.ts handles T
     case 'toggle-safe-area': // guides-view.ts handles G
     case 'capture-frame': // task 45
-    case 'open-about': // task 42
       return false;
   }
 }
@@ -98,6 +106,7 @@ export function createKeyboard(options: KeyboardOptions): Keyboard {
   const onKeyDown = (event: KeyboardEvent): void => {
     // actionForKey cannot see modifiers. Shift is allowed because '+' and '?' need it.
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
+    if (document.querySelector(OPEN_DIALOG_SELECTOR) !== null) return; // a modal dialog is open: no app keys
     const target = event.target instanceof Element ? event.target : null;
     const tagName = target === null ? '' : target.tagName;
     const inputType = target instanceof HTMLInputElement ? target.type : '';
